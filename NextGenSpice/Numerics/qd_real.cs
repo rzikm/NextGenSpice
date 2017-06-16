@@ -29,6 +29,16 @@ namespace NextGenSpice.Numerics
             return lhs.CompareTo(rhs) < 0;
         }
 
+        public static bool operator <(qd_real lhs, double rhs)
+        {
+            return lhs.CompareTo(qd_real.Zero + rhs) < 0;
+        }
+
+        public static bool operator >(qd_real lhs, double rhs)
+        {
+            return lhs.CompareTo(qd_real.Zero + rhs) > 0;
+        }
+
         public static bool operator >(qd_real lhs, qd_real rhs)
         {
             return lhs.CompareTo(rhs) > 0;
@@ -91,19 +101,19 @@ namespace NextGenSpice.Numerics
 
         public static qd_real operator -(qd_real lhs, double rhs)
         {
-            var qd = new qd_real();
-            qd.x0 = rhs;
+            var qd = new qd_real {x0 = rhs};
             return lhs - qd;
         }
 
-        public static qd_real operator -(double rhs, qd_real lhs)
+        public static qd_real operator -(double lhs, qd_real rhs)
         {
-            return lhs - rhs;
+            var qd = new qd_real {x0 = lhs};
+            return qd - rhs;
         }
 
         public static qd_real operator -(qd_real self)
         {
-            return 0 - self;
+            return Zero - self;
         }
 
         [DllImport("NumericCore.dll", CallingConvention = CallingConvention.Cdecl)]

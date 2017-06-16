@@ -1,73 +1,17 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using NextGenSpice.Numerics;
 
 namespace NextGenSpice
 {
-    public unsafe class TestQD
+    public unsafe class TestQdGe : TestBaseQD
     {
-        delegate void DllCallback();
 
         [DllImport("NumericCore.dll", CallingConvention = CallingConvention.StdCall)]
         static extern void Run_qd(qd_real* matrix, int size, DllCallback callback);
 
-        private qd_real[,] matrix;
-        private qd_real[,] matrix2;
-
-        public TestQD(int size)
+        public TestQdGe(int size) : base(size)
         {
-            matrix2 = new qd_real[size, size + 1];
-            Random rnd = new Random(42);
-            for (var i = 0; i < size; i++)
-            for (var j = 0; j < size; j++)
-            {
-                matrix2[i, j] = 1 / (qd_real.Zero + i + j + 1);
-                matrix2[i, size] += matrix2[i, j];
-            }
-        }
-
-        public qd_real[] RunTest_Native()
-        {
-            matrix = (qd_real[,]) matrix2.Clone();
-            Stopwatch sw = Stopwatch.StartNew();
-            fixed (qd_real* m = matrix)
-            {
-                Run_qd(m, matrix.GetLength(0), Callback);
-            }
-            sw.Stop();
-            Console.WriteLine($"Native:  {sw.Elapsed}");
-            return GetResults();
-        }
-
-        private qd_real[] GetResults()
-        {
-            qd_real[] ret = new qd_real[matrix.GetLength(0)];
-            for (int i = 0; i < ret.Length; i++)
-            {
-                ret[i] = matrix[i, ret.Length];
-            }
-            return ret;
-        }
-
-        private long i = 0;
-
-        public void Callback()
-        {
-            i++;
-        }
-
-
-        public qd_real[] RunTest_Managed()
-        {
-            matrix = (qd_real[,]) matrix2.Clone();
-            Stopwatch sw = Stopwatch.StartNew();
-            {
-                RunManaged(matrix, matrix.GetLength(0), Callback);
-            }
-            sw.Stop();
-            Console.WriteLine($"Managed: {sw.Elapsed}");
-            return GetResults();
         }
 
 
@@ -124,6 +68,16 @@ namespace NextGenSpice
                 }
                 callback();
             }
+        }
+
+        protected override unsafe void Call_Native(qd_real* qdReal, int getLength, DllCallback callback)
+        {
+            Run_qd(qdReal, getLength, callback);
+        }
+
+        protected override void Call_Managed(qd_real[,] qdReals, int getLength, DllCallback callback)
+        {
+            RunManaged(qdReals, getLength, callback);
         }
     }
 }

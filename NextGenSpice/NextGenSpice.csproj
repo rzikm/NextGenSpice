@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -43,8 +44,13 @@
   <ItemGroup>
     <Compile Include="Class1.cs" />
     <Compile Include="Misc\Misc.cs" />
-    <Compile Include="Misc\Test.cs" />
-    <Compile Include="Misc\TestQD.cs" />
+    <Compile Include="Misc\TestBaseDouble.cs" />
+    <Compile Include="Misc\TestBaseQD.cs" />
+    <Compile Include="Misc\TestCjGdaDouble.cs" />
+    <Compile Include="Misc\TestGDADouble.cs" />
+    <Compile Include="Misc\TestGdaQd.cs" />
+    <Compile Include="Misc\TestGEDouble.cs" />
+    <Compile Include="Misc\TestQdGe.cs" />
     <Compile Include="Numerics\qd_real.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
