@@ -11,13 +11,20 @@ namespace NextGenSpice
         public TestBaseDouble(int size)
         {
             matrix2 = new double[size, size + 1];
-            Random rnd = new Random(42);
+            Random rnd = new Random(30);
             for (var i = 0; i < size; i++)
-            for (var j = 0; j < size; j++)
-            {
-                matrix2[i, j] = 1f / (i + j + 1);
-                matrix2[i, size] += matrix2[i, j];
-            }
+                for (var j = 0; j < size; j++)
+                {
+                    //              Hilbert Matrix
+//                                    matrix2[i, j] = 1f / (i + j + 1);
+//                                    matrix2[i, size] += matrix2[i, j];
+
+                    var val = rnd.NextDouble();
+                    matrix2[i, j] += val;
+                    matrix2[j, i] += val;
+                    matrix2[i, size] += val;
+                    matrix2[j, size] += val;
+                }
         }
 
         protected delegate void DllCallback();
@@ -35,7 +42,7 @@ namespace NextGenSpice
             return GetResults();
         }
 
-        protected abstract unsafe void Call_Native(double* d, int getLength, DllCallback callback);
+        protected abstract unsafe void Call_Native(double* d, int size, DllCallback callback);
 
         protected virtual double[] GetResults()
         {

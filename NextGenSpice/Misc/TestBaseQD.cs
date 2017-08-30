@@ -15,12 +15,19 @@ namespace NextGenSpice
         public TestBaseQD(int size)
         {
             matrix2 = new qd_real[size, size + 1];
-            Random rnd = new Random(42);
+            Random rnd = new Random(30);
             for (var i = 0; i < size; i++)
             for (var j = 0; j < size; j++)
             {
-                matrix2[i, j] = 1 / (qd_real.Zero + i + j + 1);
-                matrix2[i, size] += matrix2[i, j];
+//              Hilbert matrix
+//                matrix2[i, j] = 1 / (qd_real.Zero + i + j + 1);
+//                matrix2[i, size] += matrix2[i, j];
+
+                var val = rnd.NextDouble();
+                matrix2[i, j] += val;
+                matrix2[j, i] += val;
+                matrix2[i, size] += val;
+                matrix2[j, size] += val;
             }
         }
 

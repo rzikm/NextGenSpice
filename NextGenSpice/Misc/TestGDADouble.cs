@@ -14,30 +14,30 @@ namespace NextGenSpice
         private int c;
 
         private double[] partial;
-        protected double[] solutions;
+        protected double[] Solutions { get; set; }
 
         public TestGdaDouble(int size) : base(size)
         {
-            solutions = new double[size];
+            Solutions = new double[size];
         }
 
-        protected override unsafe void Call_Native(double* d, int getLength, DllCallback callback)
+        protected override unsafe void Call_Native(double* d, int size, DllCallback callback)
         {
-            solutions = new double[getLength];
+            Solutions = new double[size];
 
-            fixed (double* sol = solutions)
-            { Run_d_gda(d, getLength, sol, callback); }
+            fixed (double* sol = Solutions)
+            { Run_d_gda(d, size, sol, callback); }
         }
 
 
         protected override double[] GetResults()
         {
-            return solutions;
+            return Solutions;
         }
 
         protected override void Call_Managed(double[,] doubles, int getLength, DllCallback callback)
         {
-            solutions = new double[getLength];
+            Solutions = new double[getLength];
             Managed(doubles, getLength, callback);
         }
 
@@ -63,7 +63,7 @@ namespace NextGenSpice
                 partial[i] = -doubles[i, size];
                 for (int j = 0; j < size; j++)
                 {
-                    partial[i] += solutions[i] * doubles[i, j];
+                    partial[i] += Solutions[i] * doubles[i, j];
                 }
             }
         }
@@ -74,7 +74,7 @@ namespace NextGenSpice
             {
                 for (int j = 0; j < size; j++)
                 {
-                    solutions[i] -= doubles[j, i] * partial[i] * 0.07;
+                    Solutions[i] -= doubles[j, i] * partial[i] * 0.07;
                 }
             }
         }

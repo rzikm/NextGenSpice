@@ -6,6 +6,15 @@ namespace NextGenSpice.Numerics
     [StructLayout(LayoutKind.Sequential)]
     public struct qd_real
     {
+        public qd_real(double x0 = 0, double x1 = 0, double x2 = 0, double x3 = 0)
+        {
+            this.x0 = x0;
+            this.x1 = x1;
+            this.x2 = x2;
+            this.x3 = x3;
+        }
+
+
         public bool Equals(qd_real other)
         {
             return CompareTo(other) == 0;

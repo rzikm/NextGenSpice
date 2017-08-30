@@ -12,19 +12,11 @@ namespace NextGenSpice
 
         public TestGeDouble(int size) : base(size)
         {
-            matrix2 = new double[size, size + 1];
-            Random rnd = new Random(42);
-            for (var i = 0; i < size; i++)
-                for (var j = 0; j < size; j++)
-                {
-                    matrix2[i, j] = 1f / (i + j + 1);
-                    matrix2[i, size] += matrix2[i, j];
-                }
         }
 
-        protected override unsafe void Call_Native(double* d, int getLength, DllCallback callback)
+        protected override unsafe void Call_Native(double* d, int size, DllCallback callback)
         {
-            Run_d(d, getLength, callback);
+            Run_d(d, size, callback);
         }
         
         protected override void Call_Managed(double[,] doubles, int getLength, TestBaseDouble.DllCallback callback)
