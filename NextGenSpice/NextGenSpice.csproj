@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NextGenSpice</RootNamespace>
     <AssemblyName>NextGenSpice</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -43,7 +43,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="Circuit\Array2DWrapper.cs" />
+    <Compile Include="Circuit\CircuitBuilder.cs" />
+    <Compile Include="Circuit\CurrentSourceElement.cs" />
+    <Compile Include="Circuit\DiodeElement.cs" />
+    <Compile Include="Circuit\DiodeModelParams.cs" />
+    <Compile Include="Circuit\NodeConnectionSet.cs" />
+    <Compile Include="Circuit\RezistorElement.cs" />
+    <Compile Include="Circuit\TwoNodeCircuitElement.cs" />
+    <Compile Include="Circuit\CircuitEquationSystem.cs" />
+    <Compile Include="Circuit\CircuitNode.cs" />
+    <Compile Include="Circuit\CircuitSimulator.cs" />
+    <Compile Include="Circuit\ElectricCircuit.cs" />
+    <Compile Include="Circuit\ICircuitElement.cs" />
+    <Compile Include="Circuit\ICircuitEquationSystem.cs" />
+    <Compile Include="Circuit\ICircuitVisitor.cs" />
+    <Compile Include="Circuit\IEquationSolver.cs" />
+    <Compile Include="Circuit\ILinearCircuit.cs" />
+    <Compile Include="Circuit\ILinearCircuitElement.cs" />
+    <Compile Include="Circuit\INonlinearCircuitElement.cs" />
     <Compile Include="Misc\Misc.cs" />
     <Compile Include="Misc\TestBaseDouble.cs" />
     <Compile Include="Misc\TestBaseQD.cs" />
@@ -54,6 +72,10 @@
     <Compile Include="Misc\TestQdGe.cs" />
     <Compile Include="Numerics\qd_real.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpiceSimulator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Circuit\Elements\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -4,11 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NextGenSpice.Circuit;
 
 namespace NextGenSpice
 {
     public class SpiceSimulator
     {
+        public static void TestSimple()
+        {
+           
+        }
         public static void TestRun()
         {
             Console.WriteLine(Directory.GetCurrentDirectory());

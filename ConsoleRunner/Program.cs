@@ -31,7 +31,8 @@ namespace ConsoleRunner
     {
         static void Main(string[] args)
         {
-            NextGenSpice.Misc.HilbertMatrixStabilityTest();
+//            NextGenSpice.Misc.HilbertMatrixStabilityTest()
+              NextGenSpice.SpiceSimulator.TestSimple();
         }
     }
 }
