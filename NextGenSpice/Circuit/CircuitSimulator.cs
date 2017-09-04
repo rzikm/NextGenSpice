@@ -6,6 +6,10 @@ namespace NextGenSpice.Circuit
     public class CircuitSimulator
     {
         private bool dcBiasEstablished;
+
+        private double epsilon = 1e-10;
+        private int maxDcPointIterations = 100;
+
         public CircuitSimulator(ElectricCircuit circuit)
         {
             this.equationSystem = new CircuitEquationSystem(circuit.Nodes.Count);
@@ -22,10 +26,22 @@ namespace NextGenSpice.Circuit
 
             if (!circuit.IsLinear)
             {
-                for (int i = 0; i < 15; i++)
+                double delta;
+                do
                 {
+                    if (--maxDcPointIterations < 0) break;
+
+                    delta = 0;
+                    var prevVoltages = (double[]) equationSystem.NodeVoltages.Clone();
+
                     Iterate();
-                }
+
+                    for (int i = 0; i < prevVoltages.Length; i++)
+                    {
+                        var d = prevVoltages[i] - equationSystem.NodeVoltages[i];
+                        delta += d * d;
+                    }
+                } while (delta > epsilon * epsilon);
             }
         }
 

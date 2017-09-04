@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using NUnit.Framework;
 using NextGenSpice;
 using NextGenSpice.Circuit;
@@ -13,30 +14,20 @@ namespace NextGenSpiceTests
         [Test]
         public void TestLinearCircuit()
         {
-            CircuitEquationSystem sys = new CircuitEquationSystem(4);
-
             var circuit = GetTestLinearCircuit();
-
-            foreach (var e in circuit.Elements)
-            {
-                e.ApplyToEquations(sys);
-            }
-
-            sys.Solve();
-            for (var i = 0; i < sys.NodeVoltages.Length; i++)
-            {
-                var v = sys.NodeVoltages[i];
-                Console.WriteLine($"node {i}: {v:##.000}");
-            }
-            CollectionAssert.AreEqual(new double[4] { 0, 33, 18, 12 }, sys.NodeVoltages, new DoubleComparer(1e-10));
-
+            CircuitSimulator sim = new CircuitSimulator(circuit);
+            sim.EstablishDcBias();
+            CollectionAssert.AreEqual(new double[4] { 0, 33, 18, 12 }, circuit.Nodes.Select(n => n.Voltage), new DoubleComparer(1e-10));
         }
 
         [Test]
         public void TestNonlinearCircuit()
         {
-            CircuitSimulator sim = new CircuitSimulator(GetTestNonlinearCircuit());
+            var circuit = GetTestNonlinearCircuit();
+
+            CircuitSimulator sim = new CircuitSimulator(circuit);
             sim.EstablishDcBias();
+            CollectionAssert.AreEqual(new double[]{0, 9.90804734507935, 0.712781853012352 }, circuit.Nodes.Select(n => n.Voltage), new DoubleComparer(1e-10));
         }
 
         private static ElectricCircuit GetTestLinearCircuit()
