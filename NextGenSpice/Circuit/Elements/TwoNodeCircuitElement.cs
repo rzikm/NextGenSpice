@@ -23,7 +23,7 @@
 
         public NodeConnectionSet ConnectedNodes { get; protected set; }
         public abstract void Accept<T>(ICircuitVisitor<T> visitor);
-        public abstract void ApplyToEquationsPermanent(IEquationEditor equationSystem, SimulationContext context);
+        public abstract void ApplyToEquationsPermanent(IEquationSystemBuilder equationSystem, SimulationContext context);
         public virtual void ApplyToEquationsDynamic(IEquationSystem equationSystem, SimulationContext context)
         {
         }

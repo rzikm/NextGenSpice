@@ -8,7 +8,7 @@
 
         void Accept<T>(ICircuitVisitor<T> visitor);
 
-        void ApplyToEquationsPermanent(IEquationEditor equationSystem, SimulationContext context);
+        void ApplyToEquationsPermanent(IEquationSystemBuilder equationSystem, SimulationContext context);
         void ApplyToEquationsDynamic(IEquationSystem equationSystem, SimulationContext context);
     }
 }

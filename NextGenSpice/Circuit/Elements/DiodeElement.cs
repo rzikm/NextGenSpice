@@ -25,7 +25,7 @@ namespace NextGenSpice.Circuit
             throw new NotImplementedException();
         }
 
-        public override void ApplyToEquationsPermanent(IEquationEditor equationSystem, SimulationContext context)
+        public override void ApplyToEquationsPermanent(IEquationSystemBuilder equationSystem, SimulationContext context)
         {
             Initialize();
         }
@@ -66,5 +66,10 @@ namespace NextGenSpice.Circuit
             Console.WriteLine($"Vd = {Vd}, Geq = {Geq:E2}, Ieq = {Ieq:E2}");
 
         }
+    }
+
+    public interface ICanonicalElement
+    {
+        void ApplyToEquationsPermanent(IEquationEditor equationSystem, SimulationContext context);
     }
 }

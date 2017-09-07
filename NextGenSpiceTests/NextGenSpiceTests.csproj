@@ -62,7 +62,7 @@
     <Compile Include="Misc\TestGdaQd.cs" />
     <Compile Include="Misc\TestGEDouble.cs" />
     <Compile Include="Misc\TestQdGe.cs" />
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="CircuitCalculationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

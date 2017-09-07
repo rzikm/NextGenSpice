@@ -102,7 +102,7 @@ namespace NextGenSpice.Circuit
         private void DebugPrint()
         {
             Console.WriteLine("Results:");
-            for (var i = 0; i < equationSystem.Solution.Length; i++)
+            for (var i = 0; i < circuit.Nodes.Count; i++)
             {
                 var v = equationSystem.Solution[i];
                 Console.WriteLine($"node {i}: {v:##.0000}");

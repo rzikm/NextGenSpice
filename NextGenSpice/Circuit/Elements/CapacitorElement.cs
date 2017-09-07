@@ -21,7 +21,7 @@
             throw new System.NotImplementedException();
         }
 
-        public override void ApplyToEquationsPermanent(IEquationEditor equationSystem, SimulationContext context)
+        public override void ApplyToEquationsPermanent(IEquationSystemBuilder equationSystem, SimulationContext context)
         {
             if (r_eq.Anode == null)
                 Initialize();

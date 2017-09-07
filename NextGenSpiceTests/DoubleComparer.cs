@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace NextGenSpiceTests
 {
-    public partial class UnitTest1
+    public partial class CircuitCalculationTests
     {
         class DoubleComparer : IComparer
         {
