@@ -2,6 +2,6 @@
 {
     public interface INonlinearCircuitElement : ICircuitElement
     {
-        void UpdateLinearizedModel();
+        void UpdateLinearizedModel(SimulationContext context);
     }
 }

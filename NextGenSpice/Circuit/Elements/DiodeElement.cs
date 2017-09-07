@@ -25,15 +25,20 @@ namespace NextGenSpice.Circuit
             throw new NotImplementedException();
         }
 
-        public override void ApplyToEquations(ICircuitEquationSystem equationSystem)
+        public override void ApplyToEquationsPermanent(IEquationEditor equationSystem, SimulationContext context)
         {
-            if (r_eq.Anode == null)
-                Initialize();
-            r_eq.ApplyToEquations(equationSystem);
-            i_eq.ApplyToEquations(equationSystem);
+            Initialize();
         }
 
-        public void UpdateLinearizedModel()
+        public override void ApplyToEquationsDynamic(IEquationSystem equationSystem, SimulationContext context)
+        {
+            base.ApplyToEquationsDynamic(equationSystem, context);
+
+            r_eq.ApplyToEquationsPermanent(equationSystem, context);
+            i_eq.ApplyToEquationsPermanent(equationSystem, context);
+        }
+
+        public void UpdateLinearizedModel(SimulationContext context)
         {
             Vd = Anode.Voltage - Kathode.Voltage;
             RecomputeLinearCircuit();

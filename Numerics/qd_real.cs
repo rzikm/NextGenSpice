@@ -1,7 +1,6 @@
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace NextGenSpice.Numerics
+namespace Numerics
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct qd_real

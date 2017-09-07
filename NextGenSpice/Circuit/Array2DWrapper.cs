@@ -10,7 +10,7 @@ namespace NextGenSpice.Circuit
         private readonly int size;
         private readonly double[] values;
 
-        public int SizeLength => size;
+        public int SideLength => size;
         public double[] RawData => values;
 
         public double this[int i, int j]
@@ -22,10 +22,7 @@ namespace NextGenSpice.Circuit
         public Array2DWrapper Clone()
         {
             var clone = new Array2DWrapper(size);
-            for (int i = 0; i < RawData.Length; i++)
-            {
-                clone.RawData[i] = RawData[i];
-            }
+            RawData.CopyTo(clone.RawData, 0);
 
             return clone;
         }

@@ -12,10 +12,10 @@
             throw new System.NotImplementedException();
         }
 
-        public override void ApplyToEquations(ICircuitEquationSystem equationSystem)
+        public override void ApplyToEquationsPermanent(IEquationEditor equationSystem, SimulationContext context)
         {
-            equationSystem.AddCurrent(Anode.Id, Current);
-            equationSystem.AddCurrent(Kathode.Id, -Current);
+            equationSystem.AddRightHandSideEntry(Anode.Id, Current);
+            equationSystem.AddRightHandSideEntry(Kathode.Id, -Current);
         }
     }
 }

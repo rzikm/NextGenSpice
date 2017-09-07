@@ -13,11 +13,12 @@
             throw new System.NotImplementedException();
         }
 
-        public override void ApplyToEquations(ICircuitEquationSystem equationSystem)
+        public override void ApplyToEquationsPermanent(IEquationEditor equationSystem, SimulationContext context)
         {
-            equationSystem.AddConductance(Anode.Id, Kathode.Id, -1/Resistance);
-            equationSystem.AddConductance(Anode.Id, Anode.Id, 1/Resistance);
-            equationSystem.AddConductance(Kathode.Id, Kathode.Id, 1/Resistance);
+            equationSystem.AddMatrixEntry(Kathode.Id, Anode.Id, -1/Resistance);
+            equationSystem.AddMatrixEntry(Anode.Id, Kathode.Id, -1/Resistance);
+            equationSystem.AddMatrixEntry(Anode.Id, Anode.Id, 1/Resistance);
+            equationSystem.AddMatrixEntry(Kathode.Id, Kathode.Id, 1/Resistance);
         }
     }
 }
