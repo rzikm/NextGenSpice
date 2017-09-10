@@ -1,6 +1,6 @@
 ﻿namespace NextGenSpice.Circuit
 {
-    public abstract class TwoNodeCircuitElement : ICircuitElement
+    public abstract class TwoNodeCircuitElement : ICircuitDefinitionElement
     {
         public string Name { get; }
 
@@ -23,9 +23,7 @@
 
         public NodeConnectionSet ConnectedNodes { get; protected set; }
         public abstract void Accept<T>(ICircuitVisitor<T> visitor);
-        public abstract void ApplyToEquationsPermanent(IEquationSystemBuilder equationSystem, SimulationContext context);
-        public virtual void ApplyToEquationsDynamic(IEquationSystem equationSystem, SimulationContext context)
-        {
-        }
+        public abstract ICircuitModelElement GetDcOperatingPointModel();
+        public abstract ICircuitModelElement GetTransientModel();
     }
 }

@@ -6,11 +6,13 @@ namespace NextGenSpice.Circuit
     {
         private List<List<double>> matrix;
         List<double> rhs;
+        private ISet<ISet<int>> equivalences;
 
         public EquationSystemBuilder()
         {
             this.matrix = new List<List<double>>();
             this.rhs = new List<double>();
+            equivalences = new HashSet<ISet<int>>();
         }
 
         public int AddVariable()
@@ -38,6 +40,11 @@ namespace NextGenSpice.Circuit
         public void AddRightHandSideEntry(int index, double value)
         {
             rhs[index] += value;
+        }
+
+        public void BindEquivalent(IEnumerable<int> vars)
+        {
+
         }
 
         public IEquationSystem Build()

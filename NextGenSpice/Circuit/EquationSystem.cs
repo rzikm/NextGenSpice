@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 
 namespace NextGenSpice.Circuit
 {
@@ -10,6 +12,8 @@ namespace NextGenSpice.Circuit
         private readonly double[] rhsBackup;
         private Array2DWrapper matrix;
         private double[] rhs;
+
+        private ISet<ISet<int>> equivalences;
 
         public EquationSystem(Array2DWrapper matrix, double[] rhs)
         {
@@ -35,21 +39,81 @@ namespace NextGenSpice.Circuit
             rhs[index] += value;
         }
 
+        public void BindEquivalent(IEnumerable<int> vars)
+        {
+            // check input
+            if (vars.Max() >= rhs.Length || vars.Min() < 0) throw new IndexOutOfRangeException();
+
+            var toMerge = equivalences.Where(e => e.Overlaps(vars)).ToList();
+            equivalences.ExceptWith(toMerge);
+            equivalences.Add(new HashSet<int>(toMerge.SelectMany(set => set)));
+        }
+
         public double[] Solution { get; }
 
         public void Clear()
         {
             matrix = matrixBackup.Clone();
             rhs = (double[])rhsBackup.Clone();
+            equivalences = new HashSet<ISet<int>>(Enumerable.Range(0, rhs.Length).Select(i => new HashSet<int>(new[] { i })));
         }
 
         public double[] Solve()
         {
-            PrintMatrix();
+            PrintMatrix(matrix, rhs);
 
             var m = matrix.Clone();
             var b = (double[])rhs.Clone();
+            
+            EnforceBoundNodeEquivalence(m, b);
 
+            EnforceGroundHasZeroVoltage(m, b);
+            NumericMethods.GaussElimSolve(m, b, Solution);
+
+            DistributeEquivalentVoltages(m);
+            return Solution;
+        }
+
+        private void DistributeEquivalentVoltages(Array2DWrapper m)
+        {
+            foreach (var grp in equivalences)
+            {
+                var representative = grp.First();
+                foreach (var other in grp.Skip(1))
+                {
+                    Solution[other] = Solution[representative];
+                }
+            }
+        }
+
+        private void EnforceBoundNodeEquivalence(Array2DWrapper m, double[] b)
+        {
+            foreach (var grp in equivalences)
+            {
+                var representative = grp.First();
+                foreach (var other in grp.Skip(1))
+                {
+                    b[representative] += b[other];
+                    b[other] = 0;
+                    for (int i = 0; i < m.SideLength; i++)
+                    {
+                        // move others into representative
+                        m[representative, i] += m[other, i];
+                        m[i, representative] += m[i, other];
+
+                        m[other, i] = 0;
+                        m[i, other] = 0;
+
+                        // force equality
+                        m[representative, other] = 1;
+                        m[other, other] = -1;
+                    }
+                }
+            }
+        }
+
+        private static void EnforceGroundHasZeroVoltage(Array2DWrapper m, double[] b)
+        {
             // workaround for grounding 0th node (Voltage = 0)
             for (int i = 0; i < b.Length; i++)
             {
@@ -59,22 +123,19 @@ namespace NextGenSpice.Circuit
 
             m[0, 0] = 1;
             b[0] = 0;
-
-            NumericMethods.GaussElimSolve(m, b, Solution);
-            return Solution;
         }
 
-        private void PrintMatrix()
+        private void PrintMatrix(Array2DWrapper m, double[] b)
         {
             Console.WriteLine("EquationSystem:");
-            for (int i = 0; i < matrix.SideLength; i++)
+            for (int i = 0; i < m.SideLength; i++)
             {
-                for (int j = 0; j < matrix.SideLength; j++)
+                for (int j = 0; j < m.SideLength; j++)
                 {
-                    Console.Write($"{matrix[i, j]:00.0000}\t");
+                    Console.Write($"{m[i, j]:00.0000}\t");
                 }
 
-                Console.WriteLine($" | {rhs[i]:00.0000}");
+                Console.WriteLine($" | {b[i]:00.0000}");
             }
             Console.WriteLine();
         }

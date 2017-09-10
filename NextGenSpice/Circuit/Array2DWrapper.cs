@@ -1,6 +1,6 @@
 namespace NextGenSpice.Circuit
 {
-    public struct Array2DWrapper
+    public class Array2DWrapper
     {
         public Array2DWrapper(int size)
         {

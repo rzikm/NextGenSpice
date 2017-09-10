@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,7 +16,7 @@ namespace NextGenSpice.Circuit
 
         public IEnumerator<CircuitNode> GetEnumerator()
         {
-            return (IEnumerator<CircuitNode>) set.GetEnumerator();
+            return ((IEnumerable<CircuitNode>) set).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

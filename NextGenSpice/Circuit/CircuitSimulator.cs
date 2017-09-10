@@ -10,15 +10,17 @@ namespace NextGenSpice.Circuit
         private double epsilon = 1e-10;
         private int maxDcPointIterations = 100;
 
-        public CircuitSimulator(ElectricCircuit circuit)
+        public CircuitSimulator(ElectricCircuitDefinition circuitDefinition)
         {
-            this.circuit = circuit;
+            this.CircuitDefinition = circuitDefinition;
             context = new SimulationContext();
         }
 
         private IEquationSystem equationSystem;
-        private readonly ElectricCircuit circuit;
+        public ElectricCircuitDefinition CircuitDefinition { get; }
         private readonly SimulationContext context;
+
+        private ICircuitModel model;
 
         public void Simulate(Action<double[]> callback) 
         {
@@ -27,11 +29,11 @@ namespace NextGenSpice.Circuit
         public void BuildEquationSystem()
         {
             var b = new EquationSystemBuilder();
-            for (int i = 0; i < circuit.Nodes.Count; i++)
+            for (int i = 0; i < CircuitDefinition.Nodes.Count; i++)
             {
                 b.AddVariable();
             }
-            foreach (var circuitElement in circuit.Elements)
+            foreach (var circuitElement in model.Elements)
             {
                 circuitElement.ApplyToEquationsPermanent(b, context);
             }
@@ -41,11 +43,13 @@ namespace NextGenSpice.Circuit
 
         public void EstablishDcBias()
         {
+            model = CircuitDefinition.GetDcOperatingPointAnalysisModel();
+
             BuildEquationSystem();
 
             Iterate();
 
-            if (!circuit.IsLinear)
+            if (!model.IsLinear)
             {
                 IterateUntilConvergence();
             }
@@ -83,9 +87,9 @@ namespace NextGenSpice.Circuit
         {
             equationSystem.Solve();
 
-            for (var i = 0; i < circuit.Nodes.Count; i++)
+            for (var i = 0; i < CircuitDefinition.Nodes.Count; i++)
             {
-                circuit.Nodes[i].Voltage = equationSystem.Solution[i];
+                CircuitDefinition.Nodes[i].Voltage = equationSystem.Solution[i];
             }
         }
 
@@ -93,7 +97,7 @@ namespace NextGenSpice.Circuit
         {
             equationSystem.Clear();
 
-            foreach (var e in circuit.Elements)
+            foreach (var e in model.NonlinearElements)
             {
                 e.ApplyToEquationsDynamic(equationSystem, context);
             }
@@ -102,7 +106,7 @@ namespace NextGenSpice.Circuit
         private void DebugPrint()
         {
             Console.WriteLine("Results:");
-            for (var i = 0; i < circuit.Nodes.Count; i++)
+            for (var i = 0; i < CircuitDefinition.Nodes.Count; i++)
             {
                 var v = equationSystem.Solution[i];
                 Console.WriteLine($"node {i}: {v:##.0000}");
@@ -112,7 +116,7 @@ namespace NextGenSpice.Circuit
 
         private void UpdateNonlinearElements()
         {
-            foreach (var element in circuit.NonlinearCircuitElements)
+            foreach (var element in model.NonlinearElements)
             {
                 element.UpdateLinearizedModel(context);
             }

@@ -1,10 +1,14 @@
-﻿namespace NextGenSpice.Circuit
+﻿using System.Collections.Generic;
+
+namespace NextGenSpice.Circuit
 {
     public interface IEquationSystem : IEquationEditor
     {
         void Clear();
         double[] Solution { get; }
         double[] Solve();
+        void BindEquivalent(IEnumerable<int> vars);
+
     }
 
     public interface IEquationEditor

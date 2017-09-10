@@ -1,6 +1,6 @@
 ﻿namespace NextGenSpice.Circuit
 {
-    public interface ICircuitElement
+    public interface ICircuitDefinitionElement
     {
         NodeConnectionSet ConnectedNodes { get; }
 
@@ -8,7 +8,12 @@
 
         void Accept<T>(ICircuitVisitor<T> visitor);
 
+        ICircuitModelElement GetDcOperatingPointModel();
+        ICircuitModelElement GetTransientModel();
+    }
+
+    public interface ICircuitModelElement
+    {
         void ApplyToEquationsPermanent(IEquationSystemBuilder equationSystem, SimulationContext context);
-        void ApplyToEquationsDynamic(IEquationSystem equationSystem, SimulationContext context);
     }
 }

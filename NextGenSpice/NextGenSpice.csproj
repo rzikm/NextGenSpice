@@ -48,9 +48,12 @@
     <Compile Include="Circuit\Elements\CapacitorElement.cs" />
     <Compile Include="Circuit\Elements\CurrentSourceElement.cs" />
     <Compile Include="Circuit\Elements\DiodeElement.cs" />
+    <Compile Include="Circuit\Elements\DiodeElementModel.cs" />
     <Compile Include="Circuit\Elements\DiodeModelParams.cs" />
+    <Compile Include="Circuit\Elements\ICanonicalElement.cs" />
     <Compile Include="Circuit\Elements\InductorElement.cs" />
     <Compile Include="Circuit\Elements\SimulationContext.cs" />
+    <Compile Include="Circuit\Elements\VoltageSourceElement.cs" />
     <Compile Include="Circuit\EquationSystemBuilder.cs" />
     <Compile Include="Circuit\IEquationSystemBuilder.cs" />
     <Compile Include="Circuit\NodeConnectionSet.cs" />
@@ -59,11 +62,11 @@
     <Compile Include="Circuit\EquationSystem.cs" />
     <Compile Include="Circuit\CircuitNode.cs" />
     <Compile Include="Circuit\CircuitSimulator.cs" />
-    <Compile Include="Circuit\ElectricCircuit.cs" />
-    <Compile Include="Circuit\Elements\ICircuitElement.cs" />
+    <Compile Include="Circuit\ElectricCircuitDefinition.cs" />
+    <Compile Include="Circuit\Elements\ICircuitDefinitionElement.cs" />
     <Compile Include="Circuit\IEquationSystem.cs" />
     <Compile Include="Circuit\ICircuitVisitor.cs" />
-    <Compile Include="Circuit\Elements\INonlinearCircuitElement.cs" />
+    <Compile Include="Circuit\Elements\INonlinearCircuitModelElement.cs" />
     <Compile Include="Circuit\NumericMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

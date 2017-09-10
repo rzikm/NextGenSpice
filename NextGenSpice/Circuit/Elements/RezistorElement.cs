@@ -1,6 +1,6 @@
 ﻿namespace NextGenSpice.Circuit
 {
-    public class RezistorElement : TwoNodeCircuitElement, ICanonicalElement
+    public class RezistorElement : TwoNodeCircuitElement, ICanonicalElement, ICircuitModelElement
     {
         public double Resistance { get; internal set; }
 
@@ -13,9 +13,19 @@
             throw new System.NotImplementedException();
         }
 
-        public override void ApplyToEquationsPermanent(IEquationSystemBuilder equationSystem, SimulationContext context)
+        public override ICircuitModelElement GetDcOperatingPointModel()
         {
-            ApplyToEquationsPermanent(equationSystem, context);
+            return this;
+        }
+
+        public override ICircuitModelElement GetTransientModel()
+        {
+            return this;
+        }
+
+        public void ApplyToEquationsPermanent(IEquationSystemBuilder equationSystem, SimulationContext context)
+        {
+            ApplyToEquationsPermanent(equationSystem as IEquationEditor, context);
         }
 
         public void ApplyToEquationsPermanent(IEquationEditor equationSystem, SimulationContext context)

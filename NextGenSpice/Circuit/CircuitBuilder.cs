@@ -7,15 +7,13 @@ namespace NextGenSpice.Circuit
     public class CircuitBuilder
     {
         private Dictionary<int, CircuitNode> NodeLookup { get; set; }
-        public IEnumerable<CircuitNode> Nodes => NodeLookup.Values;
-        public List<ICircuitElement> CircuitElements { get; set; }
-        public List<INonlinearCircuitElement> NonlinearCircuitElements { get; set; }
+        private IEnumerable<CircuitNode> Nodes => NodeLookup.Values;
+        private List<ICircuitDefinitionElement> CircuitElements { get; set; }
 
         public CircuitBuilder()
         {
             NodeLookup = new Dictionary<int, CircuitNode>();
-            CircuitElements = new List<ICircuitElement>();
-            NonlinearCircuitElements = new List<INonlinearCircuitElement>();
+            CircuitElements = new List<ICircuitDefinitionElement>();
         }
 
         public CircuitNode AddNode(int id)
@@ -25,7 +23,7 @@ namespace NextGenSpice.Circuit
 
             return NodeLookup[id] = new CircuitNode { Id = id };
         }
-        public void AddElement(ICircuitElement element, params int[] nodeConnections)
+        public void AddElement(ICircuitDefinitionElement element, params int[] nodeConnections)
         {
             if (element.ConnectedNodes.Count != nodeConnections.Length)
                 throw new ArgumentException("Wrong number of connections");
@@ -40,20 +38,14 @@ namespace NextGenSpice.Circuit
             }
 
             CircuitElements.Add(element);
-
-            var nonlinear = element as INonlinearCircuitElement;
-
-            if (nonlinear != null)
-                NonlinearCircuitElements.Add(nonlinear);
         }
 
-        public ElectricCircuit Build()
+        public ElectricCircuitDefinition Build()
         {
-            return new ElectricCircuit
+            return new ElectricCircuitDefinition
             {
                 Elements = CircuitElements,
                 Nodes = Nodes.ToList(),
-                NonlinearCircuitElements = NonlinearCircuitElements
             };
         }
     }
