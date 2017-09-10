@@ -7,7 +7,7 @@ namespace NextGenSpiceTests
     {
         class DoubleComparer : IComparer
         {
-            private double epsilon;
+            private readonly double epsilon;
             public DoubleComparer(double epsilon)
             {
                 this.epsilon = epsilon;

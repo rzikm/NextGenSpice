@@ -42,7 +42,7 @@ namespace NextGenSpice.Circuit
         {
             this.Nodes = nodes;
             this.Elements = elements.ToArray();
-            NonlinearElements = Elements.Select(e => e as INonlinearCircuitModelElement).Where(e => e != null).ToArray();
+            NonlinearElements = Elements.OfType<INonlinearCircuitModelElement>().ToArray();
         }
         public CircuitNode[] Nodes { get; internal set; }
         public ICircuitModelElement[] Elements { get; internal set; }
