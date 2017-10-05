@@ -20,7 +20,7 @@ namespace NextGenSpice.Circuit
 
         public void ApplyToEquationsDynamic(IEquationSystem equationSystem, SimulationContext context)
         {
-            equationSystem.BindEquivalent(parent.ConnectedNodes.Select(n => n.Id));
+            equationSystem.BindEquivalent(parent.ConnectedNodes.Select(n => n.Id).ToArray());
         }
     }
 

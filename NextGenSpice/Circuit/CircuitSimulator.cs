@@ -7,8 +7,11 @@ namespace NextGenSpice.Circuit
     {
         private bool dcBiasEstablished;
 
-        private double epsilon = 1e-10;
-        private int maxDcPointIterations = 100;
+        private double epsilon = 1e-15;
+        private int maxDcPointIterations = 1000;
+
+        public int IterationCount { get; private set; }
+        public double SquaredDelta { get; private set; }
 
         public CircuitSimulator(ElectricCircuitDefinition circuitDefinition)
         {
@@ -43,6 +46,9 @@ namespace NextGenSpice.Circuit
 
         public void EstablishDcBias()
         {
+            IterationCount = 0;
+            SquaredDelta = 0;
+
             model = CircuitDefinition.GetDcOperatingPointAnalysisModel();
 
             BuildEquationSystem();
@@ -60,8 +66,6 @@ namespace NextGenSpice.Circuit
             double delta;
             do
             {
-                if (--maxDcPointIterations < 0) break;
-
                 delta = 0;
                 var prevVoltages = (double[]) equationSystem.Solution.Clone();
 
@@ -72,7 +76,12 @@ namespace NextGenSpice.Circuit
                     var d = prevVoltages[i] - equationSystem.Solution[i];
                     delta += d * d;
                 }
+
+                if (++IterationCount == maxDcPointIterations) break;
+
             } while (delta > epsilon * epsilon);
+
+            SquaredDelta = delta;
         }
 
         private void Iterate()
@@ -80,7 +89,7 @@ namespace NextGenSpice.Circuit
             UpdateEquationSystem();
             UpdateNodeValues();
             UpdateNonlinearElements();
-            DebugPrint();
+            //DebugPrint();
         }
 
         private void UpdateNodeValues()

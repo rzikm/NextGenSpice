@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NextGenSpice.Circuit
 {
-    class EquationSystemBuilder : IEquationSystemBuilder
+    public class EquationSystemBuilder : IEquationSystemBuilder
     {
         private List<List<double>> matrix;
         List<double> rhs;
@@ -41,12 +41,7 @@ namespace NextGenSpice.Circuit
         {
             rhs[index] += value;
         }
-
-        public void BindEquivalent(IEnumerable<int> vars)
-        {
-
-        }
-
+        
         public IEquationSystem Build()
         {
             Array2DWrapper m = new Array2DWrapper(VariablesCount);

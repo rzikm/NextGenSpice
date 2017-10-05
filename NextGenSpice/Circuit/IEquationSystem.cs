@@ -7,7 +7,7 @@ namespace NextGenSpice.Circuit
         void Clear();
         double[] Solution { get; }
         double[] Solve();
-        void BindEquivalent(IEnumerable<int> vars);
+        void BindEquivalent(params int[] vars);
 
     }
 

@@ -11,12 +11,26 @@ namespace NextGenSpiceTests
     [TestFixture]
     public partial class CircuitCalculationTests
     {
+        private static void PrintStats(CircuitSimulator sim)
+        {
+            Console.WriteLine($"Iterations: {sim.IterationCount}");
+            Console.WriteLine($"Delta^2: {sim.SquaredDelta}");
+            Console.WriteLine("Voltages:");
+            foreach (var node in sim.CircuitDefinition.Nodes)
+            {
+                Console.WriteLine($"{node.Id}\t[{node.Tag}]:\t{node.Voltage}");
+            }
+        }
+
         [Test]
         public void TestLinearCircuit()
         {
             var circuit = GetTestLinearCircuit();
             CircuitSimulator sim = new CircuitSimulator(circuit);
             sim.EstablishDcBias();
+
+            PrintStats(sim);
+
             CollectionAssert.AreEqual(new double[4] { 0, 33, 18, 12 }, circuit.Nodes.Select(n => n.Voltage),
                 new DoubleComparer(1e-10));
         }
@@ -28,6 +42,8 @@ namespace NextGenSpiceTests
 
             CircuitSimulator sim = new CircuitSimulator(circuit);
             sim.EstablishDcBias();
+            PrintStats(sim);
+
             CollectionAssert.AreEqual(new double[] { 0, 9.90804734507935, 0.712781853012352 },
                 circuit.Nodes.Select(n => n.Voltage), new DoubleComparer(1e-10));
         }
@@ -39,8 +55,10 @@ namespace NextGenSpiceTests
 
             CircuitSimulator sim = new CircuitSimulator(circuit);
             sim.EstablishDcBias();
-            //            CollectionAssert.AreEqual(new double[] { 0, 9.90804734507935, 0.712781853012352 },
-            //                circuit.Nodes.Select(n => n.Voltage), new DoubleComparer(1e-10));
+            PrintStats(sim);
+
+            CollectionAssert.AreEqual(new double[] { 0, 5, 3 },
+                circuit.Nodes.Select(n => n.Voltage), new DoubleComparer(1e-10));
         }
 
         [Test]
@@ -52,7 +70,7 @@ namespace NextGenSpiceTests
             {
                 CircuitBuilder builder = new CircuitBuilder();
                 for (int i = 0; i < 3; i++)
-                    builder.AddNode(i);
+                    builder.GetNode(i);
                 builder.AddElement(new VoltageSourceElement(5), 1, 0);
                 builder.AddElement(new RezistorElement(2), 1, 0);
                 builder.AddElement(new RezistorElement(5), 2, 0);
@@ -61,13 +79,15 @@ namespace NextGenSpiceTests
                 sim = new CircuitSimulator(builder.Build());
             }
             sim.EstablishDcBias();
+            PrintStats(sim);
+
             var withCapacitorVoltages = sim.CircuitDefinition.Nodes.Select(node => node.Voltage).ToArray();
 
             Console.WriteLine("\nWithout capacitor:");
             {
                 CircuitBuilder builder = new CircuitBuilder();
                 for (int i = 0; i < 3; i++)
-                    builder.AddNode(i);
+                    builder.GetNode(i);
                 builder.AddElement(new VoltageSourceElement(5), 1, 0);
                 builder.AddElement(new RezistorElement(2), 1, 0);
                 builder.AddElement(new RezistorElement(5), 2, 0);
@@ -75,6 +95,8 @@ namespace NextGenSpiceTests
                 sim = new CircuitSimulator(builder.Build());
             }
             sim.EstablishDcBias();
+            PrintStats(sim);
+
             var withoutCapacitorVoltages = sim.CircuitDefinition.Nodes.Select(node => node.Voltage).ToArray();
 
             CollectionAssert.AreEqual(withoutCapacitorVoltages, withCapacitorVoltages, new DoubleComparer(1e-10));
@@ -88,7 +110,7 @@ namespace NextGenSpiceTests
             {
                 CircuitBuilder builder = new CircuitBuilder();
                 for (int i = 0; i < 3; i++)
-                    builder.AddNode(i);
+                    builder.GetNode(i);
                 builder.AddElement(new VoltageSourceElement(5), 1, 0);
                 builder.AddElement(new RezistorElement(2), 1, 0);
                 builder.AddElement(new RezistorElement(5), 2, 0);
@@ -97,13 +119,15 @@ namespace NextGenSpiceTests
                 sim = new CircuitSimulator(builder.Build());
             }
             sim.EstablishDcBias();
+            PrintStats(sim);
+
             var withInductorVoltages = sim.CircuitDefinition.Nodes.Select(node => node.Voltage).ToArray();
 
             Console.WriteLine("\nWithout inductor:");
             {
                 CircuitBuilder builder = new CircuitBuilder();
                 for (int i = 0; i < 2; i++)
-                    builder.AddNode(i);
+                    builder.GetNode(i);
                 builder.AddElement(new VoltageSourceElement(5), 1, 0);
                 builder.AddElement(new RezistorElement(2), 1, 0);
                 builder.AddElement(new RezistorElement(5), 1, 0);
@@ -111,20 +135,20 @@ namespace NextGenSpiceTests
                 sim = new CircuitSimulator(builder.Build());
             }
             sim.EstablishDcBias();
+            PrintStats(sim);
 
             var withoutInductorVoltages = sim.CircuitDefinition.Nodes.Select(node => node.Voltage).ToList();
             withoutInductorVoltages.Insert(1, withoutInductorVoltages[1]);
             CollectionAssert.AreEqual(withoutInductorVoltages, withInductorVoltages, new DoubleComparer(1e-10));
         }
 
+
+
+
         private static ElectricCircuitDefinition GetTestLinearCircuit()
         {
             //taken from Inside SPICE, pg. 16
             CircuitBuilder builder = new CircuitBuilder();
-            builder.AddNode(0);
-            builder.AddNode(1);
-            builder.AddNode(2);
-            builder.AddNode(3);
 
             builder.AddElement(new RezistorElement(5), 1, 2);
             builder.AddElement(new RezistorElement(10), 2, 0);
@@ -141,16 +165,13 @@ namespace NextGenSpiceTests
         {
             //taken from http://www.ecircuitcenter.com/SpiceTopics/Non-Linear%20Analysis/Non-Linear%20Analysis.htm
             CircuitBuilder builder = new CircuitBuilder();
-            builder.AddNode(0);
-            builder.AddNode(1);
-            builder.AddNode(2);
 
             builder.AddElement(new RezistorElement(100), 1, 0);
             builder.AddElement(new RezistorElement(10000), 1, 2);
 
             builder.AddElement(new CurrentSourceElement(0.1), 1, 0);
 
-            builder.AddElement(new DiodeElement(new DiodeModelParams()), 2, 0);
+            builder.AddElement(new DiodeElement(new DiodeModelParams() { Vd = 0.2 }), 2, 0);
 
             var circuit = builder.Build();
             return circuit;
@@ -160,9 +181,6 @@ namespace NextGenSpiceTests
         {
             // taken from https://www.swarthmore.edu/NatSci/echeeve1/Ref/mna/MNA2.html, example 3
             CircuitBuilder builder = new CircuitBuilder();
-            builder.AddNode(0);
-            builder.AddNode(1);
-            builder.AddNode(2);
 
             builder.AddElement(new RezistorElement(1), 1, 0);
             builder.AddElement(new RezistorElement(2), 1, 2);
@@ -173,21 +191,6 @@ namespace NextGenSpiceTests
 
             var circuit = builder.Build();
             return circuit;
-        }
-
-        private static CircuitBuilder PartialBuildTestCircuit()
-        {
-            CircuitBuilder builder = new CircuitBuilder();
-            for (int i = 0; i < 3; i++)
-            {
-                builder.AddNode(i);
-            }
-
-            builder.AddElement(new VoltageSourceElement(5), 1, 0);
-            builder.AddElement(new RezistorElement(2), 1, 0);
-            builder.AddElement(new RezistorElement(5), 2, 0);
-
-            return builder;
         }
     }
 }

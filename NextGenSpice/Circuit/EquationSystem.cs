@@ -39,10 +39,10 @@ namespace NextGenSpice.Circuit
             rhs[index] += value;
         }
 
-        public void BindEquivalent(IEnumerable<int> vars)
+        public void BindEquivalent(params int[] vars)
         {
             // check input
-            if (vars.Max() >= rhs.Length || vars.Min() < 0) throw new IndexOutOfRangeException();
+            if (vars.Max() >= rhs.Length || vars.Min() < 0) throw new ArgumentOutOfRangeException();
 
             var toMerge = equivalences.Where(e => e.Overlaps(vars)).ToList();
             equivalences.ExceptWith(toMerge);
@@ -60,8 +60,6 @@ namespace NextGenSpice.Circuit
 
         public double[] Solve()
         {
-            PrintMatrix(matrix, rhs);
-
             var m = matrix.Clone();
             var b = (double[])rhs.Clone();
             
@@ -123,21 +121,6 @@ namespace NextGenSpice.Circuit
 
             m[0, 0] = 1;
             b[0] = 0;
-        }
-
-        private void PrintMatrix(Array2DWrapper m, double[] b)
-        {
-            Console.WriteLine("EquationSystem:");
-            for (int i = 0; i < m.SideLength; i++)
-            {
-                for (int j = 0; j < m.SideLength; j++)
-                {
-                    Console.Write($"{m[i, j]:00.0000}\t");
-                }
-
-                Console.WriteLine($" | {b[i]:00.0000}");
-            }
-            Console.WriteLine();
         }
     }
 }

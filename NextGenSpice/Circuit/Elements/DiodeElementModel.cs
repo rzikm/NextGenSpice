@@ -55,8 +55,6 @@ namespace NextGenSpice.Circuit
 
             r_eq.Resistance = 1 / Geq;
             i_eq.Current = Ieq;
-
-            Console.WriteLine($"Vd = {Vd}, Geq = {Geq:E2}, Ieq = {Ieq:E2}");
         }
     }
 }
