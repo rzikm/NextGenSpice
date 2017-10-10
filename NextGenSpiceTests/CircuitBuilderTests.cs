@@ -1,6 +1,8 @@
 ﻿using System;
 using NextGenSpice.Circuit;
 using NextGenSpice.Elements;
+using NextGenSpice.Extensions;
+using NextGenSpice.Models;
 using NUnit.Framework;
 
 namespace NextGenSpiceTests
@@ -19,13 +21,13 @@ namespace NextGenSpiceTests
         [Test]
         public void TestThrowsWhenNodeIsNotConnectedToGround()
         {
-            builder.AddElement(new RezistorElement(1), 1, 0);
-            builder.AddElement(new RezistorElement(2), 1, 2);
-            builder.AddElement(new RezistorElement(3), 0, 2);
-            builder.AddElement(new CurrentSourceElement(5), 1, 0);
+            builder.AddResistor(1, 1, 0);
+            builder.AddResistor(2, 1, 2);
+            builder.AddResistor(3, 0, 2);
+            builder.AddCurrentSource(5, 1, 0);
 
             // add element 'far away'
-            builder.AddElement(new RezistorElement(3), 3, 4);
+            builder.AddResistor(3, 3, 4);
 
             Assert.Throws<InvalidOperationException>(() => builder.Build());
         }
@@ -35,26 +37,27 @@ namespace NextGenSpiceTests
         {
             Assert.AreEqual(0, builder.Nodes.Count);
 
-            builder.GetNode(5);
+            builder.AddDiode(new DiodeModelParams(), 5, 0);
             Assert.AreEqual(6, builder.Nodes.Count);
 
 
-            builder.GetNode(4);
+            builder.SetNodeVoltage(4, 0);
             Assert.AreEqual(6, builder.Nodes.Count);
         }
 
         [Test]
         public void TestThrowOnInvalidNumberOfConnections()
         {
-            Assert.Throws<ArgumentException>(() => builder.AddElement(new CapacitorElement(3), 1));
-            Assert.Throws<ArgumentException>(() => builder.AddElement(new CapacitorElement(3), 1,2,3));
+            Assert.Throws<ArgumentException>(() => builder.AddElement(new ResistorElement(3), new[] { 1 }));
+            Assert.Throws<ArgumentException>(() => builder.AddElement(new ResistorElement(3), new[] { 1, 2, 3 }));
         }
 
 
         [Test]
-        public void TestThrowOnNegativeNodeId()
+        public void TestThrowOnNegativeNodeOrVoltage()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => builder.AddElement(new CapacitorElement(3), -1,2));
+            Assert.Throws<ArgumentOutOfRangeException>(() => builder.AddDiode(new DiodeModelParams(), -2, 0));
+            Assert.Throws<ArgumentOutOfRangeException>(() => builder.SetNodeVoltage(1, -2));
         }
     }
 }

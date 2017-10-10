@@ -12,11 +12,11 @@ namespace NextGenSpice.Models
         {
             this.parent = parent;
 
-            r_eq = new RezistorElement(double.PositiveInfinity);
+            r_eq = new ResistorElement(double.PositiveInfinity);
             i_eq = new CurrentSourceElement(parent.InitialCurrent);
         }
 
-        private readonly RezistorElement r_eq;
+        private readonly ResistorElement r_eq;
         private readonly CurrentSourceElement i_eq;
 
         public void Initialize()

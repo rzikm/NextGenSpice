@@ -3,11 +3,11 @@ using NextGenSpice.Equations;
 
 namespace NextGenSpice.Elements
 {
-    public class RezistorElement : SimpleTwoNodeElement, ICanonicalElement
+    public class ResistorElement : SimpleTwoNodeElement, ICanonicalElement
     {
         public double Resistance { get; internal set; }
 
-        public RezistorElement(double resistance)
+        public ResistorElement(double resistance)
         {
             this.Resistance = resistance;
         }
@@ -16,12 +16,12 @@ namespace NextGenSpice.Elements
             throw new System.NotImplementedException();
         }
 
-        public override ICircuitModelElement GetDcOperatingPointModel()
+        public override ICircuitModelElement GetLargeSignalModel()
         {
             return this;
         }
 
-        public override ICircuitModelElement GetTransientModel()
+        public override ICircuitModelElement GetSmallSignalModel()
         {
             return this;
         }

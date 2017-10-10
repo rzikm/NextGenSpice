@@ -8,7 +8,7 @@ namespace NextGenSpice.Elements
 
         void Accept<T>(ICircuitVisitor<T> visitor);
 
-        ICircuitModelElement GetDcOperatingPointModel();
-        ICircuitModelElement GetTransientModel();
+        ICircuitModelElement GetLargeSignalModel();
+        ICircuitModelElement GetSmallSignalModel();
     }
 }

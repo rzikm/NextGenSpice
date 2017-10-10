@@ -2,8 +2,7 @@
 {
     public class CircuitNode
     {
-        public double Voltage { get; set; }
+        public double Voltage { get; internal set; }
         public int Id { get; internal set; }
-        public string Tag { get; set; }
     }
 }

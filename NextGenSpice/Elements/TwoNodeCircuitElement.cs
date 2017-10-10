@@ -23,7 +23,7 @@ namespace NextGenSpice.Elements
 
         public NodeConnectionSet ConnectedNodes { get; protected set; }
         public abstract void Accept<T>(ICircuitVisitor<T> visitor);
-        public abstract ICircuitModelElement GetDcOperatingPointModel();
-        public abstract ICircuitModelElement GetTransientModel();
+        public abstract ICircuitModelElement GetLargeSignalModel();
+        public abstract ICircuitModelElement GetSmallSignalModel();
     }
 }

@@ -7,11 +7,11 @@ namespace NextGenSpice.Circuit
 {
     public class CircuitSimulator
     {
-        private double epsilon = 1e-15;
-        private int maxDcPointIterations = 1000;
+        public double Epsilon { get; } = 1e-15;
+        public int MaxDcPointIterations { get; } = 1000;
 
         public int IterationCount { get; private set; }
-        public double SquaredDelta { get; private set; }
+        public double DeltaSquared { get; private set; }
 
         public CircuitSimulator(ElectricCircuitDefinition circuitDefinition)
         {
@@ -36,7 +36,7 @@ namespace NextGenSpice.Circuit
         {
             if (model == null)
             {
-                model = CircuitDefinition.GetDcOperatingPointAnalysisModel();
+                model = CircuitDefinition.GetLargeSignalModel();
                 foreach (var element in model.Elements)
                 {
                     element.Initialize();
@@ -63,7 +63,7 @@ namespace NextGenSpice.Circuit
         {
             EnsureInitialized();
             IterationCount = 0;
-            SquaredDelta = 0;
+            DeltaSquared = 0;
 
             BuildEquationSystem();
 
@@ -82,7 +82,7 @@ namespace NextGenSpice.Circuit
             {
                 delta = 0;
                 var prevVoltages = (double[]) equationSystem.Solution.Clone();
-
+                
                 Iterate();
 
                 for (int i = 0; i < prevVoltages.Length; i++)
@@ -91,11 +91,11 @@ namespace NextGenSpice.Circuit
                     delta += d * d;
                 }
 
-                if (++IterationCount == maxDcPointIterations) break;
+                if (++IterationCount == MaxDcPointIterations) break;
 
-            } while (delta > epsilon * epsilon);
+            } while (delta > Epsilon * Epsilon);
 
-            SquaredDelta = delta;
+            DeltaSquared = delta;
         }
 
         private void Iterate()

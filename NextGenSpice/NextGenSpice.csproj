@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Elements\SimpleTwoNodeElement.cs" />
+    <Compile Include="Extensions\CircuitBuilderExtensions.cs" />
     <Compile Include="Helpers\Array2DWrapper.cs" />
     <Compile Include="Circuit\CircuitBuilder.cs" />
     <Compile Include="Circuit\ElectricCircuitModel.cs" />
@@ -66,7 +67,7 @@
     <Compile Include="Equations\IEquationEditor.cs" />
     <Compile Include="Equations\IEquationSystemBuilder.cs" />
     <Compile Include="Circuit\NodeConnectionSet.cs" />
-    <Compile Include="Elements\RezistorElement.cs" />
+    <Compile Include="Elements\ResistorElement.cs" />
     <Compile Include="Elements\TwoNodeCircuitElement.cs" />
     <Compile Include="Equations\EquationSystem.cs" />
     <Compile Include="Circuit\CircuitNode.cs" />

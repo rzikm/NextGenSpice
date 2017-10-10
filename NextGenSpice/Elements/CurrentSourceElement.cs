@@ -15,12 +15,12 @@ namespace NextGenSpice.Elements
             throw new System.NotImplementedException();
         }
 
-        public override ICircuitModelElement GetDcOperatingPointModel()
+        public override ICircuitModelElement GetLargeSignalModel()
         {
             return this;
         }
 
-        public override ICircuitModelElement GetTransientModel()
+        public override ICircuitModelElement GetSmallSignalModel()
         {
             return this;
         }

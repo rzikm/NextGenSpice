@@ -10,14 +10,14 @@ namespace NextGenSpice.Circuit
         public List<CircuitNode> Nodes { get; internal set; }
         public List<ICircuitDefinitionElement> Elements { get; internal set; }
 
-        public ICircuitModel GetDcOperatingPointAnalysisModel()
+        public ICircuitModel GetLargeSignalModel()
         {
-            return new ElectricCircuitModel(Nodes.ToArray(), Elements.Select(e => e.GetDcOperatingPointModel()));
+            return new ElectricCircuitModel(Nodes.ToArray(), Elements.Select(e => e.GetLargeSignalModel()));
         }
 
-        public ICircuitModel GetTransientAnalysisModel()
+        public ICircuitModel GetSmallSignalModel()
         {
-            return new ElectricCircuitModel(Nodes.ToArray(), Elements.Select(e => e.GetTransientModel()));
+            return new ElectricCircuitModel(Nodes.ToArray(), Elements.Select(e => e.GetSmallSignalModel()));
         }
     }
 }

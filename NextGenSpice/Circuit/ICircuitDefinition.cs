@@ -2,7 +2,7 @@
 {
     public interface ICircuitDefinition
     {
-        ICircuitModel GetDcOperatingPointAnalysisModel();
-        ICircuitModel GetTransientAnalysisModel();
+        ICircuitModel GetLargeSignalModel();
+        ICircuitModel GetSmallSignalModel();
     }
 }

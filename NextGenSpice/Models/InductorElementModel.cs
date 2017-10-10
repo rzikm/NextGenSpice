@@ -8,7 +8,7 @@ namespace NextGenSpice.Models
     {
         private readonly InductorElement parent;
 
-        private readonly RezistorElement r_eq;
+        private readonly ResistorElement r_eq;
         private readonly CurrentSourceElement i_eq;
 
         private double Vc;
@@ -17,7 +17,7 @@ namespace NextGenSpice.Models
         {
             this.parent = parent;
 
-            r_eq = new RezistorElement(0);
+            r_eq = new ResistorElement(0);
             i_eq = new CurrentSourceElement(parent.InitialVoltage);
         }
 

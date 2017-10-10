@@ -19,13 +19,13 @@ namespace NextGenSpice.Elements
             throw new System.NotImplementedException();
         }
 
-        public override ICircuitModelElement GetDcOperatingPointModel()
+        public override ICircuitModelElement GetLargeSignalModel()
         {
             return new InductorElementModel(this);
 //            return new ShortCircuitModel(this);
         }
 
-        public override ICircuitModelElement GetTransientModel()
+        public override ICircuitModelElement GetSmallSignalModel()
         {
             return new InductorElementModel(this);
         }

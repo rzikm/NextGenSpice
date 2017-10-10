@@ -17,7 +17,14 @@ namespace NextGenSpice.Circuit
             CircuitElements = new List<ICircuitDefinitionElement>();
         }
 
-        public CircuitNode GetNode(int id)
+        public CircuitBuilder SetNodeVoltage(int id, double voltage)
+        {
+            if (voltage < 0) throw new ArgumentOutOfRangeException(nameof(voltage));
+            GetNode(id).Voltage = voltage;
+            return this;
+        }
+
+        private CircuitNode GetNode(int id)
         {
             if (id < 0) throw new ArgumentOutOfRangeException(nameof(id));
 
@@ -28,7 +35,7 @@ namespace NextGenSpice.Circuit
 
             return nodes[id];
         }
-        public void AddElement(ICircuitDefinitionElement element, params int[] nodeConnections)
+        public CircuitBuilder AddElement(ICircuitDefinitionElement element, int[] nodeConnections)
         {
             if (element.ConnectedNodes.Count != nodeConnections.Length)
                 throw new ArgumentException("Wrong number of connections");
@@ -41,6 +48,7 @@ namespace NextGenSpice.Circuit
             }
 
             CircuitElements.Add(element);
+            return this;
         }
 
         public ElectricCircuitDefinition Build()
