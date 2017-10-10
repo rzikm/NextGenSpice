@@ -5,6 +5,8 @@ using System.Linq;
 using NUnit.Framework;
 using NextGenSpice;
 using NextGenSpice.Circuit;
+using NextGenSpice.Elements;
+using NextGenSpice.Models;
 
 namespace NextGenSpiceTests
 {

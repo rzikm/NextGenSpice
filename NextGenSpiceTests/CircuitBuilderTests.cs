@@ -1,5 +1,6 @@
 ﻿using System;
 using NextGenSpice.Circuit;
+using NextGenSpice.Elements;
 using NUnit.Framework;
 
 namespace NextGenSpiceTests

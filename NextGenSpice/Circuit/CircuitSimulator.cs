@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
+using NextGenSpice.Elements;
+using NextGenSpice.Equations;
 
 namespace NextGenSpice.Circuit
 {
     public class CircuitSimulator
     {
-        private bool dcBiasEstablished;
-
         private double epsilon = 1e-15;
         private int maxDcPointIterations = 1000;
 
@@ -27,18 +27,33 @@ namespace NextGenSpice.Circuit
 
         public void Simulate(Action<double[]> callback) 
         {
+            EnsureInitialized();
+
+            throw new NotImplementedException();
         }
 
-        public void BuildEquationSystem()
+        private void EnsureInitialized()
+        {
+            if (model == null)
+            {
+                model = CircuitDefinition.GetDcOperatingPointAnalysisModel();
+                foreach (var element in model.Elements)
+                {
+                    element.Initialize();
+                }
+            }
+        }
+
+        private void BuildEquationSystem()
         {
             var b = new EquationSystemBuilder();
             for (int i = 0; i < CircuitDefinition.Nodes.Count; i++)
             {
                 b.AddVariable();
             }
-            foreach (var circuitElement in model.Elements)
+            foreach (var circuitElement in model.LinearElements)
             {
-                circuitElement.ApplyToEquationsPermanent(b, context);
+                circuitElement.ApplyLinearModelValues(b, context);
             }
 
             equationSystem = b.Build();
@@ -46,10 +61,9 @@ namespace NextGenSpice.Circuit
 
         public void EstablishDcBias()
         {
+            EnsureInitialized();
             IterationCount = 0;
             SquaredDelta = 0;
-
-            model = CircuitDefinition.GetDcOperatingPointAnalysisModel();
 
             BuildEquationSystem();
 
@@ -108,7 +122,12 @@ namespace NextGenSpice.Circuit
 
             foreach (var e in model.NonlinearElements)
             {
-                e.ApplyToEquationsDynamic(equationSystem, context);
+                e.ApplyNonlinearModelValues(equationSystem, context);
+            }
+
+            foreach (var e in model.TimeDependentElements)
+            {
+                e.ApplyTimeDependentModelValues(equationSystem, context);
             }
         }
 
@@ -127,7 +146,7 @@ namespace NextGenSpice.Circuit
         {
             foreach (var element in model.NonlinearElements)
             {
-                element.UpdateLinearizedModel(context);
+                element.UpdateNonlinearModel(context);
             }
         }
     }

@@ -1,5 +1,7 @@
 ﻿using System;
 using NextGenSpice.Circuit;
+using NextGenSpice.Equations;
+using NextGenSpice.Helpers;
 using NUnit.Framework;
 
 namespace NextGenSpiceTests
