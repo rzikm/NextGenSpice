@@ -2,7 +2,7 @@
 
 namespace NextGenSpice.Elements
 {
-    public interface INonlinearCircuitModelElement : ICircuitModelElement
+    public interface INonlinearLargeSignalDeviceModel : ILargeSignalDeviceModel
     {
         void UpdateNonlinearModel(SimulationContext context);
 

@@ -1,29 +1,25 @@
-﻿using NextGenSpice.Circuit;
+﻿using System;
 using NextGenSpice.Equations;
 
 namespace NextGenSpice.Elements
 {
-    public class ResistorElement : SimpleTwoNodeElement, ICanonicalElement
+    public class Resistor : SimpleTwoNodeElement, ICanonicalElement
     {
-        public double Resistance { get; internal set; }
+        public double Resistance { get; set; }
 
-        public ResistorElement(double resistance)
+        public Resistor(double resistance)
         {
             this.Resistance = resistance;
         }
-        public override void Accept<T>(ICircuitVisitor<T> visitor)
-        {
-            throw new System.NotImplementedException();
-        }
 
-        public override ICircuitModelElement GetLargeSignalModel()
+        public override ILargeSignalDeviceModel GetLargeSignalModel()
         {
             return this;
         }
 
-        public override ICircuitModelElement GetSmallSignalModel()
+        public override ILargeSignalDeviceModel GetSmallSignalModel()
         {
-            return this;
+            throw new NotImplementedException();
         }
 
         public override void ApplyLinearModelValues(IEquationEditor equationSystem, SimulationContext context)

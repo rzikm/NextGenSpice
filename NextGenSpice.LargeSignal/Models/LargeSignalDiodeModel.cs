@@ -1,20 +1,21 @@
 using System;
 using NextGenSpice.Elements;
 using NextGenSpice.Equations;
+using NextGenSpice.Representation;
 
 namespace NextGenSpice.Models
 {
-    public class DiodeElementModel : INonlinearCircuitModelElement
+    public class LargeSignalDiodeModel : INonlinearLargeSignalDeviceModel, IAnalysisDeviceModel<DiodeElement>
     {
         private readonly DiodeElement parent;
-        private readonly ResistorElement r_eq;
-        private readonly CurrentSourceElement i_eq;
+        private readonly LargeSignalResistorModel r_eq;
+        private readonly LargeSignalCurrentSourceModel i_eq;
 
-        public DiodeElementModel(DiodeElement parent)
+        public LargeSignalDiodeModel(DiodeElement parent)
         {
             Vd = parent.param.Vd;
-            r_eq = new ResistorElement(0);
-            i_eq = new CurrentSourceElement(0);
+            r_eq = new LargeSignalResistorModel(0);
+            i_eq = new LargeSignalCurrentSourceModel(0);
             this.parent = parent;
 
             RecomputeLinearCircuit();

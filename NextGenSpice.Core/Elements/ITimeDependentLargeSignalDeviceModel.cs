@@ -2,7 +2,7 @@
 
 namespace NextGenSpice.Elements
 {
-    public interface ITimeDependentCircuitModelElement : ICircuitModelElement
+    public interface ITimeDependentLargeSignalDeviceModel : ILargeSignalDeviceModel
     {
         void UpdateTimeDependentModel(SimulationContext context);
 

@@ -48,8 +48,8 @@ namespace NextGenSpiceTests
         [Test]
         public void TestThrowOnInvalidNumberOfConnections()
         {
-            Assert.Throws<ArgumentException>(() => builder.AddElement(new ResistorElement(3), new[] { 1 }));
-            Assert.Throws<ArgumentException>(() => builder.AddElement(new ResistorElement(3), new[] { 1, 2, 3 }));
+            Assert.Throws<ArgumentException>(() => builder.AddElement(new Resistor(3), new[] { 1 }));
+            Assert.Throws<ArgumentException>(() => builder.AddElement(new Resistor(3), new[] { 1, 2, 3 }));
         }
 
 

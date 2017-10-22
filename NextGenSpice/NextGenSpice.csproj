@@ -49,25 +49,25 @@
     <Compile Include="Circuit\CircuitBuilder.cs" />
     <Compile Include="Circuit\ElectricCircuitModel.cs" />
     <Compile Include="Elements\CapacitorElement.cs" />
-    <Compile Include="Models\CapacitorElementModel.cs" />
-    <Compile Include="Elements\CurrentSourceElement.cs" />
+    <Compile Include="Models\CapacitorModel.cs" />
+    <Compile Include="Elements\CurrentSource.cs" />
     <Compile Include="Elements\DiodeElement.cs" />
-    <Compile Include="Models\DiodeElementModel.cs" />
+    <Compile Include="Models\DiodeModel.cs" />
     <Compile Include="Models\DiodeModelParams.cs" />
     <Compile Include="Elements\ICanonicalElement.cs" />
-    <Compile Include="Elements\ICircuitModelElement.cs" />
-    <Compile Include="Models\InductorElementModel.cs" />
+    <Compile Include="Elements\ILargeSignalDeviceModel.cs" />
+    <Compile Include="Models\InductorModel.cs" />
     <Compile Include="Elements\InductorElement.cs" />
-    <Compile Include="Elements\ITimeDependentCircuitModelElement.cs" />
+    <Compile Include="Elements\ITimeDependentLargeSignalDeviceModel.cs" />
     <Compile Include="Elements\SimulationContext.cs" />
-    <Compile Include="Elements\VoltageSourceElement.cs" />
+    <Compile Include="Elements\VoltageSource.cs" />
     <Compile Include="Equations\EquationSystemBuilder.cs" />
     <Compile Include="Circuit\ICircuitDefinition.cs" />
     <Compile Include="Circuit\ICircuitModel.cs" />
     <Compile Include="Equations\IEquationEditor.cs" />
     <Compile Include="Equations\IEquationSystemBuilder.cs" />
     <Compile Include="Circuit\NodeConnectionSet.cs" />
-    <Compile Include="Elements\ResistorElement.cs" />
+    <Compile Include="Elements\Resistor.cs" />
     <Compile Include="Elements\TwoNodeCircuitElement.cs" />
     <Compile Include="Equations\EquationSystem.cs" />
     <Compile Include="Circuit\CircuitNode.cs" />
@@ -76,12 +76,15 @@
     <Compile Include="Elements\ICircuitDefinitionElement.cs" />
     <Compile Include="Equations\IEquationSystem.cs" />
     <Compile Include="Circuit\ICircuitVisitor.cs" />
-    <Compile Include="Elements\INonlinearCircuitModelElement.cs" />
+    <Compile Include="Elements\INonlinearLargeSignalDeviceModel.cs" />
     <Compile Include="Numerics\NumericMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Representation\AnalysisModelBase.cs" />
+    <Compile Include="Representation\CircuitDef.cs" />
+    <Compile Include="Representation\IAnalysisDeviceModel.cs" />
+    <Compile Include="Representation\IAnalysisModelFactory.cs" />
+    <Compile Include="Representation\ICircuitDefinition2.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Representation\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

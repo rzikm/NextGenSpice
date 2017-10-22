@@ -71,9 +71,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NextGenSpice\NextGenSpice.csproj">
-      <Project>{117d8bdb-abef-4ef3-8cfb-98a6f4094146}</Project>
-      <Name>NextGenSpice</Name>
+    <ProjectReference Include="..\NextGenSpice.Core\NextGenSpice.Core.csproj">
+      <Project>{e653c48a-57ae-49cc-9a68-6fad1565ad09}</Project>
+      <Name>NextGenSpice.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Numerics\Numerics.csproj">
       <Project>{a5d55be1-7e04-4e6a-8f2e-34e1d9109100}</Project>

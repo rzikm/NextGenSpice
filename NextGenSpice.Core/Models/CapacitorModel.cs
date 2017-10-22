@@ -3,21 +3,21 @@ using NextGenSpice.Equations;
 
 namespace NextGenSpice.Models
 {
-    public class CapacitorElementModel : ITimeDependentCircuitModelElement
+    public class CapacitorModel : ITimeDependentLargeSignalDeviceModel
     {
         private readonly CapacitorElement parent;
         private double Vc;
 
-        public CapacitorElementModel(CapacitorElement parent)
+        public CapacitorModel(CapacitorElement parent)
         {
             this.parent = parent;
 
-            r_eq = new ResistorElement(double.PositiveInfinity);
-            i_eq = new CurrentSourceElement(parent.InitialCurrent);
+            r_eq = new Resistor(double.PositiveInfinity);
+            i_eq = new CurrentSource(parent.InitialCurrent);
         }
 
-        private readonly ResistorElement r_eq;
-        private readonly CurrentSourceElement i_eq;
+        private readonly Resistor r_eq;
+        private readonly CurrentSource i_eq;
 
         public void Initialize()
         {

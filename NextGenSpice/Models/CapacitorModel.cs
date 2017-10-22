@@ -1,25 +1,23 @@
-﻿using System;
-using NextGenSpice.Elements;
+﻿using NextGenSpice.Elements;
 using NextGenSpice.Equations;
 
 namespace NextGenSpice.Models
 {
-    public class InductorElementModel : ITimeDependentCircuitModelElement
+    public class CapacitorModel : ITimeDependentLargeSignalDeviceModel
     {
-        private readonly InductorElement parent;
-
-        private readonly ResistorElement r_eq;
-        private readonly CurrentSourceElement i_eq;
-
+        private readonly CapacitorElement parent;
         private double Vc;
 
-        public InductorElementModel(InductorElement parent)
+        public CapacitorModel(CapacitorElement parent)
         {
             this.parent = parent;
 
-            r_eq = new ResistorElement(0);
-            i_eq = new CurrentSourceElement(parent.InitialVoltage);
+            r_eq = new Resistor(double.PositiveInfinity);
+            i_eq = new CurrentSource(parent.InitialCurrent);
         }
+
+        private readonly Resistor r_eq;
+        private readonly CurrentSource i_eq;
 
         public void Initialize()
         {
@@ -33,24 +31,18 @@ namespace NextGenSpice.Models
 
         public void ApplyLinearModelValues(IEquationSystemBuilder equationSystem, SimulationContext context)
         {
-
+            // do nothing
         }
 
         public void UpdateTimeDependentModel(SimulationContext context)
         {
-            r_eq.Resistance = context.Timestep / parent.Inductance;
-            i_eq.Current = parent.Inductance / context.Timestep * Vc;
+            r_eq.Resistance = context.Timestep / parent.Capacity;
+            i_eq.Current = parent.Capacity / context.Timestep * Vc;
             Vc = parent.Anode.Voltage - parent.Kathode.Voltage;
         }
 
         public void ApplyTimeDependentModelValues(IEquationSystem equationSystem, SimulationContext context)
         {
-            if (Math.Abs(r_eq.Resistance) < Double.Epsilon)
-            {
-                 equationSystem.BindEquivalent(r_eq.Anode.Id, r_eq.Kathode.Id);
-                return;
-            }
-
             r_eq.ApplyLinearModelValues(equationSystem, context);
             i_eq.ApplyLinearModelValues(equationSystem, context);
         }

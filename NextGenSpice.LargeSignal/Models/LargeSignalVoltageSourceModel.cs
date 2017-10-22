@@ -1,28 +1,24 @@
-﻿using NextGenSpice.Circuit;
+﻿using System;
 using NextGenSpice.Equations;
 
 namespace NextGenSpice.Elements
 {
-    public class VoltageSourceElement : TwoNodeCircuitElement, ILinearCircuitModelElement
+    public class LargeSignalVoltageSourceModel : TwoNodeCircuitElement, ILinearLargeSignalDeviceModel
     {
         public double Voltage { get; internal set; }
-        public VoltageSourceElement(double voltage)
+        public LargeSignalVoltageSourceModel(double voltage)
         {
             Voltage = voltage;
         }
-        public override void Accept<T>(ICircuitVisitor<T> visitor)
-        {
-            throw new System.NotImplementedException();
-        }
 
-        public override ICircuitModelElement GetLargeSignalModel()
+        public override ILargeSignalDeviceModel GetLargeSignalModel()
         {
             return this;
         }
 
-        public override ICircuitModelElement GetSmallSignalModel()
+        public override ILargeSignalDeviceModel GetSmallSignalModel()
         {
-            return this;
+            throw new NotImplementedException();
         }
 
         public void Initialize()
