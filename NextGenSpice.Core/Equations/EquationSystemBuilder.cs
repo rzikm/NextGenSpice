@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using NextGenSpice.Helpers;
+using NextGenSpice.Core.Helpers;
 
-namespace NextGenSpice.Equations
+namespace NextGenSpice.Core.Equations
 {
     public class EquationSystemBuilder : IEquationSystemBuilder
     {

@@ -1,4 +1,4 @@
-namespace NextGenSpice.Helpers
+namespace NextGenSpice.Core.Helpers
 {
     public class Array2DWrapper
     {

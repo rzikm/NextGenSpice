@@ -1,51 +1,48 @@
-﻿using NextGenSpice.Elements;
-using NextGenSpice.Equations;
-using NextGenSpice.Representation;
+﻿using System;
+using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Equations;
 
-namespace NextGenSpice.Models
+namespace NextGenSpice.LargeSignal.Models
 {
-    public class LargeSignalCapacitorModel : ITimeDependentLargeSignalDeviceModel, IAnalysisDeviceModel<CapacitorElement>
+    public class LargeSignalCapacitorModel : TwoNodeLargeSignalModel<CapacitorElement>, ITimeDependentLargeSignalDeviceModel
     {
-        private readonly CapacitorElement parent;
         private double Vc;
 
-        public LargeSignalCapacitorModel(CapacitorElement parent)
+        public LargeSignalCapacitorModel(CapacitorElement parent) : base(parent)
         {
-            this.parent = parent;
+            fakeRezistor = new ResistorElement(Double.PositiveInfinity);
+            fakeCurrent = new CurrentSourceElement(parent.InitialCurrent);
 
-            r_eq = new LargeSignalResistorModel(double.PositiveInfinity);
-            i_eq = new LargeSignalCurrentSourceModel(parent.InitialCurrent);
+            rEq = new LargeSignalResistorModel(fakeRezistor);
+            iEq = new LargeSignalCurrentSourceModel(fakeCurrent);
         }
 
-        private readonly LargeSignalResistorModel r_eq;
-        private readonly LargeSignalCurrentSourceModel i_eq;
+        private readonly LargeSignalResistorModel rEq;
+        private readonly LargeSignalCurrentSourceModel iEq;
+
+        private readonly ResistorElement fakeRezistor;
+        private readonly CurrentSourceElement fakeCurrent;
 
         public void Initialize()
         {
-            r_eq.Anode = parent.Anode;
-            r_eq.Kathode = parent.Kathode;
-
-            // equivalent current has reverse polarity
-            i_eq.Anode = parent.Anode;
-            i_eq.Kathode = parent.Kathode;
-        }
-
-        public void ApplyLinearModelValues(IEquationSystemBuilder equationSystem, SimulationContext context)
-        {
-            // do nothing
+            fakeRezistor.Anode = Parent.Anode;
+            fakeRezistor.Kathode = Parent.Kathode;
+            
+            fakeCurrent.Anode = Parent.Anode;
+            fakeCurrent.Kathode = Parent.Kathode;
         }
 
         public void UpdateTimeDependentModel(SimulationContext context)
         {
-            r_eq.Resistance = context.Timestep / parent.Capacity;
-            i_eq.Current = parent.Capacity / context.Timestep * Vc;
-            Vc = parent.Anode.Voltage - parent.Kathode.Voltage;
+            fakeRezistor.Resistance = context.Timestep / Parent.Capacity;
+            fakeCurrent.Current = Parent.Capacity / context.Timestep * Vc;
+            Vc = context.NodeVoltages[Parent.Anode] - context.NodeVoltages[Parent.Kathode];
         }
 
         public void ApplyTimeDependentModelValues(IEquationSystem equationSystem, SimulationContext context)
         {
-            r_eq.ApplyLinearModelValues(equationSystem, context);
-            i_eq.ApplyLinearModelValues(equationSystem, context);
+            rEq.ApplyLinearModelValues(equationSystem, context);
+            iEq.ApplyLinearModelValues(equationSystem, context);
         }
     }
 }

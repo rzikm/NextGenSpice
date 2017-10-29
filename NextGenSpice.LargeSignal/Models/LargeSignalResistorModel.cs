@@ -1,33 +1,22 @@
-﻿using System;
-using NextGenSpice.Equations;
+﻿using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Equations;
 
-namespace NextGenSpice.Elements
+namespace NextGenSpice.LargeSignal.Models
 {
-    public class LargeSignalResistorModel : TwoNodeCircuitElement, ILinearLargeSignalDeviceModel
+    public class LargeSignalResistorModel : TwoNodeLargeSignalModel<ResistorElement>, ILinearLargeSignalDeviceModel
     {
-        public double Resistance { get; set; }
+        public double Resistance => Parent.Resistance;
 
-        public LargeSignalResistorModel(double resistance)
+        public LargeSignalResistorModel(ResistorElement parent) : base(parent)
         {
-            this.Resistance = resistance;
-        }
-
-        public override ILargeSignalDeviceModel GetLargeSignalModel()
-        {
-            return this;
-        }
-
-        public override ILargeSignalDeviceModel GetSmallSignalModel()
-        {
-            throw new NotImplementedException();
         }
 
         public void ApplyLinearModelValues(IEquationEditor equationSystem, SimulationContext context)
         {
-            equationSystem.AddMatrixEntry(Kathode.Id, Anode.Id, -1 / Resistance);
-            equationSystem.AddMatrixEntry(Anode.Id, Kathode.Id, -1 / Resistance);
-            equationSystem.AddMatrixEntry(Anode.Id, Anode.Id, 1 / Resistance);
-            equationSystem.AddMatrixEntry(Kathode.Id, Kathode.Id, 1 / Resistance);
+            equationSystem.AddMatrixEntry(Kathode, Anode, -1 / Resistance);
+            equationSystem.AddMatrixEntry(Anode, Kathode, -1 / Resistance);
+            equationSystem.AddMatrixEntry(Anode, Anode, 1 / Resistance);
+            equationSystem.AddMatrixEntry(Kathode, Kathode, 1 / Resistance);
         }
 
         public void Initialize()
@@ -36,7 +25,28 @@ namespace NextGenSpice.Elements
 
         public void ApplyLinearModelValues(IEquationSystemBuilder equationSystem, SimulationContext context)
         {
-            ApplyLinearModelValues(equationSystem, context);
+            ApplyLinearModelValues((IEquationEditor) equationSystem, context);
         }
+    }
+
+    public abstract class TwoNodeLargeSignalModel<TDefinitionElement> : LargeSignalModelBase<TDefinitionElement> where TDefinitionElement : TwoNodeCircuitElement
+    {
+        public int Anode => Parent.ConnectedNodes[0];
+
+        public int Kathode => Parent.ConnectedNodes[1];
+
+        protected TwoNodeLargeSignalModel(TDefinitionElement parent) : base(parent)
+        {
+        }
+    }
+
+    public abstract class LargeSignalModelBase<TDefinitionElement> where TDefinitionElement : ICircuitDefinitionElement
+    {
+        protected LargeSignalModelBase(TDefinitionElement parent)
+        {
+            Parent = parent;
+        }
+
+        public TDefinitionElement Parent { get; }
     }
 }

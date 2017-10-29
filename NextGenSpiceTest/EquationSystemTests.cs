@@ -1,17 +1,14 @@
 ﻿using System;
-using NextGenSpice.Circuit;
-using NextGenSpice.Equations;
-using NextGenSpice.Helpers;
+using NextGenSpice.Core.Equations;
+using NextGenSpice.Core.Helpers;
 using Xunit;
 
-namespace NextGenSpiceTests
+namespace NextGenSpiceTest
 {
    
     public class EquationSystemTests
     {
         private readonly IEquationSystemBuilder builder;
-        private ICircuitModel circuit;
-
 
         public EquationSystemTests()
         {

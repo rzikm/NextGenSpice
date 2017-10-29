@@ -1,6 +1,7 @@
-﻿namespace NextGenSpice.Representation
+﻿namespace NextGenSpice.Core.Representation
 {
     public interface IAnalysisDeviceModel<TAnalysisModel>
     {
+        
     }
 }

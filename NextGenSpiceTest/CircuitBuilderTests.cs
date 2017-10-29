@@ -1,11 +1,10 @@
 ﻿using System;
-using NextGenSpice.Circuit;
-using NextGenSpice.Elements;
-using NextGenSpice.Extensions;
-using NextGenSpice.Models;
+using NextGenSpice.Core.Circuit;
+using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Extensions;
 using Xunit;
 
-namespace NextGenSpiceTests
+namespace NextGenSpiceTest
 {
    
     public class CircuitBuilderTests
@@ -35,21 +34,21 @@ namespace NextGenSpiceTests
         [Fact]
         public void TestGeneratesNodesWhenRequestingHighId()
         {
-            Assert.Equal(0, builder.Nodes.Count);
+            Assert.Equal(0, builder.NodeCount);
 
             builder.AddDiode(new DiodeModelParams(), 5, 0);
-            Assert.Equal(6, builder.Nodes.Count);
+            Assert.Equal(6, builder.NodeCount);
 
 
             builder.SetNodeVoltage(4, 0);
-            Assert.Equal(6, builder.Nodes.Count);
+            Assert.Equal(6, builder.NodeCount);
         }
 
         [Fact]
         public void TestThrowOnInvalidNumberOfConnections()
         {
-            Assert.Throws<ArgumentException>(() => builder.AddElement(new Resistor(3), new[] { 1 }));
-            Assert.Throws<ArgumentException>(() => builder.AddElement(new Resistor(3), new[] { 1, 2, 3 }));
+            Assert.Throws<ArgumentException>(() => builder.AddElement(new ResistorElement(3), new[] { 1 }));
+            Assert.Throws<ArgumentException>(() => builder.AddElement(new ResistorElement(3), new[] { 1, 2, 3 }));
         }
 
 

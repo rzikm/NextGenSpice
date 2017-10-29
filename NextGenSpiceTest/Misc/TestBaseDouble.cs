@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace NextGenSpiceTests.Misc
+namespace NextGenSpiceTest.Misc
 {
     public abstract class TestBaseDouble
     {

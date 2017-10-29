@@ -1,16 +1,16 @@
-﻿using NextGenSpice.Circuit;
+﻿using NextGenSpice.Core.Circuit;
 
-namespace NextGenSpice.Elements
+namespace NextGenSpice.Core.Elements
 {
     public abstract class TwoNodeCircuitElement : ICircuitDefinitionElement
     {
-        public virtual CircuitNode Anode
+        public int Anode
         {
             get => ConnectedNodes[0];
             set => ConnectedNodes[0] = value;
         }
 
-        public virtual CircuitNode Kathode
+        public int Kathode
         {
             get => ConnectedNodes[1];
             set => ConnectedNodes[1] = value;
@@ -21,8 +21,6 @@ namespace NextGenSpice.Elements
             ConnectedNodes = new NodeConnectionSet(2);
         }
 
-        public NodeConnectionSet ConnectedNodes { get; protected set; }
-        public abstract ILargeSignalDeviceModel GetLargeSignalModel();
-        public abstract ILargeSignalDeviceModel GetSmallSignalModel();
+        public NodeConnectionSet ConnectedNodes { get; protected internal set; }
     }
 }

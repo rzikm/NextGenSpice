@@ -1,39 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NextGenSpice.Elements;
+using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Representation;
 
-namespace NextGenSpice.Circuit
+namespace NextGenSpice.Core.Circuit
 {
     public class CircuitBuilder
     {
-        private readonly List<CircuitNode> nodes;
-        public IReadOnlyList<CircuitNode> Nodes => nodes;
+        private readonly List<double> nodes;
+
+        public int NodeCount => nodes.Count;
         private List<ICircuitDefinitionElement> CircuitElements { get; set; }
 
         public CircuitBuilder()
         {
-            nodes = new List<CircuitNode>();
+            nodes = new List<double>();
             CircuitElements = new List<ICircuitDefinitionElement>();
         }
 
         public CircuitBuilder SetNodeVoltage(int id, double voltage)
         {
             if (voltage < 0) throw new ArgumentOutOfRangeException(nameof(voltage));
-            GetNode(id).Voltage = voltage;
+
+            EnsureHasNode(id);
+            nodes[id] = voltage;
             return this;
         }
 
-        private CircuitNode GetNode(int id)
+        private void EnsureHasNode(int id)
         {
             if (id < 0) throw new ArgumentOutOfRangeException(nameof(id));
 
-            while (nodes.Count <= id)
+            while (NodeCount <= id)
             {
-                nodes.Add(new CircuitNode { Id = nodes.Count });
+                nodes.Add(0);
             }
-
-            return nodes[id];
         }
         public CircuitBuilder AddElement(ICircuitDefinitionElement element, int[] nodeConnections)
         {
@@ -44,7 +46,8 @@ namespace NextGenSpice.Circuit
             for (var i = 0; i < nodeConnections.Length; i++)
             {
                 var id = nodeConnections[i];
-                element.ConnectedNodes[i] = GetNode(id);
+                EnsureHasNode(id);
+                element.ConnectedNodes[i] = id;
             }
 
             CircuitElements.Add(element);
@@ -55,23 +58,20 @@ namespace NextGenSpice.Circuit
         {
             VerifyCircuit();
 
-            return new ElectricCircuitDefinition
-            {
-                Elements = CircuitElements,
-                Nodes = Nodes.ToList(),
-            };
+            var electricCircuitDefinition = new ElectricCircuitDefinition(nodes, CircuitElements);
+            return electricCircuitDefinition;
         }
 
         private void VerifyCircuit()
         {
             // every node must be transitively connected to 0 (ground)
-            var neighbourghs = Nodes.ToDictionary(n => n.Id, n => new HashSet<int>());
+            var neighbourghs = Enumerable.Range(0, NodeCount).ToDictionary(n => n, n => new HashSet<int>());
             foreach (var element in CircuitElements)
             {
-                var ids = element.ConnectedNodes.Select(n => n.Id).ToArray();
-                for (int i = 0; i < ids.Length; i++)
+                var ids = element.ConnectedNodes;
+                for (int i = 0; i < ids.Count; i++)
                 {
-                    for (int j = 0; j < ids.Length; j++)
+                    for (int j = 0; j < ids.Count; j++)
                     {
                         if (i == j) continue;
                         neighbourghs[ids[i]].Add(ids[j]);
@@ -94,7 +94,7 @@ namespace NextGenSpice.Circuit
                 }
             }
 
-            if (visited.Count != nodes.Count) throw new InvalidOperationException("Some nodes are not connected to ground");
+            if (visited.Count != NodeCount) throw new InvalidOperationException("Some nodes are not connected to ground");
         }
 
 

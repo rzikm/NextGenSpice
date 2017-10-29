@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace NextGenSpiceTests.Misc
+namespace NextGenSpiceTest.Misc
 {
     public unsafe class TestGdaDouble : TestBaseDouble
     {

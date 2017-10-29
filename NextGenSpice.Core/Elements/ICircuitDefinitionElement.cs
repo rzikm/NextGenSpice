@@ -1,12 +1,9 @@
-﻿using NextGenSpice.Circuit;
+﻿using NextGenSpice.Core.Circuit;
 
-namespace NextGenSpice.Elements
+namespace NextGenSpice.Core.Elements
 {
     public interface ICircuitDefinitionElement
     {
         NodeConnectionSet ConnectedNodes { get; }
-
-        ILargeSignalDeviceModel GetLargeSignalModel();
-        ILargeSignalDeviceModel GetSmallSignalModel();
     }
 }

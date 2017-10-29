@@ -1,40 +1,29 @@
 ﻿using System;
-using NextGenSpice.Equations;
+using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Equations;
 
-namespace NextGenSpice.Elements
+namespace NextGenSpice.LargeSignal.Models
 {
-    public class LargeSignalCurrentSourceModel : TwoNodeCircuitElement, ILinearLargeSignalDeviceModel
+    public class LargeSignalCurrentSourceModel : TwoNodeLargeSignalModel<CurrentSourceElement>, ILinearLargeSignalDeviceModel
     {
-        public double Current { get; set; }
-        public LargeSignalCurrentSourceModel(double current)
+        public double Current => Parent.Current;
+        public LargeSignalCurrentSourceModel(CurrentSourceElement parent) : base(parent)
         {
-            Current = current;
         }
         
         public void ApplyLinearModelValues(IEquationEditor equationSystem, SimulationContext context)
         {
-            equationSystem.AddRightHandSideEntry(Anode.Id, Current);
-            equationSystem.AddRightHandSideEntry(Kathode.Id, -Current);
+            equationSystem.AddRightHandSideEntry(Anode, Current);
+            equationSystem.AddRightHandSideEntry(Kathode, -Current);
         }
 
         public void Initialize()
         {
-            throw new NotImplementedException();
         }
 
         public void ApplyLinearModelValues(IEquationSystemBuilder equationSystem, SimulationContext context)
         {
-            throw new NotImplementedException();
-        }
-
-        public override ILargeSignalDeviceModel GetLargeSignalModel()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override ILargeSignalDeviceModel GetSmallSignalModel()
-        {
-            throw new NotImplementedException();
+            ApplyLinearModelValues((IEquationEditor) equationSystem, context);
         }
     }
 }

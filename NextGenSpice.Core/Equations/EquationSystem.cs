@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NextGenSpice.Helpers;
-using NextGenSpice.Numerics;
+using NextGenSpice.Core.Helpers;
+using NextGenSpice.Core.Numerics;
 
-namespace NextGenSpice.Equations
+namespace NextGenSpice.Core.Equations
 {
     public class EquationSystem : IEquationSystem
     {

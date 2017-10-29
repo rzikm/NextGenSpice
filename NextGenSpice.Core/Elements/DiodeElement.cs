@@ -1,6 +1,4 @@
-using NextGenSpice.Models;
-
-namespace NextGenSpice.Elements
+namespace NextGenSpice.Core.Elements
 {
     public class DiodeElement : TwoNodeCircuitElement
     {
@@ -9,16 +7,6 @@ namespace NextGenSpice.Elements
         public DiodeElement(DiodeModelParams param)
         {
             this.param = param;
-        }
-
-        public override ILargeSignalDeviceModel GetLargeSignalModel()
-        {
-            return new DiodeModel(this);
-        }
-
-        public override ILargeSignalDeviceModel GetSmallSignalModel()
-        {
-            return new DiodeModel(this);
         }
     }
 }

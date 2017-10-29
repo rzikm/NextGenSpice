@@ -1,6 +1,4 @@
-﻿using NextGenSpice.Models;
-
-namespace NextGenSpice.Elements
+﻿namespace NextGenSpice.Core.Elements
 {
     public class InductorElement : TwoNodeCircuitElement
     {
@@ -12,17 +10,6 @@ namespace NextGenSpice.Elements
         {
             this.Inductance = inductance;
             InitialVoltage = initialVoltage;
-        }
-
-        public override ILargeSignalDeviceModel GetLargeSignalModel()
-        {
-            return new InductorModel(this);
-//            return new ShortCircuitModel(this);
-        }
-
-        public override ILargeSignalDeviceModel GetSmallSignalModel()
-        {
-            return new InductorModel(this);
         }
     }
 }

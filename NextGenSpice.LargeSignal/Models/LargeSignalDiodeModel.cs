@@ -1,33 +1,30 @@
 using System;
-using NextGenSpice.Elements;
-using NextGenSpice.Equations;
-using NextGenSpice.Representation;
+using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Equations;
 
-namespace NextGenSpice.Models
+namespace NextGenSpice.LargeSignal.Models
 {
-    public class LargeSignalDiodeModel : INonlinearLargeSignalDeviceModel, IAnalysisDeviceModel<DiodeElement>
+    public class LargeSignalDiodeModel : TwoNodeLargeSignalModel<DiodeElement>, INonlinearLargeSignalDeviceModel
     {
-        private readonly DiodeElement parent;
         private readonly LargeSignalResistorModel r_eq;
         private readonly LargeSignalCurrentSourceModel i_eq;
 
-        public LargeSignalDiodeModel(DiodeElement parent)
+        private readonly ResistorElement fakeRezistor;
+        private readonly CurrentSourceElement fakeCurrent;
+        public LargeSignalDiodeModel(DiodeElement parent) : base(parent)
         {
+            fakeRezistor = new ResistorElement(0);
+            fakeCurrent = new CurrentSourceElement(0);
+
             Vd = parent.param.Vd;
-            r_eq = new LargeSignalResistorModel(0);
-            i_eq = new LargeSignalCurrentSourceModel(0);
-            this.parent = parent;
+            r_eq = new LargeSignalResistorModel(fakeRezistor);
+            i_eq = new LargeSignalCurrentSourceModel(fakeCurrent);
 
             RecomputeLinearCircuit();
         }
 
         public double Vd { get; private set; }
-
-        public void ApplyLinearModelValues(IEquationSystemBuilder equationSystem, SimulationContext context)
-        {
-            Initialize();
-        }
-
+        
         public void ApplyNonlinearModelValues(IEquationSystem equationSystem, SimulationContext context)
         {
             r_eq.ApplyLinearModelValues(equationSystem, context);
@@ -36,28 +33,28 @@ namespace NextGenSpice.Models
 
         public void UpdateNonlinearModel(SimulationContext context)
         {
-            Vd = parent.Anode.Voltage - parent.Kathode.Voltage;
+            Vd = context.NodeVoltages[Parent.Anode] - context.NodeVoltages[Parent.Kathode];
             RecomputeLinearCircuit();
         }
 
         public void Initialize()
         {
-            r_eq.Anode = parent.Anode;
-            r_eq.Kathode = parent.Kathode;
+            fakeRezistor.Anode = Parent.Anode;
+            fakeRezistor.Kathode = Parent.Kathode;
 
             // equivalent current has reverse polarity
-            i_eq.Anode = parent.Kathode;
-            i_eq.Kathode = parent.Anode;
+           fakeCurrent.Anode = Parent.Kathode;
+            fakeCurrent.Kathode = Parent.Anode;
         }
 
         public void RecomputeLinearCircuit()
         {
-            var Id = parent.param.IS * (Math.Exp(Vd / parent.param.Vt) - 1);
-            var Geq = (parent.param.IS / parent.param.Vt * Math.Exp(Vd / parent.param.Vt));
+            var Id = Parent.param.IS * (Math.Exp(Vd / Parent.param.Vt) - 1);
+            var Geq = (Parent.param.IS / Parent.param.Vt * Math.Exp(Vd / Parent.param.Vt));
             var Ieq = Id - Geq * Vd;
 
-            r_eq.Resistance = 1 / Geq;
-            i_eq.Current = Ieq;
+            fakeRezistor.Resistance = 1 / Geq;
+            fakeCurrent.Current = Ieq;
         }
     }
 }

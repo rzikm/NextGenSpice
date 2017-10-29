@@ -1,6 +1,4 @@
-﻿using NextGenSpice.Models;
-
-namespace NextGenSpice.Elements
+﻿namespace NextGenSpice.Core.Elements
 {
     public class CapacitorElement : TwoNodeCircuitElement
     {
@@ -11,16 +9,6 @@ namespace NextGenSpice.Elements
         {
             this.Capacity = capacity;
             InitialCurrent = initialCurrent;
-        }
-
-        public override ILargeSignalDeviceModel GetLargeSignalModel()
-        {
-            return new CapacitorModel(this);
-        }
-
-        public override ILargeSignalDeviceModel GetSmallSignalModel()
-        {
-            return new CapacitorModel(this);
         }
     }
 }

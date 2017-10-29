@@ -1,24 +1,13 @@
-﻿using System;
-using NextGenSpice.Equations;
+﻿using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Equations;
 
-namespace NextGenSpice.Elements
+namespace NextGenSpice.LargeSignal.Models
 {
-    public class LargeSignalVoltageSourceModel : TwoNodeCircuitElement, ILinearLargeSignalDeviceModel
+    public class LargeSignalVoltageSourceModel : TwoNodeLargeSignalModel<VoltageSourceElement>, ILinearLargeSignalDeviceModel
     {
-        public double Voltage { get; internal set; }
-        public LargeSignalVoltageSourceModel(double voltage)
+        public double Voltage => Parent.Voltage;
+        public LargeSignalVoltageSourceModel(VoltageSourceElement parent) : base(parent)
         {
-            Voltage = voltage;
-        }
-
-        public override ILargeSignalDeviceModel GetLargeSignalModel()
-        {
-            return this;
-        }
-
-        public override ILargeSignalDeviceModel GetSmallSignalModel()
-        {
-            throw new NotImplementedException();
         }
 
         public void Initialize()
@@ -29,11 +18,11 @@ namespace NextGenSpice.Elements
         public void ApplyLinearModelValues(IEquationSystemBuilder equationSystem, SimulationContext context)
         {
             var i = equationSystem.AddVariable();
-            equationSystem.AddMatrixEntry(i, Anode.Id, 1);
-            equationSystem.AddMatrixEntry(i, Kathode.Id, -1);
+            equationSystem.AddMatrixEntry(i, Anode, 1);
+            equationSystem.AddMatrixEntry(i, Kathode, -1);
 
-            equationSystem.AddMatrixEntry(Anode.Id, i, 1);
-            equationSystem.AddMatrixEntry(Kathode.Id, i, -1);
+            equationSystem.AddMatrixEntry(Anode, i, 1);
+            equationSystem.AddMatrixEntry(Kathode, i, -1);
 
             equationSystem.AddRightHandSideEntry(i, Voltage);
         }

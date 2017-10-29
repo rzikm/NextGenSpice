@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace NextGenSpice.Circuit
+namespace NextGenSpice.Core.Circuit
 {
-    public class NodeConnectionSet : IReadOnlyList<CircuitNode>
+    public class NodeConnectionSet : IReadOnlyList<int>
     {
-        private readonly CircuitNode[] set;
+        private readonly int[] set;
 
         public NodeConnectionSet(int count)
         {
-            set = new CircuitNode[count];
+            set = new int[count];
         }
 
-        public IEnumerator<CircuitNode> GetEnumerator()
+        public IEnumerator<int> GetEnumerator()
         {
-            return ((IEnumerable<CircuitNode>) set).GetEnumerator();
+            return ((IEnumerable<int>) set).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -26,10 +24,10 @@ namespace NextGenSpice.Circuit
 
         public int Count => set.Length;
 
-        public CircuitNode this[int index]
+        public int this[int index]
         {
             get => set[index];
-            set => set[index] = value;
+            internal set => set[index] = value;
         }
     }
 }

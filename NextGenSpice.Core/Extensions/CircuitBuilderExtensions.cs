@@ -1,15 +1,14 @@
 ﻿using System;
-using NextGenSpice.Circuit;
-using NextGenSpice.Elements;
-using NextGenSpice.Models;
+using NextGenSpice.Core.Circuit;
+using NextGenSpice.Core.Elements;
 
-namespace NextGenSpice.Extensions
+namespace NextGenSpice.Core.Extensions
 {
     public static class CircuitBuilderExtensions
     {
         public static CircuitBuilder AddResistor(this CircuitBuilder builder, double resistance, int n1, int n2)
         {
-            builder.AddElement(new Resistor(resistance), new[]{n1, n2});
+            builder.AddElement(new ResistorElement(resistance), new[]{n1, n2});
             return builder;
         }
 
@@ -25,12 +24,12 @@ namespace NextGenSpice.Extensions
         }
         public static CircuitBuilder AddCurrentSource(this CircuitBuilder builder, double current, int n1, int n2)
         {
-            builder.AddElement(new CurrentSource(current), new[] { n1, n2 });
+            builder.AddElement(new CurrentSourceElement(current), new[] { n1, n2 });
             return builder;
         }
         public static CircuitBuilder AddVoltageSource(this CircuitBuilder builder, double voltage, int n1, int n2)
         {
-            builder.AddElement(new VoltageSource(voltage), new[] { n1, n2 });
+            builder.AddElement(new VoltageSourceElement(voltage), new[] { n1, n2 });
             return builder;
         }
 

@@ -1,17 +1,22 @@
 ﻿using System;
-using System.CodeDom;
-using NextGenSpice.Elements;
+using NextGenSpice.Core.Elements;
 
-namespace NextGenSpice.Representation
+namespace NextGenSpice.Core.Representation
 {
-    public interface IAnalysisModelFactory<TAnalysisModel>
+    public interface IAnalysisModelFactory<TAnalysisModel> : IAnalysisModelFactory
     {
-        TAnalysisModel Create(ICircuitDefinition2 circuitDefinition);
+        TAnalysisModel Create(ICircuitDefinition circuitDefinition);
 
         void SetModel<TRepresentation, TModel>() where TRepresentation : ICircuitDefinitionElement
             where TModel : IAnalysisDeviceModel<TAnalysisModel>, new();
 
-        void SetModel<TRepresentation, TModel>(Func<TModel, TRepresentation> factoryFunc)
+        void SetModel<TRepresentation, TModel>(Func<TRepresentation, TModel> factoryFunc)
+            where TRepresentation : ICircuitDefinitionElement
             where TModel : IAnalysisDeviceModel<TAnalysisModel>;
+    }
+
+    public interface IAnalysisModelFactory
+    {
+        Type AnalysisModelType { get; }
     }
 }
