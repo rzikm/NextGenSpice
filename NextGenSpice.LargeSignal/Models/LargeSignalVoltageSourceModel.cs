@@ -6,25 +6,27 @@ namespace NextGenSpice.LargeSignal.Models
     public class LargeSignalVoltageSourceModel : TwoNodeLargeSignalModel<VoltageSourceElement>, ILinearLargeSignalDeviceModel
     {
         public double Voltage => Parent.Voltage;
+
+        private int additionalVariable = -1;
         public LargeSignalVoltageSourceModel(VoltageSourceElement parent) : base(parent)
         {
         }
 
-        public void Initialize()
+        public override void Initialize(IEquationSystemBuilder builder)
         {
-            
+            base.Initialize(builder);
+            additionalVariable = builder.AddVariable();
         }
 
-        public void ApplyLinearModelValues(IEquationSystemBuilder equationSystem, SimulationContext context)
+        public void ApplyLinearModelValues(IEquationEditor equationSystem, SimulationContext context)
         {
-            var i = equationSystem.AddVariable();
-            equationSystem.AddMatrixEntry(i, Anode, 1);
-            equationSystem.AddMatrixEntry(i, Kathode, -1);
+            equationSystem.AddMatrixEntry(additionalVariable, Anode, 1);
+            equationSystem.AddMatrixEntry(additionalVariable, Kathode, -1);
 
-            equationSystem.AddMatrixEntry(Anode, i, 1);
-            equationSystem.AddMatrixEntry(Kathode, i, -1);
+            equationSystem.AddMatrixEntry(Anode, additionalVariable, 1);
+            equationSystem.AddMatrixEntry(Kathode, additionalVariable, -1);
 
-            equationSystem.AddRightHandSideEntry(i, Voltage);
+            equationSystem.AddRightHandSideEntry(additionalVariable, Voltage);
         }
     }
 }

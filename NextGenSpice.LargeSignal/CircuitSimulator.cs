@@ -17,10 +17,9 @@ namespace NextGenSpice.LargeSignal
             this.Model = model;
             context = new SimulationContext() { NodeVoltages = model.NodeVoltages };
         }
+        
 
-
-
-        private IEquationSystem equationSystem;
+        private EquationSystem equationSystem;
         private readonly SimulationContext context;
 
         public LargeSignalCircuitModel Model { get; }
@@ -34,10 +33,7 @@ namespace NextGenSpice.LargeSignal
 
         private void Initialize()
         {
-            foreach (var element in Model.Elements)
-            {
-                element.Initialize();
-            }
+            BuildEquationSystem();
         }
 
         private void BuildEquationSystem()
@@ -47,6 +43,12 @@ namespace NextGenSpice.LargeSignal
             {
                 b.AddVariable();
             }
+            
+            foreach (var element in Model.Elements)
+            {
+                element.Initialize(b);
+            }
+
             foreach (var circuitElement in Model.LinearElements)
             {
                 circuitElement.ApplyLinearModelValues(b, context);
@@ -66,7 +68,6 @@ namespace NextGenSpice.LargeSignal
             IterationCount = 0;
             DeltaSquared = 0;
 
-            BuildEquationSystem();
 
             Iterate();
 

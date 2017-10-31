@@ -8,7 +8,7 @@ namespace NextGenSpiceTest
    
     public class EquationSystemTests
     {
-        private readonly IEquationSystemBuilder builder;
+        private readonly EquationSystemBuilder builder;
 
         public EquationSystemTests()
         {
@@ -35,8 +35,9 @@ namespace NextGenSpiceTest
             builder.AddVariable();
             builder.AddVariable();
             builder.AddVariable();
+            builder.AddVariable();
 
-            Random r = new Random();
+            Random r = new Random(42);
 
             for (int i = 0; i < builder.VariablesCount; i++)
             {
@@ -55,7 +56,12 @@ namespace NextGenSpiceTest
 
             system.BindEquivalent(0, 1);
             var solution = system.Solve();
-            Assert.Equal(solution[0], solution[1]);
+            Assert.Equal(solution[0], solution[1], new DoubleComparer(double.Epsilon));
+
+            system.Clear();
+            system.BindEquivalent(1,2);
+            solution = system.Solve();
+            Assert.Equal(solution[2], solution[1], new DoubleComparer(double.Epsilon));
         }
 
         [Fact]

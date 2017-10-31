@@ -1,12 +1,14 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using NextGenSpice.Core.Helpers;
 
 namespace NextGenSpice.Core.Equations
 {
     public class EquationSystemBuilder : IEquationSystemBuilder
     {
-        private List<List<double>> matrix;
-        List<double> rhs;
+        private readonly List<List<double>> matrix;
+        readonly List<double> rhs;
         private ISet<ISet<int>> equivalences;
 
         public EquationSystemBuilder()
@@ -42,8 +44,8 @@ namespace NextGenSpice.Core.Equations
         {
             rhs[index] += value;
         }
-        
-        public IEquationSystem Build()
+       
+        public EquationSystem Build()
         {
             Array2DWrapper m = new Array2DWrapper(VariablesCount);
 

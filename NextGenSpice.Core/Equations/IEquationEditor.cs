@@ -1,4 +1,6 @@
-﻿namespace NextGenSpice.Core.Equations
+﻿using System.Collections.Generic;
+
+namespace NextGenSpice.Core.Equations
 {
     public interface IEquationEditor
     {

@@ -64,25 +64,25 @@ namespace NextGenSpice.Core.Equations
             var b = (double[])rhs.Clone();
             
             EnforceBoundNodeEquivalence(m, b);
-
             EnforceGroundHasZeroVoltage(m, b);
+
             NumericMethods.GaussElimSolve(m, b, Solution);
 
-            DistributeEquivalentVoltages(m);
+            //DistributeEquivalentVoltages(m);
             return Solution;
         }
 
-        private void DistributeEquivalentVoltages(Array2DWrapper m)
-        {
-            foreach (var grp in equivalences)
-            {
-                var representative = grp.First();
-                foreach (var other in grp.Skip(1))
-                {
-                    Solution[other] = Solution[representative];
-                }
-            }
-        }
+//        private void DistributeEquivalentVoltages(Array2DWrapper m)
+//        {
+//            foreach (var grp in equivalences)
+//            {
+//                var representative = grp.First();
+//                foreach (var other in grp.Skip(1))
+//                {
+//                    Solution[other] = Solution[representative];
+//                }
+//            }
+//        }
 
         private void EnforceBoundNodeEquivalence(Array2DWrapper m, double[] b)
         {
@@ -91,6 +91,7 @@ namespace NextGenSpice.Core.Equations
                 var representative = grp.First();
                 foreach (var other in grp.Skip(1))
                 {
+
                     b[representative] += b[other];
                     b[other] = 0;
                     for (int i = 0; i < m.SideLength; i++)
@@ -101,11 +102,13 @@ namespace NextGenSpice.Core.Equations
 
                         m[other, i] = 0;
                         m[i, other] = 0;
-
-                        // force equality
-                        m[representative, other] = 1;
-                        m[other, other] = -1;
                     }
+
+                    // force equality
+                    m[other, representative] = 1;
+                    m[representative,representative] += m[representative, other];
+                    m[representative, other] = 0;
+                    m[other, other] = -1;
                 }
             }
         }

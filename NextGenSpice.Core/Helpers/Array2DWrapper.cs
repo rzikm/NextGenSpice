@@ -13,10 +13,10 @@ namespace NextGenSpice.Core.Helpers
         public int SideLength => size;
         public double[] RawData => values;
 
-        public double this[int i, int j]
+        public double this[int row, int col]
         {
-            get => values[i * size + j];
-            set => values[i * size + j] = value;
+            get => values[row * size + col];
+            set => values[row * size + col] = value;
         }
 
         public Array2DWrapper Clone()

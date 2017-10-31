@@ -9,7 +9,7 @@ namespace NextGenSpiceTest.Misc
         protected delegate void DllCallback();
 
         private qd_real[,] matrix;
-        private qd_real[,] matrix2;
+        private readonly qd_real[,] matrix2;
         private long i = 0;
 
         public TestBaseQD(int size)

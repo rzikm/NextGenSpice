@@ -11,11 +11,6 @@ namespace NextGenSpiceTest
    
     public class CircuitCalculationTests
     {
-        public CircuitCalculationTests()
-        {
-            //ElectricCircuitDefinition.SetGlobalFactory(new largefa);
-        }
-
         private static void PrintStats(CircuitSimulator sim)
         {
             Console.WriteLine($"Iterations: {sim.IterationCount}");

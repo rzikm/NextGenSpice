@@ -23,13 +23,16 @@ namespace NextGenSpice.LargeSignal.Models
         private readonly ResistorElement fakeRezistor;
         private readonly CurrentSourceElement fakeCurrent;
 
-        public void Initialize()
+        public override void Initialize(IEquationSystemBuilder builder)
         {
             fakeRezistor.Anode = Parent.Anode;
             fakeRezistor.Kathode = Parent.Kathode;
             
             fakeCurrent.Anode = Parent.Anode;
             fakeCurrent.Kathode = Parent.Kathode;
+
+            iEq.Initialize(builder);
+            rEq.Initialize(builder);
         }
 
         public void UpdateTimeDependentModel(SimulationContext context)

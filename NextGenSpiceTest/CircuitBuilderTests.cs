@@ -9,7 +9,7 @@ namespace NextGenSpiceTest
    
     public class CircuitBuilderTests
     {
-        private CircuitBuilder builder;
+        private readonly CircuitBuilder builder;
 
 
         public CircuitBuilderTests()
