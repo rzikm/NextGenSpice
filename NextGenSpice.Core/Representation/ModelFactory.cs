@@ -4,16 +4,6 @@ using NextGenSpice.Core.Elements;
 
 namespace NextGenSpice.Core.Representation
 {
-    public abstract class ModelFactoryBase 
-    {
-        protected ModelFactoryBase(Type analysisModelType)
-        {
-            AnalysisModelType = analysisModelType;
-        }
-
-        public Type AnalysisModelType { get; }
-    }
-
     public abstract class ModelFactory<TAnalysis> : ModelFactoryBase, IAnalysisModelFactory<TAnalysis>
     {
         private readonly Dictionary<Type, Func<ICircuitDefinitionElement, IAnalysisDeviceModel<TAnalysis>>>

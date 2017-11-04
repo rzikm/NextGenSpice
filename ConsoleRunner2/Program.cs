@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -16,7 +17,7 @@ namespace ConsoleRunner2
         static void Main(string[] args)
         {
 
-            var files = Directory.GetFiles(projectPath, "*.cs", SearchOption.AllDirectories).GroupBy(GetProjectName);
+            var files = Directory.GetFiles(projectPath, "*.cs", SearchOption.AllDirectories).Concat(Directory.GetFiles(projectPath, "*.cpp", SearchOption.AllDirectories)).GroupBy(GetProjectName);
 
 
             long sizeTotal = 0;
@@ -24,7 +25,13 @@ namespace ConsoleRunner2
             foreach (var grp in files)
             {
                 long sizeGrp = 0;
-                foreach (var file in grp)
+                var group = (IEnumerable<string>) grp;
+
+                if (grp.Key == "NumericCore")
+                    group = grp.Where(name => !name.Contains("src")); // ignore qd library
+
+
+                foreach (var file in group)
                 {
                     FileInfo info = new FileInfo(file);
                     sizeGrp += info.Length;

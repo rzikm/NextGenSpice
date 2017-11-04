@@ -6,46 +6,28 @@ namespace NextGenSpice.LargeSignal.Models
 {
     public class LargeSignalCapacitorModel : TwoNodeLargeSignalModel<CapacitorElement>, ITimeDependentLargeSignalDeviceModel
     {
-        private double Vc;
+        private double vc;
+        private double gEq;
+        private double iEq;
 
         public LargeSignalCapacitorModel(CapacitorElement parent) : base(parent)
         {
-            fakeRezistor = new ResistorElement(Double.PositiveInfinity);
-            fakeCurrent = new CurrentSourceElement(parent.InitialCurrent);
-
-            rEq = new LargeSignalResistorModel(fakeRezistor);
-            iEq = new LargeSignalCurrentSourceModel(fakeCurrent);
-        }
-
-        private readonly LargeSignalResistorModel rEq;
-        private readonly LargeSignalCurrentSourceModel iEq;
-
-        private readonly ResistorElement fakeRezistor;
-        private readonly CurrentSourceElement fakeCurrent;
-
-        public override void Initialize(IEquationSystemBuilder builder)
-        {
-            fakeRezistor.Anode = Parent.Anode;
-            fakeRezistor.Kathode = Parent.Kathode;
-            
-            fakeCurrent.Anode = Parent.Anode;
-            fakeCurrent.Kathode = Parent.Kathode;
-
-            iEq.Initialize(builder);
-            rEq.Initialize(builder);
+            gEq = 0;
+            iEq = parent.InitialCurrent;
         }
 
         public void UpdateTimeDependentModel(SimulationContext context)
         {
-            fakeRezistor.Resistance = context.Timestep / Parent.Capacity;
-            fakeCurrent.Current = Parent.Capacity / context.Timestep * Vc;
-            Vc = context.NodeVoltages[Parent.Anode] - context.NodeVoltages[Parent.Kathode];
+            gEq = Parent.Capacity / context.Timestep;
+            iEq = gEq * vc;
+            vc = context.NodeVoltages[Parent.Anode] - context.NodeVoltages[Parent.Kathode];
         }
 
-        public void ApplyTimeDependentModelValues(IEquationSystem equationSystem, SimulationContext context)
+        public void ApplyTimeDependentModelValues(IEquationSystem equation, SimulationContext context)
         {
-            rEq.ApplyLinearModelValues(equationSystem, context);
-            iEq.ApplyLinearModelValues(equationSystem, context);
+            equation
+                .AddConductance(Anode, Kathode, gEq)
+                .AddCurrent(Anode, Kathode, iEq);
         }
     }
 }

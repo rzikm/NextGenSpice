@@ -7,6 +7,6 @@ namespace NextGenSpice.LargeSignal.Models
     {
         void UpdateTimeDependentModel(SimulationContext context);
 
-        void ApplyTimeDependentModelValues(IEquationSystem equationSystem, SimulationContext context);
+        void ApplyTimeDependentModelValues(IEquationSystem equation, SimulationContext context);
     }
 }

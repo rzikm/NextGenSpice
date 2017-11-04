@@ -18,15 +18,9 @@ namespace NextGenSpice.LargeSignal.Models
             additionalVariable = builder.AddVariable();
         }
 
-        public void ApplyLinearModelValues(IEquationEditor equationSystem, SimulationContext context)
+        public void ApplyLinearModelValues(IEquationEditor equation, SimulationContext context)
         {
-            equationSystem.AddMatrixEntry(additionalVariable, Anode, 1);
-            equationSystem.AddMatrixEntry(additionalVariable, Kathode, -1);
-
-            equationSystem.AddMatrixEntry(Anode, additionalVariable, 1);
-            equationSystem.AddMatrixEntry(Kathode, additionalVariable, -1);
-
-            equationSystem.AddRightHandSideEntry(additionalVariable, Voltage);
+            equation.AddVoltage(Anode, Kathode, additionalVariable, Voltage);
         }
     }
 }

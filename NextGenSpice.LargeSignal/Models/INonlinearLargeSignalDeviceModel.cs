@@ -7,6 +7,6 @@ namespace NextGenSpice.LargeSignal.Models
     {
         void UpdateNonlinearModel(SimulationContext context);
 
-        void ApplyNonlinearModelValues(IEquationSystem equationSystem, SimulationContext context);
+        void ApplyNonlinearModelValues(IEquationSystem equation, SimulationContext context);
     }
 }

@@ -11,10 +11,9 @@ namespace NextGenSpice.LargeSignal.Models
         {
         }
         
-        public void ApplyLinearModelValues(IEquationEditor equationSystem, SimulationContext context)
+        public void ApplyLinearModelValues(IEquationEditor equation, SimulationContext context)
         {
-            equationSystem.AddRightHandSideEntry(Anode, Current);
-            equationSystem.AddRightHandSideEntry(Kathode, -Current);
+            equation.AddCurrent(Anode, Kathode, Current);
         }
     }
 }

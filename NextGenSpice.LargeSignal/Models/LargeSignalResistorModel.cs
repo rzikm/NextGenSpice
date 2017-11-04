@@ -11,37 +11,9 @@ namespace NextGenSpice.LargeSignal.Models
         {
         }
 
-        public void ApplyLinearModelValues(IEquationEditor equationSystem, SimulationContext context)
+        public void ApplyLinearModelValues(IEquationEditor equation, SimulationContext context)
         {
-            equationSystem.AddMatrixEntry(Kathode, Anode, -1 / Resistance);
-            equationSystem.AddMatrixEntry(Anode, Kathode, -1 / Resistance);
-            equationSystem.AddMatrixEntry(Anode, Anode, 1 / Resistance);
-            equationSystem.AddMatrixEntry(Kathode, Kathode, 1 / Resistance);
-        }
-    }
-
-    public abstract class TwoNodeLargeSignalModel<TDefinitionElement> : LargeSignalModelBase<TDefinitionElement> where TDefinitionElement : TwoNodeCircuitElement
-    {
-        public int Anode => Parent.ConnectedNodes[0];
-
-        public int Kathode => Parent.ConnectedNodes[1];
-
-        protected TwoNodeLargeSignalModel(TDefinitionElement parent) : base(parent)
-        {
-        }
-    }
-
-    public abstract class LargeSignalModelBase<TDefinitionElement> : ILargeSignalDeviceModel where TDefinitionElement : ICircuitDefinitionElement
-    {
-        protected LargeSignalModelBase(TDefinitionElement parent)
-        {
-            Parent = parent;
-        }
-
-        protected TDefinitionElement Parent { get; }
-
-        public virtual void Initialize(IEquationSystemBuilder builder)
-        {
+            equation.AddConductance(Anode, Kathode, 1 / Resistance);
         }
     }
 }
