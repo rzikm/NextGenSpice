@@ -2,7 +2,7 @@
 
 namespace NextGenSpice.Core.Representation
 {
-    public interface IAnalysisModel<TElement>
+    public interface IAnalysisCircuitModel<TElement>
     {
         IReadOnlyList<TElement> Elements { get; }
     }

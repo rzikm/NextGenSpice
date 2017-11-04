@@ -44,21 +44,30 @@ namespace NextGenSpice.Core.Representation
             }
 
 
-            var assemblies = Directory
-                .GetFiles(Path.GetDirectoryName(typeof(ElectricCircuitDefinition).Assembly.Location), "*.dll", SearchOption.AllDirectories)
-                .Select(AssemblyLoadContext.Default.LoadFromAssemblyPath)
-                .ToList();
-                
-            // TODO: Optimize? remember resolved dependency?
-
-            var configuration = new ContainerConfiguration().WithAssemblies(assemblies);
-            using (var container = configuration.CreateContainer())
+            using (var container = GetCompositionContainer<TAnalysisModel>())
             {
                 if (container.TryGetExport<IAnalysisModelFactory<TAnalysisModel>>(out var export))
+                {
+                    factories[typeof(TAnalysisModel)] = export;
                     return export;
+                }
             }
 
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"No Factory for '{typeof(TAnalysisModel).FullName}' was found");
+        }
+
+        private static CompositionHost GetCompositionContainer<TAnalysisModel>()
+        {
+            var assemblies = Directory
+                .GetFiles(Path.GetDirectoryName(typeof(ElectricCircuitDefinition).Assembly.Location), "*.dll",
+                    SearchOption.AllDirectories)
+                .Select(AssemblyLoadContext.Default.LoadFromAssemblyPath)
+                .ToList();
+
+
+            var configuration = new ContainerConfiguration().WithAssemblies(assemblies);
+            var compositionHost = configuration.CreateContainer();
+            return compositionHost;
         }
     }
 }

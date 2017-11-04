@@ -41,7 +41,7 @@ namespace NextGenSpice.Core.Extensions
 
         public static CircuitBuilder AddDiode(this CircuitBuilder builder, Action<DiodeModelParams> config, int n1, int n2)
         {
-            var param = new DiodeModelParams();
+            var param = DiodeModelParams.Default;
             config(param);
             builder.AddElement(new DiodeElement(param), new[] { n1, n2 });
             return builder;

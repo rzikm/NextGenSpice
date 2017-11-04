@@ -36,7 +36,7 @@ namespace NextGenSpiceTest
         {
             Assert.Equal(0, builder.NodeCount);
 
-            builder.AddDiode(new DiodeModelParams(), 5, 0);
+            builder.AddDiode(DiodeModelParams.Default, 5, 0);
             Assert.Equal(6, builder.NodeCount);
 
 
@@ -55,7 +55,7 @@ namespace NextGenSpiceTest
         [Fact]
         public void TestThrowOnNegativeNodeOrVoltage()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => builder.AddDiode(new DiodeModelParams(), -2, 0));
+            Assert.Throws<ArgumentOutOfRangeException>(() => builder.AddDiode(DiodeModelParams.Default, -2, 0));
             Assert.Throws<ArgumentOutOfRangeException>(() => builder.SetNodeVoltage(1, -2));
         }
     }

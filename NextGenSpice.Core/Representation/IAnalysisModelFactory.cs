@@ -3,7 +3,7 @@ using NextGenSpice.Core.Elements;
 
 namespace NextGenSpice.Core.Representation
 {
-    public interface IAnalysisModelFactory<TAnalysisModel> : IAnalysisModelFactory
+    public interface IAnalysisModelFactory<TAnalysisModel>
     {
         TAnalysisModel Create(ICircuitDefinition circuitDefinition);
 
@@ -13,10 +13,5 @@ namespace NextGenSpice.Core.Representation
         void SetModel<TRepresentation, TModel>(Func<TRepresentation, TModel> factoryFunc)
             where TRepresentation : ICircuitDefinitionElement
             where TModel : IAnalysisDeviceModel<TAnalysisModel>;
-    }
-
-    public interface IAnalysisModelFactory
-    {
-        Type AnalysisModelType { get; }
     }
 }

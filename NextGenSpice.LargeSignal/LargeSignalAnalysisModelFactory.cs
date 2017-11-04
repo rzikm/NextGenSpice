@@ -7,9 +7,9 @@ using NextGenSpice.LargeSignal.Models;
 namespace NextGenSpice.LargeSignal
 {
     [Export(typeof(IAnalysisModelFactory<LargeSignalCircuitModel>))]
-    public class LargeSignalModelFactory : ModelFactory<LargeSignalCircuitModel>
+    public class LargeSignalAnalysisModelFactory : AnalysisModelFactory<LargeSignalCircuitModel>
     {
-        public LargeSignalModelFactory()
+        public LargeSignalAnalysisModelFactory()
         {
             RegisterDefaultModels();
         }
