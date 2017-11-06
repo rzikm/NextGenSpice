@@ -18,15 +18,15 @@ namespace NextGenSpiceTest
             this.output = output;
         }
 
-        private void PrintStats(LargeSignalCircuitModel sim)
+        private void PrintStats(LargeSignalCircuitModel model)
         {
             
-            output.WriteLine($"Iterations: {sim.IterationCount}");
-            output.WriteLine($"Delta^2: {sim.DeltaSquared}");
+            output.WriteLine($"Iterations: {model.IterationCount}");
+            output.WriteLine($"Delta^2: {model.DeltaSquared}");
             output.WriteLine("Voltages:");
-            for (var id = 0; id < sim.NodeVoltages.Length; id++)
+            for (var id = 0; id < model.NodeVoltages.Length; id++)
             {
-                output.WriteLine($"[{id}]:\t{sim.NodeVoltages[id]}");
+                output.WriteLine($"[{id}]:\t{model.NodeVoltages[id]}");
             }
             output.WriteLine("");
         }
@@ -35,12 +35,12 @@ namespace NextGenSpiceTest
         public void TestLinearCircuit()
         {
             var circuit = CircuitGenerator.GetLinearCircuit();
-            var sim = circuit.GetModel<LargeSignalCircuitModel>();
-            sim.EstablishDcBias();
+            var model = circuit.GetModel<LargeSignalCircuitModel>();
+            model.EstablishDcBias();
 
-            PrintStats(sim);
+            PrintStats(model);
 
-            Assert.Equal(new double[4] { 0, 33, 18, 12 }, sim.NodeVoltages,
+            Assert.Equal(new double[4] { 0, 33, 18, 12 }, model.NodeVoltages,
                 new DoubleComparer(1e-10));
         }
 
@@ -49,12 +49,12 @@ namespace NextGenSpiceTest
         {
             var circuit = CircuitGenerator.GetNonlinearCircuit();
 
-            var sim = circuit.GetModel<LargeSignalCircuitModel>();
-            sim.EstablishDcBias();
-            PrintStats(sim);
+            var model = circuit.GetModel<LargeSignalCircuitModel>();
+            model.EstablishDcBias();
+            PrintStats(model);
 
             Assert.Equal(new double[] { 0, 9.90804734507935, 0.712781853012352 },
-                sim.NodeVoltages, new DoubleComparer(1e-10));
+                model.NodeVoltages, new DoubleComparer(1e-10));
         }
 
         [Fact]
@@ -62,46 +62,46 @@ namespace NextGenSpiceTest
         {
             var circuit = CircuitGenerator.GetCircuitWithVoltageSource();
 
-            var sim = circuit.GetModel<LargeSignalCircuitModel>();
-            sim.EstablishDcBias();
-            PrintStats(sim);
+            var model = circuit.GetModel<LargeSignalCircuitModel>();
+            model.EstablishDcBias();
+            PrintStats(model);
 
             Assert.Equal(new double[] { 0, 5, 3 },
-                sim.NodeVoltages, new DoubleComparer(1e-10));
+                model.NodeVoltages, new DoubleComparer(1e-10));
         }
 
         [Fact]
         public void TestCapacitorAsOpenCircuit()
         {
-            LargeSignalCircuitModel sim;
+            LargeSignalCircuitModel model;
 
             Console.WriteLine("With capacitor:");
             {
                 var circuit = new CircuitBuilder()
-                    .AddVoltageSource(5, 1, 0)
-                    .AddResistor(2, 1, 0)
-                    .AddResistor(5, 2, 0)
-                    .AddCapacitor(1, 1, 2).Build();
+                    .AddVoltageSource(1, 0, 5)
+                    .AddResistor(1, 0, 2)
+                    .AddResistor(2, 0, 5)
+                    .AddCapacitor(1, 2, 1).Build();
                 Assert.Equal(3, circuit.NodeCount);
-                sim = circuit.GetModel<LargeSignalCircuitModel>();
+                model = circuit.GetModel<LargeSignalCircuitModel>();
             }
-            sim.EstablishDcBias();
-            PrintStats(sim);
+            model.EstablishDcBias();
+            PrintStats(model);
 
-            var withCapacitorVoltages = sim.NodeVoltages.ToArray();
+            var withCapacitorVoltages = model.NodeVoltages.ToArray();
 
             Console.WriteLine("\nWithout capacitor:");
             {
                 var circuit = new CircuitBuilder()
-                    .AddVoltageSource(5, 1, 0)
-                    .AddResistor(2, 1, 0)
-                    .AddResistor(5, 2, 0).Build();
-                sim = circuit.GetModel<LargeSignalCircuitModel>();
+                    .AddVoltageSource(1, 0, 5)
+                    .AddResistor(1, 0, 2)
+                    .AddResistor(2, 0, 5).Build();
+                model = circuit.GetModel<LargeSignalCircuitModel>();
             }
-            sim.EstablishDcBias();
-            PrintStats(sim);
+            model.EstablishDcBias();
+            PrintStats(model);
 
-            var withoutCapacitorVoltages = sim.NodeVoltages.ToArray();
+            var withoutCapacitorVoltages = model.NodeVoltages.ToArray();
 
             Assert.Equal(withoutCapacitorVoltages, withCapacitorVoltages, new DoubleComparer(1e-10));
         }
@@ -109,36 +109,48 @@ namespace NextGenSpiceTest
         [Fact]
         public void TestInductorAsShortCircuit()
         {
-            LargeSignalCircuitModel sim;
+            LargeSignalCircuitModel model;
             Console.WriteLine("With inductor:");
             {
                 var circuit = new CircuitBuilder()
-                    .AddVoltageSource(5, 1, 0)
-                    .AddResistor(2, 1, 0)
-                    .AddResistor(5, 2, 0)
-                    .AddInductor(1, 1, 2).Build();
-                sim = circuit.GetModel<LargeSignalCircuitModel>();
+                    .AddVoltageSource(1, 0, 5)
+                    .AddResistor(1, 0, 2)
+                    .AddResistor(2, 0, 5)
+                    .AddInductor(1, 2, 1).Build();
+                model = circuit.GetModel<LargeSignalCircuitModel>();
             }
-            sim.EstablishDcBias();
-            PrintStats(sim);
+            model.EstablishDcBias();
+            PrintStats(model);
 
-            var withInductorVoltages = sim.NodeVoltages.ToArray();
+            var withInductorVoltages = model.NodeVoltages.ToArray();
 
             Console.WriteLine("\nWithout inductor:");
             {
                 var circuit = new CircuitBuilder()
-                    .AddVoltageSource(5, 1, 0)
-                    .AddResistor(2, 1, 0)
-                    .AddResistor(5, 1, 0).Build();
-                sim = circuit.GetModel<LargeSignalCircuitModel>();
+                    .AddVoltageSource(1, 0, 5)
+                    .AddResistor(1, 0, 2)
+                    .AddResistor(1, 0, 5).Build();
+                model = circuit.GetModel<LargeSignalCircuitModel>();
             }
-            sim.EstablishDcBias();
-            PrintStats(sim);
+            model.EstablishDcBias();
+            PrintStats(model);
 
-            var withoutInductorVoltages = sim.NodeVoltages.ToList();
+            var withoutInductorVoltages = model.NodeVoltages.ToList();
             withoutInductorVoltages.Insert(1, withoutInductorVoltages[1]);
 
             Assert.Equal(withoutInductorVoltages, withInductorVoltages, new DoubleComparer(1e-10));
+        }
+
+        [Fact]
+        public void ThrowsWhenCannotConverge()
+        {
+            var circuit = CircuitGenerator.GetNonlinearCircuit();
+
+            var model = circuit.GetModel<LargeSignalCircuitModel>();
+            model.MaxDcPointIterations = 100;
+
+            Assert.Throws<NonConvergenceException>(() => model.EstablishDcBias());
+            PrintStats(model);
         }
     }
 }

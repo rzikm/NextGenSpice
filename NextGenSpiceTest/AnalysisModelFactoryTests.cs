@@ -107,7 +107,7 @@ namespace NextGenSpiceTest
         [Fact]
         public void CanRegisterNewDevice()
         {
-            var circuitDef = new CircuitBuilder().AddElement(new TestDeviceDefinition(), new[] { 0, 1 }).AddElement(new TestDeviceDefinition(), new[] { 1, 0 }).Build();
+            var circuitDef = new CircuitBuilder().AddElement(new[] { 0, 1 }, new TestDeviceDefinition()).AddElement(new[] { 1, 0 }, new TestDeviceDefinition()).Build();
 
             circuitDef.SetFactory(new MyPrivateFactory());
             circuitDef.GetFactory<TestAnalysisCircuitModel>().SetModel<TestDeviceDefinition, TestDeviceModel>();
@@ -118,7 +118,7 @@ namespace NextGenSpiceTest
         [Fact]
         public void CanRegisterNewDeviceAsSingleton()
         {
-            var circuitDef = new CircuitBuilder().AddElement(new TestDeviceDefinition(), new[] { 0, 1 }).AddElement(new TestDeviceDefinition(), new[] { 1, 0 }).Build();
+            var circuitDef = new CircuitBuilder().AddElement(new[] { 0, 1 }, new TestDeviceDefinition()).AddElement(new[] { 1, 0 }, new TestDeviceDefinition()).Build();
             circuitDef.SetFactory(new MyPrivateFactory());
 
             var model = new TestDeviceModel();
@@ -132,7 +132,7 @@ namespace NextGenSpiceTest
         [Fact]
         public void ThrowsWhenNoModelCreatorExists()
         {
-            var circuitDef = new CircuitBuilder().AddElement(new TestDeviceDefinition(), new[] { 0, 1 }).AddElement(new TestDeviceDefinition(), new[] { 1, 0 }).Build();
+            var circuitDef = new CircuitBuilder().AddElement(new[] { 0, 1 }, new TestDeviceDefinition()).AddElement(new[] { 1, 0 }, new TestDeviceDefinition()).Build();
             Assert.Throws<InvalidOperationException>(() => circuitDef.GetModel<LargeSignalCircuitModel>());
         }
 

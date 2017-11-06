@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.Representation;
@@ -28,7 +29,9 @@ namespace NextGenSpice.LargeSignal
         public IReadOnlyList<ILargeSignalDeviceModel> Elements { get; }
 
         public double Epsilon { get; } = 1e-15;
-        public int MaxDcPointIterations { get; } = 1000;
+        public int MaxDcPointIterations { get; set; } = 1000;
+
+        public double MaxTimeStepMilliseconds { get; set; } = 0.001;
 
         public int IterationCount { get; private set; }
         public double DeltaSquared { get; private set; }
@@ -38,7 +41,7 @@ namespace NextGenSpice.LargeSignal
 
         public void Simulate(Action<double[]> callback)
         {
-            Initialize();
+            EnsureInitialized();
 
             while (true)
             {
@@ -48,8 +51,33 @@ namespace NextGenSpice.LargeSignal
             }
         }
 
-        private void Initialize()
+        private void AdvanceInTime(double milliseconds)
         {
+            if (milliseconds < 0) throw new ArgumentOutOfRangeException(nameof(milliseconds));
+
+            while (milliseconds > 0)
+            {
+                var step = Math.Min(MaxTimeStepMilliseconds, milliseconds);
+                milliseconds -= step;
+
+                AdvanceInTime_Internal(step);
+            }
+        }
+
+        private void AdvanceInTime_Internal(double step)
+        {
+            context.Timestep = step;
+
+            UpdateTimeDependentElements();
+            EstablishDcBias_Internal();
+
+            context.Time += step;
+        }
+
+        private void EnsureInitialized()
+        {
+            if (context != null) return;
+
             BuildEquationSystem();
             context = new SimulationContext()
             {
@@ -80,11 +108,17 @@ namespace NextGenSpice.LargeSignal
 
         public void EstablishDcBias()
         {
-            Initialize();
-            EstablishDcBias_Internal();
+            EnsureInitialized();
+
+            // TODO: really reinitialize?
+            context.Timestep = 0;
+            context.Time = 0;
+
+            if (!EstablishDcBias_Internal())
+                throw new NonConvergenceException();
         }
 
-        private void EstablishDcBias_Internal()
+        private bool EstablishDcBias_Internal()
         {
             IterationCount = 0;
             DeltaSquared = 0;
@@ -92,13 +126,10 @@ namespace NextGenSpice.LargeSignal
 
             Iterate_DcBias();
 
-            if (!IsLinear)
-            {
-                IterateUntilConvergence();
-            }
+            return IsLinear || IterateUntilConvergence();
         }
 
-        private void IterateUntilConvergence()
+        private bool IterateUntilConvergence()
         {
             double delta;
             do
@@ -114,11 +145,12 @@ namespace NextGenSpice.LargeSignal
                     delta += d * d;
                 }
 
-                if (++IterationCount == MaxDcPointIterations) break;
+                if (++IterationCount == MaxDcPointIterations) return false;
 
             } while (delta > Epsilon * Epsilon);
 
             DeltaSquared = delta;
+            return true;
         }
 
         private void Iterate_DcBias()
@@ -177,9 +209,52 @@ namespace NextGenSpice.LargeSignal
         {
             foreach (var element in TimeDependentElements)
             {
-                element.UpdateTimeDependentModel(context);
+                element.AdvanceTimeDependentModel(context);
             }
         }
+    }
 
+    [Serializable]
+    public class SimulationException : Exception
+    {
+        public SimulationException()
+        {
+        }
+
+        public SimulationException(string message) : base(message)
+        {
+        }
+
+        public SimulationException(string message, Exception inner) : base(message, inner)
+        {
+        }
+
+        protected SimulationException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
+        }
+    }
+
+    [Serializable]
+    public class NonConvergenceException : SimulationException
+    {
+        public NonConvergenceException()
+        {
+        }
+
+        public NonConvergenceException(string message) : base(message)
+        {
+        }
+
+        public NonConvergenceException(string message, Exception inner) : base(message, inner)
+        {
+        }
+
+        protected NonConvergenceException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
+        }
     }
 }

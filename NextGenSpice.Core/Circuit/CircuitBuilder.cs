@@ -37,7 +37,7 @@ namespace NextGenSpice.Core.Circuit
                 nodes.Add(0);
             }
         }
-        public CircuitBuilder AddElement(ICircuitDefinitionElement element, int[] nodeConnections)
+        public CircuitBuilder AddElement(int[] nodeConnections, ICircuitDefinitionElement element)
         {
             if (element.ConnectedNodes.Count != nodeConnections.Length)
                 throw new ArgumentException("Wrong number of connections");

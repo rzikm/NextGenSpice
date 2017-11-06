@@ -20,13 +20,13 @@ namespace NextGenSpiceTest
         [Fact]
         public void TestThrowsWhenNodeIsNotConnectedToGround()
         {
-            builder.AddResistor(1, 1, 0);
-            builder.AddResistor(2, 1, 2);
-            builder.AddResistor(3, 0, 2);
-            builder.AddCurrentSource(5, 1, 0);
+            builder.AddResistor(1, 0, 1);
+            builder.AddResistor(1, 2, 2);
+            builder.AddResistor(0, 2, 3);
+            builder.AddCurrentSource(1, 0, 5);
 
             // add element 'far away'
-            builder.AddResistor(3, 3, 4);
+            builder.AddResistor(3, 4, 3);
 
             Assert.Throws<InvalidOperationException>(() => builder.Build());
         }
@@ -36,7 +36,7 @@ namespace NextGenSpiceTest
         {
             Assert.Equal(0, builder.NodeCount);
 
-            builder.AddDiode(DiodeModelParams.Default, 5, 0);
+            builder.AddDiode(0, 5, DiodeModelParams.Default);
             Assert.Equal(6, builder.NodeCount);
 
 
@@ -47,15 +47,15 @@ namespace NextGenSpiceTest
         [Fact]
         public void TestThrowOnInvalidNumberOfConnections()
         {
-            Assert.Throws<ArgumentException>(() => builder.AddElement(new ResistorElement(3), new[] { 1 }));
-            Assert.Throws<ArgumentException>(() => builder.AddElement(new ResistorElement(3), new[] { 1, 2, 3 }));
+            Assert.Throws<ArgumentException>(() => builder.AddElement(new[] { 1 }, new ResistorElement(3)));
+            Assert.Throws<ArgumentException>(() => builder.AddElement(new[] { 1, 2, 3 }, new ResistorElement(3)));
         }
 
 
         [Fact]
         public void TestThrowOnNegativeNodeOrVoltage()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => builder.AddDiode(DiodeModelParams.Default, -2, 0));
+            Assert.Throws<ArgumentOutOfRangeException>(() => builder.AddDiode(0, -2, DiodeModelParams.Default));
             Assert.Throws<ArgumentOutOfRangeException>(() => builder.SetNodeVoltage(1, -2));
         }
     }
