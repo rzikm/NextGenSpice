@@ -26,7 +26,7 @@ namespace NextGenSpice.LargeSignal.Models
 
         public void UpdateNonlinearModel(SimulationContext context)
         {
-            Vd = context.NodeVoltages[Parent.Anode] - context.NodeVoltages[Parent.Kathode];
+            Vd = context.EquationSolution[Parent.Anode] - context.EquationSolution[Parent.Kathode];
             RecomputeLinearCircuit();
         }
 

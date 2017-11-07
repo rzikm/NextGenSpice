@@ -9,11 +9,11 @@ namespace NextGenSpice.LargeSignal.Models
     {
         private struct InductorState
         {
-            public double Vc;
             public double VEq;
-            public double GEq;
+            public double Il;
+            public double REq;
         }
-
+        
         private readonly StateHelper<InductorState> stateHelper;
 
         private ref InductorState State => ref stateHelper.Value;
@@ -23,8 +23,8 @@ namespace NextGenSpice.LargeSignal.Models
         public LargeSignalInductorModel(InductorElement parent) : base(parent)
         {
             stateHelper = new StateHelper<InductorState>();
-            State.GEq = double.PositiveInfinity;
-            State.VEq = parent.InitialVoltage;
+            State.REq = 0;
+            State.Il = parent.InitialCurrent;
         }
 
         public override void Initialize(IEquationSystemBuilder builder)
@@ -32,14 +32,15 @@ namespace NextGenSpice.LargeSignal.Models
             additionalVariable = builder.AddVariable();
             base.Initialize(builder);
         }
-        
+
         public void AdvanceTimeDependentModel(SimulationContext context)
         {
             stateHelper.Commit();
 
-            State.GEq = Parent.Inductance / context.Timestep;
-            State.VEq = State.GEq * State.Vc;
-            State.Vc = context.NodeVoltages[Parent.Anode] - context.NodeVoltages[Parent.Kathode];
+            var vl = context.EquationSolution[Anode] - context.EquationSolution[Kathode];
+            State.REq = Parent.Inductance / context.Timestep;
+            State.VEq = State.REq * State.Il;
+            State.Il = vl / State.REq;
         }
 
         public void RollbackTimeDependentModel()
@@ -49,17 +50,8 @@ namespace NextGenSpice.LargeSignal.Models
 
         public void ApplyTimeDependentModelValues(IEquationSystem equation, SimulationContext context)
         {
-            if (1/ State.GEq < double.Epsilon)
-            {
-                //TODO: Use different method of calculating?
-                 equation.BindEquivalent(Anode, Kathode);
-                return;
-            }
-
-            equation
-                .AddConductance(Anode, Kathode, State.GEq)
-                .AddVoltage(Anode, Kathode, additionalVariable, State.VEq);
-            
+            equation.AddVoltage(Anode, Kathode, additionalVariable, State.VEq);
+            equation.AddMatrixEntry(additionalVariable, additionalVariable, -State.REq);
         }
     }
 }

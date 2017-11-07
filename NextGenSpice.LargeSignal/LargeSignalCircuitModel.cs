@@ -31,7 +31,7 @@ namespace NextGenSpice.LargeSignal
         public double Epsilon { get; } = 1e-15;
         public int MaxDcPointIterations { get; set; } = 1000;
 
-        public double MaxTimeStepMilliseconds { get; set; } = 0.001;
+        public double MaxTimeStepMilliseconds { get; set; } = 0.5;
 
         public int IterationCount { get; private set; }
         public double DeltaSquared { get; private set; }
@@ -51,10 +51,10 @@ namespace NextGenSpice.LargeSignal
             }
         }
 
-        private void AdvanceInTime(double milliseconds)
+        public void AdvanceInTime(double milliseconds)
         {
             if (milliseconds < 0) throw new ArgumentOutOfRangeException(nameof(milliseconds));
-
+            EnsureInitialized();
             while (milliseconds > 0)
             {
                 var step = Math.Min(MaxTimeStepMilliseconds, milliseconds);
@@ -81,7 +81,7 @@ namespace NextGenSpice.LargeSignal
             BuildEquationSystem();
             context = new SimulationContext()
             {
-                NodeVoltages = NodeVoltages
+                EquationSolution = equationSystem.Solution
             };
         }
 

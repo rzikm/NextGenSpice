@@ -152,5 +152,18 @@ namespace NextGenSpiceTest
             Assert.Throws<NonConvergenceException>(() => model.EstablishDcBias());
             PrintStats(model);
         }
+
+        [Fact]
+        public void TestTimeSimulationDoesNotChangeResult()
+        {
+            var circuit = CircuitGenerator.GetSimpleCircuitWithInductor();
+
+            var model = circuit.GetLargeSignalModel();
+            model.EstablishDcBias();
+            var expected = model.NodeVoltages.ToArray();
+            model.AdvanceInTime(model.MaxTimeStepMilliseconds);
+
+            Assert.Equal(expected, model.NodeVoltages);
+        }
     }
 }

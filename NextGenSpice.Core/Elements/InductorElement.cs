@@ -3,13 +3,13 @@
     public class InductorElement : TwoNodeCircuitElement
     {
         public double Inductance { get; }
-        public double InitialVoltage { get; }
+        public double InitialCurrent { get; }
 
 
-        public InductorElement(double inductance, double initialVoltage = 0)
+        public InductorElement(double inductance, double initialCurrent = 0)
         {
             this.Inductance = inductance;
-            InitialVoltage = initialVoltage;
+            InitialCurrent = initialCurrent;
         }
     }
 }

@@ -12,14 +12,14 @@ namespace NextGenSpice.Core.Extensions
             return builder;
         }
 
-        public static CircuitBuilder AddInductor(this CircuitBuilder builder, int n1, int n2, double inductance, double initialVoltage = 0)
+        public static CircuitBuilder AddInductor(this CircuitBuilder builder, int n1, int n2, double inductance, double initialCurrent = 0)
         {
-            builder.AddElement(new[]{n1, n2}, new InductorElement(inductance, initialVoltage));
+            builder.AddElement(new[]{n1, n2}, new InductorElement(inductance, initialCurrent));
             return builder;
         }
-        public static CircuitBuilder AddCapacitor(this CircuitBuilder builder, int n1, int n2, double capacitance, double initialCurrent = 0)
+        public static CircuitBuilder AddCapacitor(this CircuitBuilder builder, int n1, int n2, double capacitance, double initialVoltage = 0)
         {
-            builder.AddElement(new[] { n1, n2 }, new CapacitorElement(capacitance, initialCurrent));
+            builder.AddElement(new[] { n1, n2 }, new CapacitorElement(capacitance, initialVoltage));
             return builder;
         }
         public static CircuitBuilder AddCurrentSource(this CircuitBuilder builder, int n1, int n2, double current)

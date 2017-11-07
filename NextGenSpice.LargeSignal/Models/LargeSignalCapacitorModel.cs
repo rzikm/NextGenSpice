@@ -21,7 +21,7 @@ namespace NextGenSpice.LargeSignal.Models
         {
             stateHelper = new StateHelper<CapacitorState>();
             State.GEq = 0;
-            State.IEq = parent.InitialCurrent;
+            State.IEq = parent.InitialVoltage;
         }
 
         public void AdvanceTimeDependentModel(SimulationContext context)
@@ -29,8 +29,8 @@ namespace NextGenSpice.LargeSignal.Models
             stateHelper.Commit();
 
             State.GEq = Parent.Capacity / context.Timestep;
-            State.IEq = State.GEq * State.Vc;
-            State.Vc = context.NodeVoltages[Parent.Anode] - context.NodeVoltages[Parent.Kathode];
+            var vc = context.EquationSolution[Parent.Kathode] - context.EquationSolution[Parent.Anode];
+            State.IEq = State.GEq * vc;
         }
 
         public void RollbackTimeDependentModel()
@@ -42,7 +42,7 @@ namespace NextGenSpice.LargeSignal.Models
         {
             equation
                 .AddConductance(Anode, Kathode, State.GEq)
-                .AddCurrent(Anode, Kathode, State.IEq);
+                .AddCurrent(Kathode, Anode, State.IEq);
         }
     }
 

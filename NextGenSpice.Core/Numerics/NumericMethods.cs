@@ -8,6 +8,7 @@ namespace NextGenSpice.Core.Numerics
         public static void PrintSystem(Array2DWrapper m, double[] b)
         {
             var size = m.SideLength;
+            Console.WriteLine("-----------------------------------------------------");
 
             for (int i = 0; i < size; i++)
             {
@@ -17,7 +18,7 @@ namespace NextGenSpice.Core.Numerics
                     Console.Write("\t");
                 }
 
-                Console.WriteLine(b[i]);
+                Console.WriteLine($"|\t{b[i]}");
             }
 
             Console.WriteLine("-----------------------------------------------------");

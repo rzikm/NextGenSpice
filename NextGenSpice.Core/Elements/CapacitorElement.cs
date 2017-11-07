@@ -3,12 +3,12 @@
     public class CapacitorElement : TwoNodeCircuitElement
     {
         public double Capacity { get; }
-        public double InitialCurrent { get; }
+        public double InitialVoltage { get; }
 
-        public CapacitorElement(double capacity, double initialCurrent = 0)
+        public CapacitorElement(double capacity, double initialVoltage = 0)
         {
             this.Capacity = capacity;
-            InitialCurrent = initialCurrent;
+            InitialVoltage = initialVoltage;
         }
     }
 }

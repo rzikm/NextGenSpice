@@ -59,7 +59,7 @@ namespace NextGenSpice.Core.Representation
         private static CompositionHost GetCompositionContainer<TAnalysisModel>()
         {
             var assemblies = Directory
-                .GetFiles(Path.GetDirectoryName(typeof(ElectricCircuitDefinition).Assembly.Location), "*.dll",
+                .GetFiles(Path.GetDirectoryName(typeof(ElectricCircuitDefinition).Assembly.Location), "NextGenSpice*.dll",
                     SearchOption.AllDirectories)
                 .Select(AssemblyLoadContext.Default.LoadFromAssemblyPath)
                 .ToList();
