@@ -30,8 +30,6 @@ namespace NextGenSpice.Core.Equations
         public void AddMatrixEntry(int row, int column, double value)
         {
             matrix[row, column] += value;
-            if (row != column)
-                matrix[column, row] += value;
         }
 
         public void AddRightHandSideEntry(int index, double value)
