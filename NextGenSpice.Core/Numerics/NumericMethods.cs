@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using NextGenSpice.Core.Helpers;
 
 namespace NextGenSpice.Core.Numerics
@@ -8,20 +9,20 @@ namespace NextGenSpice.Core.Numerics
         public static void PrintSystem(Array2DWrapper m, double[] b)
         {
             var size = m.SideLength;
-            Console.WriteLine("-----------------------------------------------------");
+            Debug.WriteLine("-----------------------------------------------------");
 
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size; j++)
                 {
-                    Console.Write($"{m[i,j] :F}");
-                    Console.Write("\t");
+                    Debug.Write($"{m[i,j] :F}");
+                    Debug.Write("\t");
                 }
 
-                Console.WriteLine($"|\t{b[i]}");
+                Debug.WriteLine($"|\t{b[i]}");
             }
 
-            Console.WriteLine("-----------------------------------------------------");
+            Debug.WriteLine("-----------------------------------------------------");
         }
 
         public static void GaussElimSolve(Array2DWrapper m, double[] b, double[] x)
@@ -59,6 +60,9 @@ namespace NextGenSpice.Core.Numerics
                     b[i] = tmp;
                 }
 
+//                PrintSystem(m, b);
+
+
 
                 // eliminate current variable in all columns
                 for (int k = i + 1; k < size; k++)
@@ -74,6 +78,9 @@ namespace NextGenSpice.Core.Numerics
                     // b vector
                     b[k] += c * b[i];
                 }
+
+//                PrintSystem(m, b);
+
             }
 
 

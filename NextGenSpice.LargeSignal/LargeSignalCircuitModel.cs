@@ -161,8 +161,17 @@ namespace NextGenSpice.LargeSignal
         {
             UpdateEquationSystem();
             UpdateNodeValues();
+            PostProcess();
             UpdateNonlinearElements();
-            //DebugPrint();
+//            DebugPrint();
+        }
+
+        private void PostProcess()
+        {
+            foreach (var el in Elements)
+            {
+                el.PostProcess(context);
+            }
         }
 
         private void UpdateNodeValues()

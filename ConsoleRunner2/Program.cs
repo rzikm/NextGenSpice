@@ -55,26 +55,29 @@ namespace ConsoleRunner2
 
         private static void PrintStats(LargeSignalCircuitModel model, double time, double val)
         {
-            Console.WriteLine($"{(time*1e6) , +5 :## 'us'}\t|{string.Join("\t|", model.NodeVoltages.Select(v => v.ToString()))}\t|{val}");
+            Console.WriteLine($"{(time*1e6) , +5 :##.## 'us'}\t|{string.Join("\t|", model.NodeVoltages.Select(v => v.ToString("F")))}\t|{val:F}");
         }
         private static void SimulateAndPrint(LargeSignalCircuitModel model, double time, double step)
         {
             var elapsed = 0.0;
 
-            model.EstablishDcBias();
+            //model.EstablishDcBias();
             Console.WriteLine("Voltages:");
-            Console.WriteLine($"Time\t|{string.Join("\t|", Enumerable.Range(0, model.NodeCount))}\t|Vc/Il");
+            Console.WriteLine($"Time\t|{string.Join("\t|", Enumerable.Range(0, model.NodeCount))}\t|Il");
             Console.WriteLine("-------------------------------------------------------------------------");
-            var capacitor = model.TimeDependentElements.OfType<LargeSignalInductorModel>().Single();
-            PrintStats(model, elapsed, capacitor.Current);
+//            var device = model.TimeDependentElements.OfType<LargeSignalInductorModel>().Single();
+            var device = model.Elements.OfType<LargeSignalCapacitorModel>().Single();
+
+            PrintStats(model, elapsed, device.Current);
+//            PrintStats(model, elapsed, device.Voltage);
 
 
             while (elapsed < time)
             {
                 model.AdvanceInTime(step);
-                PrintStats(model, elapsed, capacitor.Current);
-
                 elapsed += step;
+                PrintStats(model, elapsed, device.Current);
+//                PrintStats(model, elapsed, device.Voltage);
             }
         }
 
@@ -82,20 +85,15 @@ namespace ConsoleRunner2
         static void Main(string[] args)
         {
             PrintFileSizes();
-
-            ElectricCircuitDefinition cd;
-
-//            cd = new CircuitBuilder()
-//                .AddVoltageSource(1, 0, 5)
-//                .AddCapacitor(2, 1, 1e-7)
-//                .AddResistor(0, 2, 5)
-//                .Build();
-
-            cd = CircuitGenerator.GetSimpleCircuitWithInductor();
             
-            var model = cd.GetLargeSignalModel();
+            var model = CircuitGenerator.GetSimpleTimeDependentModelWithCapacitor(out var switchModel); 
+//            var model = CircuitGenerator.GetSimpleTimeDependentModelWithInductor(out var switchModel);
+            switchModel.IsOn = false;
+//            var model = CircuitGenerator.GetSimpleCircuitWithInductor().GetLargeSignalModel();
+            model.EstablishDcBias();
+            switchModel.IsOn = true;
 
-            SimulateAndPrint(model, 40e-6, 1e-6);
+            SimulateAndPrint(model, 15e-6, 1e-6);
         }
     }
 }

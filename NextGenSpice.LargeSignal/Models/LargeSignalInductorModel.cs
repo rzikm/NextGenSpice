@@ -25,7 +25,7 @@ namespace NextGenSpice.LargeSignal.Models
         public LargeSignalInductorModel(InductorElement parent) : base(parent)
         {
             stateHelper = new StateHelper<InductorState>();
-            State.REq = double.PositiveInfinity;
+            State.REq = 0;
             State.Il = parent.InitialCurrent;
             State.VEq = 0; // model initially as short circuit
         }
@@ -39,11 +39,14 @@ namespace NextGenSpice.LargeSignal.Models
         public void AdvanceTimeDependentModel(SimulationContext context)
         {
             stateHelper.Commit();
-            
-            State.Il = -context.EquationSolution[additionalVariable];
             State.REq = Parent.Inductance / context.Timestep;
-
             State.VEq = State.REq * State.Il;
+        }
+
+        public override void PostProcess(SimulationContext context)
+        {
+            base.PostProcess(context);
+            State.Il = context.EquationSolution[additionalVariable];
         }
 
         public void RollbackTimeDependentModel()
@@ -53,8 +56,8 @@ namespace NextGenSpice.LargeSignal.Models
 
         public void ApplyTimeDependentModelValues(IEquationSystem equation, SimulationContext context)
         {
-            equation.AddVoltage(Kathode, Anode, additionalVariable, State.VEq);
-            equation.AddMatrixEntry(additionalVariable, additionalVariable, -1/State.REq);
+            equation.AddVoltage(Anode, Kathode, additionalVariable, -State.VEq);
+            equation.AddMatrixEntry(additionalVariable, additionalVariable, -State.REq);
         }
     }
 }

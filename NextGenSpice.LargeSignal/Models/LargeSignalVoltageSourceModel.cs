@@ -7,20 +7,28 @@ namespace NextGenSpice.LargeSignal.Models
     {
         public double Voltage => Parent.Voltage;
 
-        private int additionalVariable = -1;
+        public double Current { get; private set; }
+
+        private int branchVariable = -1;
         public LargeSignalVoltageSourceModel(VoltageSourceElement parent) : base(parent)
         {
+        }
+
+        public override void PostProcess(SimulationContext context)
+        {
+            base.PostProcess(context);
+            Current = context.EquationSolution[branchVariable];
         }
 
         public override void Initialize(IEquationSystemBuilder builder)
         {
             base.Initialize(builder);
-            additionalVariable = builder.AddVariable();
+            branchVariable = builder.AddVariable();
         }
 
         public void ApplyLinearModelValues(IEquationEditor equation, SimulationContext context)
         {
-            equation.AddVoltage(Anode, Kathode, additionalVariable, Voltage);
+            equation.AddVoltage(Anode, Kathode, branchVariable, Voltage);
         }
     }
 }

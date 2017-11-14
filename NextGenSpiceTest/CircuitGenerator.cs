@@ -1,7 +1,9 @@
-﻿using NextGenSpice.Core.Circuit;
+﻿using System.Collections.Generic;
+using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Extensions;
 using NextGenSpice.Core.Representation;
+using NextGenSpice.LargeSignal;
 
 namespace NextGenSpiceTest
 {
@@ -69,7 +71,6 @@ namespace NextGenSpiceTest
                 .AddVoltageSource(1, 0, 1)
                 .AddResistor(1, 2, 5)
                 .AddCapacitor(2, 0, 1e-6)
-                //.AddElement(new int[] { 2, 3 }, new SwitchElement())
                 .AddResistor(0, 2, 5)
                 .Build();
         }
@@ -79,10 +80,53 @@ namespace NextGenSpiceTest
             return new CircuitBuilder()
                 .AddCurrentSource(1, 0, 1)
                 .AddResistor(1, 2, 5)
-                .AddInductor(2, 0, 1e-6)
-                //.AddElement(new int[] { 2, 3 }, new SwitchElement())
-                .AddResistor(0, 2, 5)
+                .AddInductor(2, 3, 1e-6)
+                .AddResistor(0, 3, 5)
                 .Build();
+        }
+
+        public static LargeSignalCircuitModel GetSimpleTimeDependentModelWithCapacitor(out SwitchModel switchModel)
+        {
+            SwitchModel sw = null;
+
+            var circuit = new CircuitBuilder()
+                .AddVoltageSource(1, 0, 15)
+                .AddElement(new int[] { 1, 2 }, new SwitchElement())
+                .AddResistor(2, 3, 1)
+                .AddCapacitor(3, 0, 1e-6)
+                .Build();
+
+            circuit.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchElement, SwitchModel>(m =>
+            {
+                sw = new SwitchModel(m);
+                return sw;
+            });
+
+            var model = circuit.GetLargeSignalModel();
+            switchModel = sw;
+            return model;
+        }
+
+        public static LargeSignalCircuitModel GetSimpleTimeDependentModelWithInductor(out SwitchModel switchModel)
+        {
+            SwitchModel sw = null;
+            var circuit = new CircuitBuilder()
+                .AddVoltageSource(1, 0, 15)
+                .AddElement(new int[] { 1, 2 }, new SwitchElement())
+                .AddResistor(2, 3, 1)
+                .AddInductor(3, 0, 1e-6)
+                .Build();
+
+
+            circuit.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchElement, SwitchModel>(m =>
+            {
+                sw = new SwitchModel(m);
+                return sw;
+            });
+
+            var model = circuit.GetLargeSignalModel();
+            switchModel = sw;
+            return model;
         }
     }
 }

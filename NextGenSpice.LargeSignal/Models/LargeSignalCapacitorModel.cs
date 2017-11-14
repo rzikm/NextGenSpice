@@ -7,17 +7,28 @@ namespace NextGenSpice.LargeSignal.Models
 {
     public class LargeSignalCapacitorModel : TwoNodeLargeSignalModel<CapacitorElement>, ITimeDependentLargeSignalDeviceModel
     {
+        public double Current => State.Ic;
+
         private struct CapacitorState
         {
             public double Vc;
             public double GEq;
             public double IEq;
+            public double Ic;
         }
 
         private readonly StateHelper<CapacitorState> stateHelper;
         private ref CapacitorState State => ref stateHelper.Value;
 
+        private int branchVariable;
+
         public double Voltage => State.Vc;
+
+        public override void Initialize(IEquationSystemBuilder builder)
+        {
+            base.Initialize(builder);
+//            branchVariable = builder.AddVariable();
+        }
 
         public LargeSignalCapacitorModel(CapacitorElement parent) : base(parent)
         {
@@ -29,9 +40,10 @@ namespace NextGenSpice.LargeSignal.Models
         public void AdvanceTimeDependentModel(SimulationContext context)
         {
             stateHelper.Commit();
-
+            
             State.GEq = Parent.Capacity / context.Timestep;
-            State.Vc = context.EquationSolution[Parent.Anode] - context.EquationSolution[Parent.Kathode];
+            var vc = context.EquationSolution[Parent.Anode] - context.EquationSolution[Parent.Kathode];
+            State.Vc = vc;
             State.IEq = State.GEq * State.Vc;
         }
 
@@ -40,11 +52,27 @@ namespace NextGenSpice.LargeSignal.Models
             stateHelper.Rollback();
         }
 
+        public override void PostProcess(SimulationContext context)
+        {
+            base.PostProcess(context);
+            State.Ic = context.EquationSolution[branchVariable];
+        }
+
         public void ApplyTimeDependentModelValues(IEquationSystem equation, SimulationContext context)
         {
             equation
                 .AddConductance(Anode, Kathode, State.GEq)
                 .AddCurrent(Anode, Kathode, State.IEq);
+
+//            equation.AddMatrixEntry(branchVariable, Anode, State.GEq);
+//            equation.AddMatrixEntry(branchVariable, Kathode, -State.GEq);
+//
+//            equation.AddMatrixEntry(Anode, branchVariable, 1);
+//            equation.AddMatrixEntry(Kathode, branchVariable, -1);
+//
+//            equation.AddMatrixEntry(branchVariable, branchVariable, -1);
+//
+//            equation.AddRightHandSideEntry(branchVariable, State.IEq);
         }
     }
 

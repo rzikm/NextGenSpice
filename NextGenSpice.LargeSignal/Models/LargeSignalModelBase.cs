@@ -8,6 +8,8 @@ namespace NextGenSpice.LargeSignal.Models
 {
     public abstract class LargeSignalModelBase<TDefinitionElement> : ILargeSignalDeviceModel where TDefinitionElement : ICircuitDefinitionElement
     {
+        public string Tag { get; set; }
+
         protected LargeSignalModelBase(TDefinitionElement parent)
         {
             Parent = parent;
@@ -18,6 +20,10 @@ namespace NextGenSpice.LargeSignal.Models
         public virtual void Initialize(IEquationSystemBuilder builder)
         {
         }
-        
+
+        public virtual void PostProcess(SimulationContext context)
+        {
+            
+        }
     }
 }
