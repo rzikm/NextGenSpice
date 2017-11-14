@@ -58,6 +58,21 @@ namespace NextGenSpice.Core.Equations
             equivalences = new HashSet<ISet<int>>(Enumerable.Range(0, rhs.Length).Select(i => new HashSet<int>(new[] { i })));
         }
 
+        public double GetMatrixEntry(int row, int column)
+        {
+            if (row < 0 || row >= rhs.Length) throw new ArgumentOutOfRangeException(nameof(row));
+            if (column < 0 || column >= rhs.Length) throw new ArgumentOutOfRangeException(nameof(column));
+
+            return matrix[row, column];
+        }
+
+        public double GetRightHandSideEntry(int row)
+        {
+            if (row < 0 || row >= rhs.Length) throw new ArgumentOutOfRangeException(nameof(row));
+
+            return rhs[row];
+        }
+
         public double[] Solve()
         {
             var m = matrix.Clone();

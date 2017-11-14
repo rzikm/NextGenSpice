@@ -1,4 +1,6 @@
-﻿namespace NextGenSpice.Core.Elements
+﻿using System;
+
+namespace NextGenSpice.Core.Elements
 {
     public class InductorElement : TwoNodeCircuitElement
     {

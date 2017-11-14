@@ -17,6 +17,7 @@ namespace NextGenSpice.LargeSignal.Models
 
         public double Vd { get; private set; }
 
+
         public void ApplyNonlinearModelValues(IEquationSystem equation, SimulationContext context)
         {
             equation

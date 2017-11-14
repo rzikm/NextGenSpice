@@ -1,4 +1,5 @@
-﻿using NextGenSpice.Core.Elements;
+﻿using System.Diagnostics.Contracts;
+using NextGenSpice.Core.Elements;
 
 namespace NextGenSpice.LargeSignal.Models
 {

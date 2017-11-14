@@ -10,8 +10,8 @@ namespace NextGenSpice.LargeSignal.Models
         private struct InductorState
         {
             public double VEq;
-            public double Il;
             public double REq;
+            public double Il;
         }
         
         private readonly StateHelper<InductorState> stateHelper;
@@ -19,12 +19,15 @@ namespace NextGenSpice.LargeSignal.Models
         private ref InductorState State => ref stateHelper.Value;
 
         private int additionalVariable;
-        
+
+        public double Current => State.Il;
+
         public LargeSignalInductorModel(InductorElement parent) : base(parent)
         {
             stateHelper = new StateHelper<InductorState>();
-            State.REq = 0;
+            State.REq = double.PositiveInfinity;
             State.Il = parent.InitialCurrent;
+            State.VEq = 0; // model initially as short circuit
         }
 
         public override void Initialize(IEquationSystemBuilder builder)
@@ -36,11 +39,11 @@ namespace NextGenSpice.LargeSignal.Models
         public void AdvanceTimeDependentModel(SimulationContext context)
         {
             stateHelper.Commit();
-
-            var vl = context.EquationSolution[Anode] - context.EquationSolution[Kathode];
+            
+            State.Il = -context.EquationSolution[additionalVariable];
             State.REq = Parent.Inductance / context.Timestep;
+
             State.VEq = State.REq * State.Il;
-            State.Il = vl / State.REq;
         }
 
         public void RollbackTimeDependentModel()
@@ -50,8 +53,8 @@ namespace NextGenSpice.LargeSignal.Models
 
         public void ApplyTimeDependentModelValues(IEquationSystem equation, SimulationContext context)
         {
-            equation.AddVoltage(Anode, Kathode, additionalVariable, State.VEq);
-            equation.AddMatrixEntry(additionalVariable, additionalVariable, -State.REq);
+            equation.AddVoltage(Kathode, Anode, additionalVariable, State.VEq);
+            equation.AddMatrixEntry(additionalVariable, additionalVariable, -1/State.REq);
         }
     }
 }

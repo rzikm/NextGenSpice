@@ -1,4 +1,5 @@
-﻿using NextGenSpice.Core.Equations;
+﻿using NextGenSpice.Core.Circuit;
+using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.Representation;
 
 namespace NextGenSpice.LargeSignal.Models

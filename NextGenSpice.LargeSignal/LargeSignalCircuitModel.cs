@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.Representation;
@@ -31,7 +30,7 @@ namespace NextGenSpice.LargeSignal
         public double Epsilon { get; } = 1e-15;
         public int MaxDcPointIterations { get; set; } = 1000;
 
-        public double MaxTimeStepMilliseconds { get; set; } = 0.5;
+        public double MaxTimeStep { get; set; } = 1e-6;
 
         public int IterationCount { get; private set; }
         public double DeltaSquared { get; private set; }
@@ -57,7 +56,7 @@ namespace NextGenSpice.LargeSignal
             EnsureInitialized();
             while (milliseconds > 0)
             {
-                var step = Math.Min(MaxTimeStepMilliseconds, milliseconds);
+                var step = Math.Min(MaxTimeStep, milliseconds);
                 milliseconds -= step;
 
                 AdvanceInTime_Internal(step);
@@ -79,10 +78,7 @@ namespace NextGenSpice.LargeSignal
             if (context != null) return;
 
             BuildEquationSystem();
-            context = new SimulationContext()
-            {
-                EquationSolution = equationSystem.Solution
-            };
+            context = new SimulationContext(NodeCount, equationSystem);
         }
 
         private void BuildEquationSystem()
@@ -125,8 +121,14 @@ namespace NextGenSpice.LargeSignal
 
 
             Iterate_DcBias();
+            if (!IsLinear && !IterateUntilConvergence())
+            {
+                return false;
+            }
 
-            return IsLinear || IterateUntilConvergence();
+            //DistributeCurrent();
+
+            return true;
         }
 
         private bool IterateUntilConvergence()
@@ -150,8 +152,10 @@ namespace NextGenSpice.LargeSignal
             } while (delta > Epsilon * Epsilon);
 
             DeltaSquared = delta;
+
             return true;
         }
+        
 
         private void Iterate_DcBias()
         {
@@ -211,50 +215,6 @@ namespace NextGenSpice.LargeSignal
             {
                 element.AdvanceTimeDependentModel(context);
             }
-        }
-    }
-
-    [Serializable]
-    public class SimulationException : Exception
-    {
-        public SimulationException()
-        {
-        }
-
-        public SimulationException(string message) : base(message)
-        {
-        }
-
-        public SimulationException(string message, Exception inner) : base(message, inner)
-        {
-        }
-
-        protected SimulationException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
-    }
-
-    [Serializable]
-    public class NonConvergenceException : SimulationException
-    {
-        public NonConvergenceException()
-        {
-        }
-
-        public NonConvergenceException(string message) : base(message)
-        {
-        }
-
-        public NonConvergenceException(string message, Exception inner) : base(message, inner)
-        {
-        }
-
-        protected NonConvergenceException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
         }
     }
 }

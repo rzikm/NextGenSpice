@@ -1,4 +1,7 @@
-﻿using NextGenSpice.Core.Elements;
+﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using NextGenSpice.Core.Circuit;
+using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
@@ -11,9 +14,10 @@ namespace NextGenSpice.LargeSignal.Models
         }
 
         protected TDefinitionElement Parent { get; }
-
+        
         public virtual void Initialize(IEquationSystemBuilder builder)
         {
         }
+        
     }
 }

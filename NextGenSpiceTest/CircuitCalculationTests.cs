@@ -18,18 +18,6 @@ namespace NextGenSpiceTest
             this.output = output;
         }
 
-        private void PrintStats(LargeSignalCircuitModel model)
-        {
-            
-            output.WriteLine($"Iterations: {model.IterationCount}");
-            output.WriteLine($"Delta^2: {model.DeltaSquared}");
-            output.WriteLine("Voltages:");
-            for (var id = 0; id < model.NodeVoltages.Length; id++)
-            {
-                output.WriteLine($"[{id}]:\t{model.NodeVoltages[id]}");
-            }
-            output.WriteLine("");
-        }
 
         [Fact]
         public void TestLinearCircuit()
@@ -38,7 +26,7 @@ namespace NextGenSpiceTest
             var model = circuit.GetModel<LargeSignalCircuitModel>();
             model.EstablishDcBias();
 
-            PrintStats(model);
+            output.PrintCircuitStats(model);
 
             Assert.Equal(new double[4] { 0, 33, 18, 12 }, model.NodeVoltages,
                 new DoubleComparer(1e-10));
@@ -51,7 +39,7 @@ namespace NextGenSpiceTest
 
             var model = circuit.GetModel<LargeSignalCircuitModel>();
             model.EstablishDcBias();
-            PrintStats(model);
+            output.PrintCircuitStats(model);
 
             Assert.Equal(new double[] { 0, 9.90804734507935, 0.712781853012352 },
                 model.NodeVoltages, new DoubleComparer(1e-10));
@@ -64,7 +52,7 @@ namespace NextGenSpiceTest
 
             var model = circuit.GetModel<LargeSignalCircuitModel>();
             model.EstablishDcBias();
-            PrintStats(model);
+            output.PrintCircuitStats(model);
 
             Assert.Equal(new double[] { 0, 5, 3 },
                 model.NodeVoltages, new DoubleComparer(1e-10));
@@ -86,7 +74,7 @@ namespace NextGenSpiceTest
                 model = circuit.GetModel<LargeSignalCircuitModel>();
             }
             model.EstablishDcBias();
-            PrintStats(model);
+            output.PrintCircuitStats(model);
 
             var withCapacitorVoltages = model.NodeVoltages.ToArray();
 
@@ -99,7 +87,7 @@ namespace NextGenSpiceTest
                 model = circuit.GetModel<LargeSignalCircuitModel>();
             }
             model.EstablishDcBias();
-            PrintStats(model);
+            output.PrintCircuitStats(model);
 
             var withoutCapacitorVoltages = model.NodeVoltages.ToArray();
 
@@ -120,7 +108,7 @@ namespace NextGenSpiceTest
                 model = circuit.GetModel<LargeSignalCircuitModel>();
             }
             model.EstablishDcBias();
-            PrintStats(model);
+            output.PrintCircuitStats(model);
 
             var withInductorVoltages = model.NodeVoltages.ToArray();
 
@@ -133,7 +121,7 @@ namespace NextGenSpiceTest
                 model = circuit.GetModel<LargeSignalCircuitModel>();
             }
             model.EstablishDcBias();
-            PrintStats(model);
+            output.PrintCircuitStats(model);
 
             var withoutInductorVoltages = model.NodeVoltages.ToList();
             withoutInductorVoltages.Insert(1, withoutInductorVoltages[1]);
@@ -150,20 +138,7 @@ namespace NextGenSpiceTest
             model.MaxDcPointIterations = 100;
 
             Assert.Throws<NonConvergenceException>(() => model.EstablishDcBias());
-            PrintStats(model);
-        }
-
-        [Fact]
-        public void TestTimeSimulationDoesNotChangeResult()
-        {
-            var circuit = CircuitGenerator.GetSimpleCircuitWithInductor();
-
-            var model = circuit.GetLargeSignalModel();
-            model.EstablishDcBias();
-            var expected = model.NodeVoltages.ToArray();
-            model.AdvanceInTime(model.MaxTimeStepMilliseconds);
-
-            Assert.Equal(expected, model.NodeVoltages);
+            output.PrintCircuitStats(model);
         }
     }
 }

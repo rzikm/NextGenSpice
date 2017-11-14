@@ -54,11 +54,33 @@ namespace NextGenSpiceTest
                 .Build();
         }
 
-        public static ElectricCircuitDefinition GetSimpleCircuitWithInductor()
+        public static ElectricCircuitDefinition GetSimpleCircuitWithInductor2()
         {
             return new CircuitBuilder()
                 .AddCurrentSource(1, 0, 5)
                 .AddInductor(1, 2, 5)
+                .AddResistor(0, 2, 5)
+                .Build();
+        }
+
+        public static ElectricCircuitDefinition GetSimpleCircuitWithCapacitor()
+        {
+            return new CircuitBuilder()
+                .AddVoltageSource(1, 0, 1)
+                .AddResistor(1, 2, 5)
+                .AddCapacitor(2, 0, 1e-6)
+                //.AddElement(new int[] { 2, 3 }, new SwitchElement())
+                .AddResistor(0, 2, 5)
+                .Build();
+        }
+
+        public static ElectricCircuitDefinition GetSimpleCircuitWithInductor()
+        {
+            return new CircuitBuilder()
+                .AddCurrentSource(1, 0, 1)
+                .AddResistor(1, 2, 5)
+                .AddInductor(2, 0, 1e-6)
+                //.AddElement(new int[] { 2, 3 }, new SwitchElement())
                 .AddResistor(0, 2, 5)
                 .Build();
         }
