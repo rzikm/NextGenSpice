@@ -27,7 +27,7 @@ namespace NextGenSpice.LargeSignal.Models
         public override void Initialize(IEquationSystemBuilder builder)
         {
             base.Initialize(builder);
-//            branchVariable = builder.AddVariable();
+            branchVariable = builder.AddVariable();
         }
 
         public LargeSignalCapacitorModel(CapacitorElement parent) : base(parent)
@@ -60,19 +60,15 @@ namespace NextGenSpice.LargeSignal.Models
 
         public void ApplyTimeDependentModelValues(IEquationSystem equation, SimulationContext context)
         {
-            equation
-                .AddConductance(Anode, Kathode, State.GEq)
-                .AddCurrent(Anode, Kathode, State.IEq);
+            equation.AddMatrixEntry(branchVariable, Anode, State.GEq);
+            equation.AddMatrixEntry(branchVariable, Kathode, -State.GEq);
 
-//            equation.AddMatrixEntry(branchVariable, Anode, State.GEq);
-//            equation.AddMatrixEntry(branchVariable, Kathode, -State.GEq);
-//
-//            equation.AddMatrixEntry(Anode, branchVariable, 1);
-//            equation.AddMatrixEntry(Kathode, branchVariable, -1);
-//
-//            equation.AddMatrixEntry(branchVariable, branchVariable, -1);
-//
-//            equation.AddRightHandSideEntry(branchVariable, State.IEq);
+            equation.AddMatrixEntry(Anode, branchVariable, 1);
+            equation.AddMatrixEntry(Kathode, branchVariable, -1);
+
+            equation.AddMatrixEntry(branchVariable, branchVariable, -1);
+
+            equation.AddRightHandSideEntry(branchVariable, State.IEq);
         }
     }
 
