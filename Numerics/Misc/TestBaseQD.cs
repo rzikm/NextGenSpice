@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
-using Numerics;
 
-namespace NextGenSpiceTest.Misc
+namespace Numerics.Misc
 {
     public abstract class TestBaseQD
     {

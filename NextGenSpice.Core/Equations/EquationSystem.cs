@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NextGenSpice.Core.Helpers;
-using NextGenSpice.Core.Numerics;
+using Numerics;
 
 namespace NextGenSpice.Core.Equations
 {

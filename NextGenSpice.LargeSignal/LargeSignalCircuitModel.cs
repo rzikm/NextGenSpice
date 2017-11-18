@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NextGenSpice.Core;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.Representation;

@@ -1,8 +1,7 @@
 using System;
 using System.Diagnostics;
-using NextGenSpice.Core.Helpers;
 
-namespace NextGenSpice.Core.Numerics
+namespace Numerics
 {
     public static class NumericMethods
     {

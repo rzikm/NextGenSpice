@@ -1,6 +1,7 @@
 ﻿using System;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.Helpers;
+using Numerics;
 using Xunit;
 
 namespace NextGenSpiceTest

@@ -1,7 +1,6 @@
 ﻿using System;
-using Numerics;
 
-namespace NextGenSpiceTest.Misc
+namespace Numerics.Misc
 {
     public class Misc
     {

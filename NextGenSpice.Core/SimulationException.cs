@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace NextGenSpice.LargeSignal
+namespace NextGenSpice.Core
 {
     [Serializable]
     public class SimulationException : Exception

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace NextGenSpiceTest.Misc
+namespace Numerics.Misc
 {
     public unsafe class TestGeDouble : TestBaseDouble
     {

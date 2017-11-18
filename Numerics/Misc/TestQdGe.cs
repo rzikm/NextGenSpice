@@ -1,7 +1,6 @@
 ﻿using System.Runtime.InteropServices;
-using Numerics;
 
-namespace NextGenSpiceTest.Misc
+namespace Numerics.Misc
 {
     public unsafe class TestQdGe : TestBaseQD
     {
