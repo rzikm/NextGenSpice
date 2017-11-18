@@ -20,8 +20,7 @@ namespace NextGenSpiceTest
         {
             if (IsOn)
                 equation.BindEquivalent(Anode, Kathode);
-            else
-                equation.AddConductance(Anode, Kathode, 1e-12);
+            else equation.AddConductance(Anode, Kathode, 1e-12);
         }
 
         public void RollbackTimeDependentModel()

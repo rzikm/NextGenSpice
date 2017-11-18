@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NextGenSpice.Core.Circuit;
@@ -10,6 +11,7 @@ using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal;
 using NextGenSpice.LargeSignal.Models;
 using NextGenSpiceTest;
+using SwitchElement = NextGenSpiceTest.SwitchElement;
 
 namespace ConsoleRunner2
 {
@@ -85,15 +87,63 @@ namespace ConsoleRunner2
         static void Main(string[] args)
         {
             PrintFileSizes();
-            
-            var model = CircuitGenerator.GetSimpleTimeDependentModelWithCapacitor(out var switchModel); 
-//            var model = CircuitGenerator.GetSimpleTimeDependentModelWithInductor(out var switchModel);
-            switchModel.IsOn = false;
+//            SetListeners();
+            SwitchModel sw = null;
+
+            var circuit = new CircuitBuilder()
+                .AddVoltageSource(1, 0, 0)
+                .AddElement(new int[] { 1, 2 }, new SwitchElement())
+                .AddResistor(2, 3, 1)
+                .AddCapacitor(3, 0, 1e-6)
+                .Build();
+
+            circuit.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchElement, SwitchModel>(m =>
+            {
+                sw = new SwitchModel(m);
+                return sw;
+            });
+            circuit.GetFactory<LargeSignalCircuitModel>().SetModel<VoltageSourceElement, PulsingLargeSignalVoltageSourceModel>(m =>
+            {
+                return new PulsingLargeSignalVoltageSourceModel(m);
+            });
+
+
+            var model = circuit.GetLargeSignalModel();
+            //            var model = CircuitGenerator.GetSimpleTimeDependentModelWithInductor(out var switchModel);
+            sw.IsOn = false;
 //            var model = CircuitGenerator.GetSimpleCircuitWithInductor().GetLargeSignalModel();
             model.EstablishDcBias();
-            switchModel.IsOn = true;
 
-            SimulateAndPrint(model, 15e-6, 1e-6);
+            sw.IsOn = true;
+
+            var elapsed = 0.0;
+
+            //model.EstablishDcBias();
+            Console.WriteLine("Voltages:");
+            Console.WriteLine($"Time\t|{string.Join("\t|", Enumerable.Range(0, model.NodeCount))}\t|Il");
+            Console.WriteLine("-------------------------------------------------------------------------");
+//            var device = model.TimeDependentElements.OfType<LargeSignalInductorModel>().Single();
+            var device = model.Elements.OfType<LargeSignalCapacitorModel>().Single();
+
+            PrintStats(model, elapsed, device.Current);
+            //            PrintStats(model, elapsed, device.Voltage);
+
+            circuit.Elements.OfType<VoltageSourceElement>().Single().Voltage = 15;
+
+            while (elapsed < 15e-6)
+            {
+                model.AdvanceInTime(0.1e-6);
+                elapsed += 0.1e-6;
+                PrintStats(model, elapsed, device.Current);
+//                PrintStats(model, elapsed, device.Voltage);
+            }
+        }
+
+
+        [Conditional("DEBUG")]
+        private static void SetListeners()
+        {
+            Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
         }
     }
 }

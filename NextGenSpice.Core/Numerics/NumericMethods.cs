@@ -6,30 +6,31 @@ namespace NextGenSpice.Core.Numerics
 {
     public static class NumericMethods
     {
+        [Conditional("DEBUG")]
         public static void PrintSystem(Array2DWrapper m, double[] b)
         {
             var size = m.SideLength;
-            Debug.WriteLine("-----------------------------------------------------");
+            Trace.WriteLine("-----------------------------------------------------");
 
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size; j++)
                 {
-                    Debug.Write($"{m[i,j] :F}");
-                    Debug.Write("\t");
+                    Trace.Write($"{m[i,j] :F}");
+                    Trace.Write("\t");
                 }
 
-                Debug.WriteLine($"|\t{b[i]}");
+                Trace.WriteLine($"|\t{b[i]}");
             }
 
-            Debug.WriteLine("-----------------------------------------------------");
+            Trace.WriteLine("-----------------------------------------------------");
         }
 
         public static void GaussElimSolve(Array2DWrapper m, double[] b, double[] x)
         {
             var size = m.SideLength;
 
-//            PrintSystem(m,b);
+            PrintSystem(m,b);
 
             // we start from node 1, because 0 is the ground/reference (0V)
             for (int i = 1; i < size - 1; i++)

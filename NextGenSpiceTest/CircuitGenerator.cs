@@ -55,16 +55,7 @@ namespace NextGenSpiceTest
                 .AddVoltageSource(5, 0, 5)
                 .Build();
         }
-
-        public static ElectricCircuitDefinition GetSimpleCircuitWithInductor2()
-        {
-            return new CircuitBuilder()
-                .AddCurrentSource(1, 0, 5)
-                .AddInductor(1, 2, 5)
-                .AddResistor(0, 2, 5)
-                .Build();
-        }
-
+        
         public static ElectricCircuitDefinition GetSimpleCircuitWithCapacitor()
         {
             return new CircuitBuilder()
@@ -92,7 +83,7 @@ namespace NextGenSpiceTest
             var circuit = new CircuitBuilder()
                 .AddVoltageSource(1, 0, 15)
                 .AddElement(new int[] { 1, 2 }, new SwitchElement())
-                .AddResistor(2, 3, 1)
+                .AddResistor(2, 3, 5)
                 .AddCapacitor(3, 0, 1e-6)
                 .Build();
 
