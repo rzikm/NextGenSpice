@@ -5,6 +5,6 @@ namespace NextGenSpice.LargeSignal.Models
 {
     public interface ILinearLargeSignalDeviceModel : ILargeSignalDeviceModel
     {
-        void ApplyLinearModelValues(IEquationEditor equation, SimulationContext context);
+        void ApplyLinearModelValues(IEquationEditor equation, ISimulationContext context);
     }
 }

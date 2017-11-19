@@ -70,7 +70,7 @@ namespace NextGenSpiceTest
                     .AddVoltageSource(1, 0, 5)
                     .AddResistor(1, 0, 2)
                     .AddResistor(2, 0, 5)
-                    .AddCapacitor(1, 2, 1).Build();
+                    .AddCapacitor(1, 2, 1).BuildCircuit();
                 Assert.Equal(3, circuit.NodeCount);
                 model = circuit.GetModel<LargeSignalCircuitModel>();
             }
@@ -84,7 +84,7 @@ namespace NextGenSpiceTest
                 var circuit = new CircuitBuilder()
                     .AddVoltageSource(1, 0, 5)
                     .AddResistor(1, 0, 2)
-                    .AddResistor(2, 0, 5).Build();
+                    .AddResistor(2, 0, 5).BuildCircuit();
                 model = circuit.GetModel<LargeSignalCircuitModel>();
             }
             model.EstablishDcBias();
@@ -105,7 +105,7 @@ namespace NextGenSpiceTest
                     .AddVoltageSource(1, 0, 5)
                     .AddResistor(1, 0, 2)
                     .AddResistor(2, 0, 5)
-                    .AddInductor(1, 2, 1).Build();
+                    .AddInductor(1, 2, 1).BuildCircuit();
                 model = circuit.GetModel<LargeSignalCircuitModel>();
             }
             model.EstablishDcBias();
@@ -118,7 +118,7 @@ namespace NextGenSpiceTest
                 var circuit = new CircuitBuilder()
                     .AddVoltageSource(1, 0, 5)
                     .AddResistor(1, 0, 2)
-                    .AddResistor(1, 0, 5).Build();
+                    .AddResistor(1, 0, 5).BuildCircuit();
                 model = circuit.GetModel<LargeSignalCircuitModel>();
             }
             model.EstablishDcBias();

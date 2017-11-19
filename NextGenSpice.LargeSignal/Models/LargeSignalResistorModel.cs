@@ -5,13 +5,13 @@ namespace NextGenSpice.LargeSignal.Models
 {
     public class LargeSignalResistorModel : TwoNodeLargeSignalModel<ResistorElement>, ILinearLargeSignalDeviceModel
     {
-        public double Resistance => Parent.Resistance;
-
         public LargeSignalResistorModel(ResistorElement parent) : base(parent)
         {
         }
 
-        public void ApplyLinearModelValues(IEquationEditor equation, SimulationContext context)
+        public double Resistance => Parent.Resistance;
+
+        public void ApplyLinearModelValues(IEquationEditor equation, ISimulationContext context)
         {
             equation.AddConductance(Anode, Kathode, 1 / Resistance);
         }

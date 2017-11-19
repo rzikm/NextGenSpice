@@ -15,18 +15,28 @@ namespace NextGenSpice.Core.Representation
         }
 
         public abstract TAnalysis Create(ICircuitDefinition circuitDefinition);
-
-        public void SetModel<TRepresentation, TModel>() where TRepresentation : ICircuitDefinitionElement where TModel : IAnalysisDeviceModel<TAnalysis>, new()
+        public void SetModel<TRepresentation, TModel>(TModel model)
+            where TRepresentation : ICircuitDefinitionElement
+            where TModel : IAnalysisDeviceModel<TAnalysis>
         {
-            SetModel<TRepresentation, TModel>(m => new TModel());
+            SetModel<TRepresentation, TModel>(m => model);
         }
-
-        public void SetModel<TRepresentation, TModel>(Func<TRepresentation, TModel> factoryFunc) where TRepresentation : ICircuitDefinitionElement where TModel : IAnalysisDeviceModel<TAnalysis>
+        
+        public void SetModel<TRepresentation, TModel>(Func<TRepresentation, TModel> factoryFunc)
+            where TRepresentation : ICircuitDefinitionElement
+            where TModel : IAnalysisDeviceModel<TAnalysis>
         {
             modelCreators[typeof(TRepresentation)] = model => factoryFunc((TRepresentation)model);
         }
 
-        protected IAnalysisDeviceModel<TAnalysis> GetModel(ICircuitDefinitionElement element)
+        public void SetModel<TRepresentation, TModel>(Func<TRepresentation, IAnalysisModelFactory<TAnalysis>, TModel> factoryFunc)
+            where TRepresentation : ICircuitDefinitionElement
+            where TModel : IAnalysisDeviceModel<TAnalysis>
+        {
+            modelCreators[typeof(TRepresentation)] = model => factoryFunc((TRepresentation) model, this);
+        }
+
+        public IAnalysisDeviceModel<TAnalysis> GetModel(ICircuitDefinitionElement element)
         {
             if (modelCreators.TryGetValue(element.GetType(), out var creator))
             {

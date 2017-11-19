@@ -6,8 +6,8 @@ namespace NextGenSpice.LargeSignal.Models
 {
     public class LargeSignalDiodeModel : TwoNodeLargeSignalModel<DiodeElement>, INonlinearLargeSignalDeviceModel
     {
-        private double iEq;
         private double gEq;
+        private double iEq;
 
         public LargeSignalDiodeModel(DiodeElement parent) : base(parent)
         {
@@ -18,25 +18,25 @@ namespace NextGenSpice.LargeSignal.Models
         public double Vd { get; private set; }
 
 
-        public void ApplyNonlinearModelValues(IEquationSystem equation, SimulationContext context)
+        public void ApplyNonlinearModelValues(IEquationSystem equation, ISimulationContext context)
         {
             equation
                 .AddConductance(Anode, Kathode, gEq)
                 .AddCurrent(Kathode, Anode, iEq);
         }
 
-        public void UpdateNonlinearModel(SimulationContext context)
+        public void UpdateNonlinearModel(ISimulationContext context)
         {
-            Vd = context.EquationSolution[Parent.Anode] - context.EquationSolution[Parent.Kathode];
+            Vd = context.GetSolutionForVariable(Parent.Anode) - context.GetSolutionForVariable(Parent.Kathode);
             RecomputeLinearCircuit();
         }
 
         public void RecomputeLinearCircuit()
         {
             var id = Parent.param.IS * (Math.Exp(Vd / Parent.param.Vt) - 1);
-            var geq = (Parent.param.IS / Parent.param.Vt * Math.Exp(Vd / Parent.param.Vt));
+            var geq = Parent.param.IS / Parent.param.Vt * Math.Exp(Vd / Parent.param.Vt);
             var ieq = id - geq * Vd;
-            
+
             iEq = ieq;
             gEq = geq;
         }

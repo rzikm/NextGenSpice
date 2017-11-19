@@ -22,6 +22,7 @@ namespace NextGenSpice.LargeSignal
             SetModel<VoltageSourceElement, LargeSignalVoltageSourceModel>(e => new LargeSignalVoltageSourceModel(e));
             SetModel<CapacitorElement, LargeSignalCapacitorModel>(e => new LargeSignalCapacitorModel(e));
             SetModel<InductorElement, LargeSignalInductorModel>(e => new LargeSignalInductorModel(e));
+            SetModel<SubcircuitElement, LargeSignalSubcircuitModel>((e, f) => new LargeSignalSubcircuitModel(e, e.Elements.Select(f.GetModel).Cast<ILargeSignalDeviceModel>()));
         }
 
         private ILargeSignalDeviceModel InstantiateModel(ICircuitDefinitionElement element)

@@ -3,7 +3,7 @@ using NextGenSpice.Core.Equations;
 
 namespace NextGenSpice.Core.Elements
 {
-    public class SimulationContext
+    public class SimulationContext : ISimulationContext
     {
         private readonly EquationSystem equationSystem;
 
@@ -18,25 +18,30 @@ namespace NextGenSpice.Core.Elements
         public double Timestep { get; set; }
         public double[] EquationSolution => equationSystem.Solution;
 
-        public double GetNodeVoltage(int id)
+        public double GetSolutionForVariable(int index)
         {
-            Contract.Assert(id >= 0 && id < NodeCount);
-
-            return EquationSolution[id];
+            return equationSystem.Solution[index];
         }
 
-        public double GetCurrent(int sourceId, int targetId)
-        {
-            return (GetNodeVoltage(sourceId) - GetNodeVoltage(targetId)) * GetConductance(sourceId, targetId);
-        }
-
-        public double GetConductance(int sourceId, int targetId)
-        {
-            Contract.Assert(sourceId >= 0 && sourceId < NodeCount);
-            Contract.Assert(targetId >= 0 && targetId < NodeCount);
-
-            return equationSystem.GetMatrixEntry(sourceId, targetId);
-        }
+//        public double GetNodeVoltage(int id)
+//        {
+//            Contract.Assert(id >= 0 && id < NodeCount);
+//
+//            return GetSolutionForVariable(id);
+//        }
+//
+//        public double GetCurrent(int sourceId, int targetId)
+//        {
+//            return (GetNodeVoltage(sourceId) - GetNodeVoltage(targetId)) * GetConductance(sourceId, targetId);
+//        }
+//
+//        public double GetConductance(int sourceId, int targetId)
+//        {
+//            Contract.Assert(sourceId >= 0 && sourceId < NodeCount);
+//            Contract.Assert(targetId >= 0 && targetId < NodeCount);
+//
+//            return equationSystem.GetMatrixEntry(sourceId, targetId);
+//        }
 
     }
 }

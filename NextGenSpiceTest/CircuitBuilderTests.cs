@@ -28,7 +28,7 @@ namespace NextGenSpiceTest
             // add element 'far away'
             builder.AddResistor(3, 4, 3);
 
-            Assert.Throws<InvalidOperationException>(() => builder.Build());
+            Assert.Throws<InvalidOperationException>(() => builder.BuildCircuit());
         }
 
         [Fact]
@@ -57,6 +57,14 @@ namespace NextGenSpiceTest
         {
             Assert.Throws<ArgumentOutOfRangeException>(() => builder.AddDiode(0, -2, DiodeModelParams.Default));
             Assert.Throws<ArgumentOutOfRangeException>(() => builder.SetNodeVoltage(1, -2));
+        }
+
+        [Fact]
+        public void ThrowsWhenAddingSameDeviceTwice()
+        {
+            var device = new ResistorElement(5);
+            builder.AddElement(new []{1, 2}, device);
+            Assert.Throws<InvalidOperationException>(() => builder.AddElement(new[] {1, 2}, device));
         }
     }
 }

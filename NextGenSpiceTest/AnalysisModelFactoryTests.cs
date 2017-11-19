@@ -99,30 +99,30 @@ namespace NextGenSpiceTest
         }
 
         [Fact]
-        public void HasModelsForDefaultTypes()
+        public void HasModelsForDefaultDevices()
         {
             definition.GetModel<LargeSignalCircuitModel>();
         }
 
         [Fact]
-        public void CanRegisterNewDevice()
+        public void CanRegisterNewDeviceModel()
         {
-            var circuitDef = new CircuitBuilder().AddElement(new[] { 0, 1 }, new TestDeviceDefinition()).AddElement(new[] { 1, 0 }, new TestDeviceDefinition()).Build();
+            var circuitDef = new CircuitBuilder().AddElement(new[] { 0, 1 }, new TestDeviceDefinition()).AddElement(new[] { 1, 0 }, new TestDeviceDefinition()).BuildCircuit();
 
             circuitDef.SetFactory(new MyPrivateFactory());
-            circuitDef.GetFactory<TestAnalysisCircuitModel>().SetModel<TestDeviceDefinition, TestDeviceModel>();
+            circuitDef.GetFactory<TestAnalysisCircuitModel>().SetModel<TestDeviceDefinition, TestDeviceModel>(def => new TestDeviceModel());
             
             Assert.NotNull(circuitDef.GetModel<TestAnalysisCircuitModel>());
         }
 
         [Fact]
-        public void CanRegisterNewDeviceAsSingleton()
+        public void CanRegisterNewDeviceModelAsSingleton()
         {
-            var circuitDef = new CircuitBuilder().AddElement(new[] { 0, 1 }, new TestDeviceDefinition()).AddElement(new[] { 1, 0 }, new TestDeviceDefinition()).Build();
+            var circuitDef = new CircuitBuilder().AddElement(new[] { 0, 1 }, new TestDeviceDefinition()).AddElement(new[] { 1, 0 }, new TestDeviceDefinition()).BuildCircuit();
             circuitDef.SetFactory(new MyPrivateFactory());
 
             var model = new TestDeviceModel();
-            circuitDef.GetFactory<TestAnalysisCircuitModel>().SetModel<TestDeviceDefinition, TestDeviceModel>(def => model);
+            circuitDef.GetFactory<TestAnalysisCircuitModel>().SetModel<TestDeviceDefinition, TestDeviceModel>(model);
 
             var circuitModel = circuitDef.GetModel<TestAnalysisCircuitModel>();
             Assert.NotNull(circuitModel);
@@ -132,9 +132,8 @@ namespace NextGenSpiceTest
         [Fact]
         public void ThrowsWhenNoModelCreatorExists()
         {
-            var circuitDef = new CircuitBuilder().AddElement(new[] { 0, 1 }, new TestDeviceDefinition()).AddElement(new[] { 1, 0 }, new TestDeviceDefinition()).Build();
+            var circuitDef = new CircuitBuilder().AddElement(new[] { 0, 1 }, new TestDeviceDefinition()).AddElement(new[] { 1, 0 }, new TestDeviceDefinition()).BuildCircuit();
             Assert.Throws<InvalidOperationException>(() => circuitDef.GetModel<LargeSignalCircuitModel>());
         }
-
     }
 }

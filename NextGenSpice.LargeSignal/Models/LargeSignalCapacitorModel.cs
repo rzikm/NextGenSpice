@@ -1,26 +1,25 @@
-﻿using System;
-using NextGenSpice.Core.Elements;
+﻿using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.Helpers;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    public class LargeSignalCapacitorModel : TwoNodeLargeSignalModel<CapacitorElement>, ITimeDependentLargeSignalDeviceModel
+    public class LargeSignalCapacitorModel : TwoNodeLargeSignalModel<CapacitorElement>,
+        ITimeDependentLargeSignalDeviceModel
     {
-        public double Current => State.Ic;
-
-        private struct CapacitorState
-        {
-            public double Vc;
-            public double GEq;
-            public double IEq;
-            public double Ic;
-        }
-
         private readonly StateHelper<CapacitorState> stateHelper;
-        private ref CapacitorState State => ref stateHelper.Value;
 
         private int branchVariable;
+
+        public LargeSignalCapacitorModel(CapacitorElement parent) : base(parent)
+        {
+            stateHelper = new StateHelper<CapacitorState>();
+            State.GEq = 0;
+            State.Vc = parent.InitialVoltage;
+        }
+
+        public double Current => State.Ic;
+        private ref CapacitorState State => ref stateHelper.Value;
 
         public double Voltage => State.Vc;
 
@@ -30,19 +29,12 @@ namespace NextGenSpice.LargeSignal.Models
             branchVariable = builder.AddVariable();
         }
 
-        public LargeSignalCapacitorModel(CapacitorElement parent) : base(parent)
-        {
-            stateHelper = new StateHelper<CapacitorState>();
-            State.GEq = 0;
-            State.Vc = parent.InitialVoltage;
-        }
-
-        public void AdvanceTimeDependentModel(SimulationContext context)
+        public void UpdateTimeDependentModel(ISimulationContext context)
         {
             stateHelper.Commit();
-            
+
             State.GEq = Parent.Capacity / context.Timestep;
-            var vc = context.EquationSolution[Parent.Anode] - context.EquationSolution[Parent.Kathode];
+            var vc = context.GetSolutionForVariable(Parent.Anode) - context.GetSolutionForVariable(Parent.Kathode);
             State.Vc = vc;
             State.IEq = State.GEq * State.Vc;
         }
@@ -52,13 +44,13 @@ namespace NextGenSpice.LargeSignal.Models
             stateHelper.Rollback();
         }
 
-        public override void PostProcess(SimulationContext context)
+        public override void PostProcess(ISimulationContext context)
         {
             base.PostProcess(context);
-            State.Ic = context.EquationSolution[branchVariable];
+            State.Ic = context.GetSolutionForVariable(branchVariable);
         }
 
-        public void ApplyTimeDependentModelValues(IEquationSystem equation, SimulationContext context)
+        public void ApplyTimeDependentModelValues(IEquationSystem equation, ISimulationContext context)
         {
             equation.AddMatrixEntry(branchVariable, Anode, State.GEq);
             equation.AddMatrixEntry(branchVariable, Kathode, -State.GEq);
@@ -70,7 +62,13 @@ namespace NextGenSpice.LargeSignal.Models
 
             equation.AddRightHandSideEntry(branchVariable, State.IEq);
         }
+
+        private struct CapacitorState
+        {
+            public double Vc;
+            public double GEq;
+            public double IEq;
+            public double Ic;
+        }
     }
-
-
 }

@@ -4,23 +4,22 @@ namespace NextGenSpice.Core.Elements
 {
     public abstract class TwoNodeCircuitElement : ICircuitDefinitionElement
     {
-        public int Anode
-        {
-            get => ConnectedNodes[0];
-            set => ConnectedNodes[0] = value;
-        }
+        public int Anode => ConnectedNodes[0];
 
-        public int Kathode
-        {
-            get => ConnectedNodes[1];
-            set => ConnectedNodes[1] = value;
-        }
+        public int Kathode => ConnectedNodes[1];
 
-        public TwoNodeCircuitElement()
+        protected TwoNodeCircuitElement()
         {
             ConnectedNodes = new NodeConnectionSet(2);
         }
 
-        public NodeConnectionSet ConnectedNodes { get; protected internal set; }
+        public NodeConnectionSet ConnectedNodes { get; private set; }
+        public virtual ICircuitDefinitionElement Clone()
+        {
+            var clone = (TwoNodeCircuitElement)MemberwiseClone();
+            clone.ConnectedNodes = ConnectedNodes.Clone();
+
+            return clone;
+        }
     }
 }

@@ -5,8 +5,8 @@ namespace NextGenSpice.LargeSignal.Models
 {
     public interface INonlinearLargeSignalDeviceModel : ILargeSignalDeviceModel
     {
-        void UpdateNonlinearModel(SimulationContext context);
+        void UpdateNonlinearModel(ISimulationContext context);
 
-        void ApplyNonlinearModelValues(IEquationSystem equation, SimulationContext context);
+        void ApplyNonlinearModelValues(IEquationSystem equation, ISimulationContext context);
     }
 }

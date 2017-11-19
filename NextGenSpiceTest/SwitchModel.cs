@@ -12,11 +12,11 @@ namespace NextGenSpiceTest
         {
         }
 
-        public void AdvanceTimeDependentModel(SimulationContext context)
+        public void UpdateTimeDependentModel(ISimulationContext context)
         {
         }
 
-        public void ApplyTimeDependentModelValues(IEquationSystem equation, SimulationContext context)
+        public void ApplyTimeDependentModelValues(IEquationSystem equation, ISimulationContext context)
         {
             if (IsOn)
                 equation.BindEquivalent(Anode, Kathode);

@@ -1,26 +1,15 @@
-﻿using System;
-using NextGenSpice.Core.Elements;
+﻿using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.Helpers;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    public class LargeSignalInductorModel : TwoNodeLargeSignalModel<InductorElement>, ITimeDependentLargeSignalDeviceModel
+    public class LargeSignalInductorModel : TwoNodeLargeSignalModel<InductorElement>,
+        ITimeDependentLargeSignalDeviceModel
     {
-        private struct InductorState
-        {
-            public double VEq;
-            public double REq;
-            public double Il;
-        }
-        
         private readonly StateHelper<InductorState> stateHelper;
 
-        private ref InductorState State => ref stateHelper.Value;
-
         private int additionalVariable;
-
-        public double Current => State.Il;
 
         public LargeSignalInductorModel(InductorElement parent) : base(parent)
         {
@@ -30,23 +19,27 @@ namespace NextGenSpice.LargeSignal.Models
             State.VEq = 0; // model initially as short circuit
         }
 
+        private ref InductorState State => ref stateHelper.Value;
+
+        public double Current => State.Il;
+
         public override void Initialize(IEquationSystemBuilder builder)
         {
             additionalVariable = builder.AddVariable();
             base.Initialize(builder);
         }
 
-        public void AdvanceTimeDependentModel(SimulationContext context)
+        public void UpdateTimeDependentModel(ISimulationContext context)
         {
             stateHelper.Commit();
             State.REq = Parent.Inductance / context.Timestep;
             State.VEq = State.REq * State.Il;
         }
 
-        public override void PostProcess(SimulationContext context)
+        public override void PostProcess(ISimulationContext context)
         {
             base.PostProcess(context);
-            State.Il = context.EquationSolution[additionalVariable];
+            State.Il = context.GetSolutionForVariable(additionalVariable);
         }
 
         public void RollbackTimeDependentModel()
@@ -54,10 +47,17 @@ namespace NextGenSpice.LargeSignal.Models
             stateHelper.Rollback();
         }
 
-        public void ApplyTimeDependentModelValues(IEquationSystem equation, SimulationContext context)
+        public void ApplyTimeDependentModelValues(IEquationSystem equation, ISimulationContext context)
         {
             equation.AddVoltage(Anode, Kathode, additionalVariable, -State.VEq);
             equation.AddMatrixEntry(additionalVariable, additionalVariable, -State.REq);
+        }
+
+        private struct InductorState
+        {
+            public double VEq;
+            public double REq;
+            public double Il;
         }
     }
 }

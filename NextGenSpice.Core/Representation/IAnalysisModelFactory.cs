@@ -7,11 +7,17 @@ namespace NextGenSpice.Core.Representation
     {
         TAnalysisModel Create(ICircuitDefinition circuitDefinition);
 
-        void SetModel<TRepresentation, TModel>() where TRepresentation : ICircuitDefinitionElement
-            where TModel : IAnalysisDeviceModel<TAnalysisModel>, new();
+        void SetModel<TRepresentation, TModel>(TModel model) where TRepresentation : ICircuitDefinitionElement
+            where TModel : IAnalysisDeviceModel<TAnalysisModel>;
 
         void SetModel<TRepresentation, TModel>(Func<TRepresentation, TModel> factoryFunc)
             where TRepresentation : ICircuitDefinitionElement
             where TModel : IAnalysisDeviceModel<TAnalysisModel>;
+
+        void SetModel<TRepresentation, TModel>(Func<TRepresentation, IAnalysisModelFactory<TAnalysisModel>, TModel> factoryFunc)
+            where TRepresentation : ICircuitDefinitionElement
+            where TModel : IAnalysisDeviceModel<TAnalysisModel>;
+
+        IAnalysisDeviceModel<TAnalysisModel> GetModel(ICircuitDefinitionElement element);
     }
 }

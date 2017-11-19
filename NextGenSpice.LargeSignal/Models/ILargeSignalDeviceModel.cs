@@ -1,5 +1,4 @@
-﻿using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
+﻿using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.Representation;
 
@@ -9,6 +8,6 @@ namespace NextGenSpice.LargeSignal.Models
     {
         void Initialize(IEquationSystemBuilder builder);
 
-        void PostProcess(SimulationContext context);
+        void PostProcess(ISimulationContext context);
     }
 }

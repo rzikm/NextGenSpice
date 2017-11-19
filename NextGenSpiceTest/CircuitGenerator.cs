@@ -19,7 +19,7 @@ namespace NextGenSpiceTest
                 .AddResistor(2, 3, 5)
                 .AddResistor(3, 0, 10)
                 .AddCurrentSource(1, 0, 3)
-                .Build();
+                .BuildCircuit();
         }
 
         public static ElectricCircuitDefinition GetNonlinearCircuit()
@@ -30,7 +30,7 @@ namespace NextGenSpiceTest
                 .AddResistor(1, 2, 10000)
                 .AddCurrentSource(1, 0, 0.1)
                 .AddDiode(2, 0, p => { p.Vd = 0.2; })
-                .Build();
+                .BuildCircuit();
         }
 
         public static ElectricCircuitDefinition GetCircuitWithVoltageSource()
@@ -41,7 +41,7 @@ namespace NextGenSpiceTest
                 .AddResistor(1, 0, 1)
                 .AddResistor(1, 2, 2)
                 .AddResistor(0, 2, 3)
-                .AddVoltageSource(1, 0, 5).Build();
+                .AddVoltageSource(1, 0, 5).BuildCircuit();
         }
 
         public static ElectricCircuitDefinition GetCircuitWithBasicDevices()
@@ -53,7 +53,7 @@ namespace NextGenSpiceTest
                 .AddDiode(3, 4, DiodeModelParams.Default)
                 .AddInductor(4, 5, 5)
                 .AddVoltageSource(5, 0, 5)
-                .Build();
+                .BuildCircuit();
         }
         
         public static ElectricCircuitDefinition GetSimpleCircuitWithCapacitor()
@@ -63,7 +63,7 @@ namespace NextGenSpiceTest
                 .AddResistor(1, 2, 5)
                 .AddCapacitor(2, 0, 1e-6)
                 .AddResistor(0, 2, 5)
-                .Build();
+                .BuildCircuit();
         }
 
         public static ElectricCircuitDefinition GetSimpleCircuitWithInductor()
@@ -73,7 +73,7 @@ namespace NextGenSpiceTest
                 .AddResistor(1, 2, 5)
                 .AddInductor(2, 3, 1e-6)
                 .AddResistor(0, 3, 5)
-                .Build();
+                .BuildCircuit();
         }
 
         public static LargeSignalCircuitModel GetSimpleTimeDependentModelWithCapacitor(out SwitchModel switchModel)
@@ -85,7 +85,7 @@ namespace NextGenSpiceTest
                 .AddElement(new int[] { 1, 2 }, new SwitchElement())
                 .AddResistor(2, 3, 5)
                 .AddCapacitor(3, 0, 1e-6)
-                .Build();
+                .BuildCircuit();
 
             circuit.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchElement, SwitchModel>(m =>
             {
@@ -106,7 +106,7 @@ namespace NextGenSpiceTest
                 .AddElement(new int[] { 1, 2 }, new SwitchElement())
                 .AddResistor(2, 3, 1)
                 .AddInductor(3, 0, 1e-6)
-                .Build();
+                .BuildCircuit();
 
 
             circuit.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchElement, SwitchModel>(m =>

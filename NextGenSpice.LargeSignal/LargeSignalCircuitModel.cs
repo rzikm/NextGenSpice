@@ -11,6 +11,9 @@ namespace NextGenSpice.LargeSignal
 {
     public class LargeSignalCircuitModel : IAnalysisCircuitModel<ILargeSignalDeviceModel>
     {
+        private ISimulationContext context;
+        private EquationSystem equationSystem;
+
         public LargeSignalCircuitModel(IEnumerable<double> initialVoltages, List<ILargeSignalDeviceModel> elements)
         {
             NodeVoltages = initialVoltages.ToArray();
@@ -26,7 +29,6 @@ namespace NextGenSpice.LargeSignal
         public IReadOnlyList<INonlinearLargeSignalDeviceModel> NonlinearElements { get; }
         public IReadOnlyList<ITimeDependentLargeSignalDeviceModel> TimeDependentElements { get; }
         public bool IsLinear => NonlinearElements.Count == 0;
-        public IReadOnlyList<ILargeSignalDeviceModel> Elements { get; }
 
         public double Epsilon { get; } = 1e-15;
         public int MaxDcPointIterations { get; set; } = 1000;
@@ -35,9 +37,7 @@ namespace NextGenSpice.LargeSignal
 
         public int IterationCount { get; private set; }
         public double DeltaSquared { get; private set; }
-
-        private SimulationContext context;
-        private EquationSystem equationSystem;
+        public IReadOnlyList<ILargeSignalDeviceModel> Elements { get; }
 
         public void Simulate(Action<double[]> callback)
         {
@@ -85,20 +85,14 @@ namespace NextGenSpice.LargeSignal
         private void BuildEquationSystem()
         {
             var b = new EquationSystemBuilder();
-            for (int i = 0; i < NodeCount; i++)
-            {
+            for (var i = 0; i < NodeCount; i++)
                 b.AddVariable();
-            }
 
             foreach (var element in Elements)
-            {
                 element.Initialize(b);
-            }
 
             foreach (var circuitElement in LinearElements)
-            {
                 circuitElement.ApplyLinearModelValues(b, context);
-            }
 
             equationSystem = b.Build();
         }
@@ -123,9 +117,7 @@ namespace NextGenSpice.LargeSignal
 
             Iterate_DcBias();
             if (!IsLinear && !IterateUntilConvergence())
-            {
                 return false;
-            }
 
             //DistributeCurrent();
 
@@ -138,25 +130,24 @@ namespace NextGenSpice.LargeSignal
             do
             {
                 delta = 0;
-                var prevVoltages = (double[])equationSystem.Solution.Clone();
+                var prevVoltages = (double[]) equationSystem.Solution.Clone();
 
                 Iterate_DcBias();
 
-                for (int i = 0; i < prevVoltages.Length; i++)
+                for (var i = 0; i < prevVoltages.Length; i++)
                 {
                     var d = prevVoltages[i] - equationSystem.Solution[i];
                     delta += d * d;
                 }
 
                 if (++IterationCount == MaxDcPointIterations) return false;
-
             } while (delta > Epsilon * Epsilon);
 
             DeltaSquared = delta;
 
             return true;
         }
-        
+
 
         private void Iterate_DcBias()
         {
@@ -170,9 +161,7 @@ namespace NextGenSpice.LargeSignal
         private void PostProcess()
         {
             foreach (var el in Elements)
-            {
                 el.PostProcess(context);
-            }
         }
 
         private void UpdateNodeValues()
@@ -180,9 +169,7 @@ namespace NextGenSpice.LargeSignal
             equationSystem.Solve();
 
             for (var i = 0; i < NodeCount; i++)
-            {
                 NodeVoltages[i] = equationSystem.Solution[i];
-            }
         }
 
         private void UpdateEquationSystem()
@@ -190,14 +177,10 @@ namespace NextGenSpice.LargeSignal
             equationSystem.Clear();
 
             foreach (var e in NonlinearElements)
-            {
                 e.ApplyNonlinearModelValues(equationSystem, context);
-            }
 
             foreach (var e in TimeDependentElements)
-            {
                 e.ApplyTimeDependentModelValues(equationSystem, context);
-            }
         }
 
         private void DebugPrint()
@@ -214,17 +197,13 @@ namespace NextGenSpice.LargeSignal
         private void UpdateNonlinearElements()
         {
             foreach (var element in NonlinearElements)
-            {
                 element.UpdateNonlinearModel(context);
-            }
         }
 
         private void UpdateTimeDependentElements()
         {
             foreach (var element in TimeDependentElements)
-            {
-                element.AdvanceTimeDependentModel(context);
-            }
+                element.UpdateTimeDependentModel(context);
         }
     }
 }

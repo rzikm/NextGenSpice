@@ -55,7 +55,7 @@ namespace SandboxRunner
 
         private static void PrintStats(LargeSignalCircuitModel model, double time, double val)
         {
-            Console.WriteLine($"{(time * 1e6),+5:##.## 'us'}\t|{string.Join("\t|", model.NodeVoltages.Select(v => v.ToString("F")))}\t|{val:F}");
+            Trace.WriteLine($"{(time * 1e6),+5:##.## 'us'}\t|{string.Join("\t|", model.NodeVoltages.Select(v => v.ToString("F")))}\t|{val:F}");
         }
         private static void SimulateAndPrint(LargeSignalCircuitModel model, double time, double step)
         {
@@ -91,7 +91,7 @@ namespace SandboxRunner
                 .AddElement(new int[] { 1, 2 }, new NextGenSpiceTest.SwitchElement())
                 .AddResistor(2, 3, 1)
                 .AddCapacitor(3, 0, 1e-6)
-                .Build();
+                .BuildCircuit();
 
             circuit.GetFactory<LargeSignalCircuitModel>().SetModel<NextGenSpiceTest.SwitchElement, SwitchModel>(m =>
             {
@@ -116,9 +116,9 @@ namespace SandboxRunner
             var elapsed = 0.0;
 
             //model.EstablishDcBias();
-            Console.WriteLine("Voltages:");
-            Console.WriteLine($"Time\t|{string.Join("\t|", Enumerable.Range(0, model.NodeCount))}\t|Il");
-            Console.WriteLine("-------------------------------------------------------------------------");
+            Trace.WriteLine("Voltages:");
+            Trace.WriteLine($"Time\t|{string.Join("\t|", Enumerable.Range(0, model.NodeCount))}\t|Il");
+            Trace.WriteLine("-------------------------------------------------------------------------");
             //            var device = model.TimeDependentElements.OfType<LargeSignalInductorModel>().Single();
             var device = model.Elements.OfType<LargeSignalCapacitorModel>().Single();
 
@@ -129,8 +129,8 @@ namespace SandboxRunner
 
             while (elapsed < 15e-6)
             {
-                model.AdvanceInTime(0.1e-6);
-                elapsed += 0.1e-6;
+                model.AdvanceInTime(0.1e-7);
+                elapsed += 0.1e-7;
                 PrintStats(model, elapsed, device.Current);
                 //                PrintStats(model, elapsed, device.Voltage);
             }
@@ -140,8 +140,13 @@ namespace SandboxRunner
         {
             PrintFileSizes();
             //            SetListeners();
-//            RunModel();
-            Misc.HilbertMatrixStabilityTest();
+            Stopwatch sw = Stopwatch.StartNew();
+            RunModel();
+            sw.Stop();
+
+            Console.WriteLine(sw.Elapsed);
+
+//            Misc.HilbertMatrixStabilityTest();
         }
 
 

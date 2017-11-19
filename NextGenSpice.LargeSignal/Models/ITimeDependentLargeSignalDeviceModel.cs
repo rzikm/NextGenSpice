@@ -5,9 +5,9 @@ namespace NextGenSpice.LargeSignal.Models
 {
     public interface ITimeDependentLargeSignalDeviceModel : ILargeSignalDeviceModel
     {
-        void AdvanceTimeDependentModel(SimulationContext context);
+        void UpdateTimeDependentModel(ISimulationContext context);
         void RollbackTimeDependentModel();
 
-        void ApplyTimeDependentModelValues(IEquationSystem equation, SimulationContext context);
+        void ApplyTimeDependentModelValues(IEquationSystem equation, ISimulationContext context);
     }
 }
