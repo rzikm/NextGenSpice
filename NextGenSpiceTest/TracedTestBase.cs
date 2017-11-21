@@ -5,37 +5,44 @@ using Xunit.Abstractions;
 
 namespace NextGenSpiceTest
 {
-    public class TracedTestBase : IDisposable
+    public class TracedTestBase
     {
-        protected MyTraceListener traceListener;
 
-        protected class MyTraceListener : TraceListener
+        [ThreadStatic]
+        private static ITestOutputHelper output;
+
+        [ThreadStatic]
+        private static StringBuilder sb;
+
+        protected ITestOutputHelper Output => output;
+
+        public TracedTestBase(ITestOutputHelper output)
         {
-            private readonly ITestOutputHelper output;
+            TracedTestBase.output = output;
+            sb = new StringBuilder();
 
-            private StringBuilder sb = new StringBuilder();
+        }
 
-            public MyTraceListener(ITestOutputHelper output)
-            {
-                this.output = output;
-            }
+        static TracedTestBase()
+        {
+            Trace.Listeners.Add(new MyTraceListener());
+        }
+
+        private class MyTraceListener : TraceListener
+        {
 
             public override void Write(string message)
             {
-                sb.Append(message);
+                sb?.Append(message);
             }
 
             public override void WriteLine(string message)
             {
+                if (sb == null) return;
                 sb.Append(message);
                 output.WriteLine(sb.ToString());
                 sb.Clear();
             }
-        }
-
-        public void Dispose()
-        {
-            Trace.Listeners.Remove(traceListener);
         }
     }
 }

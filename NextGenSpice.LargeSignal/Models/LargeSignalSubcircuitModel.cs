@@ -49,7 +49,13 @@ namespace NextGenSpice.LargeSignal.Models
             base.Initialize(builder);
 
             for (var i = 1; i < nodeMap.Length; i++)
-                nodeMap[i] = builder.AddVariable();
+                nodeMap[i] = -1;
+
+            for (int i = 0; i < Parent.TerminalNodes.Length; i++)
+                nodeMap[Parent.TerminalNodes[i]] = Parent.ConnectedNodes[i];
+
+            for (var i = 1; i < nodeMap.Length; i++)
+                nodeMap[i] = nodeMap[i] < 0 ? builder.AddVariable() : nodeMap[i];
 
             biasedEquationEditor.TrueEquationEditor = builder;
 

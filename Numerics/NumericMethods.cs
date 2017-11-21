@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Numerics
@@ -19,20 +20,26 @@ namespace Numerics
             {
                 for (var j = 0; j < size; j++)
                 {
-                    Trace.Write($"{m[i, j]:F}");
+                    Trace.Write($"{m[i, j],10:G4}");
                     Trace.Write("\t");
                 }
 
-                Trace.WriteLine($"|\t{b[i]}");
+                Trace.WriteLine($"|\t{b[i],10:G4}");
             }
 
             Trace.WriteLine("-----------------------------------------------------");
         }
 
+        [Conditional("DEBUG")]
+        private static void PrintSolution(double[] b)
+        {
+            Trace.WriteLine($"Solution: {string.Join(" ", b.Select(d => d.ToString("F")))}");
+        }
+
         public static void GaussElimSolve(Array2DWrapper m, double[] b, double[] x)
         {
             GaussElimSolve_Managed(m, b, x);
-//                        GaussElimSolve_Native(m, b, x);
+            //                        GaussElimSolve_Native(m, b, x);
         }
 
         private static void GaussElimSolve_Managed(Array2DWrapper m, double[] b, double[] x)
@@ -103,6 +110,7 @@ namespace Numerics
             }
 
             b.CopyTo(x, 0);
+            PrintSolution(b);
         }
 
         private static void GaussElimSolve_Native(Array2DWrapper m, double[] b, double[] x)
@@ -110,7 +118,7 @@ namespace Numerics
             fixed (double* mat = m.RawData)
             fixed (double* rhs = b)
             {
-                gauss_solve_double(mat, rhs, (uint) x.Length);
+                gauss_solve_double(mat, rhs, (uint)x.Length);
             }
 
             b.CopyTo(x, 0);
