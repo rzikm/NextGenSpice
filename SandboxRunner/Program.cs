@@ -129,8 +129,8 @@ namespace SandboxRunner
 
             while (elapsed < 15e-6)
             {
-                model.AdvanceInTime(0.1e-7);
-                elapsed += 0.1e-7;
+                model.AdvanceInTime(1e-6);
+                elapsed += 1e-6;
                 PrintStats(model, elapsed, device.Current);
                 //                PrintStats(model, elapsed, device.Voltage);
             }

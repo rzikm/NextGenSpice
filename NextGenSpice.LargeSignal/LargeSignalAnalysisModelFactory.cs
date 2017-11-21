@@ -31,11 +31,11 @@ namespace NextGenSpice.LargeSignal
             return (ILargeSignalDeviceModel) model;
         }
 
-        public override LargeSignalCircuitModel Create(ICircuitDefinition circuitDefinition)
+        protected override LargeSignalCircuitModel Instantiate(ModelInstantiationContext<LargeSignalCircuitModel> context)
         {
-            var elements = circuitDefinition.Elements.Select(InstantiateModel).ToList();
+            var elements = context.CircuitDefinition.Elements.Select(context.GetModel).Cast<ILargeSignalDeviceModel>().ToList();
 
-            return new LargeSignalCircuitModel(circuitDefinition.InitialVoltages, elements);
+            return new LargeSignalCircuitModel(context.CircuitDefinition.InitialVoltages, elements);
         }
     }
 }
