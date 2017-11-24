@@ -23,7 +23,6 @@ namespace NextGenSpice.Core.Representation
             Elements = elements;
             
         }
-        
 
         public void SetFactory<TAnalysisModel>(IAnalysisModelFactory<TAnalysisModel> factory)
         {

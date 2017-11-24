@@ -8,7 +8,7 @@ namespace NextGenSpice.Core.Elements
         public double InitialCurrent { get; }
 
 
-        public InductorElement(double inductance, double initialCurrent = 0)
+        public InductorElement(double inductance, double initialCurrent = 0, string name = null) : base(name)
         {
             this.Inductance = inductance;
             InitialCurrent = initialCurrent;

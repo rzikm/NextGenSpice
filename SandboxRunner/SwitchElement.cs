@@ -4,6 +4,8 @@ namespace SandboxRunner
 {
     public class SwitchElement : TwoNodeCircuitElement
     {
-        
+        public SwitchElement(string name = null) : base(name)
+        {
+        }
     }
 }

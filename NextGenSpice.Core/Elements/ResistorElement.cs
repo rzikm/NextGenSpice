@@ -4,7 +4,7 @@
     {
         public double Resistance { get; set; }
 
-        public ResistorElement(double resistance)
+        public ResistorElement(double resistance, string name = null) : base(name)
         {
             this.Resistance = resistance;
         }

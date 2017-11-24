@@ -24,13 +24,7 @@ namespace NextGenSpice.LargeSignal
             SetModel<InductorElement, LargeSignalInductorModel>(e => new LargeSignalInductorModel(e));
             SetModel<SubcircuitElement, LargeSignalSubcircuitModel>((e, f) => new LargeSignalSubcircuitModel(e, e.Elements.Select(f.GetModel).Cast<ILargeSignalDeviceModel>()));
         }
-
-        private ILargeSignalDeviceModel InstantiateModel(ICircuitDefinitionElement element)
-        {
-            var model = GetModel(element);
-            return (ILargeSignalDeviceModel) model;
-        }
-
+        
         protected override LargeSignalCircuitModel Instantiate(ModelInstantiationContext<LargeSignalCircuitModel> context)
         {
             var elements = context.CircuitDefinition.Elements.Select(context.GetModel).Cast<ILargeSignalDeviceModel>().ToList();

@@ -139,6 +139,10 @@ namespace SandboxRunner
         static void Main(string[] args)
         {
             PrintFileSizes();
+
+            new CircuitInstantiationTests().GetsModelByName();
+
+
             //            SetListeners();
             Stopwatch sw = Stopwatch.StartNew();
             RunModel();

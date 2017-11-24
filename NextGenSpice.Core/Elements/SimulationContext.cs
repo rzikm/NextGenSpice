@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.Contracts;
-using NextGenSpice.Core.Equations;
+﻿using NextGenSpice.Core.Equations;
 
 namespace NextGenSpice.Core.Elements
 {
@@ -22,26 +21,5 @@ namespace NextGenSpice.Core.Elements
         {
             return equationSystem.Solution[index];
         }
-
-//        public double GetNodeVoltage(int id)
-//        {
-//            Contract.Assert(id >= 0 && id < NodeCount);
-//
-//            return GetSolutionForVariable(id);
-//        }
-//
-//        public double GetCurrent(int sourceId, int targetId)
-//        {
-//            return (GetNodeVoltage(sourceId) - GetNodeVoltage(targetId)) * GetConductance(sourceId, targetId);
-//        }
-//
-//        public double GetConductance(int sourceId, int targetId)
-//        {
-//            Contract.Assert(sourceId >= 0 && sourceId < NodeCount);
-//            Contract.Assert(targetId >= 0 && targetId < NodeCount);
-//
-//            return equationSystem.GetMatrixEntry(sourceId, targetId);
-//        }
-
     }
 }

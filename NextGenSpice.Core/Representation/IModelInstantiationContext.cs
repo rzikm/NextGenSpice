@@ -6,5 +6,7 @@ namespace NextGenSpice.Core.Representation
     {
         ICircuitDefinition CircuitDefinition { get; }
         IAnalysisDeviceModel<TAnalysisModel> GetModel(ICircuitDefinitionElement element);
+
+        IAnalysisDeviceModel<TAnalysisModel> GetModel(string name);
     }
 }

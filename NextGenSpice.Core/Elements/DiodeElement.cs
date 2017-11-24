@@ -4,7 +4,7 @@ namespace NextGenSpice.Core.Elements
     {
         public readonly DiodeModelParams param;
 
-        public DiodeElement(DiodeModelParams param)
+        public DiodeElement(DiodeModelParams param, string name = null) : base(name)
         {
             this.param = param;
         }

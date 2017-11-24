@@ -17,13 +17,7 @@ namespace NextGenSpiceTest
             builder = new CircuitBuilder();
         }
 
-        [Fact]
-        public void CanAddClonedElement()
-        {
-            var device = new ResistorElement(5);
-            builder.AddElement(new[] { 1, 2 }, device);
-            builder.AddElement(new[] { 1, 2 }, device.Clone());
-        }
+  
 
         [Fact]
         public void TestSimpleSubcircuit()
@@ -50,6 +44,32 @@ namespace NextGenSpiceTest
             originalCircuit.EstablishDcBias();
 
 //            Assert.Equal(circuitWithSubcircuit.NodeVoltages[1], originalCircuit.NodeVoltages[2]);    
+        }
+
+        [Fact]
+        public void SubcircuitCannotReferenceOuterElements()
+        {
+            var subcircuit = builder
+                .AddVoltageSource(2, 1, 4)
+                .AddResistor(2, 3, 1)
+                .BuildSubcircuit(new int[] { 1, 2 });
+
+            var circuitWithSubcircuit = new CircuitBuilder()
+                .AddElement(new[] { 0, 1 }, subcircuit)
+                .AddResistor(1, 0, 5, "R1")
+                .BuildCircuit();
+            
+
+            
+        }
+
+        [Fact]
+        public void SubcircuitCanReferenceInnerElements()
+        {
+            var subcircuit = builder
+                .AddVoltageSource(2, 1, 4)
+                .AddResistor(2, 3, 1)
+                .BuildSubcircuit(new int[] { 1, 2 });
         }
     }
 }

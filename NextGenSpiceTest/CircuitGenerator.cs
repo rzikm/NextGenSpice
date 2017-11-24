@@ -14,7 +14,7 @@ namespace NextGenSpiceTest
             //taken from Inside SPICE, pg. 16
 
             return new CircuitBuilder()
-                .AddResistor(1, 2, 5)
+                .AddResistor(1, 2, 5, "R1")
                 .AddResistor(2, 0, 10)
                 .AddResistor(2, 3, 5)
                 .AddResistor(3, 0, 10)

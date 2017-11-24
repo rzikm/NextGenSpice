@@ -20,6 +20,11 @@ namespace NextGenSpice.Core.Representation
             {
                 return factory.GetModel(element);
             }
+
+            public IAnalysisDeviceModel<TAnalysisModel> GetModel(string name)
+            {
+                throw new NotSupportedException("Cannot find model by name when resolving a single model.");
+            }
         }
 
         private readonly Dictionary<Type, Func<ICircuitDefinitionElement, IModelInstantiationContext<TAnalysisModel>, IAnalysisDeviceModel<TAnalysisModel>>>
@@ -65,14 +70,8 @@ namespace NextGenSpice.Core.Representation
         {
             modelCreators[typeof(TRepresentation)] = (model, context) => factoryFunc((TRepresentation)model, context);
         }
-
-        //todo: consider removing this method
+        
         public IAnalysisDeviceModel<TAnalysisModel> GetModel(ICircuitDefinitionElement element)
-        {
-            return InstantiationContext.GetModel(element);
-        }
-
-        IAnalysisDeviceModel<TAnalysisModel> IAnalysisModelFactory<TAnalysisModel>.GetModel(ICircuitDefinitionElement element)
         {
             if (modelCreators.TryGetValue(element.GetType(), out var creator))
             {

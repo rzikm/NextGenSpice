@@ -40,7 +40,9 @@ namespace NextGenSpiceTest
 
         class TestDeviceDefinition : TwoNodeCircuitElement
         {
-
+            public TestDeviceDefinition(string name = null) : base(name)
+            {
+            }
         }
 
         interface ITestDeviceModel : IAnalysisDeviceModel<TestAnalysisCircuitModel>
