@@ -3,18 +3,17 @@ using NextGenSpice.Core.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    public class LargeSignalCurrentSourceModel : TwoNodeLargeSignalModel<CurrentSourceElement>,
-        ILinearLargeSignalDeviceModel
+    public class LargeSignalCurrentSourceModel : TwoNodeLargeSignalModel<CurrentSourceElement>
     {
         public LargeSignalCurrentSourceModel(CurrentSourceElement parent) : base(parent)
         {
         }
 
         public double Current => Parent.Current;
-
-        public void ApplyLinearModelValues(IEquationEditor equation, ISimulationContext context)
+        
+        public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            equation.AddCurrent(Anode, Kathode, Current);
+            equations.AddCurrent(Anode, Kathode, Current);
         }
     }
 }

@@ -6,18 +6,13 @@ using NextGenSpice.Core.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    public class LargeSignalSubcircuitModel : LargeSignalModelBase<SubcircuitElement>, ILinearLargeSignalDeviceModel,
-        INonlinearLargeSignalDeviceModel, ITimeDependentLargeSignalDeviceModel
+    public class LargeSignalSubcircuitModel : LargeSignalModelBase<SubcircuitElement>
     {
         private readonly BiasedEquationEditor biasedEquationEditor;
         private readonly BiasedSimulationContext subContext;
         private readonly int[] nodeMap;
 
         private readonly ILargeSignalDeviceModel[] elements;
-
-        private readonly ILinearLargeSignalDeviceModel[] linearModels;
-        private readonly INonlinearLargeSignalDeviceModel[] nonlinearModels;
-        private readonly ITimeDependentLargeSignalDeviceModel[] timeDependentModels;
 
         public IReadOnlyList<ILargeSignalDeviceModel> Elements => elements;
 
@@ -26,27 +21,23 @@ namespace NextGenSpice.LargeSignal.Models
         {
             this.elements = elements.ToArray();
 
-            linearModels = this.elements.OfType<ILinearLargeSignalDeviceModel>().ToArray();
-            nonlinearModels = this.elements.OfType<INonlinearLargeSignalDeviceModel>().ToArray();
-            timeDependentModels = this.elements.OfType<ITimeDependentLargeSignalDeviceModel>().ToArray();
-
             nodeMap = new int[parent.InnerNodeCount + 1];
             biasedEquationEditor = new BiasedEquationEditor(nodeMap);
             subContext = new BiasedSimulationContext(nodeMap);
         }
 
-        public override void PostProcess(ISimulationContext context)
+        public override void OnDcBiasEstablished(ISimulationContext context)
         {
-            base.PostProcess(context);
+            base.OnDcBiasEstablished(context);
             subContext.TrueContext = context;
 
             foreach (var model in elements)
-                model.PostProcess(context);
+                model.OnDcBiasEstablished(context);
         }
 
-        public override void Initialize(IEquationSystemBuilder builder)
+        public override void RegisterAdditionalVariables(IEquationSystemBuilder builder)
         {
-            base.Initialize(builder);
+            base.RegisterAdditionalVariables(builder);
 
             for (var i = 1; i < nodeMap.Length; i++)
                 nodeMap[i] = -1;
@@ -60,56 +51,16 @@ namespace NextGenSpice.LargeSignal.Models
             biasedEquationEditor.TrueEquationEditor = builder;
 
             foreach (var model in elements)
-                model.Initialize(builder);
+                model.RegisterAdditionalVariables(builder);
         }
 
-        public void ApplyLinearModelValues(IEquationEditor equation, ISimulationContext context)
+        public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            biasedEquationEditor.TrueEquationEditor = equation;
+            biasedEquationEditor.TrueEquationEditor = equations;
             subContext.TrueContext = context;
 
-            foreach (var model in linearModels)
-                model.ApplyLinearModelValues(biasedEquationEditor, context);
-        }
-
-        public void UpdateNonlinearModel(ISimulationContext context)
-        {
-            subContext.TrueContext = context;
-
-            foreach (var model in nonlinearModels)
-                model.UpdateNonlinearModel(context);
-        }
-
-        public void ApplyNonlinearModelValues(IEquationSystem equation, ISimulationContext context)
-        {
-            subContext.TrueContext = context;
-            biasedEquationEditor.TrueEquationEditor = equation;
-
-            foreach (var model in nonlinearModels)
-                model.ApplyNonlinearModelValues(biasedEquationEditor, context);
-        }
-
-        public void UpdateTimeDependentModel(ISimulationContext context)
-        {
-            subContext.TrueContext = context;
-
-            foreach (var model in timeDependentModels)
-                model.UpdateTimeDependentModel(context);
-        }
-
-        public void RollbackTimeDependentModel()
-        {
-            foreach (var model in timeDependentModels)
-                model.RollbackTimeDependentModel();
-        }
-
-        public void ApplyTimeDependentModelValues(IEquationSystem equation, ISimulationContext context)
-        {
-            biasedEquationEditor.TrueEquationEditor = equation;
-            subContext.TrueContext = context;
-
-            foreach (var model in timeDependentModels)
-                model.ApplyTimeDependentModelValues(biasedEquationEditor, context);
+            foreach (var model in elements)
+                model.ApplyModelValues(biasedEquationEditor, context);
         }
     }
 }

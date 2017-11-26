@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NextGenSpice.Core.Circuit;
+using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Extensions;
 using NextGenSpice.LargeSignal;
 using NextGenSpice.LargeSignal.Models;
@@ -9,65 +10,44 @@ using Xunit.Abstractions;
 
 namespace NextGenSpiceTest
 {
-    public class TransientAnalysisTests
+    public class TransientAnalysisTests : TracedTestBase
     {
-        private readonly ITestOutputHelper output;
-
-        public TransientAnalysisTests(ITestOutputHelper output)
+        public TransientAnalysisTests(ITestOutputHelper output) : base(output)
         {
-            this.output = output;
+            DoTrace = false;
         }
+        
 
         [Fact]
-        public void TestTimeSimulationDoesNotChangeResultWhenUsingInductor()
-        {
-            var circuit = CircuitGenerator.GetSimpleCircuitWithInductor();
-
-            var model = circuit.GetLargeSignalModel();
-            model.EstablishDcBias();
-            output.PrintCircuitStats(model);
-
-            var expected = model.NodeVoltages.ToArray();
-            model.AdvanceInTime(model.MaxTimeStep);
-            output.PrintCircuitStats(model);
-
-            Assert.Equal(expected, model.NodeVoltages, new DoubleComparer(1e-4));
-        }
-
-
-
-
-
-//        [Fact]
         public void TestSimpleCapacitorTimeDependentCircuit()
         {
             // TODO expected values taken from LTSPICE, file capacitor_simple_time.asc - see docs.
-            List<double> results = new List<double>();
-
-            var model = CircuitGenerator.GetSimpleTimeDependentModelWithCapacitor(out var switchModel);
-
+            var results = new List<double>();
+            
+            var circuit = new CircuitBuilder()
+                .AddVoltageSource(1, 0, 15)
+                .AddResistor(1, 2, 1)
+                .AddCapacitor(2, 0, 1e-6, 0)
+                .BuildCircuit();
+            
+            var model = circuit.GetLargeSignalModel();
             model.EstablishDcBias();
-            output.PrintCircuitStats(model);
 
-            output.WriteLine("Voltages:");
-            output.WriteLine(string.Join("\t", Enumerable.Range(0, model.NodeCount)));
+            var device = model.Elements.OfType<LargeSignalCapacitorModel>().Single();
 
+            Output.WriteLine("Voltages:");
+            Output.WriteLine(string.Join("\t", Enumerable.Range(0, model.NodeCount)));
+            Output.WriteLine(string.Join("\t",
+                model.NodeVoltages.Concat(new[] { device.Current }).Select(v => v.ToString("F"))));
 
-            results.Add(model.NodeVoltages[2]);
-            switchModel.IsOn = false;
-
-            var capacitor = model.TimeDependentElements.OfType<LargeSignalCapacitorModel>().Single();
-
-            for (int i = 0; i < 40; i++)
+            for (var i = 0; i < 40; i++)
             {
                 model.AdvanceInTime(1e-6); // 1us
 
-                output.WriteLine(string.Join("\t", model.NodeVoltages.Concat(new[] { capacitor.Voltage }).Select(v => v.ToString("F"))));
+                Output.WriteLine(string.Join("\t",
+                    model.NodeVoltages.Concat(new[] { device.Current }).Select(v => v.ToString("F"))));
                 results.Add(model.NodeVoltages[2]);
             }
-
-            Assert.Equal(0.77, results[4], new DoubleComparer(0.15));
-            Assert.Equal(0.90, results[8], new DoubleComparer(0.15));
         }
 
 
@@ -76,34 +56,34 @@ namespace NextGenSpiceTest
         {
             // TODO expected values taken from LTSPICE, file inductor_simple_time.asc - see docs.
 
-            List<double> results = new List<double>();
+            var results = new List<double>();
 
             var model = CircuitGenerator.GetSimpleTimeDependentModelWithInductor(out var switchModel);
-            var inductor = model.TimeDependentElements.OfType<LargeSignalInductorModel>().Single();
+            var inductor = model.Elements.OfType<LargeSignalInductorModel>().Single();
 
             switchModel.IsOn = false;
             model.EstablishDcBias();
             switchModel.IsOn = true;
 
-            output.PrintCircuitStats(model);
-
-            output.WriteLine("Voltages:");
-            output.WriteLine(string.Join("\t", Enumerable.Range(0, model.NodeCount)));
-            output.WriteLine(string.Join("\t", model.NodeVoltages.Concat(new[] { inductor.Current }).Select(v => v.ToString("F"))));
+            Output.WriteLine("Voltages:");
+            Output.WriteLine(string.Join("\t", Enumerable.Range(0, model.NodeCount)));
+            Output.WriteLine(string.Join("\t",
+                model.NodeVoltages.Concat(new[] { inductor.Current }).Select(v => v.ToString("F"))));
 
             results.Add(model.NodeVoltages[2]);
 
 
-            for (int i = 0; i < 40; i++)
+            for (var i = 0; i < 40; i++)
             {
                 model.AdvanceInTime(1e-6); // 1us
 
-                output.WriteLine(string.Join("\t", model.NodeVoltages.Concat(new[] { inductor.Current }).Select(v => v.ToString("F"))));
+                Output.WriteLine(string.Join("\t",
+                    model.NodeVoltages.Concat(new[] { inductor.Current }).Select(v => v.ToString("F"))));
                 results.Add(model.NodeVoltages[2]);
             }
 
-//            Assert.Equal(0.77, results[4], new DoubleComparer(0.15));
-//            Assert.Equal(0.90, results[8], new DoubleComparer(0.15));
+            //            Assert.Equal(0.77, results[4], new DoubleComparer(0.15));
+            //            Assert.Equal(0.90, results[8], new DoubleComparer(0.15));
         }
 
         [Fact]
@@ -113,13 +93,29 @@ namespace NextGenSpiceTest
 
             var model = circuit.GetLargeSignalModel();
             model.EstablishDcBias();
-            output.PrintCircuitStats(model);
+            Output.PrintCircuitStats(model);
 
             var expected = model.NodeVoltages.ToArray();
             model.AdvanceInTime(model.MaxTimeStep);
-            output.PrintCircuitStats(model);
+            Output.PrintCircuitStats(model);
 
             Assert.Equal(expected, model.NodeVoltages);
+        }
+
+        [Fact]
+        public void TestTimeSimulationDoesNotChangeResultWhenUsingInductor()
+        {
+            var circuit = CircuitGenerator.GetSimpleCircuitWithInductor();
+
+            var model = circuit.GetLargeSignalModel();
+            model.EstablishDcBias();
+            Output.PrintCircuitStats(model);
+
+            var expected = model.NodeVoltages.ToArray();
+            model.AdvanceInTime(model.MaxTimeStep);
+            Output.PrintCircuitStats(model);
+
+            Assert.Equal(expected, model.NodeVoltages, new DoubleComparer(1e-4));
         }
     }
 }

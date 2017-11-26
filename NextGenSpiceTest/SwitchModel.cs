@@ -4,9 +4,11 @@ using NextGenSpice.LargeSignal.Models;
 
 namespace NextGenSpiceTest
 {
-    public class SwitchModel : TwoNodeLargeSignalModel<SwitchElement>, ITimeDependentLargeSignalDeviceModel
+    public class SwitchModel : TwoNodeLargeSignalModel<SwitchElement>
     {
         public bool IsOn { get; set; } = true;
+
+        private int branchVariable;
 
         public SwitchModel(SwitchElement parent) : base(parent)
         {
@@ -16,15 +18,33 @@ namespace NextGenSpiceTest
         {
         }
 
+        public override void RegisterAdditionalVariables(IEquationSystemBuilder builder)
+        {
+            base.RegisterAdditionalVariables(builder);
+            branchVariable = builder.AddVariable();
+        }
+
         public void ApplyTimeDependentModelValues(IEquationSystem equation, ISimulationContext context)
         {
-            if (IsOn)
-                equation.BindEquivalent(Anode, Kathode);
-            else equation.AddConductance(Anode, Kathode, 1e-12);
         }
 
         public void RollbackTimeDependentModel()
         {
+        }
+
+        public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
+        {
+            if (IsOn)
+                equations.AddVoltage(Anode, Kathode, branchVariable, 0);
+            else
+            {
+                equations.AddMatrixEntry(Anode, branchVariable, 1);
+                equations.AddMatrixEntry(Kathode, branchVariable, -1);
+
+                equations.AddMatrixEntry(branchVariable, branchVariable, -1);
+
+                equations.AddRightHandSideEntry(branchVariable, 0);
+            }
         }
     }
 }

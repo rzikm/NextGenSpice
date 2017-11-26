@@ -4,71 +4,65 @@ using NextGenSpice.Core.Helpers;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    public class LargeSignalCapacitorModel : TwoNodeLargeSignalModel<CapacitorElement>,
-        ITimeDependentLargeSignalDeviceModel
+    public class LargeSignalCapacitorModel : TwoNodeLargeSignalModel<CapacitorElement>
     {
-        private readonly StateHelper<CapacitorState> stateHelper;
-
         private int branchVariable;
 
         public LargeSignalCapacitorModel(CapacitorElement parent) : base(parent)
         {
-            stateHelper = new StateHelper<CapacitorState>();
-            State.GEq = 0;
-            State.Vc = parent.InitialVoltage;
         }
 
-        public double Current => State.Ic;
-        private ref CapacitorState State => ref stateHelper.Value;
+        public double Current { get; private set; }
 
-        public double Voltage => State.Vc;
+        public double Voltage { get; private set; }
 
-        public override void Initialize(IEquationSystemBuilder builder)
+        public override void RegisterAdditionalVariables(IEquationSystemBuilder builder)
         {
-            base.Initialize(builder);
+            base.RegisterAdditionalVariables(builder);
             branchVariable = builder.AddVariable();
         }
 
-        public void UpdateTimeDependentModel(ISimulationContext context)
+        public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            stateHelper.Commit();
+            var geq = Parent.Capacity / context.Timestep * 2;
+            var ieq = geq * Voltage + Current;
 
-            State.GEq = Parent.Capacity / context.Timestep;
+            equations.AddMatrixEntry(branchVariable, Anode, geq);
+            equations.AddMatrixEntry(branchVariable, Kathode, -geq);
+
+            AddBranchCurrent(equations, ieq);
+
+        }
+
+        private void AddBranchCurrent(IEquationEditor equations, double ieq)
+        {
+            equations.AddMatrixEntry(Anode, branchVariable, 1);
+            equations.AddMatrixEntry(Kathode, branchVariable, -1);
+
+            equations.AddMatrixEntry(branchVariable, branchVariable, -1);
+
+            equations.AddRightHandSideEntry(branchVariable, ieq);
+        }
+
+        public override void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
+        {
+            if (Parent.InitialVoltage.HasValue)
+            {
+                equations.AddVoltage(Anode, Kathode, branchVariable, Parent.InitialVoltage.Value);
+            }
+            else
+            {
+                // model as open circuit
+                AddBranchCurrent(equations, 0);
+            }
+        }
+
+        public override void OnDcBiasEstablished(ISimulationContext context)
+        {
+            base.OnDcBiasEstablished(context);
+            Current = context.GetSolutionForVariable(branchVariable);
             var vc = context.GetSolutionForVariable(Parent.Anode) - context.GetSolutionForVariable(Parent.Kathode);
-            State.Vc = vc;
-            State.IEq = State.GEq * State.Vc;
-        }
-
-        public void RollbackTimeDependentModel()
-        {
-            stateHelper.Rollback();
-        }
-
-        public override void PostProcess(ISimulationContext context)
-        {
-            base.PostProcess(context);
-            State.Ic = context.GetSolutionForVariable(branchVariable);
-        }
-
-        public void ApplyTimeDependentModelValues(IEquationSystem equation, ISimulationContext context)
-        {
-            equation.AddMatrixEntry(branchVariable, Anode, State.GEq);
-            equation.AddMatrixEntry(branchVariable, Kathode, -State.GEq);
-
-            equation.AddMatrixEntry(Anode, branchVariable, 1);
-            equation.AddMatrixEntry(Kathode, branchVariable, -1);
-
-            equation.AddMatrixEntry(branchVariable, branchVariable, -1);
-
-            equation.AddRightHandSideEntry(branchVariable, State.IEq);
-        }
-
-        private struct CapacitorState
-        {
-            public double Vc;
-            public double GEq;
-            public double IEq;
-            public double Ic;
+            Voltage = vc;
         }
     }
 }

@@ -12,15 +12,15 @@
             return editor;
         }
 
-        public static IEquationEditor AddVoltage(this IEquationEditor editor, int anode, int kathode, int binder,
+        public static IEquationEditor AddVoltage(this IEquationEditor editor, int anode, int kathode, int branchVariable,
             double value)
         {
-            editor.AddMatrixEntry(binder, anode, 1);
-            editor.AddMatrixEntry(binder, kathode, -1);
-            editor.AddMatrixEntry(anode, binder, 1);
-            editor.AddMatrixEntry(kathode, binder, -1);
+            editor.AddMatrixEntry(branchVariable, anode, 1);
+            editor.AddMatrixEntry(branchVariable, kathode, -1);
+            editor.AddMatrixEntry(anode, branchVariable, 1);
+            editor.AddMatrixEntry(kathode, branchVariable, -1);
 
-            editor.AddRightHandSideEntry(binder, value);
+            editor.AddRightHandSideEntry(branchVariable, value);
 
             return editor;
         }

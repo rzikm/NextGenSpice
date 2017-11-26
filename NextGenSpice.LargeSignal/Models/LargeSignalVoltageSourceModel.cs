@@ -3,8 +3,7 @@ using NextGenSpice.Core.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    public class LargeSignalVoltageSourceModel : TwoNodeLargeSignalModel<VoltageSourceElement>,
-        ILinearLargeSignalDeviceModel
+    public class LargeSignalVoltageSourceModel : TwoNodeLargeSignalModel<VoltageSourceElement>
     {
         private int branchVariable = -1;
 
@@ -16,26 +15,25 @@ namespace NextGenSpice.LargeSignal.Models
 
         public double Current { get; private set; }
 
-        public override void PostProcess(ISimulationContext context)
+        public override void OnDcBiasEstablished(ISimulationContext context)
         {
-            base.PostProcess(context);
+            base.OnDcBiasEstablished(context);
             Current = context.GetSolutionForVariable(branchVariable);
         }
 
-        public override void Initialize(IEquationSystemBuilder builder)
+        public override void RegisterAdditionalVariables(IEquationSystemBuilder builder)
         {
-            base.Initialize(builder);
+            base.RegisterAdditionalVariables(builder);
             branchVariable = builder.AddVariable();
         }
 
-        public void ApplyLinearModelValues(IEquationEditor equation, ISimulationContext context)
+        public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            equation.AddVoltage(Anode, Kathode, branchVariable, Voltage);
+            equations.AddVoltage(Anode, Kathode, branchVariable, Voltage);
         }
     }
 
-    public class PulsingLargeSignalVoltageSourceModel : TwoNodeLargeSignalModel<VoltageSourceElement>,
-        ITimeDependentLargeSignalDeviceModel
+    public class PulsingLargeSignalVoltageSourceModel : TwoNodeLargeSignalModel<VoltageSourceElement>
     {
         private int branchVariable = -1;
 
@@ -47,34 +45,21 @@ namespace NextGenSpice.LargeSignal.Models
 
         public double Current { get; private set; }
 
-        public override void PostProcess(ISimulationContext context)
+        public override void OnDcBiasEstablished(ISimulationContext context)
         {
-            base.PostProcess(context);
+            base.OnDcBiasEstablished(context);
             Current = context.GetSolutionForVariable(branchVariable);
         }
 
-        public override void Initialize(IEquationSystemBuilder builder)
+        public override void RegisterAdditionalVariables(IEquationSystemBuilder builder)
         {
-            base.Initialize(builder);
+            base.RegisterAdditionalVariables(builder);
             branchVariable = builder.AddVariable();
         }
 
-        public void UpdateTimeDependentModel(ISimulationContext context)
+        public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-        }
-
-        public void RollbackTimeDependentModel()
-        {
-        }
-
-        public void ApplyTimeDependentModelValues(IEquationSystem equation, ISimulationContext context)
-        {
-            equation.AddVoltage(Anode, Kathode, branchVariable, Voltage);
-        }
-
-        public void ApplyLinearModelValues(IEquationEditor equation, ISimulationContext context)
-        {
-            equation.AddVoltage(Anode, Kathode, branchVariable, Voltage);
+            equations.AddVoltage(Anode, Kathode, branchVariable, Voltage);
         }
     }
 }

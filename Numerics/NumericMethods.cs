@@ -20,11 +20,10 @@ namespace Numerics
             {
                 for (var j = 0; j < size; j++)
                 {
-                    Trace.Write($"{m[i, j],10:G4}");
-                    Trace.Write("\t");
+                    Trace.Write($"{m[i, j],10:G4} ");
                 }
 
-                Trace.WriteLine($"|\t{b[i],10:G4}");
+                Trace.WriteLine($"| {b[i],10:G4}");
             }
 
             Trace.WriteLine("-----------------------------------------------------");

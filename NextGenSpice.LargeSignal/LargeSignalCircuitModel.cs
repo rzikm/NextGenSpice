@@ -6,6 +6,7 @@ using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Models;
+using Numerics;
 
 namespace NextGenSpice.LargeSignal
 {
@@ -18,26 +19,28 @@ namespace NextGenSpice.LargeSignal
         {
             NodeVoltages = initialVoltages.ToArray();
             Elements = elements;
-            LinearElements = elements.OfType<ILinearLargeSignalDeviceModel>().ToList();
-            NonlinearElements = elements.OfType<INonlinearLargeSignalDeviceModel>().ToList();
-            TimeDependentElements = elements.OfType<ITimeDependentLargeSignalDeviceModel>().ToList();
         }
 
         public double[] NodeVoltages { get; }
         public int NodeCount => NodeVoltages.Length;
-        public IReadOnlyList<ILinearLargeSignalDeviceModel> LinearElements { get; }
-        public IReadOnlyList<INonlinearLargeSignalDeviceModel> NonlinearElements { get; }
-        public IReadOnlyList<ITimeDependentLargeSignalDeviceModel> TimeDependentElements { get; }
-        public bool IsLinear => NonlinearElements.Count == 0;
+        public IReadOnlyList<ILargeSignalDeviceModel> Elements { get; }
+        public bool IsLinear => false;
 
-        public double Epsilon { get; } = 1e-15;
+
+        // iteration dependent variables
+
+        public double NonlinearIterationEpsilon { get; } = 1e-15;
+
         public int MaxDcPointIterations { get; set; } = 1000;
-
         public double MaxTimeStep { get; set; } = 1e-6;
+
+        public double TimestepAbsoluteEpsilon { get; set; }
+        public double TimestepRelativeEpsilon { get; set; }
+
 
         public int IterationCount { get; private set; }
         public double DeltaSquared { get; private set; }
-        public IReadOnlyList<ILargeSignalDeviceModel> Elements { get; }
+
 
         public void Simulate(Action<double[]> callback)
         {
@@ -45,9 +48,8 @@ namespace NextGenSpice.LargeSignal
 
             while (true)
             {
-                EstablishDcBias_Internal();
+                EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context));
                 callback(NodeVoltages);
-                UpdateTimeDependentElements();
             }
         }
 
@@ -67,9 +69,8 @@ namespace NextGenSpice.LargeSignal
         private void AdvanceInTime_Internal(double step)
         {
             context.Timestep = step;
-
-            UpdateTimeDependentElements();
-            EstablishDcBias_Internal();
+            
+            EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context));
 
             context.Time += step;
         }
@@ -89,10 +90,7 @@ namespace NextGenSpice.LargeSignal
                 b.AddVariable();
 
             foreach (var element in Elements)
-                element.Initialize(b);
-
-            foreach (var circuitElement in LinearElements)
-                circuitElement.ApplyLinearModelValues(b, context);
+                element.RegisterAdditionalVariables(b);
 
             equationSystem = b.Build();
         }
@@ -105,34 +103,34 @@ namespace NextGenSpice.LargeSignal
             context.Timestep = 0;
             context.Time = 0;
 
-            if (!EstablishDcBias_Internal())
+            if (!EstablishDcBias_Internal(e => e.ApplyInitialCondition(equationSystem, context)))
                 throw new NonConvergenceException();
         }
 
-        private bool EstablishDcBias_Internal()
+        private bool EstablishDcBias_Internal(Action<ILargeSignalDeviceModel> updater)
         {
             IterationCount = 0;
             DeltaSquared = 0;
 
 
-            Iterate_DcBias();
-            if (!IsLinear && !IterateUntilConvergence())
+            Iterate_DcBias(updater);
+            if (!IsLinear && !IterateUntilConvergence(updater))
                 return false;
 
-            //DistributeCurrent();
+            PostProcess();
 
             return true;
         }
 
-        private bool IterateUntilConvergence()
+        private bool IterateUntilConvergence(Action<ILargeSignalDeviceModel> updater)
         {
             double delta;
-            do
-            {
+            
+            do {
                 delta = 0;
                 var prevVoltages = (double[]) equationSystem.Solution.Clone();
 
-                Iterate_DcBias();
+                Iterate_DcBias(updater);
 
                 for (var i = 0; i < prevVoltages.Length; i++)
                 {
@@ -141,7 +139,7 @@ namespace NextGenSpice.LargeSignal
                 }
 
                 if (++IterationCount == MaxDcPointIterations) return false;
-            } while (delta > Epsilon * Epsilon);
+            } while (delta > NonlinearIterationEpsilon * NonlinearIterationEpsilon);
 
             DeltaSquared = delta;
 
@@ -149,38 +147,44 @@ namespace NextGenSpice.LargeSignal
         }
 
 
-        private void Iterate_DcBias()
+        private void Iterate_DcBias(Action<ILargeSignalDeviceModel> updater)
         {
-            UpdateEquationSystem();
+            UpdateEquationSystem(updater);
             UpdateNodeValues();
-            PostProcess();
-            UpdateNonlinearElements();
 //            DebugPrint();
         }
 
         private void PostProcess()
         {
             foreach (var el in Elements)
-                el.PostProcess(context);
+                el.OnDcBiasEstablished(context);
         }
 
         private void UpdateNodeValues()
         {
+            // ensure ground has 0 voltage
+            var m = equationSystem.Matrix;
+            for (int i = 0; i < m.SideLength; i++)
+            {
+                m[i, 0] = 0;
+                m[0, i] = 0;
+            }
+
+            m[0, 0] = 1;
+            equationSystem.RightHandSide[0] = 0;
+
             equationSystem.Solve();
 
             for (var i = 0; i < NodeCount; i++)
                 NodeVoltages[i] = equationSystem.Solution[i];
         }
 
-        private void UpdateEquationSystem()
+        private void UpdateEquationSystem(Action<ILargeSignalDeviceModel> updater)
         {
             equationSystem.Clear();
 
-            foreach (var e in NonlinearElements)
-                e.ApplyNonlinearModelValues(equationSystem, context);
-
-            foreach (var e in TimeDependentElements)
-                e.ApplyTimeDependentModelValues(equationSystem, context);
+            foreach (var e in Elements)
+                updater(e);
         }
 
         private void DebugPrint()
@@ -192,18 +196,6 @@ namespace NextGenSpice.LargeSignal
                 Console.WriteLine($"node {i}: {v:##.0000}");
             }
             Console.WriteLine();
-        }
-
-        private void UpdateNonlinearElements()
-        {
-            foreach (var element in NonlinearElements)
-                element.UpdateNonlinearModel(context);
-        }
-
-        private void UpdateTimeDependentElements()
-        {
-            foreach (var element in TimeDependentElements)
-                element.UpdateTimeDependentModel(context);
         }
     }
 }

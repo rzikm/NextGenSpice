@@ -3,7 +3,7 @@ using NextGenSpice.Core.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    public class LargeSignalResistorModel : TwoNodeLargeSignalModel<ResistorElement>, ILinearLargeSignalDeviceModel
+    public class LargeSignalResistorModel : TwoNodeLargeSignalModel<ResistorElement>
     {
         public LargeSignalResistorModel(ResistorElement parent) : base(parent)
         {
@@ -11,9 +11,9 @@ namespace NextGenSpice.LargeSignal.Models
 
         public double Resistance => Parent.Resistance;
 
-        public void ApplyLinearModelValues(IEquationEditor equation, ISimulationContext context)
+        public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            equation.AddConductance(Anode, Kathode, 1 / Resistance);
+            equations.AddConductance(Anode, Kathode, 1 / Resistance);
         }
     }
 }

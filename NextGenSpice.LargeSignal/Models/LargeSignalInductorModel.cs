@@ -4,60 +4,53 @@ using NextGenSpice.Core.Helpers;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    public class LargeSignalInductorModel : TwoNodeLargeSignalModel<InductorElement>,
-        ITimeDependentLargeSignalDeviceModel
+    public class LargeSignalInductorModel : TwoNodeLargeSignalModel<InductorElement>
     {
-        private readonly StateHelper<InductorState> stateHelper;
 
-        private int additionalVariable;
+        private int branchVariable;
 
         public LargeSignalInductorModel(InductorElement parent) : base(parent)
         {
-            stateHelper = new StateHelper<InductorState>();
-            State.REq = 0;
-            State.Il = parent.InitialCurrent;
-            State.VEq = 0; // model initially as short circuit
+        }
+        
+
+        public double Current { get; private set; }
+        public double Voltage { get; private set; }
+
+        public override void RegisterAdditionalVariables(IEquationSystemBuilder builder)
+        {
+            branchVariable = builder.AddVariable();
+            base.RegisterAdditionalVariables(builder);
         }
 
-        private ref InductorState State => ref stateHelper.Value;
-
-        public double Current => State.Il;
-
-        public override void Initialize(IEquationSystemBuilder builder)
+        public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            additionalVariable = builder.AddVariable();
-            base.Initialize(builder);
+            var req = Parent.Inductance / context.Timestep * 2;
+            var veq = req * Current + Voltage;
+
+            equations.AddVoltage(Anode, Kathode, branchVariable, -veq);
+            equations.AddMatrixEntry(branchVariable, branchVariable, -req);
         }
 
-        public void UpdateTimeDependentModel(ISimulationContext context)
+        public override void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
         {
-            stateHelper.Commit();
-            State.REq = Parent.Inductance / context.Timestep;
-            State.VEq = State.REq * State.Il;
+            if (Parent.InitialCurrent.HasValue)
+            {
+                equations.AddCurrent(Anode, Kathode, Parent.InitialCurrent.Value);
+            }
+            else
+            {
+                // model as short circuit
+                equations.AddVoltage(Anode, Kathode, branchVariable, 0);
+            }
         }
+        
 
-        public override void PostProcess(ISimulationContext context)
+        public override void OnDcBiasEstablished(ISimulationContext context)
         {
-            base.PostProcess(context);
-            State.Il = context.GetSolutionForVariable(additionalVariable);
-        }
-
-        public void RollbackTimeDependentModel()
-        {
-            stateHelper.Rollback();
-        }
-
-        public void ApplyTimeDependentModelValues(IEquationSystem equation, ISimulationContext context)
-        {
-            equation.AddVoltage(Anode, Kathode, additionalVariable, -State.VEq);
-            equation.AddMatrixEntry(additionalVariable, additionalVariable, -State.REq);
-        }
-
-        private struct InductorState
-        {
-            public double VEq;
-            public double REq;
-            public double Il;
+            base.OnDcBiasEstablished(context);
+            Current = context.GetSolutionForVariable(branchVariable);
+            Voltage = context.GetSolutionForVariable(Anode) - context.GetSolutionForVariable(Kathode);
         }
     }
 }

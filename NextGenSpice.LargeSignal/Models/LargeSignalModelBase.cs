@@ -15,11 +15,18 @@ namespace NextGenSpice.LargeSignal.Models
 
         protected TDefinitionElement Parent { get; }
 
-        public virtual void Initialize(IEquationSystemBuilder builder)
+        public virtual void RegisterAdditionalVariables(IEquationSystemBuilder builder)
         {
         }
 
-        public virtual void PostProcess(ISimulationContext context)
+        public abstract void ApplyModelValues(IEquationEditor equations, ISimulationContext context);
+
+        public virtual void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
+        {
+            ApplyModelValues(equations, context);
+        }
+
+        public virtual void OnDcBiasEstablished(ISimulationContext context)
         {
         }
     }

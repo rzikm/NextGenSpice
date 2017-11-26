@@ -10,6 +10,9 @@ namespace NextGenSpice.Core.Representation
 {
     public class ElectricCircuitDefinition : ICircuitDefinition
     {
+        private static CompositionHost compositionHost;
+        private static CompositionHost CompositionContainer => compositionHost ?? (compositionHost = GetCompositionContainer());
+
         public int NodeCount => InitialVoltages.Count;
         public IReadOnlyList<double> InitialVoltages { get; }
         public IReadOnlyList<ICircuitDefinitionElement> Elements { get; }
@@ -21,7 +24,7 @@ namespace NextGenSpice.Core.Representation
             factories = new Dictionary<Type, object>();
             InitialVoltages = initialVoltages;
             Elements = elements;
-            
+
         }
 
         public void SetFactory<TAnalysisModel>(IAnalysisModelFactory<TAnalysisModel> factory)
@@ -41,30 +44,28 @@ namespace NextGenSpice.Core.Representation
             {
                 return (IAnalysisModelFactory<TAnalysisModel>)factory;
             }
-
-
-            using (var container = GetCompositionContainer<TAnalysisModel>())
+            
+            if (CompositionContainer.TryGetExport<IAnalysisModelFactory<TAnalysisModel>>(out var export))
             {
-                if (container.TryGetExport<IAnalysisModelFactory<TAnalysisModel>>(out var export))
-                {
-                    factories[typeof(TAnalysisModel)] = export;
-                    return export;
-                }
+                factories[typeof(TAnalysisModel)] = export;
+                return export;
             }
 
             throw new InvalidOperationException($"No Factory for '{typeof(TAnalysisModel).FullName}' was found");
         }
 
-        private static CompositionHost GetCompositionContainer<TAnalysisModel>()
+        private static CompositionHost GetCompositionContainer()
         {
             var assemblies = Directory
                 .GetFiles(Path.GetDirectoryName(typeof(ElectricCircuitDefinition).Assembly.Location), "NextGenSpice*.dll",
-                    SearchOption.AllDirectories)
+                    SearchOption.AllDirectories);
+
+            var asms = assemblies
                 .Select(AssemblyLoadContext.Default.LoadFromAssemblyPath)
                 .ToList();
 
 
-            var configuration = new ContainerConfiguration().WithAssemblies(assemblies);
+            var configuration = new ContainerConfiguration().WithAssemblies(asms);
             var compositionHost = configuration.CreateContainer();
             return compositionHost;
         }

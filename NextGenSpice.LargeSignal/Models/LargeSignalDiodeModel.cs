@@ -4,7 +4,7 @@ using NextGenSpice.Core.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    public class LargeSignalDiodeModel : TwoNodeLargeSignalModel<DiodeElement>, INonlinearLargeSignalDeviceModel
+    public class LargeSignalDiodeModel : TwoNodeLargeSignalModel<DiodeElement>
     {
         private double gEq;
         private double iEq;
@@ -12,33 +12,37 @@ namespace NextGenSpice.LargeSignal.Models
         public LargeSignalDiodeModel(DiodeElement parent) : base(parent)
         {
             Vd = parent.param.Vd;
-            RecomputeLinearCircuit();
         }
 
         public double Vd { get; private set; }
 
 
-        public void ApplyNonlinearModelValues(IEquationSystem equation, ISimulationContext context)
+        public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            equation
-                .AddConductance(Anode, Kathode, gEq)
-                .AddCurrent(Kathode, Anode, iEq);
+            ApplyLinearizedModel(equations, context.GetSolutionForVariable(Parent.Anode) - context.GetSolutionForVariable(Parent.Kathode));
         }
 
-        public void UpdateNonlinearModel(ISimulationContext context)
+
+
+        public override void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
         {
-            Vd = context.GetSolutionForVariable(Parent.Anode) - context.GetSolutionForVariable(Parent.Kathode);
-            RecomputeLinearCircuit();
+            var vd = context.GetSolutionForVariable(Parent.Anode) - context.GetSolutionForVariable(Parent.Kathode);
+            ApplyLinearizedModel(equations, vd == 0 ? Vd : vd);
         }
 
-        public void RecomputeLinearCircuit()
+        private void ApplyLinearizedModel(IEquationEditor equations, double vd)
         {
-            var id = Parent.param.IS * (Math.Exp(Vd / Parent.param.Vt) - 1);
-            var geq = Parent.param.IS / Parent.param.Vt * Math.Exp(Vd / Parent.param.Vt);
-            var ieq = id - geq * Vd;
+            var id = Parent.param.IS * (Math.Exp(vd / Parent.param.Vt) - 1);
+            var geq = Parent.param.IS / Parent.param.Vt * Math.Exp(vd / Parent.param.Vt);
+            var ieq = id - geq * vd;
 
             iEq = ieq;
             gEq = geq;
+
+            equations
+                .AddConductance(Anode, Kathode, gEq)
+                .AddCurrent(Kathode, Anode, iEq);
         }
+        
     }
 }

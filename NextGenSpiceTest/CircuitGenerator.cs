@@ -4,6 +4,7 @@ using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Extensions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal;
+using NextGenSpice.LargeSignal.Models;
 
 namespace NextGenSpiceTest
 {
@@ -81,9 +82,9 @@ namespace NextGenSpiceTest
             SwitchModel sw = null;
 
             var circuit = new CircuitBuilder()
-                .AddVoltageSource(1, 0, 15)
+                .AddVoltageSource(1, 0, 0)
                 .AddElement(new int[] { 1, 2 }, new SwitchElement())
-                .AddResistor(2, 3, 5)
+                .AddResistor(2, 3, 1)
                 .AddCapacitor(3, 0, 1e-6)
                 .BuildCircuit();
 
@@ -92,6 +93,11 @@ namespace NextGenSpiceTest
                 sw = new SwitchModel(m);
                 return sw;
             });
+            circuit.GetFactory<LargeSignalCircuitModel>()
+                .SetModel<VoltageSourceElement, PulsingLargeSignalVoltageSourceModel>(m =>
+                {
+                    return new PulsingLargeSignalVoltageSourceModel(m);
+                });
 
             var model = circuit.GetLargeSignalModel();
             switchModel = sw;

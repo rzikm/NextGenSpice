@@ -6,6 +6,5 @@
 //        double[] Solution { get; }
 //        double[] Solve();
 
-        void BindEquivalent(params int[] vars);
     }
 }

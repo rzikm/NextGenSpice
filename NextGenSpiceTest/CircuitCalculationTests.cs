@@ -89,7 +89,7 @@ namespace NextGenSpiceTest
 
             var withoutCapacitorVoltages = model.NodeVoltages.ToArray();
 
-            Assert.Equal(withoutCapacitorVoltages, withCapacitorVoltages, new DoubleComparer(1e-10));
+            Assert.Equal(withoutCapacitorVoltages, withCapacitorVoltages);
         }
 
         [Fact]
@@ -136,6 +136,34 @@ namespace NextGenSpiceTest
             model.MaxDcPointIterations = 100;
 
             Assert.Throws<NonConvergenceException>(() => model.EstablishDcBias());
+            Output.PrintCircuitStats(model);
+        }
+
+        [Fact]
+        public void SimpleSwitchCircuit()
+        {
+            var circuit = new CircuitBuilder()
+                .AddVoltageSource(1, 0, 1)
+                .AddResistor(1, 2, 1)
+                .AddResistor(1, 3, 1)
+                .AddElement(new int[] {2, 3}, new SwitchElement())
+                .AddResistor(3, 0, 0.5)
+                .BuildCircuit();
+            
+            circuit.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchElement,SwitchModel>(e => new SwitchModel(e));
+
+            var model = circuit.GetModel<LargeSignalCircuitModel>();
+
+            var sw = model.Elements.OfType<SwitchModel>().Single();
+
+            Output.WriteLine("Switch is on");
+            sw.IsOn = true;
+            model.EstablishDcBias();
+            Output.PrintCircuitStats(model);
+
+            Output.WriteLine("Switch is off");
+            sw.IsOn = false;
+            model.EstablishDcBias();
             Output.PrintCircuitStats(model);
         }
     }

@@ -6,8 +6,12 @@ namespace NextGenSpice.LargeSignal.Models
 {
     public interface ILargeSignalDeviceModel : IAnalysisDeviceModel<LargeSignalCircuitModel>
     {
-        void Initialize(IEquationSystemBuilder builder);
+        void RegisterAdditionalVariables(IEquationSystemBuilder builder);
 
-        void PostProcess(ISimulationContext context);
+        void ApplyModelValues(IEquationEditor equations, ISimulationContext context);
+
+        void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context);
+        
+        void OnDcBiasEstablished(ISimulationContext context);
     }
 }

@@ -3,7 +3,7 @@ using NextGenSpice.Core.Equations;
 
 namespace NextGenSpice.LargeSignal
 {
-    internal class BiasedEquationEditor : IEquationSystem, IEquationSystemBuilder
+    internal class BiasedEquationEditor : IEquationSystemBuilder
     {
         private readonly int[] nodeMap;
 
@@ -24,11 +24,6 @@ namespace NextGenSpice.LargeSignal
         public void AddRightHandSideEntry(int index, double value)
         {
             TrueEquationEditor.AddRightHandSideEntry(GetMappedIndex(index), value);
-        }
-
-        public void BindEquivalent(params int[] vars)
-        {
-            (TrueEquationEditor as IEquationSystem).BindEquivalent(vars.Select(GetMappedIndex).ToArray());
         }
 
         public int AddVariable()
