@@ -17,6 +17,22 @@ namespace SandboxRunner
     {
         const string projectPath = @"D:\Visual Studio 2017\Projects\NextGen Spice\";
 
+        static void Main(string[] args)
+        {
+            PrintFileSizes();
+
+            IntegrationTest.Run();
+
+//            SetListeners();
+//            Stopwatch sw = Stopwatch.StartNew();
+//            RunModel();
+//
+//            sw.Stop();
+//            Console.WriteLine(sw.Elapsed);
+
+            //            Misc.HilbertMatrixStabilityTest();
+        }
+
         static string GetProjectName(string filePath)
         {
             return filePath.Substring(projectPath.Length, filePath.IndexOf('\\', projectPath.Length) - projectPath.Length);
@@ -57,6 +73,7 @@ namespace SandboxRunner
         {
             Console.WriteLine($"{(time * 1e6),+5:##.## 'us'}\t|{string.Join("\t|", model.NodeVoltages.Select(v => v.ToString("F")))}\t|{val:F}");
         }
+
         private static void SimulateAndPrint(LargeSignalCircuitModel model, double time, double step)
         {
             var elapsed = 0.0;
@@ -80,7 +97,7 @@ namespace SandboxRunner
                 //                PrintStats(model, elapsed, device.Voltage);
             }
         }
-        
+
         private static void RunModel()
         {
             SwitchModel sw = null;
@@ -120,20 +137,6 @@ namespace SandboxRunner
                 PrintStats(model, elapsed, device.Current);
                 //                PrintStats(model, elapsed, device.Voltage);
             }
-        }
-
-        static void Main(string[] args)
-        {
-            PrintFileSizes();
-
-                        SetListeners();
-            Stopwatch sw = Stopwatch.StartNew();
-                        RunModel();
-
-            sw.Stop();
-            Console.WriteLine(sw.Elapsed);
-
-            //            Misc.HilbertMatrixStabilityTest();
         }
 
 
