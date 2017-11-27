@@ -19,21 +19,30 @@ namespace NextGenSpice.LargeSignal
         {
             NodeVoltages = initialVoltages.ToArray();
             Elements = elements;
+
+            constElements = elements.Where(e => !e.IsNonlinear && !e.IsTimeDependent).ToArray();
+            linearTimeDependentElements = elements.Where(e => !e.IsNonlinear && e.IsTimeDependent).ToArray();
+            nonlinearElements = elements.Where(e => e.IsNonlinear).ToArray();
         }
 
         public double[] NodeVoltages { get; }
         public int NodeCount => NodeVoltages.Length;
         public IReadOnlyList<ILargeSignalDeviceModel> Elements { get; }
-        public bool IsLinear => false;
+
+        private readonly IReadOnlyList<ILargeSignalDeviceModel> constElements;
+        private readonly IReadOnlyList<ILargeSignalDeviceModel> nonlinearElements;
+        private readonly IReadOnlyList<ILargeSignalDeviceModel> linearTimeDependentElements;
+
+        public bool IsLinear => !nonlinearElements.Any();
 
 
         // iteration dependent variables
 
-        public double NonlinearIterationEpsilon { get; } = 1e-15;
+        public double NonlinearIterationEpsilon { get; } = 1e-30;
 
         public int MaxDcPointIterations { get; set; } = 1000;
         public double MaxTimeStep { get; set; } = 1e-6;
-
+        
         public double TimestepAbsoluteEpsilon { get; set; }
         public double TimestepRelativeEpsilon { get; set; }
 
@@ -56,7 +65,8 @@ namespace NextGenSpice.LargeSignal
         public void AdvanceInTime(double milliseconds)
         {
             if (milliseconds < 0) throw new ArgumentOutOfRangeException(nameof(milliseconds));
-            EnsureInitialized();
+            if (context == null) EstablishDcBias();
+
             while (milliseconds > 0)
             {
                 var step = Math.Min(MaxTimeStep, milliseconds);
@@ -92,6 +102,9 @@ namespace NextGenSpice.LargeSignal
             foreach (var element in Elements)
                 element.RegisterAdditionalVariables(b);
 
+            foreach (var element in constElements)
+                element.ApplyModelValues(b, context);
+
             equationSystem = b.Build();
         }
 
@@ -112,8 +125,14 @@ namespace NextGenSpice.LargeSignal
             IterationCount = 0;
             DeltaSquared = 0;
 
+            equationSystem.Clear();
 
-            Iterate_DcBias(updater);
+            UpdateEquationSystem(updater, linearTimeDependentElements);
+            equationSystem.Backup();
+            UpdateEquationSystem(updater, nonlinearElements);
+
+            UpdateNodeValues();
+//            DebugPrint();
             if (!IsLinear && !IterateUntilConvergence(updater))
                 return false;
 
@@ -130,7 +149,11 @@ namespace NextGenSpice.LargeSignal
                 delta = 0;
                 var prevVoltages = (double[]) equationSystem.Solution.Clone();
 
-                Iterate_DcBias(updater);
+                equationSystem.Restore();
+
+                UpdateEquationSystem(updater, nonlinearElements);
+                UpdateNodeValues();
+//            DebugPrint();
 
                 for (var i = 0; i < prevVoltages.Length; i++)
                 {
@@ -146,13 +169,6 @@ namespace NextGenSpice.LargeSignal
             return true;
         }
 
-
-        private void Iterate_DcBias(Action<ILargeSignalDeviceModel> updater)
-        {
-            UpdateEquationSystem(updater);
-            UpdateNodeValues();
-//            DebugPrint();
-        }
 
         private void PostProcess()
         {
@@ -179,12 +195,9 @@ namespace NextGenSpice.LargeSignal
                 NodeVoltages[i] = equationSystem.Solution[i];
         }
 
-        private void UpdateEquationSystem(Action<ILargeSignalDeviceModel> updater)
+        private void UpdateEquationSystem(Action<ILargeSignalDeviceModel> updater, IEnumerable<ILargeSignalDeviceModel> elements)
         {
-            equationSystem.Clear();
-
-            foreach (var e in Elements)
-                updater(e);
+            foreach (var e in elements) updater(e);
         }
 
         private void DebugPrint()

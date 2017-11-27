@@ -25,6 +25,8 @@ namespace NextGenSpice.LargeSignal.Models
             biasedEquationEditor = new BiasedEquationEditor(nodeMap);
             subContext = new BiasedSimulationContext(nodeMap);
         }
+        public override bool IsNonlinear => false;
+        public override bool IsTimeDependent => false;
 
         public override void OnDcBiasEstablished(ISimulationContext context)
         {

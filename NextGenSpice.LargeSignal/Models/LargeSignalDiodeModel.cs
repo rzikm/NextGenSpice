@@ -30,6 +30,9 @@ namespace NextGenSpice.LargeSignal.Models
             ApplyLinearizedModel(equations, vd == 0 ? Vd : vd);
         }
 
+        public override bool IsNonlinear => true;
+        public override bool IsTimeDependent  => false;
+
         private void ApplyLinearizedModel(IEquationEditor equations, double vd)
         {
             var id = Parent.param.IS * (Math.Exp(vd / Parent.param.Vt) - 1);

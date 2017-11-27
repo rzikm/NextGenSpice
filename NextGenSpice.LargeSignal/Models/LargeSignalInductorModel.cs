@@ -12,7 +12,10 @@ namespace NextGenSpice.LargeSignal.Models
         public LargeSignalInductorModel(InductorElement parent) : base(parent)
         {
         }
-        
+
+
+        public override bool IsNonlinear => false;
+        public override bool IsTimeDependent => true;
 
         public double Current { get; private set; }
         public double Voltage { get; private set; }

@@ -11,6 +11,10 @@ namespace NextGenSpice.LargeSignal.Models
         {
         }
 
+
+        public override bool IsNonlinear => false;
+        public override bool IsTimeDependent => false;
+
         public double Voltage => Parent.Voltage;
 
         public double Current { get; private set; }
@@ -40,6 +44,9 @@ namespace NextGenSpice.LargeSignal.Models
         public PulsingLargeSignalVoltageSourceModel(VoltageSourceElement parent) : base(parent)
         {
         }
+        
+        public override bool IsNonlinear => false;
+        public override bool IsTimeDependent => true;
 
         public double Voltage => Parent.Voltage;
 

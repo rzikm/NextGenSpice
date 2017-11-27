@@ -29,5 +29,8 @@ namespace NextGenSpice.LargeSignal.Models
         public virtual void OnDcBiasEstablished(ISimulationContext context)
         {
         }
+
+        public abstract bool IsNonlinear { get; }
+        public abstract bool IsTimeDependent { get; }
     }
 }

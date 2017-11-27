@@ -30,7 +30,7 @@ namespace NextGenSpiceTest
                 .AddResistor(1, 0, 100)
                 .AddResistor(1, 2, 10000)
                 .AddCurrentSource(1, 0, 0.1)
-                .AddDiode(2, 0, p => { p.Vd = 0.2; })
+                .AddDiode(2, 0, p => { p.Vd = 0.9; })
                 .BuildCircuit();
         }
 

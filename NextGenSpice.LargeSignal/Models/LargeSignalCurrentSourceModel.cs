@@ -15,5 +15,8 @@ namespace NextGenSpice.LargeSignal.Models
         {
             equations.AddCurrent(Anode, Kathode, Current);
         }
+
+        public override bool IsNonlinear => false;
+        public override bool IsTimeDependent => false;
     }
 }

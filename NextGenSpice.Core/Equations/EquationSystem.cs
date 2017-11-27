@@ -8,6 +8,8 @@ namespace NextGenSpice.Core.Equations
 {
     public class EquationSystem : IEquationSystem
     {
+        private Stack<Tuple<Array2DWrapper, double[]>> backups;
+
         private readonly Array2DWrapper matrixBackup;
         private readonly double[] rhsBackup;
         private Array2DWrapper matrix;
@@ -20,6 +22,9 @@ namespace NextGenSpice.Core.Equations
             this.rhsBackup = rhs;
             Solution = new double[rhs.Length];
 
+            backups = new Stack<Tuple<Array2DWrapper, double[]>>();
+
+            backups.Push(Tuple.Create(matrix, rhs));
             Clear();
         }
 
@@ -41,8 +46,25 @@ namespace NextGenSpice.Core.Equations
 
         public void Clear()
         {
-            matrix = matrixBackup.Clone();
-            rhs = (double[])rhsBackup.Clone();
+            while (backups.Count > 1) backups.Pop();
+
+            var tup = backups.Peek();
+
+            matrix = tup.Item1.Clone();
+            rhs = (double[])tup.Item2.Clone();
+        }
+
+        public void Backup()
+        {
+            backups.Push(Tuple.Create(matrix.Clone(), (double[])rhs.Clone()));
+        }
+
+        public void Restore()
+        {
+            var tup = backups.Peek();
+
+            matrix = tup.Item1.Clone();
+            rhs = (double[])tup.Item2.Clone();
         }
 
         public double GetMatrixEntry(int row, int column)

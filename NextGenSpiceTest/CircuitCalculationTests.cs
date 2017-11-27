@@ -133,7 +133,7 @@ namespace NextGenSpiceTest
             var circuit = CircuitGenerator.GetNonlinearCircuit();
 
             var model = circuit.GetModel<LargeSignalCircuitModel>();
-            model.MaxDcPointIterations = 100;
+            model.MaxDcPointIterations = 3; // some unrealistic low bound
 
             Assert.Throws<NonConvergenceException>(() => model.EstablishDcBias());
             Output.PrintCircuitStats(model);

@@ -13,5 +13,8 @@ namespace NextGenSpice.LargeSignal.Models
         void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context);
         
         void OnDcBiasEstablished(ISimulationContext context);
+
+        bool IsNonlinear { get; }
+        bool IsTimeDependent { get; }
     }
 }

@@ -9,6 +9,9 @@ namespace NextGenSpice.LargeSignal.Models
         {
         }
 
+        public override bool IsNonlinear => false;
+        public override bool IsTimeDependent => false;
+
         public double Resistance => Parent.Resistance;
 
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)

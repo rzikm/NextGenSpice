@@ -12,6 +12,10 @@ namespace NextGenSpice.LargeSignal.Models
         {
         }
 
+
+        public override bool IsNonlinear => false;
+        public override bool IsTimeDependent => true;
+
         public double Current { get; private set; }
 
         public double Voltage { get; private set; }
@@ -31,7 +35,6 @@ namespace NextGenSpice.LargeSignal.Models
             equations.AddMatrixEntry(branchVariable, Kathode, -geq);
 
             AddBranchCurrent(equations, ieq);
-
         }
 
         private void AddBranchCurrent(IEquationEditor equations, double ieq)

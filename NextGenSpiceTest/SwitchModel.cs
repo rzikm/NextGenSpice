@@ -46,5 +46,8 @@ namespace NextGenSpiceTest
                 equations.AddRightHandSideEntry(branchVariable, 0);
             }
         }
+
+        public override bool IsNonlinear => true;
+        public override bool IsTimeDependent => true;
     }
 }
