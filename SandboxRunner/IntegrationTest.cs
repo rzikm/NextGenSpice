@@ -13,14 +13,16 @@ namespace SandboxRunner
         {
             // see wolfram alpha:  " y' = 2y - 3t, y(0)=1, solve for y(0.2) "
             // should print out something like 1.42296
-            Console.WriteLine(Integrate(0, 0.2, 1, 0.01, (t, y) => 2 * y - 3 * t));
-            Console.WriteLine(Integrate_LTE_timestep_control(0, 0.2, 1, 0.01, 1e-15, 1 + 1e-15, (t, y) => 2 * y - 3 * t));
-            Console.WriteLine($"Should be: {1/4.0 * (6 * 0.2 + Math.Exp(2 * 0.2) + 3)}");
+            Console.WriteLine(Integrate(0, 0.2, 1, 0.001, (t, y) => 2 * y - 3 * t));
+            var loc = Integrate_LTE_timestep_control(0, 0.2, 1, 0.001, 1e-15, 1 + 1e-15, (t, y) => 2 * y - 3 * t);
+            Console.WriteLine(loc);
+            var actual = 1/4.0 * (6 * 0.2 + Math.Exp(2 * 0.2) + 3);
+            Console.WriteLine($"Should be: {actual}, diff = {loc - actual}");
             Console.WriteLine();
 
             // exponential: sollution is y(t) = y0 * exp(ty)
             Console.WriteLine(Integrate(0, 0.2, 1, 0.01, (t, y) => y));
-            Console.WriteLine(Integrate_LTE_timestep_control(0, 0.2, 1, 0.01, 1e-8, 1+1e-6, (t, y) => y));
+            Console.WriteLine(Integrate_LTE_timestep_control(0, 0.2, 1, 0.01, 1e-10, 1 + 1e-10, (t, y) => y));
             Console.WriteLine($"Should be: {Math.Exp(0.2)}");
         }
 
@@ -80,7 +82,7 @@ namespace SandboxRunner
 
                     // corrector step
                     oldxn = xn;
-                    xn = x + hn / 2 * (func(t + hn, xn) + func(t, x));
+                    xn = x + hn * (func(t + hn, xn) + func(t, x)) / 2;
                 } while (Math.Abs(xn - oldxn) > 1e-15);
 
                 var dxn = (xn - x) / hn;
