@@ -3,8 +3,8 @@
     public interface ISimulationContext
     {
         double NodeCount { get; }
-        double Time { get; set; }
-        double Timestep { get; set; }
+        double Time { get; }
+        double Timestep { get; }
         double GetSolutionForVariable(int index);
     }
 }

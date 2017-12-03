@@ -18,6 +18,7 @@ namespace NextGenSpice.Core.Representation
             where TRepresentation : ICircuitDefinitionElement
             where TModel : IAnalysisDeviceModel<TAnalysisModel>;
 
-        IAnalysisDeviceModel<TAnalysisModel> GetModel(ICircuitDefinitionElement element);
+        void SetParam<TParam>(Func<TParam, object> factoryFunc);
+        void SetParam<TParam>(Func<TParam, IModelInstantiationContext<TAnalysisModel>, object> factoryFunc);
     }
 }

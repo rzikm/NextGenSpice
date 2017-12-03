@@ -1,23 +1,35 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal;
+using NextGenSpice.LargeSignal.Models;
 using Xunit;
 
 namespace NextGenSpiceTest
 {
     public class CircuitInstantiationTests
     {
-        private readonly ModelInstantiationContext<LargeSignalCircuitModel> context;
-        private readonly ElectricCircuitDefinition circuitDefinition;
-
         public CircuitInstantiationTests()
         {
             circuitDefinition = CircuitGenerator.GetLinearCircuit();
-            context = new ModelInstantiationContext<LargeSignalCircuitModel>(new LargeSignalAnalysisModelFactory(), circuitDefinition);
+            var modelCreators =
+                new Dictionary<Type, Func<ICircuitDefinitionElement, IModelInstantiationContext<LargeSignalCircuitModel>
+                    , IAnalysisDeviceModel<LargeSignalCircuitModel>>>
+                {
+                    [typeof(ResistorElement)] = 
+                        (e, ctx) => new LargeSignalResistorModel((ResistorElement) e),
+                    [typeof(VoltageSourceElement)] = 
+                        (e, ctx) => new LargeSignalVoltageSourceModel((VoltageSourceElement) e, null)
+                };
+
+
+            context = new ModelInstantiationContext<LargeSignalCircuitModel>(modelCreators, new Dictionary<Type, Func<object, IModelInstantiationContext<LargeSignalCircuitModel>, object>>(), circuitDefinition);
         }
+
+        private readonly ModelInstantiationContext<LargeSignalCircuitModel> context;
+        private readonly ElectricCircuitDefinition circuitDefinition;
 
         [Fact]
         public void GetsCachedModel()
@@ -43,10 +55,10 @@ namespace NextGenSpiceTest
         [Fact]
         public void ThrowWhenNoSuchNameExists()
         {
-            Assert.Throws<ArgumentNullException>(() => context.GetModel((string) null));
+            Assert.Throws<ArgumentNullException>(() => context.GetModel((string)null));
             Assert.Throws<ArgumentException>(() => context.GetModel("nonexistant model"));
 
-            Assert.Throws<ArgumentNullException>(() => context.GetModel((ICircuitDefinitionElement) null));
+            Assert.Throws<ArgumentNullException>(() => context.GetModel((ICircuitDefinitionElement)null));
         }
     }
 }

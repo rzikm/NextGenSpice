@@ -1,11 +1,17 @@
-﻿namespace NextGenSpice.Core.Elements
+﻿using NextGenSpice.Core.BehaviorParams;
+
+namespace NextGenSpice.Core.Elements
 {
     public class CurrentSourceElement : TwoNodeCircuitElement
     {
-        public double Current { get; set; }
-        public CurrentSourceElement(double current, string name = null) : base(name)
+        public SourceBehaviorParams BehaviorParams { get; }
+
+        public CurrentSourceElement(SourceBehaviorParams behavior, string name = null) : base(name)
         {
-            Current = current;
+            BehaviorParams = behavior;
+        }
+        public CurrentSourceElement(double current, string name = null) : this(new ConstantBehaviorParams { Value = current }, name)
+        {
         }
     }
 }

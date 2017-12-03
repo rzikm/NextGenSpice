@@ -21,11 +21,10 @@ namespace NextGenSpiceTest
         [Export(typeof(IAnalysisModelFactory<TestAnalysisCircuitModel>))]
         class TestAnalysisModelFactory : AnalysisModelFactory<TestAnalysisCircuitModel>
         {
-            protected override TestAnalysisCircuitModel Instantiate(ModelInstantiationContext<TestAnalysisCircuitModel> context)
+            protected override TestAnalysisCircuitModel Instantiate(IModelInstantiationContext<TestAnalysisCircuitModel> context)
             {
-                return new TestAnalysisCircuitModel(context.CircuitDefinition.Elements.Select(GetModel).Cast<ITestDeviceModel>().ToList());
+                return new TestAnalysisCircuitModel(context.CircuitDefinition.Elements.Select(context.GetModel).Cast<ITestDeviceModel>().ToList());
             }
-            
         }
 
         class TestAnalysisCircuitModel : IAnalysisCircuitModel<ITestDeviceModel>
@@ -66,7 +65,7 @@ namespace NextGenSpiceTest
 
         class MyPrivateFactory : AnalysisModelFactory<LargeSignalCircuitModel>
         {
-            protected override LargeSignalCircuitModel Instantiate(ModelInstantiationContext<LargeSignalCircuitModel> context)
+            protected override LargeSignalCircuitModel Instantiate(IModelInstantiationContext<LargeSignalCircuitModel> context)
             {
                 return new LargeSignalCircuitModel(new double[5], new List<ILargeSignalDeviceModel>());
             }

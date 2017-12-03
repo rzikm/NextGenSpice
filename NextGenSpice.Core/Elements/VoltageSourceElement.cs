@@ -1,11 +1,18 @@
-﻿namespace NextGenSpice.Core.Elements
+﻿using NextGenSpice.Core.BehaviorParams;
+
+namespace NextGenSpice.Core.Elements
 {
     public class VoltageSourceElement : TwoNodeCircuitElement
     {
-        public double Voltage { get; set; }
-        public VoltageSourceElement(double voltage, string name = null) : base(name)
+        public SourceBehaviorParams BehaviorParams { get; }
+
+        public VoltageSourceElement(SourceBehaviorParams behavior, string name = null) : base(name)
         {
-            Voltage = voltage;
+            BehaviorParams = behavior;
+        }
+
+        public VoltageSourceElement(double voltage, string name = null) : this(new ConstantBehaviorParams { Value = voltage }, name)
+        {
         }
     }
 }

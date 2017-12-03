@@ -14,17 +14,9 @@ namespace NextGenSpice.LargeSignal
         public ISimulationContext TrueContext { get; set; }
         public double NodeCount => TrueContext.NodeCount;
 
-        public double Time
-        {
-            get => TrueContext.Time;
-            set => TrueContext.Time = value;
-        }
+        public double Time => TrueContext.Time;
 
-        public double Timestep
-        {
-            get => TrueContext.Timestep;
-            set => TrueContext.Timestep = value;
-        }
+        public double Timestep => TrueContext.Timestep;
 
         public double GetSolutionForVariable(int index)
         {

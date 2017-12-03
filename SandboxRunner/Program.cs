@@ -100,8 +100,6 @@ namespace SandboxRunner
 
         private static void RunModel()
         {
-            SwitchModel sw = null;
-
             var circuit = new CircuitBuilder()
                 .AddCurrentSource(1, 0, 5)
                 .AddResistor(1, 2, 5)
@@ -116,27 +114,6 @@ namespace SandboxRunner
 
             model.EstablishDcBias();
             return;
-            var elapsed = 0.0;
-
-            //model.EstablishDcBias();
-            Trace.WriteLine("Voltages:");
-            Trace.WriteLine($"Time\t|{string.Join("\t|", Enumerable.Range(0, model.NodeCount))}\t|Il");
-            Trace.WriteLine("-------------------------------------------------------------------------");
-            //            var device = model.TimeDependentElements.OfType<LargeSignalInductorModel>().Single();
-            var device = model.Elements.OfType<LargeSignalVoltageSourceModel>().Single();
-
-            PrintStats(model, elapsed, device.Current);
-            //            PrintStats(model, elapsed, device.Voltage);
-
-            circuit.Elements.OfType<VoltageSourceElement>().Single().Voltage = 15;
-
-            while (elapsed < 15e-6)
-            {
-                model.AdvanceInTime(1e-6);
-                elapsed += 1e-6;
-                PrintStats(model, elapsed, device.Current);
-                //                PrintStats(model, elapsed, device.Voltage);
-            }
         }
 
 

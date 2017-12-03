@@ -6,47 +6,25 @@ namespace NextGenSpice.Core.Representation
 {
     public abstract class AnalysisModelFactory<TAnalysisModel> : IAnalysisModelFactory<TAnalysisModel>
     {
-        private class NullModelInstantiationContext : IModelInstantiationContext<TAnalysisModel> {
-            public ICircuitDefinition CircuitDefinition { get; }
-
-            private readonly IAnalysisModelFactory<TAnalysisModel> factory;
-
-            public NullModelInstantiationContext(IAnalysisModelFactory<TAnalysisModel> factory)
-            {
-                this.factory = factory;
-            }
-
-            public IAnalysisDeviceModel<TAnalysisModel> GetModel(ICircuitDefinitionElement element)
-            {
-                return factory.GetModel(element);
-            }
-
-            public IAnalysisDeviceModel<TAnalysisModel> GetModel(string name)
-            {
-                throw new NotSupportedException("Cannot find model by name when resolving a single model.");
-            }
-        }
-
         private readonly Dictionary<Type, Func<ICircuitDefinitionElement, IModelInstantiationContext<TAnalysisModel>, IAnalysisDeviceModel<TAnalysisModel>>>
             modelCreators;
 
-        private ModelInstantiationContext<TAnalysisModel> instantiationContext;
-        private readonly IModelInstantiationContext<TAnalysisModel> nullInstantiationContext;
+        private readonly Dictionary<Type, Func<object, IModelInstantiationContext<TAnalysisModel>, object>>
+            paramCreators;
         
         protected AnalysisModelFactory()
         {
+            paramCreators = new Dictionary<Type, Func<object, IModelInstantiationContext<TAnalysisModel>, object>>();
             modelCreators = new Dictionary<Type, Func<ICircuitDefinitionElement, IModelInstantiationContext<TAnalysisModel>, IAnalysisDeviceModel<TAnalysisModel>>>();
-            nullInstantiationContext = new NullModelInstantiationContext(this);
         }   
 
-        protected abstract TAnalysisModel Instantiate(ModelInstantiationContext<TAnalysisModel> context);
+        protected abstract TAnalysisModel Instantiate(IModelInstantiationContext<TAnalysisModel> context);
 
         public TAnalysisModel Create(ICircuitDefinition circuitDefinition)
         {
-            instantiationContext = new ModelInstantiationContext<TAnalysisModel>(this, circuitDefinition);
+            var instantiationContext = new ModelInstantiationContext<TAnalysisModel>(modelCreators, paramCreators, circuitDefinition);
 
             var analysisModel = Instantiate(instantiationContext);
-            instantiationContext = null;
 
             return analysisModel;
         }
@@ -70,16 +48,15 @@ namespace NextGenSpice.Core.Representation
         {
             modelCreators[typeof(TRepresentation)] = (model, context) => factoryFunc((TRepresentation)model, context);
         }
-        
-        public IAnalysisDeviceModel<TAnalysisModel> GetModel(ICircuitDefinitionElement element)
+
+        public void SetParam<TParam>(Func<TParam, object> factoryFunc)
         {
-            if (modelCreators.TryGetValue(element.GetType(), out var creator))
-            {
-                return creator(element, InstantiationContext);
-            }
-            throw new InvalidOperationException($"No device model set for device {element.GetType().FullName} in factory for {typeof(TAnalysisModel).FullName}.");
+            paramCreators[typeof(TParam)] = (param, context) => factoryFunc((TParam) param);
         }
 
-        private IModelInstantiationContext<TAnalysisModel> InstantiationContext => instantiationContext ?? nullInstantiationContext;
+        public void SetParam<TParam>(Func<TParam, IModelInstantiationContext<TAnalysisModel>, object> factoryFunc)
+        {
+            paramCreators[typeof(TParam)] = (param, context) => factoryFunc((TParam) param, context);
+        }
     }
 }

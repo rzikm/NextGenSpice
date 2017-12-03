@@ -12,7 +12,7 @@ namespace NextGenSpice.LargeSignal
 {
     public class LargeSignalCircuitModel : IAnalysisCircuitModel<ILargeSignalDeviceModel>
     {
-        private ISimulationContext context;
+        private SimulationContext context;
         private EquationSystem equationSystem;
 
         public LargeSignalCircuitModel(IEnumerable<double> initialVoltages, List<ILargeSignalDeviceModel> elements)
@@ -79,10 +79,9 @@ namespace NextGenSpice.LargeSignal
         private void AdvanceInTime_Internal(double step)
         {
             context.Timestep = step;
-            
-            EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context));
 
             context.Time += step;
+            EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context));
         }
 
         private void EnsureInitialized()

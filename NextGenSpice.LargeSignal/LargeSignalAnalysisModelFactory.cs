@@ -1,7 +1,11 @@
-﻿using System.Composition;
+﻿using System;
+using System.Composition;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
+using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Representation;
+using NextGenSpice.LargeSignal.Behaviors;
 using NextGenSpice.LargeSignal.Models;
 
 namespace NextGenSpice.LargeSignal
@@ -18,14 +22,23 @@ namespace NextGenSpice.LargeSignal
         {
             SetModel<DiodeElement, LargeSignalDiodeModel>(e => new LargeSignalDiodeModel(e));
             SetModel<ResistorElement, LargeSignalResistorModel>(e => new LargeSignalResistorModel(e));
-            SetModel<CurrentSourceElement, LargeSignalCurrentSourceModel>(e => new LargeSignalCurrentSourceModel(e));
-            SetModel<VoltageSourceElement, LargeSignalVoltageSourceModel>(e => new LargeSignalVoltageSourceModel(e));
+            SetModel<CurrentSourceElement, LargeSignalCurrentSourceModel>((e, ctx) => new LargeSignalCurrentSourceModel(e, (IInputSourceBehavior) ctx.GetParam(e.BehaviorParams)));
+            SetModel<VoltageSourceElement, LargeSignalVoltageSourceModel>((e, ctx) => new LargeSignalVoltageSourceModel(e, (IInputSourceBehavior) ctx.GetParam(e.BehaviorParams)));
             SetModel<CapacitorElement, LargeSignalCapacitorModel>(e => new LargeSignalCapacitorModel(e));
             SetModel<InductorElement, LargeSignalInductorModel>(e => new LargeSignalInductorModel(e));
-            SetModel<SubcircuitElement, LargeSignalSubcircuitModel>((e, f) => new LargeSignalSubcircuitModel(e, e.Elements.Select(f.GetModel).Cast<ILargeSignalDeviceModel>()));
+            SetModel<SubcircuitElement, LargeSignalSubcircuitModel>((e, ctx) => new LargeSignalSubcircuitModel(e, e.Elements.Select(ctx.GetModel).Cast<ILargeSignalDeviceModel>()));
+
+
+            // TODO: Add other behaviors
+            // Input source behaviors
+            SetParam<ConstantBehaviorParams>((def, ctx) => new ConstantSourceBehavior(def));
+            SetParam<PulseBehaviorParams>((def, ctx) => new PulseSourceBehavior(def));
+            SetParam<PieceWiseLinearBehaviorParams>((def, ctx) => new PieceWiseLinearSourceBehavior(def));
+            SetParam<SinusoidalBehaviorParams>((def, ctx) => new SinusioidalSourceBehavior(def));
+            SetParam<ExponentialBehaviorParams>((def, ctx) => new ExponentialSourceBehavior(def));
         }
         
-        protected override LargeSignalCircuitModel Instantiate(ModelInstantiationContext<LargeSignalCircuitModel> context)
+        protected override LargeSignalCircuitModel Instantiate(IModelInstantiationContext<LargeSignalCircuitModel> context)
         {
             var elements = context.CircuitDefinition.Elements.Select(context.GetModel).Cast<ILargeSignalDeviceModel>().ToList();
 

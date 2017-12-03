@@ -82,7 +82,7 @@ namespace NextGenSpiceTest
             SwitchModel sw = null;
 
             var circuit = new CircuitBuilder()
-                .AddVoltageSource(1, 0, 0)
+                .AddVoltageSource(1, 0, new PulseBehaviorParams())
                 .AddElement(new int[] { 1, 2 }, new SwitchElement())
                 .AddResistor(2, 3, 1)
                 .AddCapacitor(3, 0, 1e-6)
@@ -93,11 +93,7 @@ namespace NextGenSpiceTest
                 sw = new SwitchModel(m);
                 return sw;
             });
-            circuit.GetFactory<LargeSignalCircuitModel>()
-                .SetModel<VoltageSourceElement, PulsingLargeSignalVoltageSourceModel>(m =>
-                {
-                    return new PulsingLargeSignalVoltageSourceModel(m);
-                });
+            circuit.GetFactory<LargeSignalCircuitModel>();
 
             var model = circuit.GetLargeSignalModel();
             switchModel = sw;

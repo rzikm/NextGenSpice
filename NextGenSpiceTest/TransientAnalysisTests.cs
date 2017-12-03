@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Extensions;
@@ -16,20 +18,20 @@ namespace NextGenSpiceTest
         {
             DoTrace = false;
         }
-        
+
 
         [Fact]
         public void TestSimpleCapacitorTimeDependentCircuit()
         {
             // TODO expected values taken from LTSPICE, file capacitor_simple_time.asc - see docs.
             var results = new List<double>();
-            
+
             var circuit = new CircuitBuilder()
                 .AddVoltageSource(1, 0, 15)
                 .AddResistor(1, 2, 1)
                 .AddCapacitor(2, 0, 1e-6, 0)
                 .BuildCircuit();
-            
+
             var model = circuit.GetLargeSignalModel();
             model.EstablishDcBias();
 
@@ -116,6 +118,72 @@ namespace NextGenSpiceTest
             Output.PrintCircuitStats(model);
 
             Assert.Equal(expected, model.NodeVoltages, new DoubleComparer(1e-4));
+        }
+
+        [Fact]
+        public void TestPulseSource()
+        {
+            var circuit = new CircuitBuilder()
+                .AddVoltageSource(1, 0,
+                    new PulseBehaviorParams()
+                    {
+                        Value1 = 1,
+                        Value2 = 5,
+                        Delay = 3e-6,
+                        TimeRise = 4e-6,
+                        Duration = 5e-6,
+                        TimeFall = 2e-6,
+                        Period = 20e-6
+                    })
+                .AddResistor(1, 0, 1)
+                .BuildCircuit()
+                .GetLargeSignalModel();
+
+            var voltages = SimulateFor(circuit, 30e-6, 1e-6);
+        }
+
+        [Fact]
+        public void TestSinusoidalSource()
+        {
+            var circuit = new CircuitBuilder()
+                .AddVoltageSource(1, 0,
+                    new SinusoidalBehaviorParams()
+                    {
+                        BaseValue = 1,
+                        Amplitude = 1,
+                        Frequency = (2* Math.PI / 10e-6),
+                        Delay = 5e-6,
+                        DampingFactor = 10000,
+                        Phase = Math.PI/2
+                    })
+                .AddResistor(1, 0, 1)
+                .BuildCircuit()
+                .GetLargeSignalModel();
+
+            var voltages = SimulateFor(circuit, 30e-6, 1e-6);
+        }
+
+
+        public List<double> SimulateFor(LargeSignalCircuitModel model, double time, double timestep)
+        {
+            List<double> voltages = new List<double>();
+            Output.WriteLine("Voltages:");
+            Output.WriteLine($"Time      |{string.Join("|", Enumerable.Range(0, model.NodeCount).Select(c => c.ToString().PadLeft(10)))}");
+            var elapsed = 0.0;
+
+            model.EstablishDcBias();
+            while (true)
+            {
+                Output.WriteLine($"{elapsed, 10:G4}|{string.Join("|", model.NodeVoltages.Select(c => c.ToString("F").PadLeft(10)))}");
+                voltages.Add(model.NodeVoltages[1]);
+
+                if (elapsed > time) break;
+
+                model.AdvanceInTime(timestep);
+                elapsed += timestep;
+            }
+
+            return voltages;
         }
     }
 }
