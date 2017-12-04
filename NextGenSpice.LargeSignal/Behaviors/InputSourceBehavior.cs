@@ -1,5 +1,6 @@
 ﻿using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Elements;
+using Numerics;
 
 namespace NextGenSpice.LargeSignal.Behaviors
 {

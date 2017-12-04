@@ -28,14 +28,15 @@ namespace NextGenSpice.LargeSignal
             SetModel<InductorElement, LargeSignalInductorModel>(e => new LargeSignalInductorModel(e));
             SetModel<SubcircuitElement, LargeSignalSubcircuitModel>((e, ctx) => new LargeSignalSubcircuitModel(e, e.Elements.Select(ctx.GetModel).Cast<ILargeSignalDeviceModel>()));
 
-
-            // TODO: Add other behaviors
+            // TODO: Autoregister using MEF?
             // Input source behaviors
             SetParam<ConstantBehaviorParams>((def, ctx) => new ConstantSourceBehavior(def));
             SetParam<PulseBehaviorParams>((def, ctx) => new PulseSourceBehavior(def));
             SetParam<PieceWiseLinearBehaviorParams>((def, ctx) => new PieceWiseLinearSourceBehavior(def));
             SetParam<SinusoidalBehaviorParams>((def, ctx) => new SinusioidalSourceBehavior(def));
             SetParam<ExponentialBehaviorParams>((def, ctx) => new ExponentialSourceBehavior(def));
+            SetParam<SffmBehaviorParams>((def, ctx) => new SffmSourceBehavior(def));
+            SetParam<AmBehaviorParams>((def, ctx) => new AmSourceBehavior(def));
         }
         
         protected override LargeSignalCircuitModel Instantiate(IModelInstantiationContext<LargeSignalCircuitModel> context)
