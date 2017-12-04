@@ -35,8 +35,8 @@ namespace NextGenSpice.LargeSignal.Models
 
         private void ApplyLinearizedModel(IEquationEditor equations, double vd)
         {
-            var id = Parent.param.SaturationCurrent * (Math.Exp(vd / Parent.param.Vt) - 1);
-            var geq = Parent.param.SaturationCurrent / Parent.param.Vt * Math.Exp(vd / Parent.param.Vt);
+            var id = Parent.param.SaturationCurrent * (Math.Exp(vd / Parent.param.ThermalVoltage) - 1);
+            var geq = Parent.param.SaturationCurrent / Parent.param.ThermalVoltage * Math.Exp(vd / Parent.param.ThermalVoltage);
             var ieq = id - geq * vd;
 
             iEq = ieq;
