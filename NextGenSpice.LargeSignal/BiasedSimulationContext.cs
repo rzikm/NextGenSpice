@@ -23,6 +23,8 @@ namespace NextGenSpice.LargeSignal
             return TrueContext.GetSolutionForVariable(GetMappedIndex(index));
         }
 
+        public CircuitParameters CircuitParameters => TrueContext.CircuitParameters;
+
         private int GetMappedIndex(int i)
         {
             return i < nodeMap.Length ? nodeMap[i] : i;

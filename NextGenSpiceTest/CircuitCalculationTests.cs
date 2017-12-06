@@ -39,7 +39,7 @@ namespace NextGenSpiceTest
             model.EstablishDcBias();
             Output.PrintCircuitStats(model);
 
-            Assert.Equal(new double[] { 0, 9.90804734507935, 0.712781853012352 },
+            Assert.Equal(new double[] { 0, 9.90804460268287, 0.71250487096788 },
                 model.NodeVoltages, new DoubleComparer(1e-10));
         }
 
@@ -146,11 +146,11 @@ namespace NextGenSpiceTest
                 .AddVoltageSource(1, 0, 1)
                 .AddResistor(1, 2, 1)
                 .AddResistor(1, 3, 1)
-                .AddElement(new int[] {2, 3}, new SwitchElement())
+                .AddElement(new int[] { 2, 3 }, new SwitchElement())
                 .AddResistor(3, 0, 0.5)
                 .BuildCircuit();
-            
-            circuit.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchElement,SwitchModel>(e => new SwitchModel(e));
+
+            circuit.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchElement, SwitchModel>(e => new SwitchModel(e));
 
             var model = circuit.GetModel<LargeSignalCircuitModel>();
 

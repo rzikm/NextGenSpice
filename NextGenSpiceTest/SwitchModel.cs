@@ -18,9 +18,9 @@ namespace NextGenSpiceTest
         {
         }
 
-        public override void RegisterAdditionalVariables(IEquationSystemBuilder builder)
+        public override void RegisterAdditionalVariables(IEquationSystemBuilder builder, ISimulationContext context)
         {
-            base.RegisterAdditionalVariables(builder);
+            base.RegisterAdditionalVariables(builder, context);
             branchVariable = builder.AddVariable();
         }
 

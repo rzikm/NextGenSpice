@@ -15,7 +15,7 @@ namespace NextGenSpice.LargeSignal.Models
 
         protected TDefinitionElement Parent { get; }
 
-        public virtual void RegisterAdditionalVariables(IEquationSystemBuilder builder)
+        public virtual void RegisterAdditionalVariables(IEquationSystemBuilder builder, ISimulationContext context)
         {
         }
 

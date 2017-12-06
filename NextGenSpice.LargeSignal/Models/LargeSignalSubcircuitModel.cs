@@ -37,9 +37,9 @@ namespace NextGenSpice.LargeSignal.Models
                 model.OnDcBiasEstablished(context);
         }
 
-        public override void RegisterAdditionalVariables(IEquationSystemBuilder builder)
+        public override void RegisterAdditionalVariables(IEquationSystemBuilder builder, ISimulationContext context)
         {
-            base.RegisterAdditionalVariables(builder);
+            base.RegisterAdditionalVariables(builder, context);
 
             for (var i = 1; i < nodeMap.Length; i++)
                 nodeMap[i] = -1;
@@ -53,7 +53,7 @@ namespace NextGenSpice.LargeSignal.Models
             biasedEquationEditor.TrueEquationEditor = builder;
 
             foreach (var model in elements)
-                model.RegisterAdditionalVariables(builder);
+                model.RegisterAdditionalVariables(builder, context);
         }
 
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)

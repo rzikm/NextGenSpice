@@ -38,8 +38,7 @@ namespace NextGenSpice.LargeSignal
 
         // iteration dependent variables
 
-        public double NonlinearIterationEpsilon { get; } = 1e-30;
-
+        public double NonlinearIterationEpsilon { get; } = 1e-15;
         public int MaxDcPointIterations { get; set; } = 1000;
         public double MaxTimeStep { get; set; } = 1e-6;
         
@@ -88,8 +87,9 @@ namespace NextGenSpice.LargeSignal
         {
             if (context != null) return;
 
+            context = new SimulationContext(NodeCount);
             BuildEquationSystem();
-            context = new SimulationContext(NodeCount, equationSystem);
+            context.EquationSystem = equationSystem;
         }
 
         private void BuildEquationSystem()
@@ -99,7 +99,7 @@ namespace NextGenSpice.LargeSignal
                 b.AddVariable();
 
             foreach (var element in Elements)
-                element.RegisterAdditionalVariables(b);
+                element.RegisterAdditionalVariables(b, context);
 
             foreach (var element in constElements)
                 element.ApplyModelValues(b, context);

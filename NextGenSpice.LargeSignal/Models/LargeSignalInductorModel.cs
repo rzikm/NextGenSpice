@@ -20,10 +20,10 @@ namespace NextGenSpice.LargeSignal.Models
         public double Current { get; private set; }
         public double Voltage { get; private set; }
 
-        public override void RegisterAdditionalVariables(IEquationSystemBuilder builder)
+        public override void RegisterAdditionalVariables(IEquationSystemBuilder builder, ISimulationContext context)
         {
             branchVariable = builder.AddVariable();
-            base.RegisterAdditionalVariables(builder);
+            base.RegisterAdditionalVariables(builder, context);
         }
 
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
