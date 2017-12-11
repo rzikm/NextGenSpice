@@ -38,7 +38,7 @@ namespace NextGenSpice.LargeSignal
 
         // iteration dependent variables
 
-        public double NonlinearIterationEpsilon { get; } = 1e-15;
+        public double NonlinearIterationEpsilon { get; set; } = 1e-15;
         public int MaxDcPointIterations { get; set; } = 1000;
         public double MaxTimeStep { get; set; } = 1e-6;
         

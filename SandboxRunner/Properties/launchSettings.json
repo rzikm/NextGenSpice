@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "SandboxRunner": {
+      "commandName": "Project"
+    }
+  }
+}

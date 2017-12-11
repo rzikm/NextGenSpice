@@ -32,7 +32,7 @@ namespace NextGenSpice.LargeSignal.Behaviors
             if (i < 0) i = ~i;
 
             if (i >= timepoints.Count) return values[timepoints.Count - 1];
-            if (i == 0) return param.InitialValue;
+            if (i == 0) return MathHelper.LinearInterpolation(param.InitialValue, values[i], time / timepoints[i]);
             return MathHelper.LinearInterpolation(values[i - 1], values[i],
                 (time - timepoints[i - 1]) / (timepoints[i] - timepoints[i - 1]));
         }
