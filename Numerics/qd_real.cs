@@ -5,6 +5,9 @@ namespace Numerics
     [StructLayout(LayoutKind.Sequential)]
     public struct qd_real
     {
+//        private const string DllPath = "NumericCore.dll";
+        private const string DllPath = "D:\\Visual Studio 2017\\Projects\\NextGen Spice\\Debug\\NumericCore.dll";
+        
         public qd_real(double x0 = 0, double x1 = 0, double x2 = 0, double x3 = 0)
         {
             this.x0 = x0;
@@ -77,7 +80,7 @@ namespace Numerics
         }
 
 
-        [DllImport("NumericCore.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DllPath, CallingConvention = CallingConvention.Cdecl)]
         static extern void qd_add(ref qd_real self, ref qd_real b);
 
         public static qd_real operator +(qd_real lhs, qd_real rhs)
@@ -98,7 +101,7 @@ namespace Numerics
             return lhs + rhs;
         }
 
-        [DllImport("NumericCore.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DllPath, CallingConvention = CallingConvention.Cdecl)]
         static extern void qd_sub(ref qd_real self, ref qd_real b);
 
         public static qd_real operator -(qd_real lhs, qd_real rhs)
@@ -124,7 +127,7 @@ namespace Numerics
             return Zero - self;
         }
 
-        [DllImport("NumericCore.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DllPath, CallingConvention = CallingConvention.Cdecl)]
         static extern void qd_mul(ref qd_real self, ref qd_real b);
 
         public static qd_real operator *(qd_real lhs, qd_real rhs)
@@ -145,7 +148,7 @@ namespace Numerics
             return lhs * rhs;
         }
 
-        [DllImport("NumericCore.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DllPath, CallingConvention = CallingConvention.Cdecl)]
         static extern void qd_div(ref qd_real self, ref qd_real b);
 
         public static qd_real operator /(qd_real lhs, qd_real rhs)
@@ -169,7 +172,7 @@ namespace Numerics
         }
 
 
-        [DllImport("NumericCore.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DllPath, CallingConvention = CallingConvention.Cdecl)]
         static extern void qd_sqrt(ref qd_real self);
 
         public qd_real Sqrt()
@@ -179,7 +182,7 @@ namespace Numerics
             return d;
         }
 
-        [DllImport("NumericCore.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DllPath, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.BStr)]
         static extern string qd_to_string(ref qd_real self);
 

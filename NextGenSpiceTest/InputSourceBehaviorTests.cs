@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace NextGenSpiceTest
 {
-    public class InputSourceBehaviorTests : TracedTestBase{
+    public class InputSourceBehaviorTests : TracedTestBase {
         public InputSourceBehaviorTests(ITestOutputHelper output) : base(output)
         {
             DoTrace = false;

@@ -13,7 +13,7 @@ namespace NextGenSpice.LargeSignal
     public class LargeSignalCircuitModel : IAnalysisCircuitModel<ILargeSignalDeviceModel>
     {
         private SimulationContext context;
-        private EquationSystem equationSystem;
+        private QdEquationSystem equationSystem;
 
         public LargeSignalCircuitModel(IEnumerable<double> initialVoltages, List<ILargeSignalDeviceModel> elements)
         {
@@ -94,7 +94,8 @@ namespace NextGenSpice.LargeSignal
 
         private void BuildEquationSystem()
         {
-            var b = new EquationSystemBuilder();
+//            var b = new EquationSystemBuilder();
+            var b = new QdEquationSystemBuilder();
             for (var i = 0; i < NodeCount; i++)
                 b.AddVariable();
 
@@ -179,14 +180,23 @@ namespace NextGenSpice.LargeSignal
         {
             // ensure ground has 0 voltage
             var m = equationSystem.Matrix;
+            //            for (int i = 0; i < m.SideLength; i++)
+            //            {
+            //                m[i, 0] = 0;
+            //                m[0, i] = 0;
+            //            }
+            //
+            //            m[0, 0] = 1;
+            //            equationSystem.RightHandSide[0] = 0;
+
             for (int i = 0; i < m.SideLength; i++)
             {
-                m[i, 0] = 0;
-                m[0, i] = 0;
+                m[i, 0] = new qd_real(0);
+                m[0, i] = new qd_real(0);
             }
 
-            m[0, 0] = 1;
-            equationSystem.RightHandSide[0] = 0;
+            m[0, 0] = new qd_real(1);
+            equationSystem.RightHandSide[0] = new qd_real(0);
 
             equationSystem.Solve();
 

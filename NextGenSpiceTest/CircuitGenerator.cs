@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Extensions;
@@ -30,7 +31,8 @@ namespace NextGenSpiceTest
                 .AddResistor(1, 0, 100)
                 .AddResistor(1, 2, 10000)
                 .AddCurrentSource(1, 0, 0.1)
-                .AddDiode(2, 0, p => {
+                .AddDiode(2, 0, p =>
+                {
                     p.Vd = 0.7;
                     p.SaturationCurrent = 1e-15;
                 })
@@ -59,7 +61,7 @@ namespace NextGenSpiceTest
                 .AddVoltageSource(5, 0, 5)
                 .BuildCircuit();
         }
-        
+
         public static ElectricCircuitDefinition GetSimpleCircuitWithCapacitor()
         {
             return new CircuitBuilder()
@@ -123,6 +125,22 @@ namespace NextGenSpiceTest
             var model = circuit.GetLargeSignalModel();
             switchModel = sw;
             return model;
+        }
+
+        public static ElectricCircuitDefinition GetTruncationErrorModel()
+        {
+            return new CircuitBuilder()
+                .AddVoltageSource(1, 0, new SinusoidalBehaviorParams()
+                {
+                    Amplitude = 5,
+                    Frequency = 100,
+                })
+                .AddResistor(2,3,1e-6)
+                .AddDiode(1,2, DiodeModelParams.D1N4148, "D1")
+                .AddDiode(0,3, DiodeModelParams.D1N4148)
+//                .AddResistor(1,2, 1)
+//                .AddResistor(3,0, 1)
+                .BuildCircuit();
         }
     }
 }

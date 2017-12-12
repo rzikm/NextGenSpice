@@ -16,6 +16,9 @@ namespace NextGenSpice.LargeSignal.Models
         private double gEq;
         private double iEq;
 
+        public double Voltage { get; private set; }
+        public double Current { get; private set; }
+
         public LargeSignalDiodeModel(DiodeElement parent) : base(parent)
         {
             param = parent.param;
@@ -48,6 +51,8 @@ namespace NextGenSpice.LargeSignal.Models
 
         private void ApplyLinearizedModel(IEquationEditor equations, double vd)
         {
+            vd -= param.SeriesResistance * Current;
+
             var (id, geq) = GetModelValues(vd);
             var ieq = id - geq * vd;
 
@@ -57,6 +62,9 @@ namespace NextGenSpice.LargeSignal.Models
             equations
                 .AddConductance(Anode, Kathode, gEq)
                 .AddCurrent(Kathode, Anode, iEq);
+
+            Voltage = vd;
+            Current = id;
         }
 
         private (double, double) GetModelValues(double vd)

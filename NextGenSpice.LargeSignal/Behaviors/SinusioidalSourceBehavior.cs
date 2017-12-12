@@ -18,7 +18,7 @@ namespace NextGenSpice.LargeSignal.Behaviors
 
             if (elapsedTime > 0)
             {
-                phase += elapsedTime * param.Frequency;
+                phase += elapsedTime * param.Frequency * 2 * Math.PI;
                 amplitude *= Math.Exp(-elapsedTime * param.DampingFactor);
             }
 

@@ -26,12 +26,25 @@ namespace SandboxRunner
 
             //            SetListeners();
             Stopwatch sw = Stopwatch.StartNew();
-            RunModel();
+//            RunModel();
             //
+            RunTruncationModel();
             sw.Stop();
 //            Console.WriteLine(sw.Elapsed);
 
             //            Misc.HilbertMatrixStabilityTest();
+        }
+
+        private static void RunTruncationModel()
+        {
+            var model = CircuitGenerator.GetTruncationErrorModel().GetLargeSignalModel();
+
+
+            model.NonlinearIterationEpsilon = 1e-10;
+            model.MaxDcPointIterations = 10000;
+            model.MaxTimeStep = 10e-6;
+            model.EstablishDcBias();
+            SimulateAndPrint(model, 10e-3, model.MaxTimeStep);
         }
 
         static string GetProjectName(string filePath)
@@ -73,7 +86,8 @@ namespace SandboxRunner
         private static void PrintStats(LargeSignalCircuitModel model, double time, double val)
         {
             //            Console.WriteLine($"{(time * 1e6),+20:#0.## 'us'}|{string.Join("|", model.NodeVoltages.Select(v => $"{v,20:G10}"))}|{-val,20:G10}");
-            Console.WriteLine($"{time} {-val}");
+//            Console.WriteLine($"{time} {-val}");
+            Console.WriteLine($"{time} {val} {model.NodeVoltages[2]}");
 //            Console.WriteLine($"{model.NodeVoltages[1]} {-val}");
         }
 
@@ -85,11 +99,11 @@ namespace SandboxRunner
             //            Console.WriteLine("Voltages:");
             //            Console.WriteLine($"Time                |{string.Join("|", Enumerable.Range(0, model.NodeCount).Select(i => $"{i,20}"))}|Il");
             //            Console.WriteLine("-------------------------------------------------------------------------------------------------");
-            //            var device = model.TimeDependentElements.OfType<LargeSignalInductorModel>().Single();
-            var device = model.Elements.OfType<LargeSignalVoltageSourceModel>().Single();
+//            var device = model.Elements.OfType<LargeSignalVoltageSourceModel>().Single();
+            var device = model.Elements.OfType<LargeSignalDiodeModel>().Single(d => d.Name == "D1");
 
             //            PrintStats(model, elapsed, device.Current);
-            PrintStats(model, elapsed, device.Voltage);
+            PrintStats(model, elapsed, device.Current);
 
 
             while (elapsed < time)
@@ -104,27 +118,19 @@ namespace SandboxRunner
         private static void RunModel()
         {
             var circuit = new CircuitBuilder()
-//                .AddVoltageSource(1, 0, new PieceWiseLinearBehaviorParams()
-//                {
-//                    DefinitionPoints = new Dictionary<double, double>()
-//                    {
-//                        [100e-6] = 1
-//                    },
-//                    InitialValue = 0
-//                }, "V")
-//                .AddDiode(1, 0, (d) =>
-//                {
-//                    d.ReverseBreakdownVoltage = 2;
-//                    d.Vd = -3;
-//                }, "D")
-                .AddVoltageSource(1,0, new SffmBehaviorParams()
+                .AddVoltageSource(1, 0, new PieceWiseLinearBehaviorParams()
                 {
-                    FrequencyCarrier = 1/ 20e-6,
-                    FrequencySignal = 1/50e-6,
-                    Amplitude = 1,
-                    ModilationIndex = 2
-                })
-                .AddResistor(1,0, 1)
+                    DefinitionPoints = new Dictionary<double, double>()
+                    {
+                        [100e-6] = 1
+                    },
+                    InitialValue = 0
+                }, "V")
+                .AddDiode(1, 0, (d) =>
+                {
+                    d.ReverseBreakdownVoltage = 2;
+                    d.Vd = -3;
+                }, "D")
                 .BuildCircuit();
 
             var model = circuit.GetLargeSignalModel();

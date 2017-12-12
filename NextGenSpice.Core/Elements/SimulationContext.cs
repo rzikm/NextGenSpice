@@ -13,7 +13,7 @@ namespace NextGenSpice.Core.Elements
         public double NodeCount { get; }
         public double Time { get; set; }
         public double Timestep { get; set; }
-        public double[] EquationSolution => EquationSystem.Solution;
+        //public double[] EquationSolution => EquationSystem.Solution;
 
         public double GetSolutionForVariable(int index)
         {
@@ -22,6 +22,6 @@ namespace NextGenSpice.Core.Elements
 
         public CircuitParameters CircuitParameters { get; }
 
-        public EquationSystem EquationSystem { get; set; }
+        public QdEquationSystem EquationSystem { get; set; }
     }
 }
