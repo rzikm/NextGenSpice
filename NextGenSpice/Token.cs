@@ -1,5 +1,8 @@
 ﻿namespace NextGenSpice
 {
+    /// <summary>
+    /// Class representing occurence of a token in a source file
+    /// </summary>
     public class Token
     {
         /// <summary>

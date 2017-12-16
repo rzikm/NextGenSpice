@@ -6,6 +6,9 @@ using System.Xml;
 
 namespace NextGenSpice
 {
+    /// <summary>
+    /// Class for reading tokens with their location from given TextReader
+    /// </summary>
     public class TokenStream : ITokenStream
     {
         private readonly TextReader inputReader;
@@ -19,42 +22,55 @@ namespace NextGenSpice
             inputReader = input;
         }
 
+        /// <summary>
+        /// Reads a token from the stream, returns null on EOF.
+        /// </summary>
+        /// <returns>First not already read token or null</returns>
         public Token Read()
         {
-            if (!EnsureHasLine()) return null;
+            if (!TryEnsureHasLine()) return null;
 
             return MakeToken();
         }
 
-        private bool EnsureHasLine()
+        /// <summary>
+        /// Ensures that there is some token to be read in currentLine. Return true if succeeded.
+        /// </summary>
+        /// <returns></returns>
+        private bool TryEnsureHasLine()
         {
-            if (currentLine != null)
+            if (currentLine != null) // there is yet unfinished line
                 SkipWhiteSpaceAndComments();
 
             while (currentLine == null)
             {
                 var readLine = inputReader.ReadLine();
-                if (readLine == null) return false;
+                if (readLine == null) return false; // end of underlying stream
                 currentLine = new StringReader(readLine);
 
                 line++;
                 offset = 1;
 
-                SkipWhiteSpaceAndComments();
+                SkipWhiteSpaceAndComments(); // skip leading whitespaces or skip line as whole if begins with comment
             }
 
             return true;
         }
 
+        /// <summary>
+        /// Reads available token from currentLine, return null if currentLine contains only whitespace
+        /// </summary>
+        /// <returns></returns>
         private Token MakeToken()
         {
+            // mark the position of the token
             var line = this.line;
             var offset = this.offset;
 
             var s = ReadStringToken();
 
             return string.IsNullOrWhiteSpace(s)
-                ? null
+                ? null // no more tokens in the stream
                 : new Token
                 {
                     Value = s,
@@ -63,6 +79,10 @@ namespace NextGenSpice
                 };
         }
 
+        /// <summary>
+        /// Skips empty lines and then reads all tokens until line break. returns empty collection on EOF.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Token> ReadLogicalLine()
         {
             List<Token> tokens = new List<Token>();
@@ -70,34 +90,35 @@ namespace NextGenSpice
             if (tokens[0] == null)
                 return Enumerable.Empty<Token>();
 
-            while (currentLine != null)
+            while (true)
             {
-                var t = MakeToken();
-                if (t == null)
-                    break;
-                tokens.Add(t);
+                SkipWhiteSpaceAndComments();
+                if (currentLine == null) break;
+                tokens.Add(MakeToken());
             }
             return tokens;
         }
 
+        /// <summary>
+        /// Reads token from 
+        /// </summary>
+        /// <returns></returns>
         private string ReadStringToken()
         {
             int c;
             var sb = new StringBuilder();
-            while ((c = currentLine.Read()) != -1)
+            while ((c = currentLine.Peek()) != -1)
             {
+                if (char.IsWhiteSpace((char)c) || c == '*') break; // end of the token
+                sb.Append((char) currentLine.Read());
                 ++offset;
-                if (c == '*') // comment until the end of the line
-                {
-                    currentLine = null; 
-                    break;
-                }
-                if (char.IsWhiteSpace((char)c)) break; // end of the token
-                sb.Append((char)c);
             }
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Skips all leading whitespaces and comments, sets currentLine to null if EOL reached.
+        /// </summary>
         private void SkipWhiteSpaceAndComments()
         {
             int c;

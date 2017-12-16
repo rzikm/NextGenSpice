@@ -39,9 +39,9 @@ last*comment in the middle
         [Fact]
         public void ReturnsEmptyOnEof()
         {
-            InitInput("first second  ");
+            InitInput("first  second     third");
 
-            Assert.Equal(new[]{"first", "second"}, TokenStream.ReadLogicalLine().Select(t => t.Value));
+            Assert.Equal(new[]{"first", "second", "third"}, TokenStream.ReadLogicalLine().Select(t => t.Value));
             Assert.Equal(0, TokenStream.ReadLogicalLine().Count());
             Assert.Equal(0, TokenStream.ReadLogicalLine().Count());
         }
