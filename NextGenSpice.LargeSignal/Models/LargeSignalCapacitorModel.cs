@@ -1,15 +1,19 @@
 ﻿using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.Helpers;
+using NextGenSpice.LargeSignal.NumIntegration;
 
 namespace NextGenSpice.LargeSignal.Models
 {
     public class LargeSignalCapacitorModel : TwoNodeLargeSignalModel<CapacitorElement>
     {
         private int branchVariable;
+        private IIntegrationMethod IntegrationMethod { get; }
 
         public LargeSignalCapacitorModel(CapacitorElement parent) : base(parent)
         {
+            IntegrationMethod = new GearIntegrationMethod(3);
+//            IntegrationMethod = new BackwardEulerIntegrationMethod();
         }
 
 
@@ -20,6 +24,8 @@ namespace NextGenSpice.LargeSignal.Models
 
         public double Voltage { get; private set; }
 
+        private double geq;
+
         public override void RegisterAdditionalVariables(IEquationSystemBuilder builder, ISimulationContext context)
         {
             base.RegisterAdditionalVariables(builder, context);
@@ -28,12 +34,10 @@ namespace NextGenSpice.LargeSignal.Models
 
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            var geq = Parent.Capacity / context.Timestep * 2;
-            var ieq = geq * Voltage + Current;
-
+            var (geq, ieq) = IntegrationMethod.GetEquivalents(Parent.Capacity / context.TimeStep);
+            
             equations.AddMatrixEntry(branchVariable, Anode, geq);
             equations.AddMatrixEntry(branchVariable, Kathode, -geq);
-
             AddBranchCurrent(equations, ieq);
         }
 
@@ -64,8 +68,11 @@ namespace NextGenSpice.LargeSignal.Models
         {
             base.OnDcBiasEstablished(context);
             Current = context.GetSolutionForVariable(branchVariable);
+
             var vc = context.GetSolutionForVariable(Parent.Anode) - context.GetSolutionForVariable(Parent.Kathode);
             Voltage = vc;
+            
+            IntegrationMethod.SetState(Current, Voltage);
         }
     }
 }

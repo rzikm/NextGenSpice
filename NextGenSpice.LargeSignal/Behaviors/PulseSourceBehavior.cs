@@ -13,8 +13,9 @@ namespace NextGenSpice.LargeSignal.Behaviors
         public override double GetValue(ISimulationContext context)
         {
             // TODO: make more efficient
-
-            var phase = context.Time % param.Period;
+            var phase = context.Time;
+            if (param.Period > 0)
+             phase = context.Time % param.Period;
             if (phase < param.Delay) return param.Value1;
             phase -= param.Delay;
             if (phase < param.TimeRise)

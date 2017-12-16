@@ -1,6 +1,7 @@
 ﻿using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.Helpers;
+using NextGenSpice.LargeSignal.NumIntegration;
 
 namespace NextGenSpice.LargeSignal.Models
 {
@@ -9,8 +10,11 @@ namespace NextGenSpice.LargeSignal.Models
 
         private int branchVariable;
 
+        private IIntegrationMethod IntegrationMethod { get; }
+
         public LargeSignalInductorModel(InductorElement parent) : base(parent)
         {
+            IntegrationMethod = new TrapezoidalIntegrationMethod();
         }
 
 
@@ -28,8 +32,7 @@ namespace NextGenSpice.LargeSignal.Models
 
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            var req = Parent.Inductance / context.Timestep * 2;
-            var veq = req * Current + Voltage;
+            var (req, veq) = IntegrationMethod.GetEquivalents(Parent.Inductance / context.TimeStep);
 
             equations.AddVoltage(Anode, Kathode, branchVariable, -veq);
             equations.AddMatrixEntry(branchVariable, branchVariable, -req);
@@ -54,6 +57,8 @@ namespace NextGenSpice.LargeSignal.Models
             base.OnDcBiasEstablished(context);
             Current = context.GetSolutionForVariable(branchVariable);
             Voltage = context.GetSolutionForVariable(Anode) - context.GetSolutionForVariable(Kathode);
+
+            IntegrationMethod.SetState(Voltage, Current);
         }
     }
 }

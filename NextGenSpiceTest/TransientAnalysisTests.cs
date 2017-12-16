@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NextGenSpice.Core.Circuit;
+using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Extensions;
 using NextGenSpice.LargeSignal;
 using NextGenSpice.LargeSignal.Models;
@@ -24,7 +25,12 @@ namespace NextGenSpiceTest
             var results = new List<double>();
 
             var circuit = new CircuitBuilder()
-                .AddVoltageSource(1, 0, 15)
+                .AddVoltageSource(1, 0, new PulseBehaviorParams()
+                {
+                    Delay = 1e-6,
+                    Duration = 1,
+                    Value2 = 15
+                })
                 .AddResistor(1, 2, 1)
                 .AddCapacitor(2, 0, 1e-6, 0)
                 .BuildCircuit();
@@ -45,7 +51,7 @@ namespace NextGenSpiceTest
 
                 Output.WriteLine(string.Join("\t",
                     model.NodeVoltages.Concat(new[] { device.Current }).Select(v => v.ToString("F"))));
-                results.Add(model.NodeVoltages[2]);
+//                results.Add(model.NodeVoltages[2]);
             }
         }
         

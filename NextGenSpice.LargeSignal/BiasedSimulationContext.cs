@@ -16,7 +16,7 @@ namespace NextGenSpice.LargeSignal
 
         public double Time => TrueContext.Time;
 
-        public double Timestep => TrueContext.Timestep;
+        public double TimeStep => TrueContext.TimeStep;
 
         public double GetSolutionForVariable(int index)
         {

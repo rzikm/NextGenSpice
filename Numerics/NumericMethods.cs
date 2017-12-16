@@ -66,8 +66,7 @@ namespace Numerics
 
 //            PrintSystem(m, b);
 
-            // we start from node 1, because 0 is the ground/reference (0V)
-            for (var i = 1; i < size - 1; i++)
+            for (var i = 0; i < size - 1; i++)
             {
                 // Search for maximum in this column
                 var maxEl =  Abs(m[i, i]);
@@ -114,7 +113,7 @@ namespace Numerics
 
 
             // GaussElimSolve equation Ax=b for an upper triangular matrix A
-            for (var i = size - 1; i > 0; i--)
+            for (var i = size - 1; i >= 0; i--)
             {
                 if (b[i] == qd_real.Zero)
                     continue;
@@ -169,8 +168,7 @@ namespace Numerics
 
             PrintSystem(m, b);
 
-            // we start from node 1, because 0 is the ground/reference (0V)
-            for (var i = 1; i < size - 1; i++)
+            for (var i = 0; i < size - 1; i++)
             {
                 // Search for maximum in this column
                 var maxEl = Math.Abs(m[i, i]);
@@ -212,22 +210,26 @@ namespace Numerics
                     b[k] += c * b[i];
                 }
 
-//                PrintSystem(m, b);
+                PrintSystem(m, b);
             }
 
 
             // GaussElimSolve equation Ax=b for an upper triangular matrix A
-            for (var i = size - 1; i > 0; i--)
+            for (var i = size - 1; i >= 0; i--)
             {
                 if (b[i] == 0)
                     continue;
                 // normalize
                 b[i] /= m[i, i];
-                //m[i, i] = 1;
+                m[i, i] = 1;
                 // backward elimination
                 for (var k = i - 1; k >= 0; k--)
+                {
                     b[k] -= m[k, i] * b[i];
-                //m[k, i] = 0;
+                    m[k, i] = 0;
+                }
+
+                PrintSystem(m, b);
             }
 
             b.CopyTo(x, 0);

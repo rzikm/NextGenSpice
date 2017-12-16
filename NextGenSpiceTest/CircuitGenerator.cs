@@ -134,12 +134,35 @@ namespace NextGenSpiceTest
                 {
                     Amplitude = 5,
                     Frequency = 100,
+                }, "VS")
+//                .AddResistor(2, 3, 3 * 10000000000000e-6)
+                .AddResistor(2, 3, 1e-6)
+                .AddDiode(1, 2, DiodeModelParams.D1N4148, "D1")
+                .AddDiode(0, 3, DiodeModelParams.D1N4148, "D2")
+                //                .AddResistor(1,2, 1)
+//                                .AddResistor(3,0, 10)
+                .BuildCircuit();
+        }
+
+        public static ElectricCircuitDefinition GetCapacitorCircuit()
+        {
+            return new CircuitBuilder()
+                //                .AddVoltageSource(1, 0, new PulseBehaviorParams()
+                //                {
+                //                    Value1 = 0,
+                //                    Value2 = 5,
+                //                    Duration = 1e-3,
+                //                    Delay = 1e-4,
+                //                    Period = 15e-4
+                //                })
+                .AddVoltageSource(1, 0, new SinusoidalBehaviorParams()
+                {
+                    Amplitude = 5,
+                    Frequency = 500,
                 })
-                .AddResistor(2,3,1e-6)
-                .AddDiode(1,2, DiodeModelParams.D1N4148, "D1")
-                .AddDiode(0,3, DiodeModelParams.D1N4148)
-//                .AddResistor(1,2, 1)
-//                .AddResistor(3,0, 1)
+                .AddResistor(2, 3, 1e-6)
+                .AddCapacitor(1, 2, 1e-3)
+                .AddResistor(3, 0, 1)
                 .BuildCircuit();
         }
     }

@@ -4,7 +4,7 @@
     {
         double NodeCount { get; }
         double Time { get; }
-        double Timestep { get; }
+        double TimeStep { get; }
         double GetSolutionForVariable(int index);
         CircuitParameters CircuitParameters { get; }
 

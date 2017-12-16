@@ -68,19 +68,18 @@ namespace NextGenSpice.LargeSignal
 
             while (milliseconds > 0)
             {
-                var step = Math.Min(MaxTimeStep, milliseconds);
+                var step = 2 * Math.Min(MaxTimeStep, milliseconds);
+
+                var timePoint = context.Time;
+                do
+                {
+                    step /= 2;
+                    context.Time = timePoint + step;
+                    context.TimeStep = step;
+                } while (!EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context)));
+
                 milliseconds -= step;
-
-                AdvanceInTime_Internal(step);
             }
-        }
-
-        private void AdvanceInTime_Internal(double step)
-        {
-            context.Timestep = step;
-
-            context.Time += step;
-            EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context));
         }
 
         private void EnsureInitialized()
@@ -113,7 +112,7 @@ namespace NextGenSpice.LargeSignal
             EnsureInitialized();
 
             // TODO: really reinitialize?
-            context.Timestep = 0;
+            context.TimeStep = 0;
             context.Time = 0;
 
             if (!EstablishDcBias_Internal(e => e.ApplyInitialCondition(equationSystem, context)))

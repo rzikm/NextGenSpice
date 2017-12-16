@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using NextGenSpice.Core.BehaviorParams;
@@ -41,7 +42,7 @@ namespace SandboxRunner
 
 
             model.NonlinearIterationEpsilon = 1e-10;
-            model.MaxDcPointIterations = 10000;
+            model.MaxDcPointIterations = 100;
             model.MaxTimeStep = 10e-6;
             model.EstablishDcBias();
             SimulateAndPrint(model, 10e-3, model.MaxTimeStep);
@@ -83,11 +84,12 @@ namespace SandboxRunner
             Console.WriteLine();
         }
 
-        private static void PrintStats(LargeSignalCircuitModel model, double time, double val)
+        private static void PrintStats(LargeSignalCircuitModel model, double time, params double[] vals)
         {
             //            Console.WriteLine($"{(time * 1e6),+20:#0.## 'us'}|{string.Join("|", model.NodeVoltages.Select(v => $"{v,20:G10}"))}|{-val,20:G10}");
 //            Console.WriteLine($"{time} {-val}");
-            Console.WriteLine($"{time} {val} {model.NodeVoltages[2]}");
+            Console.WriteLine($"{time} {model.NodeVoltages[2]} {string.Join(" ", vals.Select(v => v.ToString(CultureInfo.InvariantCulture)))}");
+            Console.WriteLine(model.IterationCount);
 //            Console.WriteLine($"{model.NodeVoltages[1]} {-val}");
         }
 
@@ -99,18 +101,17 @@ namespace SandboxRunner
             //            Console.WriteLine("Voltages:");
             //            Console.WriteLine($"Time                |{string.Join("|", Enumerable.Range(0, model.NodeCount).Select(i => $"{i,20}"))}|Il");
             //            Console.WriteLine("-------------------------------------------------------------------------------------------------");
-//            var device = model.Elements.OfType<LargeSignalVoltageSourceModel>().Single();
+            var voltageSource = model.Elements.OfType<LargeSignalVoltageSourceModel>().Single(d => d.Name == "VS");
             var device = model.Elements.OfType<LargeSignalDiodeModel>().Single(d => d.Name == "D1");
+//            var device2 = model.Elements.OfType<LargeSignalDiodeModel>().Single(d => d.Name == "D2");
+//            var device = model.Elements.OfType<LargeSignalCapacitorModel>().Single();
 
             //            PrintStats(model, elapsed, device.Current);
-            PrintStats(model, elapsed, device.Current);
-
-
             while (elapsed < time)
             {
                 model.AdvanceInTime(step);
                 elapsed += step;
-                PrintStats(model, elapsed, device.Current);
+                PrintStats(model, elapsed, voltageSource.Voltage, device.Current);
                 //                PrintStats(model, elapsed, device.Voltage);
             }
         }

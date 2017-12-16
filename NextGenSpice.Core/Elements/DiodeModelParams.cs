@@ -4,30 +4,32 @@
     {
         public static DiodeModelParams Default => new DiodeModelParams();
 
-        public static DiodeModelParams D1N4148 => new DiodeModelParams()
-        {
-            SaturationCurrent = 4.352E-9,
-            EmissionCoefficient = 1.906,
-            TransitTime = 5e-9,
-            JunctionCapacitance = 7.048E-13,
-            JunctionGradingCoefficient = 0.285,
-            JunctionPotential = 0.869,
-            ReverseBreakdownVoltage = 110,
-            ReverseBreakdownCurrent = 0.0001,
-            SeriesResistance = 0.6458,
-
-        };
-
 //        public static DiodeModelParams D1N4148 => new DiodeModelParams()
 //        {
-//            SaturationCurrent = 35e-12,
-//            EmissionCoefficient = 1.24,
+//            SaturationCurrent = 4.352E-9,
+//            EmissionCoefficient = 1.906,
 //            TransitTime = 5e-9,
-//            JunctionCapacitance = 4e-12,
+//            JunctionCapacitance = 7.048E-13,
 //            JunctionGradingCoefficient = 0.285,
-//            JunctionPotential = 0.6,
-//            ReverseBreakdownVoltage = 75
+//            JunctionPotential = 0.869,
+//            ReverseBreakdownVoltage = 110,
+//            ReverseBreakdownCurrent = 0.0001,
+//            SeriesResistance = 0.6458,
+//            Vd = 0.0
 //        };
+
+        public static DiodeModelParams D1N4148 => new DiodeModelParams()
+        {
+            SaturationCurrent = 2.52e-9,
+            EmissionCoefficient = 1.752,
+            TransitTime = 2e-8,
+            JunctionCapacitance = 9e-13,
+            JunctionGradingCoefficient = 0.25,
+            JunctionPotential = 20,
+            ReverseBreakdownVoltage = 75,
+            SeriesResistance = 0.568,
+            Vd = 0.0
+        };
 
         private DiodeModelParams()
         {
