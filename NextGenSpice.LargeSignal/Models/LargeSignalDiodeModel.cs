@@ -33,6 +33,7 @@ namespace NextGenSpice.LargeSignal.Models
         {
 //            IntegrationMethod = new AdamsMoultonIntegrationMethod(2);
             IntegrationMethod = new GearIntegrationMethod(4);
+//            IntegrationMethod = new TrapezoidalIntegrationMethod();
 //            IntegrationMethod = new BackwardEulerIntegrationMethod();
 //            IntegrationMethod = new AdamsMoultonIntegrationMethod(3);
 
