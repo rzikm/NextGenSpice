@@ -13,8 +13,12 @@ namespace NextGenSpice.LargeSignal.Models
 
         public IInputSourceBehavior Behavior { get; }
 
-        public double Current { get; private set; }
-        
+        public override void OnDcBiasEstablished(ISimulationContext context)
+        {
+            base.OnDcBiasEstablished(context);
+            Voltage = context.GetSolutionForVariable(Anode) - context.GetSolutionForVariable(Kathode);
+        }
+
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
             Current = Behavior.GetValue(context);

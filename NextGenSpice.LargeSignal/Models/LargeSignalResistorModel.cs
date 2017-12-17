@@ -18,5 +18,12 @@ namespace NextGenSpice.LargeSignal.Models
         {
             equations.AddConductance(Anode, Kathode, 1 / Resistance);
         }
+
+        public override void OnDcBiasEstablished(ISimulationContext context)
+        {
+            base.OnDcBiasEstablished(context);
+            Voltage = context.GetSolutionForVariable(Anode) - context.GetSolutionForVariable(Kathode);
+            Current = Voltage / Resistance;
+        }
     }
 }

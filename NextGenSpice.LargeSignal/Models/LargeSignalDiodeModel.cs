@@ -1,4 +1,6 @@
 using System;
+using System.ComponentModel.Design;
+using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
 using NextGenSpice.Core;
 using NextGenSpice.Core.Elements;
@@ -15,10 +17,7 @@ namespace NextGenSpice.LargeSignal.Models
         private double gmin;
 
         private readonly DiodeModelParams param;
-
-        public double Voltage { get; private set; }
-        public double Current { get; private set; }
-
+        
         private IIntegrationMethod IntegrationMethod { get; }
 
         private double ic;
@@ -38,6 +37,7 @@ namespace NextGenSpice.LargeSignal.Models
 //            IntegrationMethod = new AdamsMoultonIntegrationMethod(4);
 
             param = parent.param;
+            Voltage = param.Vd;
 
             vt = param.EmissionCoefficient * PhysicalConstants.Boltzmann * PhysicalConstants.CelsiusToKelvin(param.Temperature) /
                  PhysicalConstants.ElementaryCharge;
@@ -45,7 +45,7 @@ namespace NextGenSpice.LargeSignal.Models
             smallBiasTreshold = -5 * vt;
             capacitanceTreshold = param.ForwardBiasDepletionCapacitanceCoefficient * param.JunctionPotential;
         }
-
+        
         public override void RegisterAdditionalVariables(IEquationSystemBuilder builder, ISimulationContext context)
         {
             base.RegisterAdditionalVariables(builder, context);
@@ -55,13 +55,17 @@ namespace NextGenSpice.LargeSignal.Models
 
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            ApplyLinearizedModel(equations, context, context.GetSolutionForVariable(Parent.Anode) - context.GetSolutionForVariable(Parent.Kathode) - param.SeriesResistance * Current);
+            var vd = context.GetSolutionForVariable(Parent.Anode) - context.GetSolutionForVariable(Parent.Kathode) - param.SeriesResistance * Current;
+            ApplyLinearizedModel(equations, context, vd);
         }
 
         public override void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
         {
             var vd = context.GetSolutionForVariable(Parent.Anode) - context.GetSolutionForVariable(Parent.Kathode);
-            ApplyLinearizedModel(equations, context, vd == 0 ? param.Vd : vd - param.SeriesResistance * Current);
+            if (vd == 0) vd = param.Vd;
+            else vd -= param.SeriesResistance * Current
+;
+            ApplyLinearizedModel(equations, context, vd);
         }
 
         public override bool IsNonlinear => true;
@@ -78,14 +82,11 @@ namespace NextGenSpice.LargeSignal.Models
                 ;
 
             // Capacitor
-//            var cieq = 0.0;
-//            var cgeq = cd / context.TimeStep * 2;
 
             var (cgeq, cieq) = IntegrationMethod.GetEquivalents(cd / context.TimeStep);
 
             if (context.TimeStep > 0)
             {
-//                cieq = cgeq * vc + ic;
                 equations.AddMatrixEntry(capacitorBranch, Anode, cgeq);
                 equations.AddMatrixEntry(capacitorBranch, Kathode, -cgeq);
                 equations.AddRightHandSideEntry(capacitorBranch, cieq);

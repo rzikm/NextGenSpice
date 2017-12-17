@@ -20,10 +20,7 @@ namespace NextGenSpice.LargeSignal.Models
 
         public override bool IsNonlinear => false;
         public override bool IsTimeDependent => true;
-
-        public double Current { get; private set; }
-        public double Voltage { get; private set; }
-
+        
         public override void RegisterAdditionalVariables(IEquationSystemBuilder builder, ISimulationContext context)
         {
             branchVariable = builder.AddVariable();

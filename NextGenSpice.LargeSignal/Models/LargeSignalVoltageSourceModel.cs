@@ -18,11 +18,7 @@ namespace NextGenSpice.LargeSignal.Models
 
         public override bool IsNonlinear => Behavior.HasDependency;
         public override bool IsTimeDependent => Behavior.IsTimeDependent;
-
-        public double Voltage { get; private set; }
-
-        public double Current { get; private set; }
-
+        
         public override void OnDcBiasEstablished(ISimulationContext context)
         {
             base.OnDcBiasEstablished(context);

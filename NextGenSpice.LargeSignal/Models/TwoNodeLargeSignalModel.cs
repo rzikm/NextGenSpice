@@ -12,5 +12,8 @@ namespace NextGenSpice.LargeSignal.Models
         public int Anode => Parent.ConnectedNodes[0];
 
         public int Kathode => Parent.ConnectedNodes[1];
+
+        public double Current { get; protected set; }
+        public double Voltage { get; protected set; }
     }
 }
