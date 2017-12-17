@@ -33,6 +33,11 @@ namespace NextGenSpice.LargeSignal
         private readonly IReadOnlyList<ILargeSignalDeviceModel> nonlinearElements;
         private readonly IReadOnlyList<ILargeSignalDeviceModel> linearTimeDependentElements;
 
+        public  ILargeSignalDeviceModel GetModel(string name)
+        {
+            return Elements.Single(e => e.Name == name);
+        }
+
         public bool IsLinear => !nonlinearElements.Any();
 
 

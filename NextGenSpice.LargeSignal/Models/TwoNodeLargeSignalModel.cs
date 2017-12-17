@@ -2,7 +2,7 @@
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    public abstract class TwoNodeLargeSignalModel<TDefinitionElement> : LargeSignalModelBase<TDefinitionElement>
+    public abstract class TwoNodeLargeSignalModel<TDefinitionElement> : LargeSignalModelBase<TDefinitionElement>, ITwoTerminalLargeSignalDeviceModel
         where TDefinitionElement : TwoNodeCircuitElement
     {
         protected TwoNodeLargeSignalModel(TDefinitionElement parent) : base(parent)

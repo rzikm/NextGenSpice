@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
 
 namespace NextGenSpice
 {
@@ -39,6 +40,13 @@ namespace NextGenSpice
             }
 
             return value;
+        }
+
+        public static double GetNumericValue(this Token t, List<ErrorInfo> errors)
+        {
+            double val = ConvertValue(t.Value);
+            if (double.IsNaN(val)) errors.Add(new ErrorInfo() {LineColumn=t.Line, LineNumber = t.Line, Messsage = $"Cannot convert '{t.Value}' to a numeric value"});
+            return val;
         }
     }
 }

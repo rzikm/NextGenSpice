@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "NextGenSpice": {
+      "commandName": "Project",
+      "commandLineArgs": "spice.in",
+      "workingDirectory": "D:\\Visual Studio 2017\\Projects\\NextGen Spice\\Debug"
+    }
+  }
+}
