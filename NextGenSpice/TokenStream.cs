@@ -73,30 +73,43 @@ namespace NextGenSpice
                 ? null // no more tokens in the stream
                 : new Token
                 {
-                    Value = s,
+                    Value = s.ToUpperInvariant(),
                     Char = offset,
                     Line = line
                 };
         }
 
         /// <summary>
-        /// Skips empty lines and then reads all tokens until line break. returns empty collection on EOF.
+        /// Skips empty lines and then reads all tokens until line break. Tokens on subsequent lines beginning with '+' are also returned. returns empty collection on EOF.
         /// </summary>
         /// <returns></returns>
         public IEnumerable<Token> ReadLogicalLine()
         {
-            List<Token> tokens = new List<Token>();
-            tokens.Add(Read());
-            if (tokens[0] == null)
-                return Enumerable.Empty<Token>();
-
+            var token = Read();
+            if (token == null) yield break;
+            yield return token;
             while (true)
             {
                 SkipWhiteSpaceAndComments();
-                if (currentLine == null) break;
-                tokens.Add(MakeToken());
+                if (currentLine == null && !ShouldContinue()) break;
+                yield return MakeToken();
             }
-            return tokens;
+//            return tokens;
+        }
+
+        private bool ShouldContinue()
+        {
+            while (currentLine == null && TryEnsureHasLine())
+            {
+                if (currentLine.Peek() == '+')
+                {
+                    currentLine.Read();
+                    offset++;
+                    SkipWhiteSpaceAndComments();
+                    if (currentLine != null) return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>

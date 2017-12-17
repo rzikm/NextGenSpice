@@ -4,16 +4,26 @@ using System.IO;
 using System.Linq;
 using NextGenSpice;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace NextGenSpiceParserTest
 {
     public class TokenStreamTests
     {
-        public TokenStream TokenStream { get; set; }
+        private TokenStream TokenStream { get; set; }
 
         private void InitInput(string input)
         {
             TokenStream = new TokenStream(new StringReader(input));
+        }
+
+        [Fact]
+        public void HandlesSplitLine()
+        {
+            InitInput(@"first second   
+* next line should be connected to the previous one
++third fourth");
+            Assert.Equal(new[] { "FIRST", "SECOND", "THIRD", "FOURTH" }, TokenStream.ReadLogicalLine().Select(t => t.Value));
         }
 
         [Fact]
@@ -24,10 +34,10 @@ namespace NextGenSpiceParserTest
 
 last*comment in the middle
      *comment on last line of file");
-            Assert.Equal(new[] { "first", "second" }, TokenStream.ReadLogicalLine().Select(t => t.Value));
+            Assert.Equal(new[] { "FIRST", "SECOND" }, TokenStream.ReadLogicalLine().Select(t => t.Value));
             var expected = new Token
             {
-                Value = "last",
+                Value = "LAST",
                 Char = 1,
                 Line = 4
             };
@@ -41,7 +51,7 @@ last*comment in the middle
         {
             InitInput("first  second     third");
 
-            Assert.Equal(new[]{"first", "second", "third"}, TokenStream.ReadLogicalLine().Select(t => t.Value));
+            Assert.Equal(new[]{"FIRST", "SECOND", "THIRD"}, TokenStream.ReadLogicalLine().Select(t => t.Value));
             Assert.Equal(0, TokenStream.ReadLogicalLine().Count());
             Assert.Equal(0, TokenStream.ReadLogicalLine().Count());
         }
@@ -52,10 +62,10 @@ last*comment in the middle
             InitInput(@"first second   
 
 last");
-            Assert.Equal(new[] { "first", "second" }, TokenStream.ReadLogicalLine().Select(t => t.Value));
+            Assert.Equal(new[] { "FIRST", "SECOND" }, TokenStream.ReadLogicalLine().Select(t => t.Value));
             var expected = new Token
             {
-                Value = "last",
+                Value = "LAST",
                 Char = 1,
                 Line = 3
             };
@@ -72,7 +82,7 @@ last");
 
             var expected = new Token
             {
-                Value = token1,
+                Value = token1.ToUpperInvariant(),
                 Char = 1,
                 Line = 1
             };
@@ -81,7 +91,7 @@ last");
 
             expected = new Token
             {
-                Value = token2,
+                Value = token2.ToUpperInvariant(),
                 Char = token1.Length + 5,
                 Line = 1
             };
@@ -99,7 +109,7 @@ last");
 
             var expected = new Token
             {
-                Value = token1,
+                Value = token1.ToUpperInvariant(),
                 Char = 1,
                 Line = 1
             };
@@ -108,7 +118,7 @@ last");
 
             expected = new Token
             {
-                Value = token2,
+                Value = token2.ToUpperInvariant(),
                 Char = 3,
                 Line = 2
             };

@@ -35,7 +35,7 @@ namespace NextGenSpice.LargeSignal.Models
             IntegrationMethod = new GearIntegrationMethod(4);
 //            IntegrationMethod = new TrapezoidalIntegrationMethod();
 //            IntegrationMethod = new BackwardEulerIntegrationMethod();
-//            IntegrationMethod = new AdamsMoultonIntegrationMethod(3);
+//            IntegrationMethod = new AdamsMoultonIntegrationMethod(4);
 
             param = parent.param;
 
