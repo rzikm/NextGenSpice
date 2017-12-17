@@ -21,9 +21,9 @@ namespace NextGenSpice.LargeSignal.Behaviors
             if (phase < param.TimeRise)
                 return MathHelper.LinearInterpolation(param.Value1, param.Value2, phase / param.TimeRise);
             phase -= param.TimeRise;
-            if (phase < param.Duration)
+            if (phase < param.PulseWidth)
                 return param.Value2;
-            phase -= param.Duration;
+            phase -= param.PulseWidth;
             if (phase < param.TimeFall)
                 return MathHelper.LinearInterpolation(param.Value2, param.Value1, phase / param.TimeFall);
             return param.Value1;

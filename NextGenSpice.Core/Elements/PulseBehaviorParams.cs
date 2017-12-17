@@ -9,7 +9,7 @@ namespace NextGenSpice.Core.Elements
         public double Value2 { get; set; }
         public double Delay { get; set; }
         public double TimeRise { get; set; }
-        public double Duration { get; set; }
+        public double PulseWidth { get; set; }
         public double TimeFall { get; set; }
         public double Period { get; set; }
     }

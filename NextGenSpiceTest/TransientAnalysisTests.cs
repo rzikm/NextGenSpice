@@ -28,7 +28,7 @@ namespace NextGenSpiceTest
                 .AddVoltageSource(1, 0, new PulseBehaviorParams()
                 {
                     Delay = 1e-6,
-                    Duration = 1,
+                    PulseWidth = 1,
                     Value2 = 15
                 })
                 .AddResistor(1, 2, 1)

@@ -90,6 +90,12 @@ namespace NextGenSpice
             return Error(token, "Invalid number of arguments");
         }
 
+        /// <summary>
+        /// Gets element name and sets it in symbol table, adds relevant errors into the errors collection
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="errors"></param>
+        /// <returns></returns>
         protected string DeclareElement(Token token, List<ErrorInfo> errors)
         {
             string name = token.Value;
@@ -97,6 +103,14 @@ namespace NextGenSpice
             return name;
         }
 
+        /// <summary>
+        /// Gets indices of the nodes represented by tokens starting at startIndex. Adds relevant errors into the errors collection
+        /// </summary>
+        /// <param name="tokens"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="count"></param>
+        /// <param name="errors"></param>
+        /// <returns></returns>
         protected int[] GetNodeIndices(Token[] tokens, int startIndex, int count, List<ErrorInfo> errors)
         {
             var ret = new int[count];
@@ -114,6 +128,12 @@ namespace NextGenSpice
             return ret;
         }
 
+        /// <summary>
+        /// Parses numeric value from given token, adds relevant error into the errors collection and returns NaN if failed.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="errors"></param>
+        /// <returns></returns>
         protected double GetValue(Token token, List<ErrorInfo> errors)
         {
             var value = ConvertorHelpers.ConvertValue(token.Value);

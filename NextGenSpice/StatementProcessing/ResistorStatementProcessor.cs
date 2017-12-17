@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Extensions;
 
@@ -20,7 +21,9 @@ namespace NextGenSpice
             var nodes = GetNodeIndices(tokens, 1, 2, errors);
             var rvalue = GetValue(tokens[3], errors);
 
-            return errors.Count > 0 ? null : new SimpleElementStatement(builder => builder.AddElement(nodes, new ResistorElement(rvalue, name)));
+            return errors.Count > 0
+                ? null
+                : new SimpleElementStatement(builder => builder.AddElement(nodes, new ResistorElement(rvalue, name)));
         }
     }
 }

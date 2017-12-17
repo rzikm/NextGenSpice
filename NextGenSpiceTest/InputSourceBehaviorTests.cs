@@ -28,7 +28,7 @@ namespace NextGenSpiceTest
                         Value2 = 5,
                         Delay = 3e-6,
                         TimeRise = 4e-6,
-                        Duration = 5e-6,
+                        PulseWidth = 5e-6,
                         TimeFall = 2e-6,
                         Period = 20e-6
                     })
