@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace NextGenSpice
 {
-    public static class ConvertorHelpers
+    public static class Helper
     {
         private static readonly IDictionary<string, double> modifiers = new Dictionary<string, double>
         {
@@ -23,7 +24,7 @@ namespace NextGenSpice
 
         public static double ConvertValue(string s)
         {
-            var i = s.LastIndexOfAny(new[] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'});
+            var i = s.LastIndexOfAny(new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' });
 
             var suff = s.Substring(i + 1);
             s = s.Substring(0, i + 1);
@@ -45,8 +46,18 @@ namespace NextGenSpice
         public static double GetNumericValue(this Token t, List<ErrorInfo> errors)
         {
             double val = ConvertValue(t.Value);
-            if (double.IsNaN(val)) errors.Add(new ErrorInfo() {LineColumn=t.Line, LineNumber = t.Line, Messsage = $"Cannot convert '{t.Value}' to a numeric value"});
+            if (double.IsNaN(val)) errors.Add(new ErrorInfo() { LineColumn = t.Line, LineNumber = t.Line, Messsage = $"Cannot convert '{t.Value}' to a numeric value" });
             return val;
+        }
+
+        public static ErrorInfo ToErrorInfo(this Token t, string message)
+        {
+            return new ErrorInfo()
+            {
+                LineColumn = t.Char,
+                LineNumber = t.Line,
+                Messsage = message
+            };
         }
     }
 }

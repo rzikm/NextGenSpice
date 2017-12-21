@@ -14,7 +14,7 @@ namespace NextGenSpice
             this.errorInfos = errorInfos;
         }
 
-        public override bool CanApply()
+        public override bool CanApply(ParsingContext ctx)
         {
             return false;
         }
@@ -24,7 +24,7 @@ namespace NextGenSpice
             return errorInfos;
         }
 
-        public override void Apply(CircuitBuilder builder)
+        public override void Apply(ParsingContext ctx)
         {
             throw new InvalidOperationException();
         }

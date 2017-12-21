@@ -9,21 +9,20 @@ namespace NextGenSpice
     {
         public override char Discriminator => 'R';
 
-        protected override ElementStatement DoProcess(Token[] tokens, List<ErrorInfo> errors)
+        protected override void DoProcess(Token[] tokens)
         {
             if (tokens.Length != 4)
             {
-                errors.Add(InvalidNumberOfArguments(tokens[0]));
-                return null;
+                InvalidNumberOfArguments(tokens[0]);
+                return;
             }
 
-            var name = DeclareElement(tokens[0], errors);
-            var nodes = GetNodeIndices(tokens, 1, 2, errors);
-            var rvalue = GetValue(tokens[3], errors);
+            var name = DeclareElement(tokens[0]);
+            var nodes = GetNodeIndices(tokens, 1, 2);
+            var rvalue = GetValue(tokens[3]);
 
-            return errors.Count > 0
-                ? null
-                : new SimpleElementStatement(builder => builder.AddElement(nodes, new ResistorElement(rvalue, name)));
+            if (Errors == 0)
+                Context.ElementStatements.Add(new SimpleElementStatement(builder => builder.AddElement(nodes, new ResistorElement(rvalue, name)))); 
         }
     }
 }

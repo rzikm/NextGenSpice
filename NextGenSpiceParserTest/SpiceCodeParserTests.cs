@@ -74,13 +74,9 @@ R2 R1 R2 42Meg4     * multiple errors");
         private void ExpectErrors(string s)
         {
             var res = ParseString(s);
-            foreach (var st in res.ElementStatements)
+            foreach (var error in res.Errors)
             {
-                Assert.Equal(typeof(ErrorElementStatement), st.GetType());
-                foreach (var error in st.GetErrors())
-                {
-                    output.WriteLine(error.ToString());
-                }
+                output.WriteLine(error.ToString());
             }
         }
 

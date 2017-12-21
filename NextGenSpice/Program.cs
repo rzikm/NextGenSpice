@@ -40,7 +40,7 @@ namespace NextGenSpice
 
             foreach (var el in result.ElementStatements)
             {
-                el.Apply(builder);
+//                el.Apply(builder);
             }
 
             var sim = result.SimulationStatements.Single();

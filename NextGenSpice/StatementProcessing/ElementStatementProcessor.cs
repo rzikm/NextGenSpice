@@ -7,7 +7,11 @@ namespace NextGenSpice
     /// </summary>
     public abstract class ElementStatementProcessor
     {
-        protected SymbolTable SymbolTable { get; private set; }
+        protected SymbolTable SymbolTable => Context.SymbolTable;
+
+        protected int Errors { get; private set; }
+
+        protected ParsingContext Context { get; private set; }
 
         /// <summary>
         /// Discriminator of the element type this processor can parse.
@@ -15,24 +19,22 @@ namespace NextGenSpice
         public abstract char Discriminator { get; }
 
         /// <summary>
-        /// Parses given line of tokens and returns statement to be processed later.
+        /// Parses given line of tokens, adds statement to be processed later or adds errors to Errors collection.
         /// </summary>
         /// <param name="tokens"></param>
-        /// <param name="tab"></param>
+        /// <param name="ctx"></param>
         /// <returns></returns>
-        public ElementStatement Process(Token[] tokens, SymbolTable tab)
+        public void Process(Token[] tokens, ParsingContext ctx)
         {
-            SymbolTable = tab;
+            Context = ctx;
 
-            var errors = new List<ErrorInfo>();
-            var ret = DoProcess(tokens, errors);
+            Errors = 0;
+            DoProcess(tokens);
 
-            SymbolTable = null;
-
-            return errors.Count > 0 ? new ErrorElementStatement(errors) : ret;
+            Context = null;
         }
 
-        protected abstract ElementStatement DoProcess(Token[] tokens, List<ErrorInfo> errors);
+        protected abstract void DoProcess(Token[] tokens);
 
         /// <summary>
         /// Returns generic error message
@@ -40,14 +42,14 @@ namespace NextGenSpice
         /// <param name="source"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        protected ErrorInfo Error(Token source, string message)
+        protected void Error(Token source, string message)
         {
-            return new ErrorInfo
+            Context.Errors.Add( new ErrorInfo
             {
                 Messsage = message,
                 LineNumber = source.Line,
                 LineColumn = source.Char
-            };
+            });
         }
 
         /// <summary>
@@ -55,9 +57,9 @@ namespace NextGenSpice
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        protected ErrorInfo ElementAlreadyDefined(Token token)
+        protected void ElementAlreadyDefined(Token token)
         {
-            return Error(token, $"Element with name {token.Value} is already defined.");
+            Error(token, $"Element with name {token.Value} is already defined.");
         }
 
         /// <summary>
@@ -65,9 +67,9 @@ namespace NextGenSpice
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        protected ErrorInfo NotANumber(Token token)
+        protected void NotANumber(Token token)
         {
-            return Error(token, $"Cannot convert {token.Value} to numeric representation.");
+            Error(token, $"Cannot convert {token.Value} to numeric representation.");
         }
 
         /// <summary>
@@ -75,9 +77,9 @@ namespace NextGenSpice
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        protected ErrorInfo NotANode(Token token)
+        protected void NotANode(Token token)
         {
-            return Error(token, $"Symbol {token.Value} is not a node");
+            Error(token, $"Symbol {token.Value} is not a node");
         }
 
         /// <summary>
@@ -85,9 +87,9 @@ namespace NextGenSpice
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        protected ErrorInfo InvalidNumberOfArguments(Token token)
+        protected void InvalidNumberOfArguments(Token token)
         {
-            return Error(token, "Invalid number of arguments");
+            Error(token, "Invalid number of arguments");
         }
 
         /// <summary>
@@ -96,10 +98,10 @@ namespace NextGenSpice
         /// <param name="token"></param>
         /// <param name="errors"></param>
         /// <returns></returns>
-        protected string DeclareElement(Token token, List<ErrorInfo> errors)
+        protected string DeclareElement(Token token)
         {
-            string name = token.Value;
-            if (!SymbolTable.DefineElement(name)) errors.Add(ElementAlreadyDefined(token));
+            var name = token.Value;
+            if (!SymbolTable.DefineElement(name)) ElementAlreadyDefined(token);
             return name;
         }
 
@@ -111,7 +113,7 @@ namespace NextGenSpice
         /// <param name="count"></param>
         /// <param name="errors"></param>
         /// <returns></returns>
-        protected int[] GetNodeIndices(Token[] tokens, int startIndex, int count, List<ErrorInfo> errors)
+        protected int[] GetNodeIndices(Token[] tokens, int startIndex, int count)
         {
             var ret = new int[count];
             for (int i = 0; i < count; i++)
@@ -120,7 +122,7 @@ namespace NextGenSpice
                 if (!SymbolTable.TryGetNodeIndex(token.Value, out var node))
                 {
                     node = -1;
-                    errors.Add(NotANode(token));
+                    NotANode(token);
                 }
                 ret[i] = node;
             }
@@ -134,10 +136,10 @@ namespace NextGenSpice
         /// <param name="token"></param>
         /// <param name="errors"></param>
         /// <returns></returns>
-        protected double GetValue(Token token, List<ErrorInfo> errors)
+        protected double GetValue(Token token)
         {
-            var value = ConvertorHelpers.ConvertValue(token.Value);
-            if (double.IsNaN(value)) errors.Add(NotANumber(token));
+            var value = Helper.ConvertValue(token.Value);
+            if (double.IsNaN(value)) NotANumber(token);
             return value;
         }
     }

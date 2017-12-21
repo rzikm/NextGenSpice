@@ -40,7 +40,7 @@ namespace NextGenSpice
             sinMapper.Map(c => c.Frequency, 2);
             sinMapper.Map(c => c.Delay, 3);
             sinMapper.Map(c => c.DampingFactor, 4);
-            sinMapper.Map(c => c.Phase, 5, v => v / 180.0 * Math.PI);
+            sinMapper.Map(c => c.Phase, 5, v => v / 180.0 * Math.PI); // convert from degrees to radians
 
             expMapper.Map(c => c.Value1, 0);
             expMapper.Map(c => c.Value2, 1);
@@ -62,65 +62,67 @@ namespace NextGenSpice
             amMapper.Map(c => c.Delay, 4);
         }
 
-        protected override ElementStatement DoProcess(Token[] tokens, List<ErrorInfo> errors)
+        protected override void DoProcess(Token[] tokens)
         {
             if (tokens.Length < 4)
             {
-                errors.Add(InvalidNumberOfArguments(tokens[0]));
-                return null;
+                InvalidNumberOfArguments(tokens[0]);
+                return;
             }
 
-            var name = DeclareElement(tokens[0], errors);
-            var nodes = GetNodeIndices(tokens, 1, 2, errors);
+            var name = DeclareElement(tokens[0]);
+            var nodes = GetNodeIndices(tokens, 1, 2);
 
+            ElementStatement statement;
             if (char.IsDigit(tokens[3].Value[0])) // constant source
             {
-                var val = GetValue(tokens[3], errors);
-                return GetStatement(name, nodes, new ConstantBehaviorParams { Value = val });
+                var val = GetValue(tokens[3]);
+                statement = GetStatement(name, nodes, new ConstantBehaviorParams { Value = val });
             }
-
-            // tran function
-
-            var paramTokens = GetParameterTokens(tokens, errors);
-            var param = GetBehaviorParam(paramTokens, errors);
-            if (paramTokens.Count < 3 && param != null)
+            else // tran function
             {
-                errors.Add(Error(paramTokens[0], $"Too few arguments for transient function '{paramTokens[0].Value}'"));
-                return null;
+                var paramTokens = GetParameterTokens(tokens);
+                var param = GetBehaviorParam(paramTokens);
+                if (paramTokens.Count < 3 && param != null)
+                {
+                    Error(paramTokens[0], $"Too few arguments for transient function '{paramTokens[0].Value}'");
+                }
+                statement = GetStatement(name, nodes, param);
             }
 
-            return GetStatement(name, nodes, param);
+            if (Errors == 0)
+                Context.ElementStatements.Add(statement);
         }
 
-        private SourceBehaviorParams GetBehaviorParam(List<Token> paramTokens, List<ErrorInfo> errors)
+        private SourceBehaviorParams GetBehaviorParam(List<Token> paramTokens)
         {
             switch (paramTokens[0].Value)
             {
                 case "PULSE":
-                    return GetParameterTokens(pulseMapper, paramTokens, errors);
+                    return GetParameterTokens(pulseMapper, paramTokens);
 
                 case "PWL":
-                    return GetPwlParams(paramTokens, errors);
+                    return GetPwlParams(paramTokens);
 
                 case "EXP":
-                    return GetParameterTokens(expMapper, paramTokens, errors);
+                    return GetParameterTokens(expMapper, paramTokens);
 
                 case "SIN":
-                    return GetParameterTokens(sinMapper, paramTokens, errors);
+                    return GetParameterTokens(sinMapper, paramTokens);
 
                 case "AM":
-                    return GetParameterTokens(amMapper, paramTokens, errors);
+                    return GetParameterTokens(amMapper, paramTokens);
 
                 case "SFFM":
-                    return GetParameterTokens(sffmMapper, paramTokens, errors);
+                    return GetParameterTokens(sffmMapper, paramTokens);
 
                 default:
-                    errors.Add(Error(paramTokens[0], $"Unknown transient source: '{paramTokens[0].Value}'"));
+                    Error(paramTokens[0], $"Unknown transient source function: '{paramTokens[0].Value}'");
                     return null;
             }
         }
 
-        private SourceBehaviorParams GetPwlParams(List<Token> paramTokens, List<ErrorInfo> errors)
+        private SourceBehaviorParams GetPwlParams(List<Token> paramTokens)
         {
             var par = new PieceWiseLinearBehaviorParams();
 
@@ -134,26 +136,26 @@ namespace NextGenSpice
                     var rep = 0.0;
                     if (i < paramTokens.Count - 1)
                     {
-                        rep = GetValue(paramTokens[i + 1], errors);
+                        rep = GetValue(paramTokens[i + 1]);
                         if (!definitionPoints.ContainsKey(rep))
-                            errors.Add(Error(paramTokens[i + 1], "Repetition point must be equal to a function breakpoint."));
+                            Error(paramTokens[i + 1], "Repetition point must be equal to a function breakpoint.");
                     }
-                  
+
                     par.RepeatStart = rep;
                     break;
                 }
 
                 if (i == paramTokens.Count - 1) // this timepoint does not have corresponding value
                 {
-                    errors.Add(Error(paramTokens[i], "Timpeoint without corresponding value."));
+                    Error(paramTokens[i], "Timpeoint without corresponding value.");
                     break;
                 }
 
-                var time = GetValue(paramTokens[i], errors);
-                var value = GetValue(paramTokens[i + 1], errors);
+                var time = GetValue(paramTokens[i]);
+                var value = GetValue(paramTokens[i + 1]);
 
-                if (time < 0) errors.Add(Error(paramTokens[i], "Timepoints must be nonnegative."));
-                else if (time <= currentTime) errors.Add(Error(paramTokens[i + 1], "Timepoints must be ascending."));
+                if (time < 0) Error(paramTokens[i], "Timepoints must be nonnegative.");
+                else if (time <= currentTime) Error(paramTokens[i + 1], "Timepoints must be ascending.");
 
                 definitionPoints[time] = value;
 
@@ -165,17 +167,18 @@ namespace NextGenSpice
             return par;
         }
 
-        private T GetParameterTokens<T>(ParameterMapper<T> mapper, List<Token> paramTokens, List<ErrorInfo> errors) where T : new()
+        private T GetParameterTokens<T>(ParameterMapper<T> mapper, List<Token> paramTokens) where T : new()
         {
             mapper.Target = new T();
             for (int i = 1; i < Math.Min(mapper.ByIndexCount, paramTokens.Count); i++) // start from 1 bc. first is method identifier
             {
-                mapper.Set(i - 1, GetValue(paramTokens[i], errors));
+                mapper.Set(i - 1, GetValue(paramTokens[i]));
             }
 
             if (paramTokens.Count > mapper.ByIndexCount + 1)
             {
-                errors.Add(Error(paramTokens[mapper.ByIndexCount], $"Too many arguments for transient source '{paramTokens[0].Value}'"));
+                Error(paramTokens[mapper.ByIndexCount],
+                    $"Too many arguments for transient source '{paramTokens[0].Value}'");
             }
 
             var t = mapper.Target;
@@ -183,7 +186,7 @@ namespace NextGenSpice
             return t;
         }
 
-        private List<Token> GetParameterTokens(Token[] tokens, List<ErrorInfo> errors)
+        private List<Token> GetParameterTokens(Token[] tokens)
         {
             List<Token> paramTokens = new List<Token>();
 
@@ -225,13 +228,14 @@ namespace NextGenSpice
 
                     col += i;
                     if (t < tokens.Length - 1)
-                        errors.Add(Error(tokens[t + 1], "Unexpected tokens after end of statement."));
-                    if (paramTokens.Count < 2) errors.Add(Error(new Token()
-                    {
-                        Line = line,
-                        Char = col,
-                        Value = ")"
-                    }, "Unexpected end of parameter list."));
+                        Error(tokens[t + 1], "Unexpected tokens after end of statement.");
+                    if (paramTokens.Count < 2)
+                        Error(new Token()
+                        {
+                            Line = line,
+                            Char = col,
+                            Value = ")"
+                        }, "Unexpected end of parameter list.");
 
                     return paramTokens;
                 }
@@ -257,7 +261,7 @@ namespace NextGenSpice
                 t.Char += t.Value.Length;
                 t.Value = "";
 
-                errors.Add(Error(t, "Unterminated transient function"));
+                Error(t, "Unterminated transient function");
             }
 
             return paramTokens;

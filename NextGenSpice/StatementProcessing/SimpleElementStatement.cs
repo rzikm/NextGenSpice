@@ -13,7 +13,7 @@ namespace NextGenSpice
             this.builderFunc = builderFunc;
         }
 
-        public override bool CanApply()
+        public override bool CanApply(ParsingContext ctx)
         {
             return true;
         }
@@ -23,9 +23,9 @@ namespace NextGenSpice
             throw new InvalidOperationException();
         }
 
-        public override void Apply(CircuitBuilder builder)
+        public override void Apply(ParsingContext ctx)
         {
-            builderFunc(builder);
+            builderFunc(ctx.CircuitBuilder);
         }
     }
 }
