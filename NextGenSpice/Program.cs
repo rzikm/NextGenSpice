@@ -36,15 +36,19 @@ namespace NextGenSpice
 
             var result = parser.ParseInputFile(new TokenStream(input));
 
-            var builder = new CircuitBuilder();
-
-            foreach (var el in result.ElementStatements)
+            if (result.HasError)
             {
-//                el.Apply(builder);
+                foreach (var error in result.Errors)
+                {
+                    Console.WriteLine(error);
+                }
+                Console.WriteLine($"There were {result.Errors.Count} errors.");
+                return;
             }
 
-            var sim = result.SimulationStatements.Single();
-            var circuit = builder.BuildCircuit().GetLargeSignalModel();
+
+            return;
+            var circuit = result.CircuitDefinition.GetLargeSignalModel();
 
             List<Func<double>> printers = new List<Func<double>>();
 
@@ -56,18 +60,6 @@ namespace NextGenSpice
                     printers.Add(() => element.Current);
                 else
                     printers.Add(() => element.Voltage);
-            }
-
-            circuit.EstablishDcBias();
-            var time = 0.0;
-            while (true)
-            {
-                Console.WriteLine($"{time} {string.Join(" ", printers.Select(a => a().ToString()))}");;
-
-                if (time >= sim.StopTime) break;
-
-                time += sim.TimeStep;
-                circuit.AdvanceInTime(sim.TimeStep);
             }
         }
     }

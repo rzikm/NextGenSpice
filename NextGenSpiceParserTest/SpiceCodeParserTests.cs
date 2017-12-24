@@ -24,24 +24,24 @@ namespace NextGenSpiceParserTest
         public void RecognisesResistorStatement()
         {
             var r = ParseString("R1 0 1 6ohm");
-            Assert.NotEqual(typeof(ErrorElementStatement), r.ElementStatements.Single().GetType());
+            Assert.True(!r.Errors.Any());
         }
 
         [Fact]
         public void RecognisesInputSourceStatement()
         {
             var r = ParseString("V1 0 1 6V");
-            Assert.NotEqual(typeof(ErrorElementStatement), r.ElementStatements.Single().GetType());
+            Assert.True(!r.Errors.Any());
         }
 
         [Fact]
         public void RecognisesTransientInputSourceStatement()
         {
-            Assert.NotEqual(typeof(ErrorElementStatement), ParseString("V1 0 1 Exp( 2 3 )").ElementStatements.Single().GetType());
-            Assert.NotEqual(typeof(ErrorElementStatement), ParseString("V1 0 1 Exp ( 2 3 )").ElementStatements.Single().GetType());
-            Assert.NotEqual(typeof(ErrorElementStatement), ParseString("V1 0 1 Exp (2 3 )").ElementStatements.Single().GetType());
-            Assert.NotEqual(typeof(ErrorElementStatement), ParseString("V1 0 1 Exp(2 3)").ElementStatements.Single().GetType());
-            Assert.NotEqual(typeof(ErrorElementStatement), ParseString("V1 0 1 Exp 2 3 ").ElementStatements.Single().GetType());
+            Assert.True(!ParseString("V1 0 1 Exp( 2 3 )").Errors.Any());
+            Assert.True(!ParseString("V1 0 1 Exp ( 2 3 )").Errors.Any());
+            Assert.True(!ParseString("V1 0 1 Exp (2 3 )").Errors.Any());
+            Assert.True(!ParseString("V1 0 1 Exp(2 3)").Errors.Any());
+            Assert.True(!ParseString("V1 0 1 Exp 2 3 ").Errors.Any());
         }
 
         [Fact]
@@ -58,7 +58,7 @@ v7 1 0    pwl 0 1 -1 3 R              * negative timepoint
 v7 1 0    pwl 0 1 -1 3 5              * odd number of pairs
 ");
         }
-    
+
 
         [Fact]
         public void ReportsErrorOnResistor()

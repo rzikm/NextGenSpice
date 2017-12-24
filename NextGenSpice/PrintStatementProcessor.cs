@@ -8,7 +8,7 @@
             var analysisType = tokens[1].Value;
             if (!Context.KnownAnalysisTypes.Contains(analysisType))
             {
-                Context.Errors.Add(new ErrorInfo { LineNumber = tokens[1].Line, LineColumn = tokens[1].Char, Messsage = $"Unrecognized analysis type: '{analysisType}'." });
+                Context.Errors.Add(tokens[1].ToErrorInfo($"Unrecognized analysis type: '{analysisType}'."));
                 return;
             }
 
@@ -20,8 +20,13 @@
                 // expected token in format V(element), I(element), V(node)
                 if (s.Length > 3 && (s[0] == 'I' || s[0] == 'V') && s[1] == '(' && s[s.Length - 1] == ')')
                 {
-                    Context.PrintStatements.Add(new PrintStatement { AnalysisType = analysisType, Header = s });
+                    Context.PrintStatements.Add(new PrintStatement {AnalysisType = analysisType, Header = s});
                 }
+                else
+                {
+                    Context.Errors.Add(tokens[i].ToErrorInfo($"Unsupported .PRINT statement format: '{s}'."));
+                }
+
             }
         }
     }

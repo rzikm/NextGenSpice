@@ -91,7 +91,7 @@ namespace NextGenSpice
             }
 
             if (Errors == 0)
-                Context.ElementStatements.Add(statement);
+                Context.DeferredStatements.Add(statement);
         }
 
         private SourceBehaviorParams GetBehaviorParam(List<Token> paramTokens)

@@ -1,20 +1,24 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using NextGenSpice.Core.Representation;
 
 namespace NextGenSpice
 {
     public class ParserResult
     {
-        public ParserResult(IEnumerable<ElementStatement> elementStatements, IEnumerable<PrintStatement> printStatements, IEnumerable<TranSimulationStatement> simulationStatements, IEnumerable<ErrorInfo> errors)
+        public ParserResult(ICircuitDefinition circuit, IReadOnlyList<PrintStatement> printStatements, IReadOnlyList<TranSimulationStatement> simulationStatements, IReadOnlyList<ErrorInfo> errors)
         {
-            ElementStatements = elementStatements;
+            CircuitDefinition = circuit;
             PrintStatements = printStatements;
             SimulationStatements = simulationStatements;
             Errors = errors;
         }
 
-        public IEnumerable<ElementStatement> ElementStatements { get; }
-        public IEnumerable<PrintStatement> PrintStatements { get; }
-        public IEnumerable<TranSimulationStatement> SimulationStatements { get; }
-        public IEnumerable<ErrorInfo> Errors { get; set; }
+        public ICircuitDefinition CircuitDefinition { get; }
+        public IReadOnlyList<PrintStatement> PrintStatements { get; }
+        public IReadOnlyList<TranSimulationStatement> SimulationStatements { get; }
+        public IReadOnlyList<ErrorInfo> Errors { get; }
+
+        public bool HasError => Errors.Count > 0;
     }
 }

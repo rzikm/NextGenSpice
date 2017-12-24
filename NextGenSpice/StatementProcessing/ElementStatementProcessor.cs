@@ -44,6 +44,7 @@ namespace NextGenSpice
         /// <returns></returns>
         protected void Error(Token source, string message)
         {
+            Errors++;
             Context.Errors.Add( new ErrorInfo
             {
                 Messsage = message,

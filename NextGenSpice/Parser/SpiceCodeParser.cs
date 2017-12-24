@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
+using NextGenSpice.Core.Circuit;
+using NextGenSpice.Core.Representation;
 
 namespace NextGenSpice
 {
@@ -24,7 +28,6 @@ namespace NextGenSpice
 
         public ParserResult ParseInputFile(TokenStream stream)
         {
-            var tab = new SymbolTable();
             Token[] tokens;
 
             var ctx = new ParsingContext();
@@ -47,7 +50,54 @@ namespace NextGenSpice
                     ProcessStatement(tokens, ctx);
                 }
             }
-            return new ParserResult(ctx.ElementStatements, ctx.PrintStatements, ctx.SimulationStatements, ctx.Errors);
+
+            return PostProcess(ctx);
+        }
+
+        private ParserResult PostProcess(ParsingContext ctx)
+        {
+            var builder = new CircuitBuilder();
+
+//            var deferred = new List<DeferredStatement>();
+             var deferred = ctx.DeferredStatements.ToList();
+            do
+            {
+                ctx.DeferredStatements.Clear();
+                ctx.DeferredStatements.AddRange(deferred);
+                deferred.Clear();
+                
+                foreach (var statement in ctx.DeferredStatements)
+                {
+                    if (statement.CanApply(ctx))
+                    {
+                        statement.Apply(ctx);
+                    }
+                    else
+                    {
+                        deferred.Add(statement);
+                    }
+                }
+            } while (deferred.Count < ctx.DeferredStatements.Count);
+
+            foreach (var statement in ctx.DeferredStatements)
+            {
+                ctx.Errors.AddRange(statement.GetErrors());
+            }
+
+
+            ElectricCircuitDefinition circuitDefinition = null;
+            try
+            {
+                circuitDefinition = builder.BuildCircuit();
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+
+
+            return new ParserResult(circuitDefinition, ctx.PrintStatements, ctx.SimulationStatements, ctx.Errors.OrderBy(e => e.LineNumber).ThenBy(e => e.LineColumn).ToList());
         }
 
         private void ProcessStatement(Token[] tokens, ParsingContext ctx)
@@ -62,38 +112,7 @@ namespace NextGenSpice
                 ctx.Errors.Add(tokens[0].ToErrorInfo($"Statement invalid or not implemented: {discriminator}."));
             }
         }
-
-        private void ProcessPrint(Token[] tokens, ParsingContext ctx)
-        {
-            if (tokens.Length < 3)
-            {
-                ctx.Errors.Add(new ErrorInfo { LineNumber = tokens[0].Line, LineColumn = tokens[0].Char, Messsage = $"Too few arguments for {tokens[0].Value} statement." });
-                return;
-            }
-
-            var analysisType = tokens[1].Value;
-            if (analysisType != "TRAN")
-            {
-                ctx.Errors.Add(new ErrorInfo { LineNumber = tokens[1].Line, LineColumn = tokens[1].Char, Messsage = $"Unrecognized analysis type: '{analysisType}'." });
-            }
-
-            for (int i = 2; i < tokens.Length; i++)
-            {
-                var t = tokens[i];
-                var s = t.Value;
-
-                // expected token in format V(element), I(element), V(node)
-                if (s.Length > 3 && (s[0] == 'I' || s[0] == 'V') && s[1] == '(' && s[s.Length - 1] == ')')
-                {
-                    ctx.PrintStatements.Add(new PrintStatement { AnalysisType = analysisType, Header = s });
-                }
-                else
-                {
-                    ctx.Errors.Add(new ErrorInfo { LineNumber = t.Line, LineColumn = t.Char, Messsage = $"Unrecognized variable: '{s}'." });
-                }
-            }
-        }
-
+        
         private void ProcessElement(char discriminator, Token[] tokens, ParsingContext ctx)
         {
             if (elementProcessors.TryGetValue(discriminator, out var proc))

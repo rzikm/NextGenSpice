@@ -10,7 +10,7 @@ namespace NextGenSpice
             KnownAnalysisTypes = new HashSet<string>();
             SymbolTable = new SymbolTable();
             Errors = new List<ErrorInfo>();
-            ElementStatements = new List<ElementStatement>();
+            DeferredStatements = new List<DeferredStatement>();
             ModelStatements = new List<ModelStatement>();
             SimulationStatements = new List<TranSimulationStatement>();
             PrintStatements = new List<PrintStatement>();
@@ -20,7 +20,7 @@ namespace NextGenSpice
         public ISet<string> KnownAnalysisTypes { get;  }
         public SymbolTable SymbolTable { get;  }
         public List<ErrorInfo> Errors { get;  }
-        public List<ElementStatement> ElementStatements { get; }
+        public List<DeferredStatement> DeferredStatements { get; }
         public List<ModelStatement> ModelStatements { get;  }
         public List<TranSimulationStatement> SimulationStatements { get;  }
         public List<PrintStatement> PrintStatements { get; }

@@ -14,7 +14,6 @@ namespace NextGenSpice
             if (tokens.Length != 4)
             {
                 InvalidNumberOfArguments(tokens[0]);
-                return;
             }
 
             var name = DeclareElement(tokens[0]);
@@ -22,7 +21,7 @@ namespace NextGenSpice
             var rvalue = GetValue(tokens[3]);
 
             if (Errors == 0)
-                Context.ElementStatements.Add(new SimpleElementStatement(builder => builder.AddElement(nodes, new ResistorElement(rvalue, name)))); 
+                Context.DeferredStatements.Add(new SimpleElementStatement(builder => builder.AddElement(nodes, new ResistorElement(rvalue, name)))); 
         }
     }
 }

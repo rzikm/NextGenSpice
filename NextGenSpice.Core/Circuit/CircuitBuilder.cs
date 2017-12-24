@@ -120,7 +120,7 @@ namespace NextGenSpice.Core.Circuit
 
             var visited = GetIdsInSameComponent(0, neighbourghs);
 
-            if (visited.Count != NodeCount) throw new InvalidOperationException($"Some nodes are not connected to the ground node ({string.Join(", ", Enumerable.Range(0, NodeCount).Except(visited))})");
+            if (visited.Count != NodeCount) throw new CircuitTopologyException(Enumerable.Range(0, NodeCount).Except(visited));
         }
 
         private void GetNeighbourghs(Dictionary<int, HashSet<int>> neighbourghs)
