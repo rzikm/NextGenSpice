@@ -8,7 +8,7 @@
 
         public override string ToString()
         {
-            return $"({LineNumber}, {LineColumn}): {Messsage}";
+            return LineColumn * LineNumber == 0 ? Messsage : $"({LineNumber}, {LineColumn}): {Messsage}";
         }
     }
 }

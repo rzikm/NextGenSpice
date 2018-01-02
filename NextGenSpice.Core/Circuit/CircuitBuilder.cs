@@ -14,6 +14,8 @@ namespace NextGenSpice.Core.Circuit
         private readonly List<ICircuitDefinitionElement> elements;
         private readonly Dictionary<string, ICircuitDefinitionElement> namedElements;
 
+        public IReadOnlyList<ICircuitDefinitionElement> Elements => elements;
+
         public CircuitBuilder()
         {
             nodes = new List<double>();
@@ -92,7 +94,7 @@ namespace NextGenSpice.Core.Circuit
             var components = GetComponents(neighbourghs);
             if (components.Count != 1) // incorrectly connected
             {
-                throw new InvalidOperationException($"No path connecting node sets {string.Join(", ", components.Select(c => $"({String.Join(", ", c.Select(i => i.ToString()))})"))}.");
+                throw new NotConnectedSubcircuit(components);
             }
         }
 
@@ -120,7 +122,8 @@ namespace NextGenSpice.Core.Circuit
 
             var visited = GetIdsInSameComponent(0, neighbourghs);
 
-            if (visited.Count != NodeCount) throw new CircuitTopologyException(Enumerable.Range(0, NodeCount).Except(visited));
+            // some nodes are not reachable from ground
+            if (visited.Count != NodeCount) throw new NoDcPathToGroundException(Enumerable.Range(0, NodeCount).Except(visited));
         }
 
         private void GetNeighbourghs(Dictionary<int, HashSet<int>> neighbourghs)

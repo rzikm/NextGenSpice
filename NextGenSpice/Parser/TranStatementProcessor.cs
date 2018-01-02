@@ -2,7 +2,7 @@ using System;
 
 namespace NextGenSpice
 {
-    public class TranStatementProcessor : SimpleStatementProcessor<TranSimulationStatement>
+    public class TranStatementProcessor : SimpleStatementProcessor<TranSimulationParams>
     {
         public TranStatementProcessor()
         {
@@ -17,13 +17,13 @@ namespace NextGenSpice
         public override string Discriminator => ".TRAN";
         protected override void InitMapper()
         {
-            Mapper.Target = new TranSimulationStatement();
+            Mapper.Target = new TranSimulationParams();
         }
 
         protected override void UseParam()
         {
-            Mapper.Target.AnalysisType = "TRAN";
-            throw new NotImplementedException();
+            Context.SimulationStatements.Add(new TranSimulationStatement(Mapper.Target));
+            Mapper.Target = null;
         }
     }
 }

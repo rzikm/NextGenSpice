@@ -6,7 +6,7 @@ namespace NextGenSpice
 {
     public class ParserResult
     {
-        public ParserResult(ICircuitDefinition circuit, IReadOnlyList<PrintStatement> printStatements, IReadOnlyList<TranSimulationStatement> simulationStatements, IReadOnlyList<ErrorInfo> errors)
+        public ParserResult(ICircuitDefinition circuit, IReadOnlyList<PrintStatement> printStatements, IReadOnlyList<SimulationStatement> simulationStatements, IReadOnlyList<ErrorInfo> errors)
         {
             CircuitDefinition = circuit;
             PrintStatements = printStatements;
@@ -16,7 +16,7 @@ namespace NextGenSpice
 
         public ICircuitDefinition CircuitDefinition { get; }
         public IReadOnlyList<PrintStatement> PrintStatements { get; }
-        public IReadOnlyList<TranSimulationStatement> SimulationStatements { get; }
+        public IReadOnlyList<SimulationStatement> SimulationStatements { get; }
         public IReadOnlyList<ErrorInfo> Errors { get; }
 
         public bool HasError => Errors.Count > 0;

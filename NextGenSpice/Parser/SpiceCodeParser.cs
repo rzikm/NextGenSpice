@@ -15,6 +15,11 @@ namespace NextGenSpice
         public SpiceCodeParser()
         {
             elementProcessors = new Dictionary<char, ElementStatementProcessor>();
+            statementProcessors = new Dictionary<string, StatementProcessor>();
+
+            Register(new TranStatementProcessor());
+            Register(new OpStatementProcessor());
+            Register(new PrintStatementProcessor());
         }
 
         public void Register(ElementStatementProcessor processor)
@@ -56,16 +61,27 @@ namespace NextGenSpice
 
         private ParserResult PostProcess(ParsingContext ctx)
         {
-            var builder = new CircuitBuilder();
+            ProcessDeferredStatements(ctx);
 
-//            var deferred = new List<DeferredStatement>();
-             var deferred = ctx.DeferredStatements.ToList();
+            foreach (var statement in ctx.DeferredStatements)
+            {
+                ctx.Errors.AddRange(statement.GetErrors());
+            }
+
+            var circuitDefinition = ctx.Errors.Count == 0 ? CreateCircuitDefinition(ctx) : null;
+
+            return new ParserResult(circuitDefinition, ctx.PrintStatements, ctx.SimulationStatements, ctx.Errors.OrderBy(e => e.LineNumber).ThenBy(e => e.LineColumn).ToList());
+        }
+
+        private static void ProcessDeferredStatements(ParsingContext ctx)
+        {
+            var deferred = ctx.DeferredStatements.ToList();
             do
             {
                 ctx.DeferredStatements.Clear();
                 ctx.DeferredStatements.AddRange(deferred);
                 deferred.Clear();
-                
+
                 foreach (var statement in ctx.DeferredStatements)
                 {
                     if (statement.CanApply(ctx))
@@ -78,26 +94,43 @@ namespace NextGenSpice
                     }
                 }
             } while (deferred.Count < ctx.DeferredStatements.Count);
+        }
 
-            foreach (var statement in ctx.DeferredStatements)
-            {
-                ctx.Errors.AddRange(statement.GetErrors());
-            }
-
-
+        private static ElectricCircuitDefinition CreateCircuitDefinition(ParsingContext ctx)
+        {
             ElectricCircuitDefinition circuitDefinition = null;
             try
             {
-                circuitDefinition = builder.BuildCircuit();
+                circuitDefinition = ctx.CircuitBuilder.BuildCircuit();
             }
             catch (Exception e)
             {
+                string message;
 
-                throw;
+                switch (e)
+                {
+                    case NoDcPathToGroundException ex:
+                        message =
+                            $"Some nodes are not connected to the ground node ({string.Join(", ", ctx.SymbolTable.GetNodeNames(ex.Nodes))})";
+                        break;
+
+                    case NotConnectedSubcircuit ex:
+                        message =
+                            $"No path connecting node sets {string.Join(", ", ex.Components.Select(c => $"({String.Join(", ", ctx.SymbolTable.GetNodeNames(c))})"))}.";
+                        break;
+
+                    default:
+                        throw;
+                }
+
+                ctx.Errors.Add(new ErrorInfo
+                {
+                    LineColumn = 0,
+                    LineNumber = 0,
+                    Messsage = message
+                });
             }
-
-
-            return new ParserResult(circuitDefinition, ctx.PrintStatements, ctx.SimulationStatements, ctx.Errors.OrderBy(e => e.LineNumber).ThenBy(e => e.LineColumn).ToList());
+            return circuitDefinition;
         }
 
         private void ProcessStatement(Token[] tokens, ParsingContext ctx)
@@ -112,7 +145,7 @@ namespace NextGenSpice
                 ctx.Errors.Add(tokens[0].ToErrorInfo($"Statement invalid or not implemented: {discriminator}."));
             }
         }
-        
+
         private void ProcessElement(char discriminator, Token[] tokens, ParsingContext ctx)
         {
             if (elementProcessors.TryGetValue(discriminator, out var proc))
@@ -123,7 +156,7 @@ namespace NextGenSpice
             {
                 ctx.Errors.Add(tokens[0].ToErrorInfo($"Element type invalid or not implemented: {discriminator}."));
             }
-            
+
         }
     }
 }

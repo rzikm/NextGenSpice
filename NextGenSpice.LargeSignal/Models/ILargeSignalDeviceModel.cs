@@ -19,10 +19,4 @@ namespace NextGenSpice.LargeSignal.Models
         bool IsNonlinear { get; }
         bool IsTimeDependent { get; }
     }
-
-    public interface ITwoTerminalLargeSignalDeviceModel
-    {
-        double Voltage { get; }
-        double Current { get; }
-    }
 }

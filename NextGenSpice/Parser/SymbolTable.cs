@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace NextGenSpice
 {
@@ -39,6 +40,11 @@ namespace NextGenSpice
             DefinedSymbols.Add(name);
 
             return true;
+        }
+
+        public IEnumerable<string> GetNodeNames(IEnumerable<int> exNodes)
+        {
+            return exNodes.Select(id => NodeIndices.First(kvp => kvp.Value == id).Key);
         }
     }
 }

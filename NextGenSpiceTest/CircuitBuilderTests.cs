@@ -29,7 +29,7 @@ namespace NextGenSpiceTest
             builder.AddResistor(3, 4, 3);
 
 //            builder.BuildSubcircuit(new []{1,4});
-            Assert.Throws<InvalidOperationException>(() => builder.BuildSubcircuit(new[] { 1, 4 }));
+            Assert.Throws<NotConnectedSubcircuit>(() => builder.BuildSubcircuit(new[] { 1, 4 }));
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace NextGenSpiceTest
             builder.AddResistor(3, 4, 3);
 
             //            builder.BuildCircuit();
-            Assert.Throws<InvalidOperationException>(() => builder.BuildCircuit());
+            Assert.Throws<NoDcPathToGroundException>(() => builder.BuildCircuit());
         }
 
         [Fact]

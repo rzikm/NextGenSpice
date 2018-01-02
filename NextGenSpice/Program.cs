@@ -46,20 +46,9 @@ namespace NextGenSpice
                 return;
             }
 
-
-            return;
-            var circuit = result.CircuitDefinition.GetLargeSignalModel();
-
-            List<Func<double>> printers = new List<Func<double>>();
-
-            foreach (var ps in result.PrintStatements)
+            foreach (var statement in result.SimulationStatements)
             {
-                var name = ps.Header.Substring(2, ps.Header.Length - 3);
-                var element = (ITwoTerminalLargeSignalDeviceModel) circuit.GetModel(name);
-                if (ps.Header[0] == 'I')
-                    printers.Add(() => element.Current);
-                else
-                    printers.Add(() => element.Voltage);
+                statement.Simulate(result.CircuitDefinition, result.PrintStatements, Console.Out);
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NextGenSpice.Core.Circuit;
 
 namespace NextGenSpice
@@ -12,7 +13,7 @@ namespace NextGenSpice
             Errors = new List<ErrorInfo>();
             DeferredStatements = new List<DeferredStatement>();
             ModelStatements = new List<ModelStatement>();
-            SimulationStatements = new List<TranSimulationStatement>();
+            SimulationStatements = new List<SimulationStatement>();
             PrintStatements = new List<PrintStatement>();
             CircuitBuilder = new CircuitBuilder();
         }
@@ -22,7 +23,7 @@ namespace NextGenSpice
         public List<ErrorInfo> Errors { get;  }
         public List<DeferredStatement> DeferredStatements { get; }
         public List<ModelStatement> ModelStatements { get;  }
-        public List<TranSimulationStatement> SimulationStatements { get;  }
+        public List<SimulationStatement> SimulationStatements { get;  }
         public List<PrintStatement> PrintStatements { get; }
         public CircuitBuilder CircuitBuilder { get; }
     }

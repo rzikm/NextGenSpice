@@ -23,6 +23,8 @@ namespace NextGenSpice.LargeSignal
             constElements = elements.Where(e => !e.IsNonlinear && !e.IsTimeDependent).ToArray();
             linearTimeDependentElements = elements.Where(e => !e.IsNonlinear && e.IsTimeDependent).ToArray();
             nonlinearElements = elements.Where(e => e.IsNonlinear).ToArray();
+
+            elementLookup = elements.Where(e => !string.IsNullOrEmpty(e.Name)).ToDictionary(e => e.Name);
         }
 
         public double[] NodeVoltages { get; }
@@ -33,9 +35,16 @@ namespace NextGenSpice.LargeSignal
         private readonly IReadOnlyList<ILargeSignalDeviceModel> nonlinearElements;
         private readonly IReadOnlyList<ILargeSignalDeviceModel> linearTimeDependentElements;
 
-        public  ILargeSignalDeviceModel GetModel(string name)
+        private readonly Dictionary<string, ILargeSignalDeviceModel> elementLookup;
+
+        public  ILargeSignalDeviceModel GetElement(string name)
         {
-            return Elements.Single(e => e.Name == name);
+            return elementLookup[name];
+        }
+
+        public bool TryGetElement(string name, out ILargeSignalDeviceModel value)
+        {
+            return elementLookup.TryGetValue(name, out value);
         }
 
         public bool IsLinear => !nonlinearElements.Any();
@@ -54,6 +63,8 @@ namespace NextGenSpice.LargeSignal
         public int IterationCount { get; private set; }
         public double DeltaSquared { get; private set; }
 
+
+        public double CurrentTimePoint => context?.Time ?? 0.0;
 
         public void Simulate(Action<double[]> callback)
         {
