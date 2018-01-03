@@ -2,7 +2,7 @@ using System;
 
 namespace NextGenSpice
 {
-    public class TranStatementProcessor : SimpleStatementProcessor<TranSimulationParams>
+    public class TranStatementProcessor : SimpleStatementProcessor<TranSimulationParams>, ISimulationStatementProcessor
     {
         public TranStatementProcessor()
         {
@@ -24,6 +24,11 @@ namespace NextGenSpice
         {
             Context.SimulationStatements.Add(new TranSimulationStatement(Mapper.Target));
             Mapper.Target = null;
+        }
+
+        public IPrintStatementHandler GetPrintStatementHandler()
+        {
+            return new LsPrintStatementHandler("TRAN");
         }
     }
 }

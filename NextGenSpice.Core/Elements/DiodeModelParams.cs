@@ -30,12 +30,7 @@
             SeriesResistance = 0.568,
             Vd = 0.0
         };
-
-        private DiodeModelParams()
-        {
-
-        }
-
+        
         /// <summary>
         /// Saturation current (from diode equation) in amperes.
         /// </summary>

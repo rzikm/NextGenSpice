@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NextGenSpice.Core.Circuit;
+using NextGenSpice.Core.Elements;
 
 namespace NextGenSpice
 {

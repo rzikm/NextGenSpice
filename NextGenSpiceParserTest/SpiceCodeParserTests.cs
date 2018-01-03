@@ -16,8 +16,8 @@ namespace NextGenSpiceParserTest
         {
             this.output = output;
             parser = new SpiceCodeParser();
-            parser.Register(new ResistorStatementProcessor());
-            parser.Register(new VoltageSourceStatementProcessor());
+            parser.RegisterElement(new ResistorStatementProcessor());
+            parser.RegisterElement(new VoltageSourceStatementProcessor());
         }
 
         [Fact]

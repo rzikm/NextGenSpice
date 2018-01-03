@@ -1,27 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using NextGenSpice.Core.Helpers;
+using System.Linq;
 using Numerics;
 
 namespace NextGenSpice.Core.Equations
 {
-    public class EquationSystem : IEquationSystem
+    public class QdEquationSystem : IEquationSystem
     {
-        private Stack<Tuple<Array2DWrapper, double[]>> backups;
+        private readonly Stack<Tuple<QdArray2DWrapper, qd_real[]>> backups;
 
-        private readonly Array2DWrapper matrixBackup;
-        private readonly double[] rhsBackup;
-        private Array2DWrapper matrix;
-        private double[] rhs;
-        
-        public EquationSystem(Array2DWrapper matrix, double[] rhs)
+        private readonly QdArray2DWrapper matrixBackup;
+        private readonly qd_real[] rhsBackup;
+        private QdArray2DWrapper matrix;
+        private qd_real[] rhs;
+
+        public QdEquationSystem(QdArray2DWrapper matrix, qd_real[] rhs)
         {
             if (matrix.SideLength != rhs.Length) throw new ArgumentException($"Matrix side length ({matrix.SideLength}) is different from right hand side vector length ({rhs.Length})");
             this.matrixBackup = matrix;
             this.rhsBackup = rhs;
             Solution = new double[rhs.Length];
 
-            backups = new Stack<Tuple<Array2DWrapper, double[]>>();
+            backups = new Stack<Tuple<QdArray2DWrapper, qd_real[]>>();
 
             backups.Push(Tuple.Create(matrix, rhs));
             Clear();
@@ -38,10 +38,10 @@ namespace NextGenSpice.Core.Equations
         {
             rhs[index] += value;
         }
-        public double[] Solution { get; }
+        public double[] Solution { get; private set; }
 
-        public Array2DWrapper Matrix => matrix;
-        public double[] RightHandSide => rhs;
+        public QdArray2DWrapper Matrix => matrix;
+        public qd_real[] RightHandSide => rhs;
 
         public void Clear()
         {
@@ -50,12 +50,12 @@ namespace NextGenSpice.Core.Equations
             var tup = backups.Peek();
 
             matrix = tup.Item1.Clone();
-            rhs = (double[])tup.Item2.Clone();
+            rhs = (qd_real[])tup.Item2.Clone();
         }
 
         public void Backup()
         {
-            backups.Push(Tuple.Create(matrix.Clone(), (double[])rhs.Clone()));
+            backups.Push(Tuple.Create(matrix.Clone(), (qd_real[])rhs.Clone()));
         }
 
         public void Restore()
@@ -63,10 +63,10 @@ namespace NextGenSpice.Core.Equations
             var tup = backups.Peek();
 
             matrix = tup.Item1.Clone();
-            rhs = (double[])tup.Item2.Clone();
+            rhs = (qd_real[])tup.Item2.Clone();
         }
 
-        public double GetMatrixEntry(int row, int column)
+        public qd_real GetMatrixEntry(int row, int column)
         {
             if (row < 0 || row >= rhs.Length) throw new ArgumentOutOfRangeException(nameof(row));
             if (column < 0 || column >= rhs.Length) throw new ArgumentOutOfRangeException(nameof(column));
@@ -74,7 +74,7 @@ namespace NextGenSpice.Core.Equations
             return matrix[row, column];
         }
 
-        public double GetRightHandSideEntry(int row)
+        public qd_real GetRightHandSideEntry(int row)
         {
             if (row < 0 || row >= rhs.Length) throw new ArgumentOutOfRangeException(nameof(row));
 
@@ -84,26 +84,26 @@ namespace NextGenSpice.Core.Equations
         public double[] Solve()
         {
             var m = matrix.Clone();
-            var b = (double[])rhs.Clone();
-            
+            var b = (qd_real[])rhs.Clone();
+            var x = new qd_real[b.Length];
 
-            NumericMethods.GaussElimSolve(m, b, Solution);
+            NumericMethods.GaussElimSolve_qd(m, b, x);
 
             //DistributeEquivalentVoltages(m);
-            return Solution;
+            return Solution = x.Select(qd => (double) qd).ToArray();
         }
 
-//        private void DistributeEquivalentVoltages(Array2DWrapper m)
-//        {
-//            foreach (var grp in equivalences)
-//            {
-//                var representative = grp.First();
-//                foreach (var other in grp.Skip(1))
-//                {
-//                    Solution[other] = Solution[representative];
-//                }
-//            }
-//        }
+        //        private void DistributeEquivalentVoltages(Array2DWrapper m)
+        //        {
+        //            foreach (var grp in equivalences)
+        //            {
+        //                var representative = grp.First();
+        //                foreach (var other in grp.Skip(1))
+        //                {
+        //                    Solution[other] = Solution[representative];
+        //                }
+        //            }
+        //        }
 
     }
 }

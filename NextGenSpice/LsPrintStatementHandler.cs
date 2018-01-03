@@ -1,8 +1,8 @@
 ﻿namespace NextGenSpice
 {
-    public class LsPrintStatementProcessor : IPrintStatementProcessor
+    public class LsPrintStatementHandler : IPrintStatementHandler
     {
-        public LsPrintStatementProcessor(string analysisTypeIdentifer)
+        public LsPrintStatementHandler(string analysisTypeIdentifer)
         {
             AnalysisTypeIdentifer = analysisTypeIdentifer;
         }

@@ -1,17 +1,16 @@
-using System;
 using System.Collections.Generic;
-using NextGenSpice.Core.Helpers;
+using System.Linq;
 using Numerics;
 
 namespace NextGenSpice.Core.Equations
 {
-    public class EquationSystemBuilder : IEquationSystemBuilder
+    public class QdEquationSystemBuilder : IEquationSystemBuilder
     {
         private readonly List<List<double>> matrix;
         readonly List<double> rhs;
         private ISet<ISet<int>> equivalences;
 
-        public EquationSystemBuilder()
+        public QdEquationSystemBuilder()
         {
             this.matrix = new List<List<double>>();
             this.rhs = new List<double>();
@@ -44,17 +43,17 @@ namespace NextGenSpice.Core.Equations
         {
             rhs[index] += value;
         }
-       
-        public EquationSystem Build()
+
+        public QdEquationSystem Build()
         {
-            Array2DWrapper m = new Array2DWrapper(VariablesCount);
+            QdArray2DWrapper m = new QdArray2DWrapper(VariablesCount);
 
 
             for (int i = 0; i < VariablesCount; i++)
             for (int j = 0; j < VariablesCount; j++)
-                m[i, j] = matrix[i][j];
+                m[i, j] = new qd_real(matrix[i][j]);
 
-            return new EquationSystem(m, rhs.ToArray());
+            return new QdEquationSystem(m, rhs.Select(d => new qd_real(d)).ToArray());
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace NextGenSpice
 {
-    public interface IPrintStatementProcessor
+    public interface IPrintStatementHandler
     {
         string AnalysisTypeIdentifer { get; }
         void ProcessPrintStatement(Token[] tokens, ParsingContext context);

@@ -5,21 +5,21 @@ namespace NextGenSpice
 {
     public class PrintStatementProcessor : StatementProcessor
     {
-        private readonly IDictionary<string, IPrintStatementProcessor> processors;
+        private readonly IDictionary<string, IPrintStatementHandler> processors;
 
         public PrintStatementProcessor()
         {
             MaxArgs = int.MaxValue;
             MinArgs = 2;
-            processors = new ConcurrentDictionary<string, IPrintStatementProcessor>();
+            processors = new ConcurrentDictionary<string, IPrintStatementHandler>();
 
-            Register(new LsPrintStatementProcessor("TRAN"));
-            Register(new LsPrintStatementProcessor("DC"));
+            AddHandler(new LsPrintStatementHandler("TRAN"));
+            AddHandler(new LsPrintStatementHandler("DC"));
         }
 
-        public void Register(IPrintStatementProcessor proc)
+        public void AddHandler(IPrintStatementHandler handler)
         {
-            processors.Add(proc.AnalysisTypeIdentifer, proc);
+            processors.Add(handler.AnalysisTypeIdentifer, handler);
         }
 
         public override string Discriminator => ".PRINT";

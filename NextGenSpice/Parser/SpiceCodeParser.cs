@@ -9,26 +9,37 @@ namespace NextGenSpice
 {
     public class SpiceCodeParser
     {
-        private readonly IDictionary<char, ElementStatementProcessor> elementProcessors;
-        private readonly IDictionary<string, StatementProcessor> statementProcessors;
+        private readonly IDictionary<char, IElementStatementProcessor> elementProcessors;
+        private readonly IDictionary<string, IStatementProcessor> statementProcessors;
+        
+        private readonly ModelStatementProcessor modelProcessor;
+        private readonly PrintStatementProcessor printProcessor;
 
         public SpiceCodeParser()
         {
-            elementProcessors = new Dictionary<char, ElementStatementProcessor>();
-            statementProcessors = new Dictionary<string, StatementProcessor>();
+            modelProcessor = new ModelStatementProcessor();
+            printProcessor = new PrintStatementProcessor();
 
-            Register(new TranStatementProcessor());
-            Register(new OpStatementProcessor());
-            Register(new PrintStatementProcessor());
+            elementProcessors = new Dictionary<char, IElementStatementProcessor>();
+            statementProcessors = new Dictionary<string, IStatementProcessor>
+            {
+                [modelProcessor.Discriminator] = modelProcessor,
+                [printProcessor.Discriminator] = printProcessor
+            };
         }
 
-        public void Register(ElementStatementProcessor processor)
+        public void RegisterElement(IElementStatementProcessor processor)
         {
             elementProcessors.Add(processor.Discriminator, processor);
+            foreach (var handler in processor.GetModelStatementHandlers())
+            {
+                modelProcessor.AddHandler(handler);
+            }
         }
-        public void Register(StatementProcessor processor)
+        public void RegisterSimulation(ISimulationStatementProcessor processor)
         {
             statementProcessors.Add(processor.Discriminator, processor);
+            printProcessor.AddHandler(processor.GetPrintStatementHandler());
         }
 
         public ParserResult ParseInputFile(TokenStream stream)

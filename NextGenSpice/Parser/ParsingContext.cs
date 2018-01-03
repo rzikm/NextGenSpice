@@ -12,7 +12,6 @@ namespace NextGenSpice
             SymbolTable = new SymbolTable();
             Errors = new List<ErrorInfo>();
             DeferredStatements = new List<DeferredStatement>();
-            ModelStatements = new List<ModelStatement>();
             SimulationStatements = new List<SimulationStatement>();
             PrintStatements = new List<PrintStatement>();
             CircuitBuilder = new CircuitBuilder();
@@ -22,7 +21,6 @@ namespace NextGenSpice
         public SymbolTable SymbolTable { get;  }
         public List<ErrorInfo> Errors { get;  }
         public List<DeferredStatement> DeferredStatements { get; }
-        public List<ModelStatement> ModelStatements { get;  }
         public List<SimulationStatement> SimulationStatements { get;  }
         public List<PrintStatement> PrintStatements { get; }
         public CircuitBuilder CircuitBuilder { get; }

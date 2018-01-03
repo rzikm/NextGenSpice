@@ -9,14 +9,14 @@ namespace NextGenSpice
     {
         public ParameterMapper()
         {
-            settersByName = new Dictionary<string, Action<TParam, double>>();
+            settersByKey = new Dictionary<string, Action<TParam, double>>();
             settersByIndex = new Dictionary<int, Action<TParam, double>>();
         }
 
-        public int ByNameCount => settersByName.Count;
+        public int ByKeyCount => settersByKey.Count;
         public int ByIndexCount => settersByIndex.Count;
 
-        private readonly Dictionary<string, Action<TParam, double>> settersByName;
+        private readonly Dictionary<string, Action<TParam, double>> settersByKey;
         private readonly Dictionary<int, Action<TParam, double>> settersByIndex;
 
         public TParam Target { get; set; }
@@ -28,15 +28,25 @@ namespace NextGenSpice
             return prop;
         }
 
-        public void Map(Expression<Func<TParam, double>> mapping, string paramName)
+        public bool HasIndex(int i)
+        {
+            return settersByIndex.ContainsKey(i);
+        }
+
+        public bool HasKey(string key)
+        {
+            return settersByKey.ContainsKey(key);
+        }
+
+        public void Map(Expression<Func<TParam, double>> mapping, string paramKey)
         {
             PropertyInfo prop =  GetMappedProperty(mapping);
-            settersByName.Add(paramName, (target, value) => prop.SetValue(target, value));
+            settersByKey.Add(paramKey, (target, value) => prop.SetValue(target, value));
         }
-        public void Map(Expression<Func<TParam, double>> mapping, string paramName, Func<double, double> transform)
+        public void Map(Expression<Func<TParam, double>> mapping, string paramKey, Func<double, double> transform)
         {
             PropertyInfo prop = GetMappedProperty(mapping);
-            settersByName.Add(paramName, (target, value) => prop.SetValue(target, transform(value)));
+            settersByKey.Add(paramKey, (target, value) => prop.SetValue(target, transform(value)));
         }
 
         public void Map(Expression<Func<TParam, double>> mapping, int index)
@@ -53,7 +63,7 @@ namespace NextGenSpice
 
         public void Set(string paramName, double value)
         {
-            if (!settersByName.TryGetValue(paramName, out var setter)) throw new ArgumentException($"Parameter '{paramName}' is not mapped to any property");
+            if (!settersByKey.TryGetValue(paramName, out var setter)) throw new ArgumentException($"Parameter '{paramName}' is not mapped to any property");
             setter(Target, value);
         }
 

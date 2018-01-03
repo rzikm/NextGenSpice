@@ -2,7 +2,7 @@ using System.Linq;
 
 namespace NextGenSpice
 {
-    public class OpStatementProcessor : SimpleStatementProcessor<OpSimulationParams>
+    public class OpStatementProcessor : SimpleStatementProcessor<OpSimulationParams>, ISimulationStatementProcessor
     {
         public OpStatementProcessor()
         {
@@ -11,6 +11,12 @@ namespace NextGenSpice
             
         }
         public override string Discriminator => ".OP";
+
+        public IPrintStatementHandler GetPrintStatementHandler()
+        {
+            return new LsPrintStatementHandler("OP");
+        }
+
         protected override void InitMapper()
         {
             Mapper.Target = new OpSimulationParams();

@@ -2,7 +2,7 @@
 
 namespace NextGenSpice
 {
-    public abstract class StatementProcessor
+    public abstract class StatementProcessor : IStatementProcessor
     {
         public StatementProcessor()
         {

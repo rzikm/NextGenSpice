@@ -30,9 +30,13 @@ namespace NextGenSpice
             }
 
             var parser = new SpiceCodeParser();
-            parser.Register(new CurrentSourceStatementProcessor());
-            parser.Register(new VoltageSourceStatementProcessor());
-            parser.Register(new ResistorStatementProcessor());
+            parser.RegisterElement(new CurrentSourceStatementProcessor());
+            parser.RegisterElement(new VoltageSourceStatementProcessor());
+            parser.RegisterElement(new ResistorStatementProcessor());
+            parser.RegisterElement(new DiodeStatementProcessor());
+
+            parser.RegisterSimulation(new TranStatementProcessor());
+            parser.RegisterSimulation(new OpStatementProcessor());
 
             var result = parser.ParseInputFile(new TokenStream(input));
 

@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace NextGenSpice
 {
     /// <summary>
     /// Class representing processor for a given element type.
     /// </summary>
-    public abstract class ElementStatementProcessor
+    public abstract class ElementStatementProcessor : IElementStatementProcessor
     {
         protected SymbolTable SymbolTable => Context.SymbolTable;
 
@@ -142,6 +143,15 @@ namespace NextGenSpice
             var value = Helper.ConvertValue(token.Value);
             if (double.IsNaN(value)) NotANumber(token);
             return value;
+        }
+
+        /// <summary>
+        /// Gets list of model statement handlers that are responsible to parsing respective models of this device.
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<IModelStatementHandler> GetModelStatementHandlers()
+        {
+            return Enumerable.Empty<IModelStatementHandler>();
         }
     }
 }
