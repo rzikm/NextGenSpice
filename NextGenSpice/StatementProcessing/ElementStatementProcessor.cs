@@ -10,7 +10,8 @@ namespace NextGenSpice
     {
         protected SymbolTable SymbolTable => Context.SymbolTable;
 
-        protected int Errors { get; private set; }
+        protected int Errors => Context.Errors.Count - oldErrors;
+        private int oldErrors;
 
         protected ParsingContext Context { get; private set; }
 
@@ -29,7 +30,7 @@ namespace NextGenSpice
         {
             Context = ctx;
 
-            Errors = 0;
+            oldErrors = ctx.Errors.Count;
             DoProcess(tokens);
 
             Context = null;
@@ -45,7 +46,6 @@ namespace NextGenSpice
         /// <returns></returns>
         protected void Error(Token source, string message)
         {
-            Errors++;
             Context.Errors.Add( new ErrorInfo
             {
                 Messsage = message,

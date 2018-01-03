@@ -20,7 +20,7 @@ namespace NextGenSpice
             if (tokens.Length - 1 < MinArgs)
                 ctx.Errors.Add(firstToken.ToErrorInfo($"Too few arguments for {firstToken.Value} statement."));
             
-            if (tokens.Length - 1 > MinArgs)
+            if (tokens.Length - 1 > MaxArgs)
                 ctx.Errors.Add(firstToken.ToErrorInfo($"Too many arguments for {firstToken.Value} statement."));
             
             DoProcess(tokens);

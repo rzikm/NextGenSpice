@@ -61,9 +61,9 @@ namespace NextGenSpice
             settersByIndex.Add(index, (target, value) => prop.SetValue(target, transform(value)));
         }
 
-        public void Set(string paramName, double value)
+        public void Set(string key, double value)
         {
-            if (!settersByKey.TryGetValue(paramName, out var setter)) throw new ArgumentException($"Parameter '{paramName}' is not mapped to any property");
+            if (!settersByKey.TryGetValue(key, out var setter)) throw new ArgumentException($"Parameter '{key}' is not mapped to any property");
             setter(Target, value);
         }
 

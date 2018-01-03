@@ -59,5 +59,79 @@ namespace NextGenSpice
                 Messsage = message
             };
         }
+
+        // TODO: reimplement so that it correctly handles parentheses (currently, D 1 (111) does not couse errors)
+        public static List<Token> Retokenize(Token[] tokens, List<ErrorInfo> errors)
+        {
+            List<Token> result = new List<Token>();
+
+            var parentheses = false;
+
+            for (var t = 3; t < tokens.Length; t++)
+            {
+                var line = tokens[t].Line;
+                var col = tokens[t].Char;
+                var s = tokens[t].Value;
+
+                int i;
+                if (!parentheses && (i = s.IndexOf('(')) >= 0)
+                {
+                    parentheses = true;
+
+                    if (i > 0)
+                        result.Add(new Token
+                        {
+                            Line = line,
+                            Char = col,
+                            Value = s.Substring(0, i)
+                        });
+
+                    col += i + 1;
+                    s = s.Substring(i + 1);
+                }
+
+                if (parentheses && (i = s.IndexOf(')')) >= 0)
+                {
+                    if (i > 0)
+                        result.Add(new Token
+                        {
+                            Line = line,
+                            Char = col,
+                            Value = s.Substring(0, i)
+                        });
+
+                    col += i;
+                    if (t < tokens.Length - 1)
+                        errors.Add(tokens[t + 1].ToErrorInfo("Unexpected tokens after end of statement."));
+                    
+                    return result;
+                }
+
+                if (s.Length > 0)
+                    result.Add(new Token
+                    {
+                        Line = line,
+                        Char = col,
+                        Value = s
+                    });
+            }
+
+            var last = tokens[tokens.Length - 1];
+            if (parentheses) // unterminated parentheses
+            {
+                var t = new Token
+                {
+                    Line = last.Line,
+                    Char = last.Char,
+                    Value = last.Value
+                };
+                t.Char += t.Value.Length;
+                t.Value = "";
+
+                errors.Add(t.ToErrorInfo("Unterminated transient function"));
+            }
+
+            return result;
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace NextGenSpice
         public ModelStatementProcessor()
         {
             MaxArgs = Int32.MaxValue;
-            MinArgs = 3;
+            MinArgs = 2;
 
             handlers = new Dictionary<string, IModelStatementHandler>();
         }
@@ -24,13 +24,14 @@ namespace NextGenSpice
         public override string Discriminator => ".MODEL";
         protected override void DoProcess(Token[] tokens)
         {
-            if (!handlers.TryGetValue(tokens[1].Value, out var handler))
+            var discriminatorToken = tokens[2];
+            if (!handlers.TryGetValue(discriminatorToken.Value, out var handler))
             {
-                Context.Errors.Add(tokens[1].ToErrorInfo($"No device model has discriminator '{tokens[1].Value}'"));
+                Context.Errors.Add(discriminatorToken.ToErrorInfo($"No device model has discriminator '{discriminatorToken.Value}'"));
                 return;
             }
 
-            handler.Process(tokens.Skip(2).ToArray(), Context);
+            handler.Process(tokens, Context);
         }
     }
 }

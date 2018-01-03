@@ -81,7 +81,7 @@ namespace NextGenSpice
             }
             else // tran function
             {
-                var paramTokens = GetParameterTokens(tokens);
+                var paramTokens = Helper.Retokenize(tokens, Context.Errors).ToList();
                 var param = GetBehaviorParam(paramTokens);
                 if (paramTokens.Count < 3 && param != null)
                 {
@@ -184,87 +184,6 @@ namespace NextGenSpice
             var t = mapper.Target;
             mapper.Target = default(T);
             return t;
-        }
-
-        private List<Token> GetParameterTokens(Token[] tokens)
-        {
-            List<Token> paramTokens = new List<Token>();
-
-            var parentheses = false;
-
-
-            for (var t = 3; t < tokens.Length; t++)
-            {
-                var line = tokens[t].Line;
-                var col = tokens[t].Char;
-                var s = tokens[t].Value;
-
-                int i;
-                if (!parentheses && (i = s.IndexOf('(')) >= 0)
-                {
-                    parentheses = true;
-
-                    if (i > 0)
-                        paramTokens.Add(new Token()
-                        {
-                            Line = line,
-                            Char = col,
-                            Value = s.Substring(0, i)
-                        });
-
-                    col += i + 1;
-                    s = s.Substring(i + 1);
-                }
-
-                if (parentheses && (i = s.IndexOf(')')) >= 0)
-                {
-                    if (i > 0)
-                        paramTokens.Add(new Token()
-                        {
-                            Line = line,
-                            Char = col,
-                            Value = s.Substring(0, i)
-                        });
-
-                    col += i;
-                    if (t < tokens.Length - 1)
-                        Error(tokens[t + 1], "Unexpected tokens after end of statement.");
-                    if (paramTokens.Count < 2)
-                        Error(new Token()
-                        {
-                            Line = line,
-                            Char = col,
-                            Value = ")"
-                        }, "Unexpected end of parameter list.");
-
-                    return paramTokens;
-                }
-
-                if (s.Length > 0)
-                    paramTokens.Add(new Token()
-                    {
-                        Line = line,
-                        Char = col,
-                        Value = s
-                    });
-            }
-
-            var last = tokens[tokens.Length - 1];
-            if (parentheses) // unterminated parentheses
-            {
-                var t = new Token()
-                {
-                    Line = last.Line,
-                    Char = last.Char,
-                    Value = last.Value
-                };
-                t.Char += t.Value.Length;
-                t.Value = "";
-
-                Error(t, "Unterminated transient function");
-            }
-
-            return paramTokens;
         }
 
         protected abstract ElementStatement GetStatement(string name, int[] nodes, SourceBehaviorParams par);

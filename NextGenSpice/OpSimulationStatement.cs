@@ -31,6 +31,7 @@ namespace NextGenSpice
 
             foreach (var element in model.Elements.OfType<ITwoTerminalLargeSignalDeviceModel>().Where(e => !string.IsNullOrEmpty(e.Name)))
             {
+                output.WriteLine();
                 output.WriteLine($"V({element.Name}) = {element.Voltage}");
                 output.WriteLine($"I({element.Name}) = {element.Current}");
             }

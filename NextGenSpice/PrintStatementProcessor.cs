@@ -12,9 +12,6 @@ namespace NextGenSpice
             MaxArgs = int.MaxValue;
             MinArgs = 2;
             processors = new ConcurrentDictionary<string, IPrintStatementHandler>();
-
-            AddHandler(new LsPrintStatementHandler("TRAN"));
-            AddHandler(new LsPrintStatementHandler("DC"));
         }
 
         public void AddHandler(IPrintStatementHandler handler)

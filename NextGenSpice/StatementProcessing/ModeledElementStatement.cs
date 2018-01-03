@@ -21,7 +21,7 @@ namespace NextGenSpice
 
         public override bool CanApply(ParsingContext context)
         {
-            return (model = modelFactory()) == null;
+            return (model = modelFactory()) != null;
         }
 
         public override IEnumerable<ErrorInfo> GetErrors()
