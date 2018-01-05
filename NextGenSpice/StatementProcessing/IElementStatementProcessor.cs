@@ -2,6 +2,9 @@
 
 namespace NextGenSpice
 {
+    /// <summary>
+    /// Defines methods for parsing SPICE element statements.
+    /// </summary>
     public interface IElementStatementProcessor
     {
         /// <summary>

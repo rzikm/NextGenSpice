@@ -5,6 +5,7 @@ using System.Reflection;
 
 namespace NextGenSpice
 {
+    // Helper class for mapping statement parameters onto properties of an object.
     public class ParameterMapper<TParam>
     {
         public ParameterMapper()
@@ -13,12 +14,22 @@ namespace NextGenSpice
             settersByIndex = new Dictionary<int, Action<TParam, double>>();
         }
 
+        /// <summary>
+        /// Count of parameters mapped by Key.
+        /// </summary>
         public int ByKeyCount => settersByKey.Count;
+
+        /// <summary>
+        /// Count of parameters mapped by index.
+        /// </summary>
         public int ByIndexCount => settersByIndex.Count;
 
         private readonly Dictionary<string, Action<TParam, double>> settersByKey;
         private readonly Dictionary<int, Action<TParam, double>> settersByIndex;
 
+        /// <summary>
+        /// Instance of an object to which parameters are mapped.
+        /// </summary>
         public TParam Target { get; set; }
 
         private static PropertyInfo GetMappedProperty(Expression<Func<TParam, double>> mapping)
@@ -28,26 +39,49 @@ namespace NextGenSpice
             return prop;
         }
 
+        /// <summary>
+        /// Returns true if there is a mapping from given index onto a property.
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
         public bool HasIndex(int i)
         {
             return settersByIndex.ContainsKey(i);
         }
 
+        /// <summary>
+        /// Returns true if there is a mapping from given key onto a property.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public bool HasKey(string key)
         {
             return settersByKey.ContainsKey(key);
         }
 
+        /// <summary>
+        /// Maps given key onto given property.
+        /// </summary>
+        /// <param name="mapping"></param>
+        /// <param name="paramKey"></param>
         public void Map(Expression<Func<TParam, double>> mapping, string paramKey)
         {
             PropertyInfo prop =  GetMappedProperty(mapping);
             settersByKey.Add(paramKey, (target, value) => prop.SetValue(target, value));
         }
+
+        /// <summary>
+        /// Maps given key onto given property.
+        /// </summary>
+        /// <param name="mapping"></param>
+        /// <param name="paramKey"></param>
+        /// <param name="transform"></param>
         public void Map(Expression<Func<TParam, double>> mapping, string paramKey, Func<double, double> transform)
         {
             PropertyInfo prop = GetMappedProperty(mapping);
             settersByKey.Add(paramKey, (target, value) => prop.SetValue(target, transform(value)));
         }
+
 
         public void Map(Expression<Func<TParam, double>> mapping, int index)
         {

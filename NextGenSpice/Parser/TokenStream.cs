@@ -74,8 +74,8 @@ namespace NextGenSpice
                 : new Token
                 {
                     Value = s.ToUpperInvariant(),
-                    Char = offset,
-                    Line = line
+                    LineColumn = offset,
+                    LineNumber = line
                 };
         }
 

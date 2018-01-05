@@ -46,7 +46,7 @@ namespace NextGenSpice
         public static double GetNumericValue(this Token t, List<ErrorInfo> errors)
         {
             double val = ConvertValue(t.Value);
-            if (double.IsNaN(val)) errors.Add(new ErrorInfo() { LineColumn = t.Line, LineNumber = t.Line, Messsage = $"Cannot convert '{t.Value}' to a numeric value" });
+            if (double.IsNaN(val)) errors.Add(new ErrorInfo() { LineColumn = t.LineNumber, LineNumber = t.LineNumber, Messsage = $"Cannot convert '{t.Value}' to a numeric value" });
             return val;
         }
 
@@ -54,8 +54,8 @@ namespace NextGenSpice
         {
             return new ErrorInfo()
             {
-                LineColumn = t.Char,
-                LineNumber = t.Line,
+                LineColumn = t.LineColumn,
+                LineNumber = t.LineNumber,
                 Messsage = message
             };
         }
@@ -69,8 +69,8 @@ namespace NextGenSpice
 
             for (var t = 3; t < tokens.Length; t++)
             {
-                var line = tokens[t].Line;
-                var col = tokens[t].Char;
+                var line = tokens[t].LineNumber;
+                var col = tokens[t].LineColumn;
                 var s = tokens[t].Value;
 
                 int i;
@@ -81,8 +81,8 @@ namespace NextGenSpice
                     if (i > 0)
                         result.Add(new Token
                         {
-                            Line = line,
-                            Char = col,
+                            LineNumber = line,
+                            LineColumn = col,
                             Value = s.Substring(0, i)
                         });
 
@@ -95,8 +95,8 @@ namespace NextGenSpice
                     if (i > 0)
                         result.Add(new Token
                         {
-                            Line = line,
-                            Char = col,
+                            LineNumber = line,
+                            LineColumn = col,
                             Value = s.Substring(0, i)
                         });
 
@@ -110,8 +110,8 @@ namespace NextGenSpice
                 if (s.Length > 0)
                     result.Add(new Token
                     {
-                        Line = line,
-                        Char = col,
+                        LineNumber = line,
+                        LineColumn = col,
                         Value = s
                     });
             }
@@ -121,11 +121,11 @@ namespace NextGenSpice
             {
                 var t = new Token
                 {
-                    Line = last.Line,
-                    Char = last.Char,
+                    LineNumber = last.LineNumber,
+                    LineColumn = last.LineColumn,
                     Value = last.Value
                 };
-                t.Char += t.Value.Length;
+                t.LineColumn += t.Value.Length;
                 t.Value = "";
 
                 errors.Add(t.ToErrorInfo("Unterminated transient function"));

@@ -13,11 +13,11 @@
         /// <summary>
         /// Number of line, on which the token occured in the source file.
         /// </summary>
-        public int Line { get; set; }
+        public int LineNumber { get; set; }
 
         /// <summary>
-        /// Offset from beginning of the line, where the token occured in the source file.
+        /// One based index from beginning of the line, where the token occured in the source file.
         /// </summary>
-        public int Char { get; set; }
+        public int LineColumn { get; set; }
     }
 }

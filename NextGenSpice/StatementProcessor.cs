@@ -27,6 +27,11 @@ namespace NextGenSpice
 
             Context = null;
         }
+
+        /// <summary>
+        /// Processes given statement.
+        /// </summary>
+        /// <param name="tokens"></param>
         protected abstract void DoProcess(Token[] tokens);
         protected int MinArgs { get; set; }
         protected int MaxArgs { get; set; }

@@ -38,8 +38,8 @@ last*comment in the middle
             var expected = new Token
             {
                 Value = "LAST",
-                Char = 1,
-                Line = 4
+                LineColumn = 1,
+                LineNumber = 4
             };
             var nextLine = TokenStream.ReadLogicalLine();
             Assert.Equal(expected, nextLine.Single(), new TokenComparer());
@@ -66,8 +66,8 @@ last");
             var expected = new Token
             {
                 Value = "LAST",
-                Char = 1,
-                Line = 3
+                LineColumn = 1,
+                LineNumber = 3
             };
             Assert.Equal(expected, TokenStream.ReadLogicalLine().Single(), new TokenComparer());
             Assert.Equal(0, TokenStream.ReadLogicalLine().Count());
@@ -83,8 +83,8 @@ last");
             var expected = new Token
             {
                 Value = token1.ToUpperInvariant(),
-                Char = 1,
-                Line = 1
+                LineColumn = 1,
+                LineNumber = 1
             };
 
             Assert.Equal(expected, TokenStream.Read(), new TokenComparer());
@@ -92,8 +92,8 @@ last");
             expected = new Token
             {
                 Value = token2.ToUpperInvariant(),
-                Char = token1.Length + 5,
-                Line = 1
+                LineColumn = token1.Length + 5,
+                LineNumber = 1
             };
 
             Assert.Equal(expected, TokenStream.Read(), new TokenComparer());
@@ -110,8 +110,8 @@ last");
             var expected = new Token
             {
                 Value = token1.ToUpperInvariant(),
-                Char = 1,
-                Line = 1
+                LineColumn = 1,
+                LineNumber = 1
             };
 
             Assert.Equal(expected, TokenStream.Read(), new TokenComparer());
@@ -119,8 +119,8 @@ last");
             expected = new Token
             {
                 Value = token2.ToUpperInvariant(),
-                Char = 3,
-                Line = 2
+                LineColumn = 3,
+                LineNumber = 2
             };
 
             Assert.Equal(expected, TokenStream.Read(), new TokenComparer());
@@ -132,9 +132,9 @@ last");
             public int Compare(Token x, Token y)
             {
                 var res = 0;
-                if ((res = x.Char.CompareTo(y.Char)) != 0)
+                if ((res = x.LineColumn.CompareTo(y.LineColumn)) != 0)
                     return res;
-                if ((res = x.Line.CompareTo(y.Line)) != 0)
+                if ((res = x.LineNumber.CompareTo(y.LineNumber)) != 0)
                     return res;
                 return string.Compare(x.Value, y.Value, StringComparison.Ordinal);
             }

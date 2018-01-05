@@ -6,6 +6,9 @@ using NextGenSpice.Core.Elements;
 
 namespace NextGenSpice
 {
+    /// <summary>
+    /// Class responsible for handling both current and voltage input source statements
+    /// </summary>
     public abstract class InputSourceStatementProcessor : ElementStatementProcessor
     {
         private readonly ParameterMapper<SinusoidalBehaviorParams> sinMapper;
@@ -27,6 +30,8 @@ namespace NextGenSpice
 
         private void InitMappers()
         {
+            // parameter order is given by SPICE code specification, see documentation for details
+
             pulseMapper.Map(c => c.Value1, 0);
             pulseMapper.Map(c => c.Value2, 1);
             pulseMapper.Map(c => c.Delay, 2);
@@ -62,6 +67,10 @@ namespace NextGenSpice
             amMapper.Map(c => c.Delay, 4);
         }
 
+        /// <summary>
+        /// Processes given set of statements.
+        /// </summary>
+        /// <param name="tokens"></param>
         protected override void DoProcess(Token[] tokens)
         {
             if (tokens.Length < 4)
@@ -73,7 +82,7 @@ namespace NextGenSpice
             var name = DeclareElement(tokens[0]);
             var nodes = GetNodeIndices(tokens, 1, 2);
 
-            ElementStatement statement;
+            DeferredStatement statement;
             if (char.IsDigit(tokens[3].Value[0])) // constant source
             {
                 var val = GetValue(tokens[3]);
@@ -83,7 +92,7 @@ namespace NextGenSpice
             {
                 var paramTokens = Helper.Retokenize(tokens, Context.Errors).ToList();
                 var param = GetBehaviorParam(paramTokens);
-                if (paramTokens.Count < 3 && param != null)
+                if (paramTokens.Count < 3 && param != null) // every transient function must have at least 2 arguments
                 {
                     Error(paramTokens[0], $"Too few arguments for transient function '{paramTokens[0].Value}'");
                 }
@@ -94,6 +103,11 @@ namespace NextGenSpice
                 Context.DeferredStatements.Add(statement);
         }
 
+        /// <summary>
+        /// Gets behavior parameters for given list of tokens or null if no such transient function exists.
+        /// </summary>
+        /// <param name="paramTokens"></param>
+        /// <returns></returns>
         private SourceBehaviorParams GetBehaviorParam(List<Token> paramTokens)
         {
             switch (paramTokens[0].Value)
@@ -122,6 +136,11 @@ namespace NextGenSpice
             }
         }
 
+        /// <summary>
+        /// Functino responsible for parsing Piece-wise linear behavior of the input source.
+        /// </summary>
+        /// <param name="paramTokens"></param>
+        /// <returns></returns>
         private SourceBehaviorParams GetPwlParams(List<Token> paramTokens)
         {
             var par = new PieceWiseLinearBehaviorParams();
@@ -167,6 +186,13 @@ namespace NextGenSpice
             return par;
         }
 
+        /// <summary>
+        /// Generic function for parsing simple transient function parameters.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="mapper"></param>
+        /// <param name="paramTokens"></param>
+        /// <returns></returns>
         private T GetParameterTokens<T>(ParameterMapper<T> mapper, List<Token> paramTokens) where T : new()
         {
             mapper.Target = new T();
@@ -186,6 +212,13 @@ namespace NextGenSpice
             return t;
         }
 
-        protected abstract ElementStatement GetStatement(string name, int[] nodes, SourceBehaviorParams par);
+        /// <summary>
+        /// Factory method for a deferred statement that should be processed later.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="nodes"></param>
+        /// <param name="par"></param>
+        /// <returns></returns>
+        protected abstract DeferredStatement GetStatement(string name, int[] nodes, SourceBehaviorParams par);
     }
 }

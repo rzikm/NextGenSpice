@@ -38,7 +38,7 @@ namespace NextGenSpice
             parser.RegisterSimulation(new TranStatementProcessor());
             parser.RegisterSimulation(new OpStatementProcessor());
 
-            var result = parser.ParseInputFile(new TokenStream(input));
+            var result = parser.Parse(new TokenStream(input));
 
             if (result.HasError)
             {

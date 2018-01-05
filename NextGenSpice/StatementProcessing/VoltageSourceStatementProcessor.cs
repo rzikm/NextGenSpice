@@ -6,7 +6,7 @@ namespace NextGenSpice
     public class VoltageSourceStatementProcessor : InputSourceStatementProcessor
     {
         public override char Discriminator => 'V';
-        protected override ElementStatement GetStatement(string name, int[] nodes, SourceBehaviorParams par)
+        protected override DeferredStatement GetStatement(string name, int[] nodes, SourceBehaviorParams par)
         {
             return new SimpleElementStatement(builder => builder.AddElement(nodes, new VoltageSourceElement(par, name)));
         }

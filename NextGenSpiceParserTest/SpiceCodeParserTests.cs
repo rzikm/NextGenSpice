@@ -83,7 +83,7 @@ R2 R1 R2 42Meg4     * multiple errors");
         private ParserResult ParseString(string s)
         {
             var sr = new StringReader(s);
-            return parser.ParseInputFile(new TokenStream(sr));
+            return parser.Parse(new TokenStream(sr));
         }
     }
 }

@@ -28,6 +28,7 @@ namespace NextGenSpice
         /// <returns></returns>
         public void Process(Token[] tokens, ParsingContext ctx)
         {
+            // set context for the derived classes
             Context = ctx;
 
             oldErrors = ctx.Errors.Count;
@@ -36,6 +37,10 @@ namespace NextGenSpice
             Context = null;
         }
 
+        /// <summary>
+        /// Processes given set of statements.
+        /// </summary>
+        /// <param name="tokens"></param>
         protected abstract void DoProcess(Token[] tokens);
 
         /// <summary>
@@ -49,8 +54,8 @@ namespace NextGenSpice
             Context.Errors.Add( new ErrorInfo
             {
                 Messsage = message,
-                LineNumber = source.Line,
-                LineColumn = source.Char
+                LineNumber = source.LineNumber,
+                LineColumn = source.LineColumn
             });
         }
 
@@ -103,7 +108,7 @@ namespace NextGenSpice
         protected string DeclareElement(Token token)
         {
             var name = token.Value;
-            if (!SymbolTable.DefineElement(name)) ElementAlreadyDefined(token);
+            if (!SymbolTable.TryDefineElement(name)) ElementAlreadyDefined(token);
             return name;
         }
 

@@ -59,7 +59,7 @@ namespace NextGenSpice
                     {
                         context.Errors.Add(token.ToErrorInfo($"Unknown model parameter name '{paramName}'."));
                     }
-                    token.Char += index + 1;
+                    token.LineColumn += index + 1;
                     token.Value = token.Value.Substring(index + 1);
                     
                     if (mapper.HasKey(paramName)) mapper.Set(paramName, token.GetNumericValue(context.Errors));

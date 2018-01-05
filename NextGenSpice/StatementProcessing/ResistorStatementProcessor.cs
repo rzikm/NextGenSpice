@@ -5,10 +5,20 @@ using NextGenSpice.Core.Extensions;
 
 namespace NextGenSpice
 {
+    /// <summary>
+    /// Class responsible for handling spice resistor statements.
+    /// </summary>
     public class ResistorStatementProcessor : ElementStatementProcessor
     {
+        /// <summary>
+        /// Discriminator of the element type this processor can parse.
+        /// </summary>
         public override char Discriminator => 'R';
 
+        /// <summary>
+        /// Processes given set of statements.
+        /// </summary>
+        /// <param name="tokens"></param>
         protected override void DoProcess(Token[] tokens)
         {
             if (tokens.Length != 4)

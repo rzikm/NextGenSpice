@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
 using NextGenSpice.Core.Circuit;
@@ -7,6 +8,9 @@ using NextGenSpice.Core.Representation;
 
 namespace NextGenSpice
 {
+    /// <summary>
+    /// Main class for parsing SPICE code input files
+    /// </summary>
     public class SpiceCodeParser
     {
         private readonly IDictionary<char, IElementStatementProcessor> elementProcessors;
@@ -28,6 +32,10 @@ namespace NextGenSpice
             };
         }
 
+        /// <summary>
+        /// Adds handler class for element statement processing, including their .MODEL statements
+        /// </summary>
+        /// <param name="processor"></param>
         public void RegisterElement(IElementStatementProcessor processor)
         {
             elementProcessors.Add(processor.Discriminator, processor);
@@ -36,56 +44,82 @@ namespace NextGenSpice
                 modelProcessor.AddHandler(handler);
             }
         }
+
+        /// <summary>
+        /// Adds handler for .[simulation type] statement processing, including accompanying .PRINT statements.
+        /// </summary>
+        /// <param name="processor"></param>
         public void RegisterSimulation(ISimulationStatementProcessor processor)
         {
             statementProcessors.Add(processor.Discriminator, processor);
             printProcessor.AddHandler(processor.GetPrintStatementHandler());
         }
 
-        public ParserResult ParseInputFile(TokenStream stream)
+        /// <summary>
+        /// Parses SPICE code in the input stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        public ParserResult Parse(FileStream filestream)
+        {
+            return Parse(new TokenStream(new StreamReader(filestream)));
+        }
+
+        /// <summary>
+        /// Parses SPICE code in the input stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        public ParserResult Parse(ITokenStream stream)
         {
             Token[] tokens;
-
             var ctx = new ParsingContext();
 
+            // parse input file by logical lines, each line is an independent statement
             while ((tokens = stream.ReadLogicalLine().ToArray()).Length > 0) // while not EOF
             {
-                var firstToken = tokens[0];
-                var discriminator = firstToken.Value[0];
+                var firstToken = tokens[0]; // statement discriminator
+                var c = firstToken.Value[0];
 
-                if (char.IsLetter(discriminator)) // element statement
+                if (char.IsLetter(c)) // possible element statement
                 {
-                    ProcessElement(discriminator, tokens, ctx);
+                    ProcessElement(c, tokens, ctx);
                 }
-                else if (discriminator != '.')
+                else if (c != '.') // syntactic error
                 {
-                    ctx.Errors.Add(firstToken.ToErrorInfo($"Unexpected character: '{discriminator}'."));
+                    ctx.Errors.Add(firstToken.ToErrorInfo($"Unexpected character: '{c}'."));
                 }
-                else
+                else // .[keyword] statement
                 {
                     ProcessStatement(tokens, ctx);
                 }
             }
 
-            return PostProcess(ctx);
+            return ApplyStatements(ctx);
         }
 
-        private ParserResult PostProcess(ParsingContext ctx)
+        private ParserResult ApplyStatements(ParsingContext ctx)
         {
             ProcessDeferredStatements(ctx);
 
+            // get error messages from not processed statements
             foreach (var statement in ctx.DeferredStatements)
             {
                 ctx.Errors.AddRange(statement.GetErrors());
             }
 
-            var circuitDefinition = ctx.Errors.Count == 0 ? CreateCircuitDefinition(ctx) : null;
+            // create circuit only if there were no errors
+            var circuitDefinition = ctx.Errors.Count == 0 ? TryCreateCircuitDefinition(ctx) : null;
 
             return new ParserResult(circuitDefinition, ctx.PrintStatements, ctx.SimulationStatements, ctx.Errors.OrderBy(e => e.LineNumber).ThenBy(e => e.LineColumn).ToList());
         }
 
         private static void ProcessDeferredStatements(ParsingContext ctx)
         {
+            //TODO: Use some ordering of statements and sort them beforehand (=> linear complexity)
+
+            // repeatedly try to process all statements until no more statements can be processed in the iteration
+
             var deferred = ctx.DeferredStatements.ToList();
             do
             {
@@ -107,7 +141,7 @@ namespace NextGenSpice
             } while (deferred.Count < ctx.DeferredStatements.Count);
         }
 
-        private static ElectricCircuitDefinition CreateCircuitDefinition(ParsingContext ctx)
+        private static ElectricCircuitDefinition TryCreateCircuitDefinition(ParsingContext ctx)
         {
             ElectricCircuitDefinition circuitDefinition = null;
             try
@@ -118,6 +152,7 @@ namespace NextGenSpice
             {
                 string message;
 
+                // translate node indexes to node names used in the input file
                 switch (e)
                 {
                     case NoDcPathToGroundException ex:
@@ -136,7 +171,7 @@ namespace NextGenSpice
 
                 ctx.Errors.Add(new ErrorInfo
                 {
-                    LineColumn = 0,
+                    LineColumn = 0, // no coordinates shall be displayed when printing this error
                     LineNumber = 0,
                     Messsage = message
                 });
@@ -146,12 +181,13 @@ namespace NextGenSpice
 
         private void ProcessStatement(Token[] tokens, ParsingContext ctx)
         {
+            // find processor that can handle this statement
             var discriminator = tokens[0].Value;
             if (statementProcessors.TryGetValue(discriminator, out var proc))
             {
                 proc.Process(tokens, ctx);
             }
-            else
+            else // unknown statement
             {
                 ctx.Errors.Add(tokens[0].ToErrorInfo($"Statement invalid or not implemented: {discriminator}."));
             }
@@ -159,11 +195,12 @@ namespace NextGenSpice
 
         private void ProcessElement(char discriminator, Token[] tokens, ParsingContext ctx)
         {
+            // find processor that can handle this element
             if (elementProcessors.TryGetValue(discriminator, out var proc))
             {
                 proc.Process(tokens, ctx);
             }
-            else
+            else // unknown element
             {
                 ctx.Errors.Add(tokens[0].ToErrorInfo($"Element type invalid or not implemented: {discriminator}."));
             }
