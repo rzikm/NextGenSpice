@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using NextGenSpice.Parser.Statements.Models;
 
-namespace NextGenSpice
+namespace NextGenSpice.Parser
 {
     /// <summary>
     /// Class aggregating all encountered symbols in the input file.

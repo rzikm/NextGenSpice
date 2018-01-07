@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Xml;
 
-namespace NextGenSpice
+namespace NextGenSpice.Parser
 {
     /// <summary>
     /// Class for reading tokens with their location from given TextReader

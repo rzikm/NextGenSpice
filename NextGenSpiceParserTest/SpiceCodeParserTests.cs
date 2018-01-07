@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Linq;
 using NextGenSpice;
+using NextGenSpice.Parser;
+using NextGenSpice.Parser.Statements.Devices;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -1,4 +1,4 @@
-﻿namespace NextGenSpice
+﻿namespace NextGenSpice.Parser
 {
     /// <summary>
     /// Class representing occurence of a token in a source file

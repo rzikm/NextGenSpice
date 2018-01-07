@@ -1,5 +1,6 @@
 ﻿using NextGenSpice;
 using NextGenSpice.Core.Elements;
+using NextGenSpice.Utils;
 using Xunit;
 
 namespace NextGenSpiceParserTest

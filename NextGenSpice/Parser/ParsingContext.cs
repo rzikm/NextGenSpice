@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using NextGenSpice.Core.Circuit;
+using NextGenSpice.Parser.Statements.Deferring;
+using NextGenSpice.Parser.Statements.Simulation;
+using NextGenSpice.Utils;
 
-namespace NextGenSpice
+namespace NextGenSpice.Parser
 {
     /// <summary>
     /// Class that hold intermediate data during paring of an input file.

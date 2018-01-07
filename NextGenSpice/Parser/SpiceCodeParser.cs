@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection.Metadata;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Representation;
+using NextGenSpice.Parser.Statements;
+using NextGenSpice.Parser.Statements.Devices;
+using NextGenSpice.Parser.Statements.Simulation;
+using NextGenSpice.Utils;
 
-namespace NextGenSpice
+namespace NextGenSpice.Parser
 {
     /// <summary>
     /// Main class for parsing SPICE code input files
@@ -72,6 +75,9 @@ namespace NextGenSpice
         /// <returns></returns>
         public ParserResult Parse(ITokenStream stream)
         {
+            // TODO: .END statement
+            // TODO: Subcircuits
+
             Token[] tokens;
             var ctx = new ParsingContext();
 

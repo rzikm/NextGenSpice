@@ -5,6 +5,9 @@ using System.Linq;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.LargeSignal;
 using NextGenSpice.LargeSignal.Models;
+using NextGenSpice.Parser;
+using NextGenSpice.Parser.Statements.Devices;
+using NextGenSpice.Parser.Statements.Simulation;
 
 namespace NextGenSpice
 {
@@ -34,6 +37,8 @@ namespace NextGenSpice
             parser.RegisterElement(new VoltageSourceStatementProcessor());
             parser.RegisterElement(new ResistorStatementProcessor());
             parser.RegisterElement(new DiodeStatementProcessor());
+            parser.RegisterElement(new CapacitorStatementProcessor());
+            parser.RegisterElement(new InductorStatementProcessor());
 
             parser.RegisterSimulation(new TranStatementProcessor());
             parser.RegisterSimulation(new OpStatementProcessor());

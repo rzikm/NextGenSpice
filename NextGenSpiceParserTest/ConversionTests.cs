@@ -1,4 +1,5 @@
 ﻿using NextGenSpice;
+using NextGenSpice.Utils;
 using Xunit;
 
 namespace NextGenSpiceParserTest

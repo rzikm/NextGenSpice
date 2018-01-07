@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using NextGenSpice.Core.Representation;
+using NextGenSpice.Parser.Statements.Simulation;
+using NextGenSpice.Utils;
 
-namespace NextGenSpice
+namespace NextGenSpice.Parser
 {
     /// <summary>
     /// Class holding result of input file parsing

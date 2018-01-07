@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace NextGenSpice
+namespace NextGenSpice.Parser
 {
     /// <summary>
     /// Defines interface for reading tokens.
