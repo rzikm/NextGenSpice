@@ -12,8 +12,8 @@ namespace NextGenSpice.LargeSignal.Models
 
         public LargeSignalCapacitorModel(CapacitorElement parent) : base(parent)
         {
-//            IntegrationMethod = new GearIntegrationMethod(3);
-            IntegrationMethod = new AdamsMoultonIntegrationMethod(4);
+            IntegrationMethod = new GearIntegrationMethod(3);
+//            IntegrationMethod = new AdamsMoultonIntegrationMethod(4);
 //            IntegrationMethod = new BackwardEulerIntegrationMethod();
         }
 

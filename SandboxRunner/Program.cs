@@ -21,7 +21,7 @@ namespace SandboxRunner
 
         static void Main(string[] args)
         {
-            PrintFileSizes(); return;
+//            PrintFileSizes(); return;
 
             //            IntegrationTest.Run();
 
@@ -88,8 +88,8 @@ namespace SandboxRunner
         {
             //            Console.WriteLine($"{(time * 1e6),+20:#0.## 'us'}|{string.Join("|", model.NodeVoltages.Select(v => $"{v,20:G10}"))}|{-val,20:G10}");
 //            Console.WriteLine($"{time} {-val}");
-            Console.WriteLine($"{time} {model.NodeVoltages[2]} {string.Join(" ", vals.Select(v => v.ToString(CultureInfo.InvariantCulture)))}");
-            Console.WriteLine(model.IterationCount);
+            Console.WriteLine($"{time} {model.NodeVoltages[2]} {model.NodeVoltages[2] - model.NodeVoltages[3]} {string.Join(" ", vals.Select(v => v.ToString(CultureInfo.InvariantCulture)))}");
+//            Console.WriteLine(model.IterationCount);
 //            Console.WriteLine($"{model.NodeVoltages[1]} {-val}");
         }
 

@@ -12,6 +12,10 @@
   <PropertyGroup>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>D:\Visual Studio 2017\Projects\NextGen Spice\Release\</OutputPath>
+  </PropertyGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\NextGenSpice.Core\NextGenSpice.Core.csproj" />

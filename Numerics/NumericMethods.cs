@@ -50,9 +50,8 @@ namespace Numerics
 
         public static void GaussElimSolve_qd(QdArray2DWrapper m, qd_real[] b, qd_real[] x)
         {
-                        GaussElimSolve_Managed_qd(m, b, x);
-//            GaussElimSolve_Native_qd2(m, b, x);
-            //                                    GaussElimSolve_Native(m, b, x);
+//                        GaussElimSolve_Managed_qd(m, b, x);
+            GaussElimSolve_Native_qd(m, b, x);
         }
 
         private static void GaussElimSolve_Managed_qd(QdArray2DWrapper m, qd_real[] b, qd_real[] x)
@@ -130,7 +129,7 @@ namespace Numerics
             PrintSolution(b.Select(e => (double) e).ToArray());
         }
 
-        private static unsafe void GaussElimSolve_Native_qd2(QdArray2DWrapper m, qd_real[] b, qd_real[] x)
+        private static unsafe void GaussElimSolve_Native_qd(QdArray2DWrapper m, qd_real[] b, qd_real[] x)
         {
             fixed (qd_real* mat = m.RawData)
             fixed (qd_real* rhs = b)
@@ -139,27 +138,6 @@ namespace Numerics
             }
 
             b.CopyTo(x, 0);
-        }
-
-        private static void GaussElimSolve_Native_qd(Array2DWrapper m, double[] b, double[] x)
-        {
-            PrintSystem(m, b);
-
-
-            qd_real[] b2 = b.Select(d => new qd_real(d)).ToArray();
-            qd_real[] mat = m.RawData.Select(d => new qd_real(d)).ToArray();
-            qd_real[] sol = new qd_real[x.Length];
-
-            fixed (qd_real* m_ = mat)
-            fixed (qd_real* rhs = b2)
-            {
-                gauss_solve_qd(m_, rhs, (uint)x.Length);
-            }
-
-            for (var i = 0; i < b2.Length; i++)
-            {
-                x[i] = (double) b2[i];
-            }
         }
 
         private static void GaussElimSolve_Managed(Array2DWrapper m, double[] b, double[] x)

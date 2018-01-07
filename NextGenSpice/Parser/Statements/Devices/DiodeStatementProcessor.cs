@@ -26,7 +26,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                 mapper.Map(p => p.SeriesResistance, "RS");
                 mapper.Map(p => p.EmissionCoefficient, "N");
                 mapper.Map(p => p.TransitTime, "TT");
-                mapper.Map(p => p.JunctionCapacitance, "CJ0");
+                mapper.Map(p => p.JunctionCapacitance, "CJO");
                 mapper.Map(p => p.JunctionPotential, "VJ");
                 mapper.Map(p => p.JunctionGradingCoefficient, "M");
                 mapper.Map(p => p.ActivationEnergy, "EG");

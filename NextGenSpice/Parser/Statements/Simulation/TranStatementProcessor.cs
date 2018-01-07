@@ -1,3 +1,4 @@
+using System.Linq;
 using NextGenSpice.Parser.Statements.Printing;
 
 namespace NextGenSpice.Parser.Statements.Simulation
@@ -38,7 +39,7 @@ namespace NextGenSpice.Parser.Statements.Simulation
         /// </summary>
         protected override void UseParam()
         {
-            Context.SimulationStatements.Add(new TranSimulationStatement(Mapper.Target));
+            Context.SimulationStatements.Add(new TranSimulationStatement(Mapper.Target, Context.SymbolTable.NodeIndices.ToDictionary(kvp => kvp.Value, kvp => kvp.Key)));
             Mapper.Target = null;
         }
 

@@ -52,7 +52,7 @@ namespace NextGenSpice.LargeSignal
 
         // iteration dependent variables
 
-        public double NonlinearIterationEpsilon { get; set; } = 1e-15;
+        public double NonlinearIterationEpsilon { get; set; } = 1e-4;
         public int MaxDcPointIterations { get; set; } = 1000;
         public double MaxTimeStep { get; set; } = 1e-6;
         
@@ -87,12 +87,13 @@ namespace NextGenSpice.LargeSignal
                 var step = 2 * Math.Min(MaxTimeStep, milliseconds);
 
                 var timePoint = context.Time;
-                do
-                {
+//                do
+//                {
                     step /= 2;
                     context.Time = timePoint + step;
                     context.TimeStep = step;
-                } while (!EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context)));
+                EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context));
+//                } while (!EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context)));
 
                 milliseconds -= step;
             }

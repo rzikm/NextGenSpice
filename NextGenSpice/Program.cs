@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NextGenSpice.Core.Circuit;
@@ -15,6 +16,7 @@ namespace NextGenSpice
     {
         static void Main(string[] args)
         {
+
             if (args.Length != 1)
             {
                 Console.Error.WriteLine("Usage: NextGenSpice <input file>");
@@ -55,10 +57,26 @@ namespace NextGenSpice
                 return;
             }
 
-            foreach (var statement in result.SimulationStatements)
-            {
+//            TimeSpan total = TimeSpan.Zero;
+
+//            for (int i = -1; i < 10; i++)
+//            {
+//                Stopwatch sw = Stopwatch.StartNew();
+
+                foreach (var statement in result.SimulationStatements)
+                {
                 statement.Simulate(result.CircuitDefinition, result.PrintStatements, Console.Out);
-            }
+//                    statement.Simulate(result.CircuitDefinition, result.PrintStatements, TextWriter.Null);
+                }
+//                sw.Stop();
+//                if (i >= 0)
+//                {
+//                    Console.WriteLine(sw.Elapsed);
+//                    total += sw.Elapsed;
+//                }
+//            }
+//            Console.WriteLine($"Average: {total/10}");
+
         }
     }
 }

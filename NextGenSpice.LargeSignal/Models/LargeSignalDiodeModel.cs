@@ -31,7 +31,7 @@ namespace NextGenSpice.LargeSignal.Models
         public LargeSignalDiodeModel(DiodeElement parent) : base(parent)
         {
 //            IntegrationMethod = new AdamsMoultonIntegrationMethod(2);
-            IntegrationMethod = new GearIntegrationMethod(4);
+            IntegrationMethod = new GearIntegrationMethod(2);
 //            IntegrationMethod = new TrapezoidalIntegrationMethod();
 //            IntegrationMethod = new BackwardEulerIntegrationMethod();
 //            IntegrationMethod = new AdamsMoultonIntegrationMethod(4);
