@@ -1,6 +1,7 @@
 using System.Linq;
+using NextGenSpice.Parser.Statements.Printing;
 
-namespace NextGenSpice
+namespace NextGenSpice.Parser.Statements.Simulation
 {
     /// <summary>
     /// Class for processing .OP simulation statements.

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Parser.Statements.Deferring;
+using NextGenSpice.Parser.Statements.Printing;
 using NextGenSpice.Parser.Statements.Simulation;
 using NextGenSpice.Utils;
 

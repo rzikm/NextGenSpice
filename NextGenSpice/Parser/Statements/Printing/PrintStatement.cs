@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace NextGenSpice
+namespace NextGenSpice.Parser.Statements.Printing
 {
     /// <summary>
     /// Class that represent a parsed .PRINT statement for certain analysis type.

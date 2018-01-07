@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal;
+using NextGenSpice.Parser.Statements.Printing;
 
 namespace NextGenSpice.Parser.Statements.Simulation
 {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using NextGenSpice.Core.Representation;
+using NextGenSpice.Parser.Statements.Printing;
 using NextGenSpice.Parser.Statements.Simulation;
 using NextGenSpice.Utils;
 

@@ -1,4 +1,4 @@
-namespace NextGenSpice
+namespace NextGenSpice.Parser.Statements
 {
     /// <summary>
     /// Defines methods for processing of SPICE statements that begin with a .
