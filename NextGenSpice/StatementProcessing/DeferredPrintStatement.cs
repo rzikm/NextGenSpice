@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NextGenSpice.LargeSignal;
 
 namespace NextGenSpice
 {
@@ -12,7 +13,7 @@ namespace NextGenSpice
         private readonly string analysisType;
         private readonly string name;
         private readonly List<ErrorInfo> errors;
-        private LsPrintStatement printStatement;
+        private PrintStatement<LargeSignalCircuitModel> printStatement;
 
         public DeferredPrintStatement(Token token, string analysisType)
         {

@@ -46,7 +46,7 @@ namespace NextGenSpice
         /// <returns></returns>
         public IPrintStatementHandler GetPrintStatementHandler()
         {
-            return new LsPrintStatementHandler("TRAN");
+            return LsPrintStatementHandler.CreateTran();
         }
     }
 }

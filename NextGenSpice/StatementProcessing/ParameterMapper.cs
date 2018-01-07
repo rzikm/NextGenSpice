@@ -5,7 +5,10 @@ using System.Reflection;
 
 namespace NextGenSpice
 {
-    // Helper class for mapping statement parameters onto properties of an object.
+    /// <summary>
+    /// Helper class for mapping statement parameters onto properties of an object.
+    /// </summary>
+    /// <typeparam name="TParam"></typeparam>
     public class ParameterMapper<TParam>
     {
         public ParameterMapper()
@@ -71,7 +74,7 @@ namespace NextGenSpice
         }
 
         /// <summary>
-        /// Maps given key onto given property.
+        /// Maps given key onto given property with specified conversion function.
         /// </summary>
         /// <param name="mapping"></param>
         /// <param name="paramKey"></param>
@@ -82,25 +85,44 @@ namespace NextGenSpice
             settersByKey.Add(paramKey, (target, value) => prop.SetValue(target, transform(value)));
         }
 
-
+        /// <summary>
+        /// Maps given key onto given index.
+        /// </summary>
+        /// <param name="mapping"></param>
+        /// <param name="index"></param>
         public void Map(Expression<Func<TParam, double>> mapping, int index)
         {
             PropertyInfo prop = GetMappedProperty(mapping);
             settersByIndex.Add(index, (target, value) => prop.SetValue(target, value));
         }
 
+        /// <summary>
+        /// Maps given key onto given index with specified conversion function.
+        /// </summary>
+        /// <param name="mapping"></param>
+        /// <param name="index"></param>
+        /// <param name="transform"></param>
         public void Map(Expression<Func<TParam, double>> mapping, int index, Func<double, double> transform)
         {
             PropertyInfo prop = GetMappedProperty(mapping);
             settersByIndex.Add(index, (target, value) => prop.SetValue(target, transform(value)));
         }
 
+        /// <summary>
+        /// Sets value of parameter that maps to given key to specified value
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         public void Set(string key, double value)
         {
             if (!settersByKey.TryGetValue(key, out var setter)) throw new ArgumentException($"Parameter '{key}' is not mapped to any property");
             setter(Target, value);
         }
-
+        /// <summary>
+        /// Sets value of parameter that maps to given index to specified value
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="value"></param>
         public void Set(int index, double value)
         {
             if (!settersByIndex.TryGetValue(index, out var setter)) throw new ArgumentException($"Index '{index}' is not mapped to any property");

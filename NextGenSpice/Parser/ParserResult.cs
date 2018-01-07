@@ -9,7 +9,7 @@ namespace NextGenSpice
     /// </summary>
     public class ParserResult
     {
-        public ParserResult(ICircuitDefinition circuit, IReadOnlyList<PrintStatement> printStatements, IReadOnlyList<SimulationStatement> simulationStatements, IReadOnlyList<ErrorInfo> errors)
+        public ParserResult(ICircuitDefinition circuit, IReadOnlyList<PrintStatement> printStatements, IReadOnlyList<ISimulationStatement> simulationStatements, IReadOnlyList<ErrorInfo> errors)
         {
             CircuitDefinition = circuit;
             PrintStatements = printStatements;
@@ -30,7 +30,7 @@ namespace NextGenSpice
         /// <summary>
         /// All siulations requested in the input file.
         /// </summary>
-        public IReadOnlyList<SimulationStatement> SimulationStatements { get; }
+        public IReadOnlyList<ISimulationStatement> SimulationStatements { get; }
 
         /// <summary>
         /// Set of errors encountered in input file.

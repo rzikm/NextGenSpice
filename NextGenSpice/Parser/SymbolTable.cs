@@ -14,7 +14,7 @@ namespace NextGenSpice
         {
             DefinedElements = new HashSet<string>();
 
-            Models = ((ModelType[]) Enum.GetValues(typeof(ModelType))).ToDictionary(type => type,
+            Models = ((DeviceType[]) Enum.GetValues(typeof(DeviceType))).ToDictionary(type => type,
                 type => new Dictionary<string, object>());
 
             NodeIndices = new Dictionary<string, int> {["0"] = 0}; // enforce ground node on index 0
@@ -28,7 +28,7 @@ namespace NextGenSpice
         /// <summary>
         /// Sets of all device models (parameter sets) for each device type.
         /// </summary>
-        public Dictionary<ModelType, Dictionary<string, object>> Models { get; }
+        public Dictionary<DeviceType, Dictionary<string, object>> Models { get; }
 
         /// <summary>
         /// Set of all node identifiers with associated ids that will be used during simulation.

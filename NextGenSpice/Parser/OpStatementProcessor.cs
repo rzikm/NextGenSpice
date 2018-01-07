@@ -25,7 +25,7 @@ namespace NextGenSpice
         /// <returns></returns>
         public IPrintStatementHandler GetPrintStatementHandler()
         {
-            return new LsPrintStatementHandler("OP");
+            return LsPrintStatementHandler.CreateOp();
         }
 
         /// <summary>
