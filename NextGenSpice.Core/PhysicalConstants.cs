@@ -2,6 +2,9 @@
 
 namespace NextGenSpice.Core
 {
+    /// <summary>
+    /// Helper class for aggregating physics-related constants.
+    /// </summary>
     public static class PhysicalConstants
     {
         /// <summary>
@@ -14,6 +17,11 @@ namespace NextGenSpice.Core
         /// </summary>
         public static double ElementaryCharge { get; } = 1.602176620898e-19;
 
+        /// <summary>
+        /// Converts temperature from degrees Celsius to Kelvins.
+        /// </summary>
+        /// <param name="celsius"></param>
+        /// <returns></returns>
         public static double CelsiusToKelvin(double celsius)
         {
             return celsius + 273.15;

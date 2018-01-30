@@ -17,7 +17,7 @@ namespace NextGenSpice.Parser.Statements.Simulation
             Mapper.Map(c => c.StopTime, 2);
             Mapper.Map(c => c.StartTime, 3);
 
-            // not supported yet
+            // not supported yet, the timestep is constant and equal to TimeStep parameter
 //            Mapper.Map(c => c.MaximmumTimestep, 4);
         }
 

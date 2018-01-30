@@ -24,8 +24,8 @@ namespace NextGenSpiceTest
                 .AddVoltageSource(1, 0,
                     new PulseBehaviorParams()
                     {
-                        Value1 = 1,
-                        Value2 = 5,
+                        InitialLevel = 1,
+                        PulseLevel = 5,
                         Delay = 3e-6,
                         TimeRise = 4e-6,
                         PulseWidth = 5e-6,
@@ -46,12 +46,12 @@ namespace NextGenSpiceTest
                 .AddVoltageSource(1, 0,
                     new SinusoidalBehaviorParams()
                     {
-                        BaseValue = 1,
+                        DcOffset = 1,
                         Amplitude = 1,
                         Frequency = (2 * Math.PI / 10e-6),
                         Delay = 5e-6,
                         DampingFactor = 10000,
-                        Phase = Math.PI / 2
+                        PhaseOffset = Math.PI / 2
                     })
                 .AddResistor(1, 0, 1)
                 .BuildCircuit()
@@ -67,8 +67,8 @@ namespace NextGenSpiceTest
                 .AddVoltageSource(1, 0,
                     new ExponentialBehaviorParams()
                     {
-                        Value1 = 1,
-                        Value2 = 5,
+                        InitialLevel = 1,
+                        PulseLevel = 5,
                         RiseDelay = 3e-6,
                         TauRise = 5e-6,
                         FallDelay = 10e-6,

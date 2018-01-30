@@ -16,8 +16,8 @@ namespace NextGenSpice.LargeSignal.Behaviors
             var phaseCarrier = c * param.FrequencyCarrier;
             var phaseSignal = c * param.FrequencySignal;
 
-            return param.BaseValue +
-                   param.Amplitude * Math.Sin(phaseCarrier + param.ModilationIndex * Math.Sin(phaseSignal));
+            return param.DcOffset +
+                   param.Amplitude * Math.Sin(phaseCarrier + param.ModulationIndex * Math.Sin(phaseSignal));
         }
 
         public override bool IsTimeDependent => true;

@@ -34,39 +34,40 @@ namespace NextGenSpice.Parser.Statements.Devices
         {
             // parameter order is given by SPICE code specification, see documentation for details
 
-            pulseMapper.Map(c => c.Value1, 0);
-            pulseMapper.Map(c => c.Value2, 1);
+            pulseMapper.Map(c => c.InitialLevel, 0);
+            pulseMapper.Map(c => c.PulseLevel, 1);
             pulseMapper.Map(c => c.Delay, 2);
             pulseMapper.Map(c => c.TimeRise, 3);
             pulseMapper.Map(c => c.TimeFall, 4);
             pulseMapper.Map(c => c.PulseWidth, 5);
             pulseMapper.Map(c => c.Period, 6);
 
-            sinMapper.Map(c => c.BaseValue, 0);
+            sinMapper.Map(c => c.DcOffset, 0);
             sinMapper.Map(c => c.Amplitude, 1);
             sinMapper.Map(c => c.Frequency, 2);
             sinMapper.Map(c => c.Delay, 3);
             sinMapper.Map(c => c.DampingFactor, 4);
-            sinMapper.Map(c => c.Phase, 5, v => v / 180.0 * Math.PI); // convert from degrees to radians
+            sinMapper.Map(c => c.PhaseOffset, 5, v => v / 180.0 * Math.PI); // convert from degrees to radians
 
-            expMapper.Map(c => c.Value1, 0);
-            expMapper.Map(c => c.Value2, 1);
+            expMapper.Map(c => c.InitialLevel, 0);
+            expMapper.Map(c => c.PulseLevel, 1);
             expMapper.Map(c => c.RiseDelay, 2);
             expMapper.Map(c => c.TauRise, 3);
             expMapper.Map(c => c.FallDelay, 4);
             expMapper.Map(c => c.TauFall, 5);
 
-            sffmMapper.Map(c => c.BaseValue, 0);
+            sffmMapper.Map(c => c.DcOffset, 0);
             sffmMapper.Map(c => c.Amplitude, 1);
             sffmMapper.Map(c => c.FrequencyCarrier, 2);
-            sffmMapper.Map(c => c.ModilationIndex, 3);
+            sffmMapper.Map(c => c.ModulationIndex, 3);
             sffmMapper.Map(c => c.FrequencySignal, 4);
 
             amMapper.Map(c => c.SignalAmplitude, 0);
             amMapper.Map(c => c.FrequencyCarrier, 1);
             amMapper.Map(c => c.FrequencyModulation, 2);
-            amMapper.Map(c => c.Offset, 3);
-            amMapper.Map(c => c.Delay, 4);
+            amMapper.Map(c => c.ModulationIndex, 3);
+            amMapper.Map(c => c.PhaseOffset, 4, v => v / 180.0 * Math.PI); // convert from degrees to radians
+            amMapper.Map(c => c.Delay, 5);
         }
 
         /// <summary>

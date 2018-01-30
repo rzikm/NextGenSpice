@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Extensions;
@@ -29,7 +30,7 @@ namespace NextGenSpiceTest
                 {
                     Delay = 1e-6,
                     PulseWidth = 1,
-                    Value2 = 15
+                    PulseLevel = 15
                 })
                 .AddResistor(1, 2, 1)
                 .AddCapacitor(2, 0, 1e-6, 0)

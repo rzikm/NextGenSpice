@@ -14,6 +14,19 @@ namespace NextGenSpice
 {
     class Program
     {
+        private static void RegisterStatementProcessors(SpiceCodeParser parser)
+        {
+            parser.RegisterElement(new CurrentSourceStatementProcessor());
+            parser.RegisterElement(new VoltageSourceStatementProcessor());
+            parser.RegisterElement(new ResistorStatementProcessor());
+            parser.RegisterElement(new DiodeStatementProcessor());
+            parser.RegisterElement(new CapacitorStatementProcessor());
+            parser.RegisterElement(new InductorStatementProcessor());
+
+            parser.RegisterSimulation(new TranStatementProcessor());
+            parser.RegisterSimulation(new OpStatementProcessor());
+        }
+
         static void Main(string[] args)
         {
 
@@ -34,21 +47,15 @@ namespace NextGenSpice
                 return;
             }
 
+            
             var parser = new SpiceCodeParser();
-            parser.RegisterElement(new CurrentSourceStatementProcessor());
-            parser.RegisterElement(new VoltageSourceStatementProcessor());
-            parser.RegisterElement(new ResistorStatementProcessor());
-            parser.RegisterElement(new DiodeStatementProcessor());
-            parser.RegisterElement(new CapacitorStatementProcessor());
-            parser.RegisterElement(new InductorStatementProcessor());
-
-            parser.RegisterSimulation(new TranStatementProcessor());
-            parser.RegisterSimulation(new OpStatementProcessor());
-
+            RegisterStatementProcessors(parser);
             var result = parser.Parse(new TokenStream(input));
 
             if (result.HasError)
             {
+                // display errors and exit
+
                 foreach (var error in result.Errors)
                 {
                     Console.WriteLine(error);

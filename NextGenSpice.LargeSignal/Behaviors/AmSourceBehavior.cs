@@ -12,13 +12,18 @@ namespace NextGenSpice.LargeSignal.Behaviors
 
         public override double GetValue(ISimulationContext context)
         {
-            var time = context.Time;
+            var time = context.Time - param.Delay;
+            var c = 2 * Math.PI * time;
 
-            var c = 2 * Math.PI * (time - param.Delay);
             var phaseCarrier = c * param.FrequencyCarrier;
             var phaseModulation = c * param.FrequencyModulation;
 
-            return param.SignalAmplitude * (param.Offset + Math.Sin(phaseModulation)) * Math.Sin(phaseCarrier);
+            //            return param.SignalAmplitude * (param.Offset + Math.Sin(phaseModulation)) * Math.Sin(phaseCarrier);
+
+            var m = param.ModulationIndex;
+
+            return param.SignalAmplitude * Math.Sin(phaseCarrier) * (1 + m * Math.Cos(phaseModulation));
+
         }
 
         public override bool IsTimeDependent => true;

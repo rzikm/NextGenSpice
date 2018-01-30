@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace NextGenSpice.Core.Circuit
 {
+    /// <summary>
+    /// Class for representing terminal connection of a circuit device.
+    /// </summary>
     public class NodeConnectionSet : IReadOnlyList<int>
     {
         private readonly int[] set;
@@ -13,6 +16,10 @@ namespace NextGenSpice.Core.Circuit
             set = new int[count];
         }
         
+        /// <summary>
+        /// Returns an enumerator that iterates through the connected nodes.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerator<int> GetEnumerator()
         {
             return ((IEnumerable<int>) set).GetEnumerator();
@@ -23,6 +30,9 @@ namespace NextGenSpice.Core.Circuit
             return GetEnumerator();
         }
 
+        /// <summary>
+        /// Number of terminals of the device.
+        /// </summary>
         public int Count => set.Length;
 
         public int this[int index]
@@ -31,6 +41,10 @@ namespace NextGenSpice.Core.Circuit
             internal set => set[index] = value;
         }
 
+        /// <summary>
+        /// Creates a deep copy of the connection set.
+        /// </summary>
+        /// <returns></returns>
         public NodeConnectionSet Clone()
         {
             var clone = new NodeConnectionSet(set.Length);

@@ -12,6 +12,9 @@ namespace NextGenSpice.Core.Circuit
             this.Components = components;
         }
 
+        /// <summary>
+        /// Non-connected components of the circuit graph.
+        /// </summary>
         public IEnumerable<int[]> Components { get; }
 
     }

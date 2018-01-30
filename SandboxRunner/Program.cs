@@ -21,7 +21,7 @@ namespace SandboxRunner
 
         static void Main(string[] args)
         {
-//            PrintFileSizes(); return;
+            PrintFileSizes(); return;
 
             //            IntegrationTest.Run();
 

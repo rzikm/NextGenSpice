@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "NextGenSpice.Core": {
+      "commandName": "Project",
+      "commandLineArgs": "run.txt"
+    }
+  }
+}

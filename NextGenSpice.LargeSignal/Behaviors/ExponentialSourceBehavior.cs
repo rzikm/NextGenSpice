@@ -16,15 +16,15 @@ namespace NextGenSpice.LargeSignal.Behaviors
             var time = context.Time;
 
             if (time <= param.RiseDelay)
-                return param.Value1;
+                return param.InitialLevel;
             if (time <= param.FallDelay)
                 return MathHelper.LinearInterpolation(
-                    param.Value1,
-                    param.Value2,
+                    param.InitialLevel,
+                    param.PulseLevel,
                     1 - Math.Exp(-(time - param.RiseDelay) / param.TauRise));
             return MathHelper.LinearInterpolation(
-                param.Value1,
-                param.Value2,
+                param.InitialLevel,
+                param.PulseLevel,
                 (1 - Math.Exp(-(param.FallDelay - param.RiseDelay) / param.TauRise)) *
                 Math.Exp(-(time - param.FallDelay) / param.TauFall));
         }

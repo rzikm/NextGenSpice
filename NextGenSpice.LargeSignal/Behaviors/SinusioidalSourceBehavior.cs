@@ -12,7 +12,7 @@ namespace NextGenSpice.LargeSignal.Behaviors
 
         public override double GetValue(ISimulationContext context)
         {
-            var phase = param.Phase;
+            var phase = param.PhaseOffset;
             var amplitude = param.Amplitude;
             var elapsedTime = context.Time - param.Delay;
 
@@ -22,7 +22,7 @@ namespace NextGenSpice.LargeSignal.Behaviors
                 amplitude *= Math.Exp(-elapsedTime * param.DampingFactor);
             }
 
-            return param.BaseValue + Math.Sin(phase) * amplitude;
+            return param.DcOffset + Math.Sin(phase) * amplitude;
         }
 
         public override bool IsTimeDependent => true;

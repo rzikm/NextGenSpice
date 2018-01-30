@@ -32,22 +32,36 @@ namespace NextGenSpice.Parser.Statements.Simulation
         public void Simulate(ICircuitDefinition circuit, IEnumerable<PrintStatement> printStatements, TextWriter output)
         {
             var model = circuit.GetLargeSignalModel();
-
+            var prints = printStatements.OfType<PrintStatement<LargeSignalCircuitModel>>()
+                .Where(s => s.AnalysisType == "OP").ToList();
             model.EstablishDcBias();
             
-            //TODO: print only requested values?
-            // print all values from the circuit that are available. 
-            for (int i = 1; i < model.NodeCount; i++) // no need to print ground voltage
+            if (prints.Count == 0)
             {
-                output.WriteLine($"V({nodeNames[i]}) = {model.NodeVoltages[i]}");
-            }
+                // print all values from the circuit that are available. 
+                for (int i = 1; i < model.NodeCount; i++) // no need to print ground voltage
+                {
+                    output.WriteLine($"V({nodeNames[i]}) = {model.NodeVoltages[i]}");
+                }
 
-            foreach (var element in model.Elements.OfType<ITwoTerminalLargeSignalDeviceModel>().Where(e => !string.IsNullOrEmpty(e.Name)))
-            {
-                output.WriteLine();
-                output.WriteLine($"V({element.Name}) = {element.Voltage}");
-                output.WriteLine($"I({element.Name}) = {element.Current}");
+                foreach (var element in model.Elements.OfType<ITwoTerminalLargeSignalDeviceModel>().Where(e => !string.IsNullOrEmpty(e.Name)))
+                {
+                    output.WriteLine();
+                    output.WriteLine($"V({element.Name}) = {element.Voltage}");
+                    output.WriteLine($"I({element.Name}) = {element.Current}");
+                }
             }
+            else // only requested values
+            {
+                foreach (var statement in prints)
+                {
+                    statement.Initialize(model);
+                    output.Write($"{statement.Header} = ");
+                    statement.PrintValue(output);
+                    output.WriteLine();
+                }
+            }
+            
         }
     }
 }

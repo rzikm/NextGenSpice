@@ -7,7 +7,7 @@ namespace NextGenSpice.Parser.Statements.Simulation
     /// </summary>
     public interface ISimulationStatementProcessor : IStatementProcessor 
     {
-            /// <summary>
+        /// <summary>
         /// Gets handler that can handle .PRINT statements that belong to analysis of this processor
         /// </summary>
         /// <returns></returns>

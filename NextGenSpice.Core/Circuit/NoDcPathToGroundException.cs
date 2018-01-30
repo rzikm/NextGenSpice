@@ -11,6 +11,9 @@ namespace NextGenSpice.Core.Circuit
             this.Nodes = nodes;
         }
 
+        /// <summary>
+        /// Nodes having no DC path to the ground.
+        /// </summary>
         public IEnumerable<int> Nodes { get; }
     }
 }

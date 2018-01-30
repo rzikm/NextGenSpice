@@ -5,6 +5,6 @@ namespace NextGenSpice.Parser.Statements.Simulation
     /// </summary>
     public class OpSimulationParams
     {
-        
+        //TODO: add parameters?
     }
 }

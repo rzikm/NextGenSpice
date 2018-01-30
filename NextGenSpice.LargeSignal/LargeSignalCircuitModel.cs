@@ -1,5 +1,5 @@
-﻿//#define qd_precision
-#define dd_precision
+﻿#define dd_precision
+//#define qd_precision
 
 
 using System;
