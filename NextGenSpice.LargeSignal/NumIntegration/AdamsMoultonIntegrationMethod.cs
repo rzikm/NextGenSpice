@@ -57,7 +57,7 @@ namespace NextGenSpice.LargeSignal.NumIntegration
         public static double[] GetCoefficients(int order)
         {
             // see http://qucs.sourceforge.net/tech/node24.html#eq:MoultonInt for details
-            EquationSystem es = new EquationSystem(new Array2DWrapper(order), new double[order]);
+            EquationSystem es = new EquationSystem(new Array2DWrapper<double>(order), new double[order]);
             es.AddMatrixEntry(0, 0, 1);
             es.AddRightHandSideEntry(0, 1);
             for (int i = 1; i < order; i++)

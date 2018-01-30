@@ -47,7 +47,7 @@ namespace NextGenSpice.Core.Equations
        
         public EquationSystem Build()
         {
-            Array2DWrapper m = new Array2DWrapper(VariablesCount);
+            Array2DWrapper<double> m = new Array2DWrapper<double>(VariablesCount);
 
 
             for (int i = 0; i < VariablesCount; i++)

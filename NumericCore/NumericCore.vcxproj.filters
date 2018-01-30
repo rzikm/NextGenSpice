@@ -77,9 +77,6 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qd_exports.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="qd\src\bits.cpp">
       <Filter>qd\src</Filter>
     </ClCompile>
@@ -109,6 +106,12 @@
     </ClCompile>
     <ClCompile Include="qd\src\util.cpp">
       <Filter>qd\src</Filter>
+    </ClCompile>
+    <ClCompile Include="dd_exports.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="qd_exports.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

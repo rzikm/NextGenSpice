@@ -1,27 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using NextGenSpice.Core.Helpers;
+using System.Linq;
 using Numerics;
 
 namespace NextGenSpice.Core.Equations
 {
-    public class EquationSystem : IEquationSystem
+    public class DdEquationSystem : IEquationSystem
     {
-        private Stack<Tuple<Array2DWrapper<double>, double[]>> backups;
+        private readonly Stack<Tuple<Array2DWrapper<dd_real>, dd_real[]>> backups;
 
-        private readonly Array2DWrapper<double> matrixBackup;
-        private readonly double[] rhsBackup;
-        private Array2DWrapper<double> matrix;
-        private double[] rhs;
-        
-        public EquationSystem(Array2DWrapper<double> matrix, double[] rhs)
+        private readonly Array2DWrapper<dd_real> matrixBackup;
+        private readonly dd_real[] rhsBackup;
+        private Array2DWrapper<dd_real> matrix;
+        private dd_real[] rhs;
+
+        public DdEquationSystem(Array2DWrapper<dd_real> matrix, dd_real[] rhs)
         {
             if (matrix.SideLength != rhs.Length) throw new ArgumentException($"Matrix side length ({matrix.SideLength}) is different from right hand side vector length ({rhs.Length})");
             this.matrixBackup = matrix;
             this.rhsBackup = rhs;
             Solution = new double[rhs.Length];
 
-            backups = new Stack<Tuple<Array2DWrapper<double>, double[]>>();
+            backups = new Stack<Tuple<Array2DWrapper<dd_real>, dd_real[]>>();
 
             backups.Push(Tuple.Create(matrix, rhs));
             Clear();
@@ -38,10 +38,10 @@ namespace NextGenSpice.Core.Equations
         {
             rhs[index] += value;
         }
-        public double[] Solution { get; }
+        public double[] Solution { get; private set; }
 
-        public Array2DWrapper<double> Matrix => matrix;
-        public double[] RightHandSide => rhs;
+        public Array2DWrapper<dd_real> Matrix => matrix;
+        public dd_real[] RightHandSide => rhs;
 
         public void Clear()
         {
@@ -50,12 +50,12 @@ namespace NextGenSpice.Core.Equations
             var tup = backups.Peek();
 
             matrix = tup.Item1.Clone();
-            rhs = (double[])tup.Item2.Clone();
+            rhs = (dd_real[])tup.Item2.Clone();
         }
 
         public void Backup()
         {
-            backups.Push(Tuple.Create(matrix.Clone(), (double[])rhs.Clone()));
+            backups.Push(Tuple.Create(matrix.Clone(), (dd_real[])rhs.Clone()));
         }
 
         public void Restore()
@@ -63,10 +63,10 @@ namespace NextGenSpice.Core.Equations
             var tup = backups.Peek();
 
             matrix = tup.Item1.Clone();
-            rhs = (double[])tup.Item2.Clone();
+            rhs = (dd_real[])tup.Item2.Clone();
         }
 
-        public double GetMatrixEntry(int row, int column)
+        public dd_real GetMatrixEntry(int row, int column)
         {
             if (row < 0 || row >= rhs.Length) throw new ArgumentOutOfRangeException(nameof(row));
             if (column < 0 || column >= rhs.Length) throw new ArgumentOutOfRangeException(nameof(column));
@@ -74,7 +74,7 @@ namespace NextGenSpice.Core.Equations
             return matrix[row, column];
         }
 
-        public double GetRightHandSideEntry(int row)
+        public dd_real GetRightHandSideEntry(int row)
         {
             if (row < 0 || row >= rhs.Length) throw new ArgumentOutOfRangeException(nameof(row));
 
@@ -84,26 +84,26 @@ namespace NextGenSpice.Core.Equations
         public double[] Solve()
         {
             var m = matrix.Clone();
-            var b = (double[])rhs.Clone();
-            
+            var b = (dd_real[])rhs.Clone();
+            var x = new dd_real[b.Length];
 
-            NumericMethods.GaussElimSolve(m, b, Solution);
+            NumericMethods.GaussElimSolve_dd(m, b, x);
 
             //DistributeEquivalentVoltages(m);
-            return Solution;
+            return Solution = x.Select(dd => (double)dd).ToArray();
         }
 
-//        private void DistributeEquivalentVoltages(Array2DWrapper m)
-//        {
-//            foreach (var grp in equivalences)
-//            {
-//                var representative = grp.First();
-//                foreach (var other in grp.Skip(1))
-//                {
-//                    Solution[other] = Solution[representative];
-//                }
-//            }
-//        }
+        //        private void DistributeEquivalentVoltages(Array2DWrapper m)
+        //        {
+        //            foreach (var grp in equivalences)
+        //            {
+        //                var representative = grp.First();
+        //                foreach (var other in grp.Skip(1))
+        //                {
+        //                    Solution[other] = Solution[representative];
+        //                }
+        //            }
+        //        }
 
     }
 }

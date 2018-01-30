@@ -7,21 +7,21 @@ namespace NextGenSpice.Core.Equations
 {
     public class QdEquationSystem : IEquationSystem
     {
-        private readonly Stack<Tuple<QdArray2DWrapper, qd_real[]>> backups;
+        private readonly Stack<Tuple<Array2DWrapper<qd_real>, qd_real[]>> backups;
 
-        private readonly QdArray2DWrapper matrixBackup;
+        private readonly Array2DWrapper<qd_real> matrixBackup;
         private readonly qd_real[] rhsBackup;
-        private QdArray2DWrapper matrix;
+        private Array2DWrapper<qd_real> matrix;
         private qd_real[] rhs;
 
-        public QdEquationSystem(QdArray2DWrapper matrix, qd_real[] rhs)
+        public QdEquationSystem(Array2DWrapper<qd_real> matrix, qd_real[] rhs)
         {
             if (matrix.SideLength != rhs.Length) throw new ArgumentException($"Matrix side length ({matrix.SideLength}) is different from right hand side vector length ({rhs.Length})");
             this.matrixBackup = matrix;
             this.rhsBackup = rhs;
             Solution = new double[rhs.Length];
 
-            backups = new Stack<Tuple<QdArray2DWrapper, qd_real[]>>();
+            backups = new Stack<Tuple<Array2DWrapper<qd_real>, qd_real[]>>();
 
             backups.Push(Tuple.Create(matrix, rhs));
             Clear();
@@ -40,7 +40,7 @@ namespace NextGenSpice.Core.Equations
         }
         public double[] Solution { get; private set; }
 
-        public QdArray2DWrapper Matrix => matrix;
+        public Array2DWrapper<qd_real> Matrix => matrix;
         public qd_real[] RightHandSide => rhs;
 
         public void Clear()

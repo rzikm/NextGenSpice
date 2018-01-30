@@ -1,4 +1,8 @@
-﻿using System;
+﻿//#define qd_precision
+#define dd_precision
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NextGenSpice.Core;
@@ -10,10 +14,47 @@ using Numerics;
 
 namespace NextGenSpice.LargeSignal
 {
+
     public class LargeSignalCircuitModel : IAnalysisCircuitModel<ILargeSignalDeviceModel>
     {
+        private class SimulationContext : ISimulationContext
+        {
+            public SimulationContext(int nodeCount)
+            {
+                NodeCount = nodeCount;
+                CircuitParameters = new CircuitParameters();
+            }
+
+            public double NodeCount { get; }
+            public double Time { get; set; }
+            public double TimeStep { get; set; }
+            //public double[] EquationSolution => EquationSystem.Solution;
+
+            public double GetSolutionForVariable(int index)
+            {
+                return EquationSystem.Solution[index];
+            }
+
+            public CircuitParameters CircuitParameters { get; }
+
+#if qd_precision
+            public QdEquationSystem EquationSystem { get; set; }
+#elif dd_precision
+            public DdEquationSystem EquationSystem { get; set; }
+#else
+            public EquationSystem EquationSystem { get; set; }
+#endif
+        }
+
         private SimulationContext context;
+
+#if qd_precision
         private QdEquationSystem equationSystem;
+#elif dd_precision
+        private DdEquationSystem equationSystem;
+#else
+        private EquationSystem equationSystem;
+#endif
 
         public LargeSignalCircuitModel(IEnumerable<double> initialVoltages, List<ILargeSignalDeviceModel> elements)
         {
@@ -37,7 +78,7 @@ namespace NextGenSpice.LargeSignal
 
         private readonly Dictionary<string, ILargeSignalDeviceModel> elementLookup;
 
-        public  ILargeSignalDeviceModel GetElement(string name)
+        public ILargeSignalDeviceModel GetElement(string name)
         {
             return elementLookup[name];
         }
@@ -55,7 +96,7 @@ namespace NextGenSpice.LargeSignal
         public double NonlinearIterationEpsilon { get; set; } = 1e-4;
         public int MaxDcPointIterations { get; set; } = 1000;
         public double MaxTimeStep { get; set; } = 1e-6;
-        
+
         public double TimestepAbsoluteEpsilon { get; set; }
         public double TimestepRelativeEpsilon { get; set; }
 
@@ -87,13 +128,13 @@ namespace NextGenSpice.LargeSignal
                 var step = 2 * Math.Min(MaxTimeStep, milliseconds);
 
                 var timePoint = context.Time;
-//                do
-//                {
-                    step /= 2;
-                    context.Time = timePoint + step;
-                    context.TimeStep = step;
+                //                do
+                //                {
+                step /= 2;
+                context.Time = timePoint + step;
+                context.TimeStep = step;
                 EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context));
-//                } while (!EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context)));
+                //                } while (!EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context)));
 
                 milliseconds -= step;
             }
@@ -110,8 +151,13 @@ namespace NextGenSpice.LargeSignal
 
         private void BuildEquationSystem()
         {
-//            var b = new EquationSystemBuilder();
+#if qd_precision
             var b = new QdEquationSystemBuilder();
+#elif dd_precision
+            var b = new DdEquationSystemBuilder();
+#else
+            var b = new EquationSystemBuilder();
+#endif
             for (var i = 0; i < NodeCount; i++)
                 b.AddVariable();
 
@@ -148,7 +194,7 @@ namespace NextGenSpice.LargeSignal
             UpdateEquationSystem(updater, nonlinearElements);
 
             UpdateNodeValues();
-//            DebugPrint();
+            //            DebugPrint();
             if (!IsLinear && !IterateUntilConvergence(updater))
                 return false;
 
@@ -160,16 +206,17 @@ namespace NextGenSpice.LargeSignal
         private bool IterateUntilConvergence(Action<ILargeSignalDeviceModel> updater)
         {
             double delta;
-            
-            do {
+
+            do
+            {
                 delta = 0;
-                var prevVoltages = (double[]) equationSystem.Solution.Clone();
+                var prevVoltages = (double[])equationSystem.Solution.Clone();
 
                 equationSystem.Restore();
 
                 UpdateEquationSystem(updater, nonlinearElements);
                 UpdateNodeValues();
-//            DebugPrint();
+                //            DebugPrint();
 
                 for (var i = 0; i < prevVoltages.Length; i++)
                 {
@@ -196,23 +243,35 @@ namespace NextGenSpice.LargeSignal
         {
             // ensure ground has 0 voltage
             var m = equationSystem.Matrix;
-            //            for (int i = 0; i < m.SideLength; i++)
-            //            {
-            //                m[i, 0] = 0;
-            //                m[0, i] = 0;
-            //            }
-            //
-            //            m[0, 0] = 1;
-            //            equationSystem.RightHandSide[0] = 0;
 
+#if qd_precision
             for (int i = 0; i < m.SideLength; i++)
             {
-                m[i, 0] = new qd_real(0);
-                m[0, i] = new qd_real(0);
+                m[i, 0] = qd_real.Zero;
+                m[0, i] = qd_real.Zero;
             }
 
             m[0, 0] = new qd_real(1);
-            equationSystem.RightHandSide[0] = new qd_real(0);
+            equationSystem.RightHandSide[0] = qd_real.Zero;
+#elif dd_precision
+            for (int i = 0; i < m.SideLength; i++)
+            {
+                m[i, 0] = dd_real.Zero;
+                m[0, i] = dd_real.Zero;
+            }
+
+            m[0, 0] = new dd_real(1);
+            equationSystem.RightHandSide[0] = dd_real.Zero;
+#else
+            for (int i = 0; i < m.SideLength; i++)
+            {
+                m[i, 0] = 0;
+                m[0, i] = 0;
+            }
+
+            m[0, 0] = 1;
+            equationSystem.RightHandSide[0] = 0;
+#endif
 
             equationSystem.Solve();
 
