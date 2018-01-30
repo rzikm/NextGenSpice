@@ -1,4 +1,4 @@
-﻿using NextGenSpice.Core.Elements;
+﻿using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.LargeSignal.Models;
 
@@ -24,7 +24,7 @@ namespace NextGenSpiceTest
             branchVariable = builder.AddVariable();
         }
 
-        public void ApplyTimeDependentModelValues(IEquationSystem equation, ISimulationContext context)
+        public void ApplyTimeDependentModelValues(IEquationEditor equation, ISimulationContext context)
         {
         }
 

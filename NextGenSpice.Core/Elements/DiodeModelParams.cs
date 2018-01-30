@@ -1,23 +1,32 @@
 ﻿namespace NextGenSpice.Core.Elements
 {
+    /// <summary>
+    /// Represents set of model parameters for the diode device.
+    /// </summary>
     public class DiodeModelParams
     {
+        /// <summary>
+        /// Default set of model parameters for the diode.
+        /// </summary>
         public static DiodeModelParams Default => new DiodeModelParams();
 
-//        public static DiodeModelParams D1N4148 => new DiodeModelParams()
-//        {
-//            SaturationCurrent = 4.352E-9,
-//            EmissionCoefficient = 1.906,
-//            TransitTime = 5e-9,
-//            JunctionCapacitance = 7.048E-13,
-//            JunctionGradingCoefficient = 0.285,
-//            JunctionPotential = 0.869,
-//            ReverseBreakdownVoltage = 110,
-//            ReverseBreakdownCurrent = 0.0001,
-//            SeriesResistance = 0.6458,
-//            Vd = 0.0
-//        };
+        //        public static DiodeModelParams D1N4148 => new DiodeModelParams()
+        //        {
+        //            SaturationCurrent = 4.352E-9,
+        //            EmissionCoefficient = 1.906,
+        //            TransitTime = 5e-9,
+        //            JunctionCapacitance = 7.048E-13,
+        //            JunctionGradingCoefficient = 0.285,
+        //            JunctionPotential = 0.869,
+        //            ReverseBreakdownVoltage = 110,
+        //            ReverseBreakdownCurrent = 0.0001,
+        //            SeriesResistance = 0.6458,
+        //            Vd = 0.0
+        //        };
 
+        /// <summary>
+        /// Set of parameters corresponding to D1N418 diode model.
+        /// </summary>
         public static DiodeModelParams D1N4148 => new DiodeModelParams()
         {
             SaturationCurrent = 2.52e-9,
@@ -30,7 +39,7 @@
             SeriesResistance = 0.568,
             Vd = 0.0
         };
-        
+
         /// <summary>
         /// Saturation current (from diode equation) in amperes.
         /// </summary>
@@ -40,7 +49,7 @@
         /// Series (parasitic) resistance in ohms.
         /// </summary>
         public double SeriesResistance { get; set; }
-        
+
         /// <summary>
         /// Emission coefficient of the diode, also called Ideality coefficient.
         /// </summary>
@@ -68,6 +77,7 @@
         public double ActivationEnergy { get; set; } = 1.11;
 
 
+        // TODO: comment physical meaning of these (unused) parameters
         public double SaturationCurrentTemperatureExponent { get; set; } = 3;
         public double FlickerNoiseCoefficient { get; set; }
         public double FlickerNoiseExponent { get; set; } = 1;

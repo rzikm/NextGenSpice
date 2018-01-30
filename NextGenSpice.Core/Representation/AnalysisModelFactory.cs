@@ -6,47 +6,51 @@ namespace NextGenSpice.Core.Representation
 {
     public abstract class AnalysisModelFactory<TAnalysisModel> : IAnalysisModelFactory<TAnalysisModel>
     {
-        private readonly Dictionary<Type, Func<ICircuitDefinitionElement, IModelInstantiationContext<TAnalysisModel>, IAnalysisDeviceModel<TAnalysisModel>>>
+        private readonly Dictionary<Type, Func<ICircuitDefinitionElement, IModelInstantiationContext<TAnalysisModel>,
+                IAnalysisDeviceModel<TAnalysisModel>>>
             modelCreators;
 
         private readonly Dictionary<Type, Func<object, IModelInstantiationContext<TAnalysisModel>, object>>
             paramCreators;
-        
+
         protected AnalysisModelFactory()
         {
             paramCreators = new Dictionary<Type, Func<object, IModelInstantiationContext<TAnalysisModel>, object>>();
-            modelCreators = new Dictionary<Type, Func<ICircuitDefinitionElement, IModelInstantiationContext<TAnalysisModel>, IAnalysisDeviceModel<TAnalysisModel>>>();
-        }   
-
-        protected abstract TAnalysisModel Instantiate(IModelInstantiationContext<TAnalysisModel> context);
+            modelCreators =
+                new Dictionary<Type, Func<ICircuitDefinitionElement, IModelInstantiationContext<TAnalysisModel>,
+                    IAnalysisDeviceModel<TAnalysisModel>>>();
+        }
 
         public TAnalysisModel Create(ICircuitDefinition circuitDefinition)
         {
-            var instantiationContext = new ModelInstantiationContext<TAnalysisModel>(modelCreators, paramCreators, circuitDefinition);
+            var instantiationContext =
+                new ModelInstantiationContext<TAnalysisModel>(modelCreators, paramCreators, circuitDefinition);
 
             var analysisModel = Instantiate(instantiationContext);
 
             return analysisModel;
         }
+
         public void SetModel<TRepresentation, TModel>(TModel model)
             where TRepresentation : ICircuitDefinitionElement
             where TModel : IAnalysisDeviceModel<TAnalysisModel>
         {
             SetModel<TRepresentation, TModel>(m => model);
         }
-        
+
         public void SetModel<TRepresentation, TModel>(Func<TRepresentation, TModel> factoryFunc)
             where TRepresentation : ICircuitDefinitionElement
             where TModel : IAnalysisDeviceModel<TAnalysisModel>
         {
-            modelCreators[typeof(TRepresentation)] = (model, context) => factoryFunc((TRepresentation)model);
+            modelCreators[typeof(TRepresentation)] = (model, context) => factoryFunc((TRepresentation) model);
         }
 
-        public void SetModel<TRepresentation, TModel>(Func<TRepresentation, IModelInstantiationContext<TAnalysisModel>, TModel> factoryFunc)
+        public void SetModel<TRepresentation, TModel>(
+            Func<TRepresentation, IModelInstantiationContext<TAnalysisModel>, TModel> factoryFunc)
             where TRepresentation : ICircuitDefinitionElement
             where TModel : IAnalysisDeviceModel<TAnalysisModel>
         {
-            modelCreators[typeof(TRepresentation)] = (model, context) => factoryFunc((TRepresentation)model, context);
+            modelCreators[typeof(TRepresentation)] = (model, context) => factoryFunc((TRepresentation) model, context);
         }
 
         public void SetParam<TParam>(Func<TParam, object> factoryFunc)
@@ -58,5 +62,7 @@ namespace NextGenSpice.Core.Representation
         {
             paramCreators[typeof(TParam)] = (param, context) => factoryFunc((TParam) param, context);
         }
+
+        protected abstract TAnalysisModel Instantiate(IModelInstantiationContext<TAnalysisModel> context);
     }
 }

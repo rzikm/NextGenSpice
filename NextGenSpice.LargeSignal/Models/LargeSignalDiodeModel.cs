@@ -3,6 +3,7 @@ using System.ComponentModel.Design;
 using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
 using NextGenSpice.Core;
+using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.LargeSignal.NumIntegration;
@@ -36,7 +37,7 @@ namespace NextGenSpice.LargeSignal.Models
 //            IntegrationMethod = new BackwardEulerIntegrationMethod();
 //            IntegrationMethod = new AdamsMoultonIntegrationMethod(4);
 
-            param = parent.param;
+            param = parent.Param;
             Voltage = param.Vd;
 
             vt = param.EmissionCoefficient * PhysicalConstants.Boltzmann * PhysicalConstants.CelsiusToKelvin(param.Temperature) /

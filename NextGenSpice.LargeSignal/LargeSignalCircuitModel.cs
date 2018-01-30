@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NextGenSpice.Core;
+using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.Representation;
@@ -32,7 +33,7 @@ namespace NextGenSpice.LargeSignal
 
             public double GetSolutionForVariable(int index)
             {
-                return EquationSystem.Solution[index];
+                return (double) EquationSystem.Solution[index];
             }
 
             public CircuitParameters CircuitParameters { get; }

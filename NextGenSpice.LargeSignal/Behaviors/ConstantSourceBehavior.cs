@@ -1,4 +1,5 @@
 ﻿using System;
+using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
 
 namespace NextGenSpice.LargeSignal.Behaviors

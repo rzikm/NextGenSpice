@@ -1,4 +1,5 @@
 ﻿using NextGenSpice.Core.BehaviorParams;
+using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
 using Numerics;
 
