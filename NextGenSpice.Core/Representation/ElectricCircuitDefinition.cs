@@ -8,13 +8,27 @@ using NextGenSpice.Core.Elements;
 
 namespace NextGenSpice.Core.Representation
 {
+    /// <summary>
+    /// Class that represents definition of an electric circuit.
+    /// </summary>
     public class ElectricCircuitDefinition : ICircuitDefinition
     {
         private static CompositionHost compositionHost;
         private static CompositionHost CompositionContainer => compositionHost ?? (compositionHost = GetCompositionContainer());
 
+        /// <summary>
+        /// Number of the nodes in the circuit.
+        /// </summary>
         public int NodeCount => InitialVoltages.Count;
+
+        /// <summary>
+        /// Initial voltages of nodes by their id.
+        /// </summary>
         public IReadOnlyList<double> InitialVoltages { get; }
+
+        /// <summary>
+        /// Set of elements that define this circuit.
+        /// </summary>
         public IReadOnlyList<ICircuitDefinitionElement> Elements { get; }
 
         private readonly Dictionary<Type, object> factories;
@@ -27,17 +41,32 @@ namespace NextGenSpice.Core.Representation
 
         }
 
+        /// <summary>
+        /// Sets factory for creating a model for specific analysis.
+        /// </summary>
+        /// <typeparam name="TAnalysisModel"></typeparam>
+        /// <param name="factory">Instance of factory that creates the analysis-specific model instance.</param>
         public void SetFactory<TAnalysisModel>(IAnalysisModelFactory<TAnalysisModel> factory)
         {
             factories[typeof(TAnalysisModel)] = factory;
         }
 
+        /// <summary>
+        /// Creates analysis-specific model of given type using registered factory instance.
+        /// </summary>
+        /// <typeparam name="TAnalysisModel">Analysis-specific model type.</typeparam>
+        /// <returns></returns>
         public TAnalysisModel GetModel<TAnalysisModel>()
         {
             IAnalysisModelFactory<TAnalysisModel> factory = GetFactory<TAnalysisModel>();
             return factory.Create(this);
         }
 
+        /// <summary>
+        /// Gets the instance of factory class responsible for creating analysis-specific model of givent type.
+        /// </summary>
+        /// <typeparam name="TAnalysisModel">Analysis-specific model type.</typeparam>
+        /// <returns></returns>
         public IAnalysisModelFactory<TAnalysisModel> GetFactory<TAnalysisModel>()
         {
             if (factories.TryGetValue(typeof(TAnalysisModel), out var factory))
@@ -54,8 +83,13 @@ namespace NextGenSpice.Core.Representation
             throw new InvalidOperationException($"No Factory for '{typeof(TAnalysisModel).FullName}' was found");
         }
 
+        /// <summary>
+        /// Gets MEF composition container with all exports.
+        /// </summary>
+        /// <returns></returns>
         private static CompositionHost GetCompositionContainer()
         {
+            //TODO: allow other dlls?
             var assemblies = Directory
                 .GetFiles(Path.GetDirectoryName(typeof(ElectricCircuitDefinition).Assembly.Location), "NextGenSpice*.dll",
                     SearchOption.AllDirectories);
@@ -64,10 +98,8 @@ namespace NextGenSpice.Core.Representation
                 .Select(AssemblyLoadContext.Default.LoadFromAssemblyPath)
                 .ToList();
 
-
             var configuration = new ContainerConfiguration().WithAssemblies(asms);
-            var compositionHost = configuration.CreateContainer();
-            return compositionHost;
+            return configuration.CreateContainer();
         }
     }
 }

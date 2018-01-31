@@ -5,9 +5,13 @@ using NextGenSpice.Core.Elements;
 
 namespace NextGenSpice.Core.Representation
 {
+    /// <summary>
+    /// Context in which a certain circuit definition is instantiated
+    /// </summary>
+    /// <typeparam name="TAnalysisModel"></typeparam>
     public class ModelInstantiationContext<TAnalysisModel> : IModelInstantiationContext<TAnalysisModel>
     {
-        private readonly Dictionary<ICircuitDefinitionElement, IAnalysisDeviceModel<TAnalysisModel>> resolutionCache;
+        private readonly Dictionary<ICircuitDefinitionElement, IAnalysisDeviceModel<TAnalysisModel>> resolutionCache; // cached models so we can compose arbitrary object graph.
         private readonly Dictionary<string, ICircuitDefinitionElement> namedElements;
         private readonly Dictionary<Type, Func<object, IModelInstantiationContext<TAnalysisModel>, object>> paramCreators;
         private readonly Dictionary<Type, Func<ICircuitDefinitionElement, IModelInstantiationContext<TAnalysisModel>, IAnalysisDeviceModel<TAnalysisModel>>> modelCreators;
@@ -25,7 +29,16 @@ namespace NextGenSpice.Core.Representation
 
         }
 
+        /// <summary>
+        /// Current circuit definition.
+        /// </summary>
         public ICircuitDefinition CircuitDefinition { get; }
+
+        /// <summary>
+        /// Gets model instance for a given device definition instance.
+        /// </summary>
+        /// <param name="element">The device definition.</param>
+        /// <returns></returns>
         public IAnalysisDeviceModel<TAnalysisModel> GetModel(ICircuitDefinitionElement element)
         {
             if (element == null) throw new ArgumentNullException(nameof(element));
@@ -36,6 +49,11 @@ namespace NextGenSpice.Core.Representation
             return resolutionCache[element] = CreateModel(element);
         }
 
+        /// <summary>
+        /// Creates model instance for given definition element.
+        /// </summary>
+        /// <param name="element">Element to be instantiated.</param>
+        /// <returns></returns>
         private IAnalysisDeviceModel<TAnalysisModel> CreateModel(ICircuitDefinitionElement element)
         {
             if (modelCreators.TryGetValue(element.GetType(), out var factory))
@@ -44,6 +62,11 @@ namespace NextGenSpice.Core.Representation
             throw new InvalidOperationException($"No model creator for type {element.GetType()}");
         }
 
+        /// <summary>
+        /// Creates model instance for definition element with given name.
+        /// </summary>
+        /// <param name="elementName">Name of the element to be instantiated.</param>
+        /// <returns></returns>
         public IAnalysisDeviceModel<TAnalysisModel> GetModel(string elementName)
         {
             if (elementName == null) throw new ArgumentNullException(nameof(elementName));
@@ -54,6 +77,11 @@ namespace NextGenSpice.Core.Representation
             return GetModel(element);
         }
 
+        /// <summary>
+        /// Processes parameter using registered factory function for its type.
+        /// </summary>
+        /// <param name="arg">Argument to be processed.</param>
+        /// <returns></returns>
         public object GetParam(object arg)
         {
             if (paramCreators.TryGetValue(arg.GetType(), out var factoryFunc))

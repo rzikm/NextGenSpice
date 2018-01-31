@@ -118,20 +118,6 @@ namespace NextGenSpiceTest
         }
 
         [Fact]
-        public void CanRegisterNewDeviceModelAsSingleton()
-        {
-            var circuitDef = new CircuitBuilder().AddElement(new[] { 0, 1 }, new TestDeviceDefinition()).AddElement(new[] { 1, 0 }, new TestDeviceDefinition()).BuildCircuit();
-            circuitDef.SetFactory(new MyPrivateFactory());
-
-            var model = new TestDeviceModel();
-            circuitDef.GetFactory<TestAnalysisCircuitModel>().SetModel<TestDeviceDefinition, TestDeviceModel>(model);
-
-            var circuitModel = circuitDef.GetModel<TestAnalysisCircuitModel>();
-            Assert.NotNull(circuitModel);
-            Assert.Equal(circuitModel.Elements[0], circuitModel.Elements[1]);
-        }
-
-        [Fact]
         public void ThrowsWhenNoModelCreatorExists()
         {
             var circuitDef = new CircuitBuilder().AddElement(new[] { 0, 1 }, new TestDeviceDefinition()).AddElement(new[] { 1, 0 }, new TestDeviceDefinition()).BuildCircuit();

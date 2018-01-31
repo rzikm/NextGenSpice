@@ -25,10 +25,6 @@ namespace NextGenSpice.LargeSignal.Models
         private double vc;
         private int capacitorBranch;
 
-
-        private double lastTime;
-        private string logstring;
-
         public LargeSignalDiodeModel(DiodeElement parent) : base(parent)
         {
 //            IntegrationMethod = new AdamsMoultonIntegrationMethod(2);

@@ -4,6 +4,10 @@ using NextGenSpice.Core.Elements;
 
 namespace NextGenSpice.Core.Representation
 {
+    /// <summary>
+    /// Class implementig basic functionality for creating circuit analysis models from circuit representation.
+    /// </summary>
+    /// <typeparam name="TAnalysisModel"></typeparam>
     public abstract class AnalysisModelFactory<TAnalysisModel> : IAnalysisModelFactory<TAnalysisModel>
     {
         private readonly Dictionary<Type, Func<ICircuitDefinitionElement, IModelInstantiationContext<TAnalysisModel>,
@@ -21,6 +25,11 @@ namespace NextGenSpice.Core.Representation
                     IAnalysisDeviceModel<TAnalysisModel>>>();
         }
 
+        /// <summary>
+        /// Creates new instance of analysis model of type <see cref="TAnalysisModel"/> for given circuit.
+        /// </summary>
+        /// <param name="circuitDefinition">Definition of the circuit.</param>
+        /// <returns></returns>
         public TAnalysisModel Create(ICircuitDefinition circuitDefinition)
         {
             var instantiationContext =
@@ -31,13 +40,12 @@ namespace NextGenSpice.Core.Representation
             return analysisModel;
         }
 
-        public void SetModel<TRepresentation, TModel>(TModel model)
-            where TRepresentation : ICircuitDefinitionElement
-            where TModel : IAnalysisDeviceModel<TAnalysisModel>
-        {
-            SetModel<TRepresentation, TModel>(m => model);
-        }
-
+        /// <summary>
+        /// Registers a factory method for creating analysis-specific device model from the representation.
+        /// </summary>
+        /// <typeparam name="TRepresentation">Class representing the device in circuit definition</typeparam>
+        /// <typeparam name="TModel">Analysis-specific class for the device</typeparam>
+        /// <param name="factoryFunc">The factory function</param>
         public void SetModel<TRepresentation, TModel>(Func<TRepresentation, TModel> factoryFunc)
             where TRepresentation : ICircuitDefinitionElement
             where TModel : IAnalysisDeviceModel<TAnalysisModel>
@@ -45,6 +53,12 @@ namespace NextGenSpice.Core.Representation
             modelCreators[typeof(TRepresentation)] = (model, context) => factoryFunc((TRepresentation) model);
         }
 
+        /// <summary>
+        /// Registers a factory method for creating analysis-specific device model from the representation.
+        /// </summary>
+        /// <typeparam name="TRepresentation">Class representing the device in circuit definition</typeparam>
+        /// <typeparam name="TModel">Analysis-specific class for the device</typeparam>
+        /// <param name="factoryFunc">The factory function</param>
         public void SetModel<TRepresentation, TModel>(
             Func<TRepresentation, IModelInstantiationContext<TAnalysisModel>, TModel> factoryFunc)
             where TRepresentation : ICircuitDefinitionElement
@@ -53,16 +67,31 @@ namespace NextGenSpice.Core.Representation
             modelCreators[typeof(TRepresentation)] = (model, context) => factoryFunc((TRepresentation) model, context);
         }
 
+        /// <summary>
+        /// Registers a function for custom parameter processing (e.g. input source behaviors).
+        /// </summary>
+        /// <typeparam name="TParam">Defining type of the parameter.</typeparam>
+        /// <param name="factoryFunc">Processing function of the parameter.</param>
         public void SetParam<TParam>(Func<TParam, object> factoryFunc)
         {
             paramCreators[typeof(TParam)] = (param, context) => factoryFunc((TParam) param);
         }
 
+        /// <summary>
+        /// Registers a function for custom parameter processing (e.g. input source behaviors).
+        /// </summary>
+        /// <typeparam name="TParam">Defining type of the parameter.</typeparam>
+        /// <param name="factoryFunc">Processing function of the parameter.</param>
         public void SetParam<TParam>(Func<TParam, IModelInstantiationContext<TAnalysisModel>, object> factoryFunc)
         {
             paramCreators[typeof(TParam)] = (param, context) => factoryFunc((TParam) param, context);
         }
 
+        /// <summary>
+        /// Factory method for creating the actual instance of the analysis model.
+        /// </summary>
+        /// <param name="context">Current instantiation context.</param>
+        /// <returns></returns>
         protected abstract TAnalysisModel Instantiate(IModelInstantiationContext<TAnalysisModel> context);
     }
 }

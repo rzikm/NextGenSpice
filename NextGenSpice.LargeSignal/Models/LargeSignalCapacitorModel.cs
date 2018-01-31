@@ -13,7 +13,7 @@ namespace NextGenSpice.LargeSignal.Models
 
         public LargeSignalCapacitorModel(CapacitorElement parent) : base(parent)
         {
-            IntegrationMethod = new GearIntegrationMethod(3);
+            IntegrationMethod = new GearIntegrationMethod(2);
 //            IntegrationMethod = new AdamsMoultonIntegrationMethod(4);
 //            IntegrationMethod = new BackwardEulerIntegrationMethod();
         }
@@ -21,8 +21,6 @@ namespace NextGenSpice.LargeSignal.Models
 
         public override bool IsNonlinear => false;
         public override bool IsTimeDependent => true;
-        
-        private double geq;
 
         public override void RegisterAdditionalVariables(IEquationSystemBuilder builder, ISimulationContext context)
         {

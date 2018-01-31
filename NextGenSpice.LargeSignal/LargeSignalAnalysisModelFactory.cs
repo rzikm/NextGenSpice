@@ -30,13 +30,13 @@ namespace NextGenSpice.LargeSignal
 
             // TODO: Autoregister using MEF?
             // Input source behaviors
-            SetParam<ConstantBehaviorParams>((def, ctx) => new ConstantSourceBehavior(def));
-            SetParam<PulseBehaviorParams>((def, ctx) => new PulseSourceBehavior(def));
-            SetParam<PieceWiseLinearBehaviorParams>((def, ctx) => new PieceWiseLinearSourceBehavior(def));
-            SetParam<SinusoidalBehaviorParams>((def, ctx) => new SinusioidalSourceBehavior(def));
-            SetParam<ExponentialBehaviorParams>((def, ctx) => new ExponentialSourceBehavior(def));
-            SetParam<SffmBehaviorParams>((def, ctx) => new SffmSourceBehavior(def));
-            SetParam<AmBehaviorParams>((def, ctx) => new AmSourceBehavior(def));
+            SetParam<ConstantBehaviorParams>(def => new ConstantSourceBehavior(def));
+            SetParam<PulseBehaviorParams>(def => new PulseSourceBehavior(def));
+            SetParam<PieceWiseLinearBehaviorParams>(def => new PieceWiseLinearSourceBehavior(def));
+            SetParam<SinusoidalBehaviorParams>(def => new SinusioidalSourceBehavior(def));
+            SetParam<ExponentialBehaviorParams>(def => new ExponentialSourceBehavior(def));
+            SetParam<SffmBehaviorParams>(def => new SffmSourceBehavior(def));
+            SetParam<AmBehaviorParams>(def => new AmSourceBehavior(def));
         }
         
         protected override LargeSignalCircuitModel Instantiate(IModelInstantiationContext<LargeSignalCircuitModel> context)
