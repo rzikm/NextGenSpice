@@ -10,16 +10,16 @@ namespace NextGenSpice.Core.Equations
     /// </summary>
     public class DdEquationSystem : IEquationEditor
     {
-        private readonly Stack<Tuple<Array2DWrapper<dd_real>, dd_real[]>> backups;
+        private readonly Stack<Tuple<Matrix<dd_real>, dd_real[]>> backups;
 
-        public DdEquationSystem(Array2DWrapper<dd_real> matrix, dd_real[] rhs)
+        public DdEquationSystem(Matrix<dd_real> matrix, dd_real[] rhs)
         {
-            if (matrix.SideLength != rhs.Length)
+            if (matrix.Size != rhs.Length)
                 throw new ArgumentException(
-                    $"Matrix side length ({matrix.SideLength}) is different from right hand side vector length ({rhs.Length})");
+                    $"Matrix side length ({matrix.Size}) is different from right hand side vector length ({rhs.Length})");
             Solution = new double[rhs.Length];
 
-            backups = new Stack<Tuple<Array2DWrapper<dd_real>, dd_real[]>>();
+            backups = new Stack<Tuple<Matrix<dd_real>, dd_real[]>>();
 
             backups.Push(Tuple.Create(matrix, rhs));
             Clear();
@@ -33,7 +33,7 @@ namespace NextGenSpice.Core.Equations
         /// <summary>
         ///     Matrix part of the equation system.
         /// </summary>
-        public Array2DWrapper<dd_real> Matrix { get; private set; }
+        public Matrix<dd_real> Matrix { get; private set; }
 
         /// <summary>
         ///     Right hand side vector of the equation system.
@@ -109,7 +109,7 @@ namespace NextGenSpice.Core.Equations
             var b = (dd_real[]) RightHandSide.Clone();
             var x = new dd_real[b.Length];
 
-            NumericMethods.GaussElimSolve_dd(m, b, x);
+            GaussJordanElimination.Solve(m, b, x);
 
             return Solution = x.Select(dd => (double) dd).ToArray();
         }

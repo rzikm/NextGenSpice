@@ -144,9 +144,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="NumericCore.h" />
     <ClInclude Include="qd\include\qd\bits.h" />
     <ClInclude Include="qd\include\qd\c_dd.h" />
@@ -177,7 +174,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="NumericCore.cpp" />
+    <ClCompile Include="gauss.cpp" />
     <ClCompile Include="qd\src\bits.cpp" />
     <ClCompile Include="qd\src\c_dd.cpp" />
     <ClCompile Include="qd\src\c_qd.cpp" />

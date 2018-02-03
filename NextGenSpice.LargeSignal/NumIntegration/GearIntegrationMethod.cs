@@ -41,25 +41,25 @@ namespace NextGenSpice.LargeSignal.NumIntegration
         /// <summary>
         ///     Gets next values of state and derivative based on history and current timepoint.
         /// </summary>
-        /// <param name="timeStep">How far to predict values of state and derivative.</param>
+        /// <param name="dx">How far to predict values of state and derivative.</param>
         /// <returns></returns>
-        public (double state, double derivative) GetEquivalents(double timeStep)
+        public (double state, double derivative) GetEquivalents(double dx)
         {
             if (stateCount < derivatives.Length)
             {
                 var rec = new GearIntegrationMethod(stateCount);
                 for (var i = 0; i < stateCount; i++)
                     rec.SetState(0, derivatives[derivatives.Length - 1 - i]);
-                return rec.GetEquivalents(timeStep);
+                return rec.GetEquivalents(dx);
             }
 
-            var dx = timeStep / normalizingCoeff;
-            var x = 0.0;
+            var dy = dx / normalizingCoeff;
+            var y = 0.0;
             for (var i = 0; i < derivatives.Length; i++)
-                x += coefficients[i] * timeStep * derivatives[(baseIndex + i) % derivatives.Length];
-            x /= normalizingCoeff;
+                y += coefficients[i] * dx * derivatives[(baseIndex + i) % derivatives.Length];
+            y /= normalizingCoeff;
 
-            return (x, dx);
+            return (y, dy);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace NextGenSpice.LargeSignal.NumIntegration
             if (order < 0) throw new ArgumentOutOfRangeException(nameof(order));
 
             // see http://qucs.sourceforge.net/tech/node24.html#SECTION00713100000000000000 for details
-            var es = new EquationSystem(new Array2DWrapper<double>(order + 1), new double[order + 1]);
+            var es = new EquationSystem(new Matrix<double>(order + 1), new double[order + 1]);
             es.AddRightHandSideEntry(0, 1);
             for (var i = 1; i < es.VariablesCount; i++)
             {

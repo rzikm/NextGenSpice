@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using NextGenSpice.Core.BehaviorParams;
+﻿using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Extensions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal;
-using NextGenSpice.LargeSignal.Models;
 
 namespace NextGenSpiceTest
 {
@@ -88,7 +86,7 @@ namespace NextGenSpiceTest
 
             var circuit = new CircuitBuilder()
                 .AddVoltageSource(1, 0, new PulseBehaviorParams())
-                .AddElement(new int[] { 1, 2 }, new SwitchElement())
+                .AddElement(new[] {1, 2}, new SwitchElement())
                 .AddResistor(2, 3, 1)
                 .AddCapacitor(3, 0, 1e-6)
                 .BuildCircuit();
@@ -110,7 +108,7 @@ namespace NextGenSpiceTest
             SwitchModel sw = null;
             var circuit = new CircuitBuilder()
                 .AddVoltageSource(1, 0, 15)
-                .AddElement(new int[] { 1, 2 }, new SwitchElement())
+                .AddElement(new[] {1, 2}, new SwitchElement())
                 .AddResistor(2, 3, 1)
                 .AddInductor(3, 0, 1e-6)
                 .BuildCircuit();
@@ -130,10 +128,10 @@ namespace NextGenSpiceTest
         public static ElectricCircuitDefinition GetTruncationErrorModel()
         {
             return new CircuitBuilder()
-                .AddVoltageSource(1, 0, new SinusoidalBehaviorParams()
+                .AddVoltageSource(1, 0, new SinusoidalBehaviorParams
                 {
                     Amplitude = 5,
-                    Frequency = 100,
+                    Frequency = 100
                 }, "VS")
 //                .AddResistor(2, 3, 3 * 10000000000000e-6)
                 .AddResistor(2, 3, 1e-6)
@@ -155,10 +153,10 @@ namespace NextGenSpiceTest
                 //                    Delay = 1e-4,
                 //                    Period = 15e-4
                 //                })
-                .AddVoltageSource(1, 0, new SinusoidalBehaviorParams()
+                .AddVoltageSource(1, 0, new SinusoidalBehaviorParams
                 {
                     Amplitude = 5,
-                    Frequency = 500,
+                    Frequency = 500
                 })
                 .AddResistor(2, 3, 1e-6)
                 .AddCapacitor(1, 2, 1e-3)

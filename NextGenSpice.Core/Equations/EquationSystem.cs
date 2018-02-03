@@ -9,16 +9,16 @@ namespace NextGenSpice.Core.Equations
     /// </summary>
     public class EquationSystem : IEquationEditor
     {
-        private readonly Stack<Tuple<Array2DWrapper<double>, double[]>> backups;
+        private readonly Stack<Tuple<Matrix<double>, double[]>> backups;
 
-        public EquationSystem(Array2DWrapper<double> matrix, double[] rhs)
+        public EquationSystem(Matrix<double> matrix, double[] rhs)
         {
-            if (matrix.SideLength != rhs.Length)
+            if (matrix.Size != rhs.Length)
                 throw new ArgumentException(
-                    $"Matrix side length ({matrix.SideLength}) is different from right hand side vector length ({rhs.Length})");
+                    $"Matrix side length ({matrix.Size}) is different from right hand side vector length ({rhs.Length})");
             Solution = new double[rhs.Length];
 
-            backups = new Stack<Tuple<Array2DWrapper<double>, double[]>>();
+            backups = new Stack<Tuple<Matrix<double>, double[]>>();
 
             backups.Push(Tuple.Create(matrix, rhs));
             Clear();
@@ -32,7 +32,7 @@ namespace NextGenSpice.Core.Equations
         /// <summary>
         ///     Matrix part of the equation system.
         /// </summary>
-        public Array2DWrapper<double> Matrix { get; private set; }
+        public Matrix<double> Matrix { get; private set; }
 
         /// <summary>
         ///     Right hand side vector of the equation system.
@@ -108,7 +108,7 @@ namespace NextGenSpice.Core.Equations
             var b = (double[]) RightHandSide.Clone();
 
 
-            NumericMethods.GaussElimSolve(m, b, Solution);
+            GaussJordanElimination.Solve(m, b, Solution);
 
             return Solution;
         }

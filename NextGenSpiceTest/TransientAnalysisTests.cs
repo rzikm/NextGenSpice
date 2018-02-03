@@ -2,7 +2,6 @@
 using System.Linq;
 using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Extensions;
 using NextGenSpice.LargeSignal;
 using NextGenSpice.LargeSignal.Models;
@@ -26,7 +25,7 @@ namespace NextGenSpiceTest
             var results = new List<double>();
 
             var circuit = new CircuitBuilder()
-                .AddVoltageSource(1, 0, new PulseBehaviorParams()
+                .AddVoltageSource(1, 0, new PulseBehaviorParams
                 {
                     Delay = 1e-6,
                     PulseWidth = 1,
@@ -44,18 +43,18 @@ namespace NextGenSpiceTest
             Output.WriteLine("Voltages:");
             Output.WriteLine(string.Join("\t", Enumerable.Range(0, model.NodeCount)));
             Output.WriteLine(string.Join("\t",
-                model.NodeVoltages.Concat(new[] { device.Current }).Select(v => v.ToString("F"))));
+                model.NodeVoltages.Concat(new[] {device.Current}).Select(v => v.ToString("F"))));
 
             for (var i = 0; i < 40; i++)
             {
                 model.AdvanceInTime(1e-6); // 1us
 
                 Output.WriteLine(string.Join("\t",
-                    model.NodeVoltages.Concat(new[] { device.Current }).Select(v => v.ToString("F"))));
+                    model.NodeVoltages.Concat(new[] {device.Current}).Select(v => v.ToString("F"))));
 //                results.Add(model.NodeVoltages[2]);
             }
         }
-        
+
         [Fact]
         public void TestSimpleInductorTimeDependentCircuit()
         {
@@ -73,7 +72,7 @@ namespace NextGenSpiceTest
             Output.WriteLine("Voltages:");
             Output.WriteLine(string.Join("\t", Enumerable.Range(0, model.NodeCount)));
             Output.WriteLine(string.Join("\t",
-                model.NodeVoltages.Concat(new[] { inductor.Current }).Select(v => v.ToString("F"))));
+                model.NodeVoltages.Concat(new[] {inductor.Current}).Select(v => v.ToString("F"))));
 
             results.Add(model.NodeVoltages[2]);
 
@@ -83,7 +82,7 @@ namespace NextGenSpiceTest
                 model.AdvanceInTime(1e-6); // 1us
 
                 Output.WriteLine(string.Join("\t",
-                    model.NodeVoltages.Concat(new[] { inductor.Current }).Select(v => v.ToString("F"))));
+                    model.NodeVoltages.Concat(new[] {inductor.Current}).Select(v => v.ToString("F"))));
                 results.Add(model.NodeVoltages[2]);
             }
 

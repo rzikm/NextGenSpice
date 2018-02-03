@@ -38,5 +38,5 @@ NUMERICCORE_API BSTR qd_to_string(qd_real& self)
 	auto str = self.to_string(60);
 	std::wstring ws = converter.from_bytes(str);
 
-	return ::SysAllocString(ws.c_str());
+	return SysAllocString(ws.c_str());
 }

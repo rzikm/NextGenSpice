@@ -68,7 +68,7 @@ namespace NextGenSpice.Core.Equations
         /// <returns></returns>
         public EquationSystem Build()
         {
-            var m = new Array2DWrapper<double>(VariablesCount);
+            var m = new Matrix<double>(VariablesCount);
 
 
             for (var i = 0; i < VariablesCount; i++)

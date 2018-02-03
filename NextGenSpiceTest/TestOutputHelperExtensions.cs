@@ -11,9 +11,7 @@ namespace NextGenSpiceTest
             output.WriteLine($"Delta^2: {model.DeltaSquared}");
             output.WriteLine("Voltages:");
             for (var id = 0; id < model.NodeVoltages.Length; id++)
-            {
                 output.WriteLine($"[{id}]:\t{model.NodeVoltages[id]}");
-            }
             output.WriteLine("");
         }
     }

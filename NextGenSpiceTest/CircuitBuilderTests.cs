@@ -6,45 +6,21 @@ using Xunit;
 
 namespace NextGenSpiceTest
 {
-   
     public class CircuitBuilderTests
     {
-        private readonly CircuitBuilder builder;
-
-
         public CircuitBuilderTests()
         {
             builder = new CircuitBuilder();
         }
 
-        [Fact]
-        public void TestThrowsWhenFloatingNodeInSubcircuit()
-        {
-            builder.AddResistor(1, 0, 1);
-            builder.AddResistor(1, 2, 2);
-            builder.AddResistor(0, 2, 3);
-            builder.AddCurrentSource(1, 0, 5);
-
-            // add element 'far away'
-            builder.AddResistor(3, 4, 3);
-
-//            builder.BuildSubcircuit(new []{1,4});
-            Assert.Throws<NotConnectedSubcircuit>(() => builder.BuildSubcircuit(new[] { 1, 4 }));
-        }
+        private readonly CircuitBuilder builder;
 
         [Fact]
-        public void TestThrowsWhenNodeIsNotConnectedToGround()
+        public void CanAddClonedElement()
         {
-            builder.AddResistor(1, 0, 1);
-            builder.AddResistor(1, 2, 2);
-            builder.AddResistor(0, 2, 3);
-            builder.AddCurrentSource(1, 0, 5);
-
-            // add element 'far away'
-            builder.AddResistor(3, 4, 3);
-
-            //            builder.BuildCircuit();
-            Assert.Throws<NoDcPathToGroundException>(() => builder.BuildCircuit());
+            var device = new ResistorElement(5);
+            builder.AddElement(new[] {1, 2}, device);
+            builder.AddElement(new[] {1, 2}, device.Clone());
         }
 
         [Fact]
@@ -63,8 +39,8 @@ namespace NextGenSpiceTest
         [Fact]
         public void TestThrowOnInvalidNumberOfConnections()
         {
-            Assert.Throws<ArgumentException>(() => builder.AddElement(new[] { 1 }, new ResistorElement(3)));
-            Assert.Throws<ArgumentException>(() => builder.AddElement(new[] { 1, 2, 3 }, new ResistorElement(3)));
+            Assert.Throws<ArgumentException>(() => builder.AddElement(new[] {1}, new ResistorElement(3)));
+            Assert.Throws<ArgumentException>(() => builder.AddElement(new[] {1, 2, 3}, new ResistorElement(3)));
         }
 
 
@@ -76,11 +52,33 @@ namespace NextGenSpiceTest
         }
 
         [Fact]
-        public void ThrowsWhenAddingSameDeviceTwice()
+        public void TestThrowsWhenFloatingNodeInSubcircuit()
         {
-            var device = new ResistorElement(5);
-            builder.AddElement(new []{1, 2}, device);
-            Assert.Throws<InvalidOperationException>(() => builder.AddElement(new[] {1, 2}, device));
+            builder.AddResistor(1, 0, 1);
+            builder.AddResistor(1, 2, 2);
+            builder.AddResistor(0, 2, 3);
+            builder.AddCurrentSource(1, 0, 5);
+
+            // add element 'far away'
+            builder.AddResistor(3, 4, 3);
+
+//            builder.BuildSubcircuit(new []{1,4});
+            Assert.Throws<NotConnectedSubcircuit>(() => builder.BuildSubcircuit(new[] {1, 4}));
+        }
+
+        [Fact]
+        public void TestThrowsWhenNodeIsNotConnectedToGround()
+        {
+            builder.AddResistor(1, 0, 1);
+            builder.AddResistor(1, 2, 2);
+            builder.AddResistor(0, 2, 3);
+            builder.AddCurrentSource(1, 0, 5);
+
+            // add element 'far away'
+            builder.AddResistor(3, 4, 3);
+
+            //            builder.BuildCircuit();
+            Assert.Throws<NoDcPathToGroundException>(() => builder.BuildCircuit());
         }
 
         [Fact]
@@ -89,18 +87,16 @@ namespace NextGenSpiceTest
             var elem1 = new ResistorElement(5, "R1");
             var elem2 = new ResistorElement(5, "R1");
 
-            builder.AddElement(new int[] {1, 2}, elem1);
-            Assert.Throws<InvalidOperationException>(() => builder.AddElement(new[] {1, 2,}, elem2));
+            builder.AddElement(new[] {1, 2}, elem1);
+            Assert.Throws<InvalidOperationException>(() => builder.AddElement(new[] {1, 2}, elem2));
         }
 
         [Fact]
-        public void CanAddClonedElement()
+        public void ThrowsWhenAddingSameDeviceTwice()
         {
             var device = new ResistorElement(5);
-            builder.AddElement(new[] { 1, 2 }, device);
-            builder.AddElement(new[] { 1, 2 }, device.Clone());
+            builder.AddElement(new[] {1, 2}, device);
+            Assert.Throws<InvalidOperationException>(() => builder.AddElement(new[] {1, 2}, device));
         }
-
-
     }
 }

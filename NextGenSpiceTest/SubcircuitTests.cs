@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
+﻿using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Extensions;
 using NextGenSpice.LargeSignal;
 using Xunit;
@@ -10,14 +8,36 @@ namespace NextGenSpiceTest
 {
     public class SubcircuitTests : TracedTestBase
     {
-        private readonly CircuitBuilder builder;
-
         public SubcircuitTests(ITestOutputHelper output) : base(output)
         {
             builder = new CircuitBuilder();
         }
 
-  
+        private readonly CircuitBuilder builder;
+
+        [Fact]
+        public void SubcircuitCannotReferenceOuterElements()
+        {
+            var subcircuit = builder
+                .AddVoltageSource(2, 1, 4)
+                .AddResistor(2, 3, 1)
+                .BuildSubcircuit(new[] {1, 2});
+
+            var circuitWithSubcircuit = new CircuitBuilder()
+                .AddElement(new[] {0, 1}, subcircuit)
+                .AddResistor(1, 0, 5, "R1")
+                .BuildCircuit();
+        }
+
+        [Fact]
+        public void SubcircuitCanReferenceInnerElements()
+        {
+            var subcircuit = builder
+                .AddVoltageSource(2, 1, 4)
+                .AddResistor(2, 3, 1)
+                .BuildSubcircuit(new[] {1, 2});
+        }
+
 
         [Fact]
         public void TestSimpleSubcircuit()
@@ -25,9 +45,9 @@ namespace NextGenSpiceTest
             var subcircuit = builder
                 .AddVoltageSource(2, 1, 4)
                 .AddResistor(2, 3, 1)
-                .BuildSubcircuit(new int[] {1, 2});
+                .BuildSubcircuit(new[] {1, 2});
 
-            
+
             Output.WriteLine("With subcircuit:");
             var circuitWithSubcircuit = new CircuitBuilder()
                 .AddElement(new[] {0, 1}, subcircuit)
@@ -44,32 +64,6 @@ namespace NextGenSpiceTest
             originalCircuit.EstablishDcBias();
 
 //            Assert.Equal(circuitWithSubcircuit.NodeVoltages[1], originalCircuit.NodeVoltages[2]);    
-        }
-
-        [Fact]
-        public void SubcircuitCannotReferenceOuterElements()
-        {
-            var subcircuit = builder
-                .AddVoltageSource(2, 1, 4)
-                .AddResistor(2, 3, 1)
-                .BuildSubcircuit(new int[] { 1, 2 });
-
-            var circuitWithSubcircuit = new CircuitBuilder()
-                .AddElement(new[] { 0, 1 }, subcircuit)
-                .AddResistor(1, 0, 5, "R1")
-                .BuildCircuit();
-            
-
-            
-        }
-
-        [Fact]
-        public void SubcircuitCanReferenceInnerElements()
-        {
-            var subcircuit = builder
-                .AddVoltageSource(2, 1, 4)
-                .AddResistor(2, 3, 1)
-                .BuildSubcircuit(new int[] { 1, 2 });
         }
     }
 }

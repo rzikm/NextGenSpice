@@ -68,7 +68,7 @@ namespace NextGenSpice.Core.Equations
         /// <returns></returns>
         public DdEquationSystem Build()
         {
-            var m = new Array2DWrapper<dd_real>(VariablesCount);
+            var m = new Matrix<dd_real>(VariablesCount);
 
 
             for (var i = 0; i < VariablesCount; i++)

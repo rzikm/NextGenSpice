@@ -68,7 +68,7 @@ namespace NextGenSpice.Core.Equations
         /// <returns></returns>
         public QdEquationSystem Build()
         {
-            var m = new Array2DWrapper<qd_real>(VariablesCount);
+            var m = new Matrix<qd_real>(VariablesCount);
 
 
             for (var i = 0; i < VariablesCount; i++)

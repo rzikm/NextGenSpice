@@ -7,19 +7,19 @@ namespace NextGenSpiceTest
 {
     public class TracedTestBase : IDisposable
     {
+        [ThreadStatic] private static ITestOutputHelper output;
 
-        [ThreadStatic]
-        private static ITestOutputHelper output;
+        [ThreadStatic] private static StringBuilder sb;
 
-        [ThreadStatic]
-        private static StringBuilder sb;
+        [ThreadStatic] protected static bool DoTrace;
 
-        [ThreadStatic]
-        protected static bool DoTrace;
+        private static readonly MyTraceListener myTraceListener;
 
-        private static MyTraceListener myTraceListener;
-
-        protected ITestOutputHelper Output => output;
+        static TracedTestBase()
+        {
+            myTraceListener = new MyTraceListener();
+            Trace.Listeners.Add(myTraceListener);
+        }
 
         public TracedTestBase(ITestOutputHelper output)
         {
@@ -28,15 +28,16 @@ namespace NextGenSpiceTest
             DoTrace = true;
         }
 
-        static TracedTestBase()
+        protected ITestOutputHelper Output => output;
+
+        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+        public void Dispose()
         {
-            myTraceListener = new MyTraceListener();
-            Trace.Listeners.Add(myTraceListener);
+            Trace.Listeners.Remove(myTraceListener);
         }
 
         private class MyTraceListener : TraceListener
         {
-
             public override void Write(string message)
             {
                 Console.Write(message);
@@ -51,12 +52,6 @@ namespace NextGenSpiceTest
                 output.WriteLine(sb.ToString());
                 sb.Clear();
             }
-        }
-
-        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public void Dispose()
-        {
-            Trace.Listeners.Remove(myTraceListener);
         }
     }
 }

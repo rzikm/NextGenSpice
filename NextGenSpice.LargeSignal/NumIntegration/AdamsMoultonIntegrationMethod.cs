@@ -45,27 +45,27 @@ namespace NextGenSpice.LargeSignal.NumIntegration
         /// <summary>
         ///     Gets next values of state and derivative based on history and current timepoint.
         /// </summary>
-        /// <param name="timeStep">How far to predict values of state and derivative.</param>
+        /// <param name="dx">How far to predict values of state and derivative.</param>
         /// <returns></returns>
-        public (double state, double derivative) GetEquivalents(double timeStep)
+        public (double state, double derivative) GetEquivalents(double dx)
         {
-            if (timeStep <= 0) throw new ArgumentOutOfRangeException(nameof(timeStep));
+            if (dx <= 0) throw new ArgumentOutOfRangeException(nameof(dx));
 
             if (stateCount < states.Length)
             {
                 var rec = new AdamsMoultonIntegrationMethod(stateCount + 1);
                 for (var i = 0; i < stateCount; i++)
                     rec.SetState(states[states.Length - 1 - i], derivative);
-                return rec.GetEquivalents(timeStep);
+                return rec.GetEquivalents(dx);
             }
 
-            var dx = timeStep / derivativeCoeff;
-            var x = derivative * timeStep;
+            var dy = dx / derivativeCoeff;
+            var y = derivative * dx;
             for (var i = 0; i < states.Length; i++)
-                x += coefficients[i] * states[(baseIndex + i) % states.Length];
-            x /= derivativeCoeff;
+                y += coefficients[i] * states[(baseIndex + i) % states.Length];
+            y /= derivativeCoeff;
 
-            return (x, dx);
+            return (y, dy);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace NextGenSpice.LargeSignal.NumIntegration
 
             // see http://qucs.sourceforge.net/tech/node24.html#eq:MoultonInt for details
 
-            var es = new EquationSystem(new Array2DWrapper<double>(order), new double[order]);
+            var es = new EquationSystem(new Matrix<double>(order), new double[order]);
             es.AddMatrixEntry(0, 0, 1);
             es.AddRightHandSideEntry(0, 1);
             for (var i = 1; i < order; i++)

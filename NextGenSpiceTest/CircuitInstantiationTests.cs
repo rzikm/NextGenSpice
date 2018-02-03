@@ -18,14 +18,16 @@ namespace NextGenSpiceTest
                 new Dictionary<Type, Func<ICircuitDefinitionElement, IModelInstantiationContext<LargeSignalCircuitModel>
                     , IAnalysisDeviceModel<LargeSignalCircuitModel>>>
                 {
-                    [typeof(ResistorElement)] = 
-                        (e, ctx) => new LargeSignalResistorModel((ResistorElement) e),
-                    [typeof(VoltageSourceElement)] = 
-                        (e, ctx) => new LargeSignalVoltageSourceModel((VoltageSourceElement) e, null)
+                    [typeof(ResistorElement)] =
+                    (e, ctx) => new LargeSignalResistorModel((ResistorElement) e),
+                    [typeof(VoltageSourceElement)] =
+                    (e, ctx) => new LargeSignalVoltageSourceModel((VoltageSourceElement) e, null)
                 };
 
 
-            context = new ModelInstantiationContext<LargeSignalCircuitModel>(modelCreators, new Dictionary<Type, Func<object, IModelInstantiationContext<LargeSignalCircuitModel>, object>>(), circuitDefinition);
+            context = new ModelInstantiationContext<LargeSignalCircuitModel>(modelCreators,
+                new Dictionary<Type, Func<object, IModelInstantiationContext<LargeSignalCircuitModel>, object>>(),
+                circuitDefinition);
         }
 
         private readonly ModelInstantiationContext<LargeSignalCircuitModel> context;
@@ -55,10 +57,10 @@ namespace NextGenSpiceTest
         [Fact]
         public void ThrowWhenNoSuchNameExists()
         {
-            Assert.Throws<ArgumentNullException>(() => context.GetModel((string)null));
+            Assert.Throws<ArgumentNullException>(() => context.GetModel((string) null));
             Assert.Throws<ArgumentException>(() => context.GetModel("nonexistant model"));
 
-            Assert.Throws<ArgumentNullException>(() => context.GetModel((ICircuitDefinitionElement)null));
+            Assert.Throws<ArgumentNullException>(() => context.GetModel((ICircuitDefinitionElement) null));
         }
     }
 }

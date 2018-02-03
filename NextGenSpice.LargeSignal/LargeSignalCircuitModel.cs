@@ -253,7 +253,7 @@ namespace NextGenSpice.LargeSignal
             m[0, 0] = new qd_real(1);
             equationSystem.RightHandSide[0] = qd_real.Zero;
 #elif dd_precision
-            for (var i = 0; i < m.SideLength; i++)
+            for (var i = 0; i < m.Size; i++)
             {
                 m[i, 0] = dd_real.Zero;
                 m[0, i] = dd_real.Zero;

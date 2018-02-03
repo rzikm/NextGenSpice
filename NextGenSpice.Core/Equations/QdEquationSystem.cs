@@ -10,16 +10,16 @@ namespace NextGenSpice.Core.Equations
     /// </summary>
     public class QdEquationSystem : IEquationEditor
     {
-        private readonly Stack<Tuple<Array2DWrapper<qd_real>, qd_real[]>> backups;
+        private readonly Stack<Tuple<Matrix<qd_real>, qd_real[]>> backups;
 
-        public QdEquationSystem(Array2DWrapper<qd_real> matrix, qd_real[] rhs)
+        public QdEquationSystem(Matrix<qd_real> matrix, qd_real[] rhs)
         {
-            if (matrix.SideLength != rhs.Length)
+            if (matrix.Size != rhs.Length)
                 throw new ArgumentException(
-                    $"Matrix side length ({matrix.SideLength}) is different from right hand side vector length ({rhs.Length})");
+                    $"Matrix side length ({matrix.Size}) is different from right hand side vector length ({rhs.Length})");
             Solution = new double[rhs.Length];
 
-            backups = new Stack<Tuple<Array2DWrapper<qd_real>, qd_real[]>>();
+            backups = new Stack<Tuple<Matrix<qd_real>, qd_real[]>>();
 
             backups.Push(Tuple.Create(matrix, rhs));
             Clear();
@@ -33,7 +33,7 @@ namespace NextGenSpice.Core.Equations
         /// <summary>
         ///     Matrix part of the equation system.
         /// </summary>
-        public Array2DWrapper<qd_real> Matrix { get; private set; }
+        public Matrix<qd_real> Matrix { get; private set; }
 
         /// <summary>
         ///     Right hand side vector of the equation system.
@@ -110,7 +110,7 @@ namespace NextGenSpice.Core.Equations
             var b = (qd_real[]) RightHandSide.Clone();
             var x = new qd_real[b.Length];
 
-            NumericMethods.GaussElimSolve_qd(m, b, x);
+            GaussJordanElimination.Solve(m, b, x);
 
             //DistributeEquivalentVoltages(m);
             return Solution = x.Select(qd => (double) qd).ToArray();

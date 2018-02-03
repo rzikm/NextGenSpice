@@ -15,8 +15,8 @@
         /// <summary>
         ///     Gets next values of state and derivative based on history and current timepoint.
         /// </summary>
-        /// <param name="timeStep">How far to predict values of state and derivative.</param>
+        /// <param name="dx">How far to predict values of state and derivative.</param>
         /// <returns></returns>
-        (double state, double derivative) GetEquivalents(double timeStep);
+        (double state, double derivative) GetEquivalents(double dx);
     }
 }

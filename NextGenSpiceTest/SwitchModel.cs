@@ -6,13 +6,16 @@ namespace NextGenSpiceTest
 {
     public class SwitchModel : TwoNodeLargeSignalModel<SwitchElement>
     {
-        public bool IsOn { get; set; } = true;
-
         private int branchVariable;
 
         public SwitchModel(SwitchElement definitionElement) : base(definitionElement)
         {
         }
+
+        public bool IsOn { get; set; } = true;
+
+        public override bool IsNonlinear => true;
+        public override bool IsTimeDependent => true;
 
         public void UpdateTimeDependentModel(ISimulationContext context)
         {
@@ -35,7 +38,9 @@ namespace NextGenSpiceTest
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
             if (IsOn)
+            {
                 equations.AddVoltage(Anode, Kathode, branchVariable, 0);
+            }
             else
             {
                 equations.AddMatrixEntry(Anode, branchVariable, 1);
@@ -46,8 +51,5 @@ namespace NextGenSpiceTest
                 equations.AddRightHandSideEntry(branchVariable, 0);
             }
         }
-
-        public override bool IsNonlinear => true;
-        public override bool IsTimeDependent => true;
     }
 }

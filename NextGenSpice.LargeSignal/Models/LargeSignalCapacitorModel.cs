@@ -90,7 +90,7 @@ namespace NextGenSpice.LargeSignal.Models
             if (DefinitionElement.InitialVoltage.HasValue) // model using voltage source
                 equations.AddVoltage(Anode, Kathode, branchVariable, DefinitionElement.InitialVoltage.Value);
             else // model as open circuit
-                AddBranchCurrent(equations, 0); 
+                AddBranchCurrent(equations, 0);
         }
 
         /// <summary>

@@ -5,6 +5,12 @@ namespace NextGenSpiceTest
 {
     public class StateHelperTests
     {
+        public StateHelperTests()
+        {
+            intHelper = new StateHelper<int>();
+            stateHelper = new StateHelper<MyState>();
+        }
+
         private struct MyState
         {
             public int Int;
@@ -12,12 +18,6 @@ namespace NextGenSpiceTest
 
         private readonly StateHelper<int> intHelper;
         private readonly StateHelper<MyState> stateHelper;
-
-        public StateHelperTests()
-        {
-            intHelper = new StateHelper<int>();
-            stateHelper = new StateHelper<MyState>();
-        }
 
         [Fact]
         public void PersistsValue()

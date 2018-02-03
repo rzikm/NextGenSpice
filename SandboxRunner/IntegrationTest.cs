@@ -6,9 +6,9 @@ namespace SandboxRunner
     {
         public static double F(double t, double x)
         {
-            return 2* x - 3 * t;
+            return 2 * x - 3 * t;
         }
-   
+
         public static void Run()
         {
             // see wolfram alpha:  " y' = 2y - 3t, y(0)=1, solve for y(0.2) "
@@ -16,7 +16,7 @@ namespace SandboxRunner
             Console.WriteLine(Integrate(0, 0.2, 1, 0.001, (t, y) => 2 * y - 3 * t));
             var loc = Integrate_LTE_timestep_control(0, 0.2, 1, 0.001, 1e-15, 1 + 1e-15, (t, y) => 2 * y - 3 * t);
             Console.WriteLine(loc);
-            var actual = 1/4.0 * (6 * 0.2 + Math.Exp(2 * 0.2) + 3);
+            var actual = 1 / 4.0 * (6 * 0.2 + Math.Exp(2 * 0.2) + 3);
             Console.WriteLine($"Should be: {actual}, diff = {loc - actual}");
             Console.WriteLine();
 
@@ -26,7 +26,8 @@ namespace SandboxRunner
             Console.WriteLine($"Should be: {Math.Exp(0.2)}");
         }
 
-        private static double Integrate(double initPoint, double stopPoint, double initValue, double stepsize, Func<double, double, double> func)
+        private static double Integrate(double initPoint, double stopPoint, double initValue, double stepsize,
+            Func<double, double, double> func)
         {
             var iterOuter = 0;
             var iterInner = 0;
@@ -55,9 +56,9 @@ namespace SandboxRunner
             return initValue;
         }
 
-        private static double Integrate_LTE_timestep_control(double initPoint, double stopPoint, double initValue, double stepsize, double maxAbsTruncErr, double maxRelTruncErr, Func<double, double, double> func)
+        private static double Integrate_LTE_timestep_control(double initPoint, double stopPoint, double initValue,
+            double stepsize, double maxAbsTruncErr, double maxRelTruncErr, Func<double, double, double> func)
         {
-
             var iterOuter = 0;
             var iterInner = 0;
 
@@ -88,10 +89,10 @@ namespace SandboxRunner
                 var dxn = (xn - x) / hn;
                 var ddx = (dxn - dx) / (h + hn); // second derivative of x
 
-                var lte = 2*ddx;
-                var q = lte/(Math.Abs(xn) * maxRelTruncErr + maxAbsTruncErr);
+                var lte = 2 * ddx;
+                var q = lte / (Math.Abs(xn) * maxRelTruncErr + maxAbsTruncErr);
 
-                bool converged = (x == initValue) || 1 > q;
+                var converged = x == initValue || 1 > q;
                 if (converged)
                 {
                     t += hn;
@@ -101,7 +102,7 @@ namespace SandboxRunner
                 }
                 else
                 {
-                    hn *= Math.Pow(0.8/q, 1/3.0);
+                    hn *= Math.Pow(0.8 / q, 1 / 3.0);
                 }
             }
 

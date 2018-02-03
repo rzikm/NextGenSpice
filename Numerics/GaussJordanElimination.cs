@@ -1,3 +1,5 @@
+#define NativeGaussElim
+
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -5,32 +7,30 @@ using System.Runtime.InteropServices;
 
 namespace Numerics
 {
-    public static unsafe class NumericMethods
+    /// <summary>
+    ///     Class Containing static methods for solving systems of linear equations using Gauss-Jordan Elimination.
+    /// </summary>
+    public static unsafe class GaussJordanElimination
     {
-        private const string DllPath = "D:\\Visual Studio 2017\\Projects\\NextGen Spice\\Debug\\NumericCore.dll";
-//        private const string DllPath = "NumericCore.dll";
-
-        [DllImport(DllPath, CallingConvention = CallingConvention.StdCall)]
+        [DllImport(Constants.DllPath, CallingConvention = CallingConvention.StdCall)]
         private static extern void gauss_solve_double(double* mat, double* b, uint size);
 
-        [DllImport(DllPath, CallingConvention = CallingConvention.StdCall)]
+        [DllImport(Constants.DllPath, CallingConvention = CallingConvention.StdCall)]
         private static extern void gauss_solve_qd(qd_real* mat, qd_real* b, uint size);
 
-        [DllImport(DllPath, CallingConvention = CallingConvention.StdCall)]
+        [DllImport(Constants.DllPath, CallingConvention = CallingConvention.StdCall)]
         private static extern void gauss_solve_dd(dd_real* mat, dd_real* b, uint size);
 
         [Conditional("DEBUG")]
-        public static void PrintSystem<T>(Array2DWrapper<T> m, T[] b) where T : struct
+        public static void PrintSystem<T>(Matrix<T> m, T[] b) where T : struct
         {
-            var size = m.SideLength;
+            var size = m.Size;
             Trace.WriteLine("-----------------------------------------------------");
 
             for (var i = 0; i < size; i++)
             {
                 for (var j = 0; j < size; j++)
-                {
                     Trace.Write($"{Convert.ToDouble(m[i, j]),10:G4} ");
-                }
 
                 Trace.WriteLine($"| {Convert.ToDouble(b[i]),10:G4}");
             }
@@ -44,40 +44,67 @@ namespace Numerics
             Trace.WriteLine($"Solution: {string.Join(" ", b.Select(d => d.ToString("F")))}");
         }
 
-        public static void GaussElimSolve(Array2DWrapper<double> m, double[] b, double[] x)
+        /// <summary>
+        ///     Solves system of linear equations in the form A*x=b.
+        /// </summary>
+        /// <param name="a">The A matrix.</param>
+        /// <param name="b">The right hand side vector b.</param>
+        /// <param name="x">The output array for solution x.</param>
+        public static void Solve(Matrix<double> a, double[] b, double[] x)
         {
-            GaussElimSolve_Managed(m, b, x);
-//            GaussElimSolve_Native_qd(m, b, x);
-//                                    GaussElimSolve_Native(m, b, x);
+#if NativeGaussElim
+            Solve_Native_double(a, b, x);
+#else
+            Solve_Managed_double(a, b, x);
+#endif
         }
 
-        public static void GaussElimSolve_qd(Array2DWrapper<qd_real> m, qd_real[] b, qd_real[] x)
+        /// <summary>
+        ///     Solves system of linear equations in the form A*x=b.
+        /// </summary>
+        /// <param name="a">The A matrix.</param>
+        /// <param name="b">The right hand side vector b.</param>
+        /// <param name="x">The output array for solution x.</param>
+        public static void Solve(Matrix<qd_real> a, qd_real[] b, qd_real[] x)
         {
-//                        GaussElimSolve_Managed_qd(m, b, x);
-            GaussElimSolve_Native_qd(m, b, x);
+#if NativeGaussElim
+            Solve_Native_qd(a, b, x);
+#else
+            Solve_Managed_qd(a, b, x);
+#endif
         }
 
-        public static void GaussElimSolve_dd(Array2DWrapper<dd_real> m, dd_real[] b, dd_real[] x)
+        /// <summary>
+        ///     Solves system of linear equations in the form A*x=b.
+        /// </summary>
+        /// <param name="a">The A matrix.</param>
+        /// <param name="b">The right hand side vector b.</param>
+        /// <param name="x">The output array for solution x.</param>
+        public static void Solve(Matrix<dd_real> a, dd_real[] b, dd_real[] x)
         {
-//            GaussElimSolve_Native_dd(m, b, x);
-            GaussElimSolve_Managed_dd(m, b, x);
+#if NativeGaussElim
+            Solve_Native_dd(a, b, x);
+#else
+            Solve_Managed_dd(a, b, x);
+#endif
         }
 
-        private static void GaussElimSolve_Managed_qd(Array2DWrapper<qd_real> m, qd_real[] b, qd_real[] x)
+
+        private static void Solve_Managed_qd(Matrix<qd_real> m, qd_real[] b, qd_real[] x)
         {
             qd_real Abs(qd_real val)
             {
                 return val > qd_real.Zero ? val : -val;
             }
 
-            var size = m.SideLength;
+            var size = m.Size;
 
-//            PrintSystem(m, b);
+            //            PrintSystem(m, b);
 
             for (var i = 0; i < size - 1; i++)
             {
                 // Search for maximum in this column
-                var maxEl =  Abs(m[i, i]);
+                var maxEl = Abs(m[i, i]);
                 var maxRow = i;
                 for (var k = i + 1; k < size; k++)
                     if (Abs(m[k, i]) > maxEl)
@@ -120,7 +147,7 @@ namespace Numerics
             }
 
 
-            // GaussElimSolve equation Ax=b for an upper triangular matrix A
+            // Solve equation Ax=b for an upper triangular matrix A
             for (var i = size - 1; i >= 0; i--)
             {
                 if (b[i] == qd_real.Zero)
@@ -135,31 +162,30 @@ namespace Numerics
             }
 
             b.CopyTo(x, 0);
-            PrintSolution(b.Select(e => (double) e).ToArray());
+            PrintSolution(b.Select(e => (double)e).ToArray());
         }
 
-        private static void GaussElimSolve_Native_qd(Array2DWrapper<qd_real> m, qd_real[] b, qd_real[] x)
+        private static void Solve_Native_qd(Matrix<qd_real> m, qd_real[] b, qd_real[] x)
         {
             fixed (qd_real* mat = m.RawData)
             fixed (qd_real* rhs = b)
             {
-                gauss_solve_qd(mat, rhs, (uint) x.Length);
+                gauss_solve_qd(mat, rhs, (uint)x.Length);
             }
 
             b.CopyTo(x, 0);
         }
 
-
-        private static void GaussElimSolve_Managed_dd(Array2DWrapper<dd_real> m, dd_real[] b, dd_real[] x)
+        private static void Solve_Managed_dd(Matrix<dd_real> m, dd_real[] b, dd_real[] x)
         {
             dd_real Abs(dd_real val)
             {
                 return val > dd_real.Zero ? val : -val;
             }
 
-            var size = m.SideLength;
+            var size = m.Size;
 
-                        PrintSystem(m, b);
+            PrintSystem(m, b);
 
             for (var i = 0; i < size - 1; i++)
             {
@@ -187,7 +213,7 @@ namespace Numerics
                     b[i] = tmp;
                 }
 
-                                PrintSystem(m, b);
+                PrintSystem(m, b);
 
 
                 // eliminate current variable in all columns
@@ -203,11 +229,11 @@ namespace Numerics
                     b[k] += c * b[i];
                 }
 
-                                PrintSystem(m, b);
+                PrintSystem(m, b);
             }
 
 
-            // GaussElimSolve equation Ax=b for an upper triangular matrix A
+            // Solve equation Ax=b for an upper triangular matrix A
             for (var i = size - 1; i >= 0; i--)
             {
                 if (b[i] == dd_real.Zero)
@@ -225,8 +251,7 @@ namespace Numerics
             PrintSolution(b.Select(e => (double)e).ToArray());
         }
 
-
-        private static void GaussElimSolve_Native_dd(Array2DWrapper<dd_real> m, dd_real[] b, dd_real[] x)
+        private static void Solve_Native_dd(Matrix<dd_real> m, dd_real[] b, dd_real[] x)
         {
             fixed (dd_real* mat = m.RawData)
             fixed (dd_real* rhs = b)
@@ -237,9 +262,9 @@ namespace Numerics
             b.CopyTo(x, 0);
         }
 
-        private static void GaussElimSolve_Managed(Array2DWrapper<double> m, double[] b, double[] x)
+        private static void Solve_Managed_double(Matrix<double> m, double[] b, double[] x)
         {
-            var size = m.SideLength;
+            var size = m.Size;
 
             PrintSystem(m, b);
 
@@ -269,7 +294,7 @@ namespace Numerics
                     b[i] = tmp;
                 }
 
-//                PrintSystem(m, b);
+                //                PrintSystem(m, b);
 
 
                 // eliminate current variable in all columns
@@ -289,7 +314,7 @@ namespace Numerics
             }
 
 
-            // GaussElimSolve equation Ax=b for an upper triangular matrix A
+            // Solve equation Ax=b for an upper triangular matrix A
             for (var i = size - 1; i >= 0; i--)
             {
                 if (b[i] == 0)
@@ -311,7 +336,7 @@ namespace Numerics
             PrintSolution(b);
         }
 
-        private static void GaussElimSolve_Native(Array2DWrapper<double> m, double[] b, double[] x)
+        private static void Solve_Native_double(Matrix<double> m, double[] b, double[] x)
         {
             fixed (double* mat = m.RawData)
             fixed (double* rhs = b)

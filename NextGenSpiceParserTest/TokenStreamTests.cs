@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NextGenSpice;
 using NextGenSpice.Parser;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace NextGenSpiceParserTest
 {
@@ -18,33 +16,63 @@ namespace NextGenSpiceParserTest
             TokenStream = new TokenStream(new StringReader(input));
         }
 
+        private class TokenComparer : IEqualityComparer<Token>
+        {
+            public bool Equals(Token x, Token y)
+            {
+                return Compare(x, y) == 0;
+            }
+
+            public int GetHashCode(Token obj)
+            {
+                throw new NotImplementedException();
+            }
+
+            public int Compare(Token x, Token y)
+            {
+                var res = 0;
+                if ((res = x.LineColumn.CompareTo(y.LineColumn)) != 0)
+                    return res;
+                if ((res = x.LineNumber.CompareTo(y.LineNumber)) != 0)
+                    return res;
+                return string.Compare(x.Value, y.Value, StringComparison.Ordinal);
+            }
+        }
+
+        [Fact]
+        public void HandlesMoreLines()
+        {
+            const string token1 = "First";
+            const string token2 = "Second";
+            InitInput($"{token1}  \n  {token2}");
+
+            var expected = new Token
+            {
+                Value = token1.ToUpperInvariant(),
+                LineColumn = 1,
+                LineNumber = 1
+            };
+
+            Assert.Equal(expected, TokenStream.Read(), new TokenComparer());
+
+            expected = new Token
+            {
+                Value = token2.ToUpperInvariant(),
+                LineColumn = 3,
+                LineNumber = 2
+            };
+
+            Assert.Equal(expected, TokenStream.Read(), new TokenComparer());
+        }
+
         [Fact]
         public void HandlesSplitLine()
         {
             InitInput(@"first second   
 * next line should be connected to the previous one
 +third fourth");
-            Assert.Equal(new[] { "FIRST", "SECOND", "THIRD", "FOURTH" }, TokenStream.ReadLogicalLine().Select(t => t.Value));
-        }
-
-        [Fact]
-        public void SkipsCommentsOnBegginingOfLine()
-        {
-            InitInput(@"first second   
-* this is a comment
-
-last*comment in the middle
-     *comment on last line of file");
-            Assert.Equal(new[] { "FIRST", "SECOND" }, TokenStream.ReadLogicalLine().Select(t => t.Value));
-            var expected = new Token
-            {
-                Value = "LAST",
-                LineColumn = 1,
-                LineNumber = 4
-            };
-            var nextLine = TokenStream.ReadLogicalLine();
-            Assert.Equal(expected, nextLine.Single(), new TokenComparer());
-            Assert.Equal(0, TokenStream.ReadLogicalLine().Count());
+            Assert.Equal(new[] {"FIRST", "SECOND", "THIRD", "FOURTH"},
+                TokenStream.ReadLogicalLine().Select(t => t.Value));
         }
 
         [Fact]
@@ -52,25 +80,8 @@ last*comment in the middle
         {
             InitInput("first  second     third");
 
-            Assert.Equal(new[]{"FIRST", "SECOND", "THIRD"}, TokenStream.ReadLogicalLine().Select(t => t.Value));
+            Assert.Equal(new[] {"FIRST", "SECOND", "THIRD"}, TokenStream.ReadLogicalLine().Select(t => t.Value));
             Assert.Equal(0, TokenStream.ReadLogicalLine().Count());
-            Assert.Equal(0, TokenStream.ReadLogicalLine().Count());
-        }
-
-        [Fact]
-        public void SkipsEmptyLine()
-        {
-            InitInput(@"first second   
-
-last");
-            Assert.Equal(new[] { "FIRST", "SECOND" }, TokenStream.ReadLogicalLine().Select(t => t.Value));
-            var expected = new Token
-            {
-                Value = "LAST",
-                LineColumn = 1,
-                LineNumber = 3
-            };
-            Assert.Equal(expected, TokenStream.ReadLogicalLine().Single(), new TokenComparer());
             Assert.Equal(0, TokenStream.ReadLogicalLine().Count());
         }
 
@@ -102,53 +113,40 @@ last");
         }
 
         [Fact]
-        public void HandlesMoreLines()
+        public void SkipsCommentsOnBegginingOfLine()
         {
-            const string token1 = "First";
-            const string token2 = "Second";
-            InitInput($"{token1}  \n  {token2}");
+            InitInput(@"first second   
+* this is a comment
 
+last*comment in the middle
+     *comment on last line of file");
+            Assert.Equal(new[] {"FIRST", "SECOND"}, TokenStream.ReadLogicalLine().Select(t => t.Value));
             var expected = new Token
             {
-                Value = token1.ToUpperInvariant(),
+                Value = "LAST",
                 LineColumn = 1,
-                LineNumber = 1
+                LineNumber = 4
             };
-
-            Assert.Equal(expected, TokenStream.Read(), new TokenComparer());
-
-            expected = new Token
-            {
-                Value = token2.ToUpperInvariant(),
-                LineColumn = 3,
-                LineNumber = 2
-            };
-
-            Assert.Equal(expected, TokenStream.Read(), new TokenComparer());
-
+            var nextLine = TokenStream.ReadLogicalLine();
+            Assert.Equal(expected, nextLine.Single(), new TokenComparer());
+            Assert.Equal(0, TokenStream.ReadLogicalLine().Count());
         }
 
-        class TokenComparer : IEqualityComparer<Token>
+        [Fact]
+        public void SkipsEmptyLine()
         {
-            public int Compare(Token x, Token y)
-            {
-                var res = 0;
-                if ((res = x.LineColumn.CompareTo(y.LineColumn)) != 0)
-                    return res;
-                if ((res = x.LineNumber.CompareTo(y.LineNumber)) != 0)
-                    return res;
-                return string.Compare(x.Value, y.Value, StringComparison.Ordinal);
-            }
+            InitInput(@"first second   
 
-            public bool Equals(Token x, Token y)
+last");
+            Assert.Equal(new[] {"FIRST", "SECOND"}, TokenStream.ReadLogicalLine().Select(t => t.Value));
+            var expected = new Token
             {
-                return Compare(x, y) == 0;
-            }
-
-            public int GetHashCode(Token obj)
-            {
-                throw new NotImplementedException();
-            }
+                Value = "LAST",
+                LineColumn = 1,
+                LineNumber = 3
+            };
+            Assert.Equal(expected, TokenStream.ReadLogicalLine().Single(), new TokenComparer());
+            Assert.Equal(0, TokenStream.ReadLogicalLine().Count());
         }
     }
 }
