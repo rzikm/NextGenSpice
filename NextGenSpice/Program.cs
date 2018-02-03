@@ -1,5 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using NextGenSpice.Core.Circuit;
+using NextGenSpice.Core.Representation;
+using NextGenSpice.LargeSignal;
 using NextGenSpice.Parser;
 using NextGenSpice.Parser.Statements.Devices;
 using NextGenSpice.Parser.Statements.Simulation;
@@ -40,7 +46,6 @@ namespace NextGenSpice
                 return;
             }
 
-
             var parser = new SpiceCodeParser();
             RegisterStatementProcessors(parser);
             var result = parser.Parse(new TokenStream(input));
@@ -48,30 +53,14 @@ namespace NextGenSpice
             if (result.HasError)
             {
                 // display errors and exit
-
                 foreach (var error in result.Errors)
                     Console.WriteLine(error);
                 Console.WriteLine($"There were {result.Errors.Count} errors.");
                 return;
             }
 
-//            TimeSpan total = TimeSpan.Zero;
-
-//            for (int i = -1; i < 10; i++)
-//            {
-//                Stopwatch sw = Stopwatch.StartNew();
-
             foreach (var statement in result.SimulationStatements)
                 statement.Simulate(result.CircuitDefinition, result.PrintStatements, Console.Out);
-//                    statement.Simulate(result.CircuitDefinition, result.PrintStatements, TextWriter.Null);
-//                sw.Stop();
-//                if (i >= 0)
-//                {
-//                    Console.WriteLine(sw.Elapsed);
-//                    total += sw.Elapsed;
-//                }
-//            }
-//            Console.WriteLine($"Average: {total/10}");
         }
     }
 }

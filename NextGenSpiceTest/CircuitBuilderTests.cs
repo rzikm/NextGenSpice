@@ -26,7 +26,7 @@ namespace NextGenSpiceTest
         [Fact]
         public void TestGeneratesNodesWhenRequestingHighId()
         {
-            Assert.Equal(0, builder.NodeCount);
+            Assert.Equal(1, builder.NodeCount);
 
             builder.AddDiode(0, 5, DiodeModelParams.Default);
             Assert.Equal(6, builder.NodeCount);

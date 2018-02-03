@@ -20,6 +20,7 @@ namespace NextGenSpice.Core.Circuit
             nodes = new List<double>();
             elements = new List<ICircuitDefinitionElement>();
             namedElements = new Dictionary<string, ICircuitDefinitionElement>();
+            EnsureHasNode(0);
         }
 
         /// <summary>
