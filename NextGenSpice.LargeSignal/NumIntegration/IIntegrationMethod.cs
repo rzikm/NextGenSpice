@@ -1,10 +1,22 @@
-﻿using System.Collections.Generic;
-
-namespace NextGenSpice.LargeSignal.NumIntegration
+﻿namespace NextGenSpice.LargeSignal.NumIntegration
 {
+    /// <summary>
+    ///     Defines basic interface for numeric integration methods to be used in model classes.
+    /// </summary>
     public interface IIntegrationMethod
     {
+        /// <summary>
+        ///     Adds state and derivative of current timepoint to history.
+        /// </summary>
+        /// <param name="state">Value of current state variable</param>
+        /// <param name="derivative">Derivative of current state variable</param>
         void SetState(double state, double derivative);
-        (double, double) GetEquivalents(double timeDerivative);
+
+        /// <summary>
+        ///     Gets next values of state and derivative based on history and current timepoint.
+        /// </summary>
+        /// <param name="timeStep">How far to predict values of state and derivative.</param>
+        /// <returns></returns>
+        (double state, double derivative) GetEquivalents(double timeStep);
     }
 }

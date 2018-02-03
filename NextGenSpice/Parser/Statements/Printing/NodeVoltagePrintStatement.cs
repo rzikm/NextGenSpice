@@ -4,12 +4,12 @@ using NextGenSpice.LargeSignal;
 namespace NextGenSpice.Parser.Statements.Printing
 {
     /// <summary>
-    /// Print statement corresponding to printing voltage of a certain node.
+    ///     Print statement corresponding to printing voltage of a certain node.
     /// </summary>
-    class NodeVoltagePrintStatement : PrintStatement<LargeSignalCircuitModel>
+    internal class NodeVoltagePrintStatement : PrintStatement<LargeSignalCircuitModel>
     {
-        private readonly string nodeName;
         private readonly int index;
+        private readonly string nodeName;
         private LargeSignalCircuitModel model;
 
         public NodeVoltagePrintStatement(string nodeName, int index)
@@ -19,12 +19,12 @@ namespace NextGenSpice.Parser.Statements.Printing
         }
 
         /// <summary>
-        /// Information about what kind of data are handled by this print statement.
+        ///     Information about what kind of data are handled by this print statement.
         /// </summary>
         public override string Header => $"V({nodeName})";
 
         /// <summary>
-        /// Prints value of handled by this print statement into given TextWriter.
+        ///     Prints value of handled by this print statement into given TextWriter.
         /// </summary>
         /// <param name="output"></param>
         public override void PrintValue(TextWriter output)
@@ -33,7 +33,7 @@ namespace NextGenSpice.Parser.Statements.Printing
         }
 
         /// <summary>
-        /// Sets analysis type circuit model from which data for printing are to be extracted.
+        ///     Sets analysis type circuit model from which data for printing are to be extracted.
         /// </summary>
         /// <param name="model"></param>
         public override void Initialize(LargeSignalCircuitModel model)
@@ -43,13 +43,13 @@ namespace NextGenSpice.Parser.Statements.Printing
     }
 
     /// <summary>
-    /// Print statement corresponding to printing voltage of a certain node.
+    ///     Print statement corresponding to printing voltage of a certain node.
     /// </summary>
-    class NodeVoltageDifferencePrintStatement : PrintStatement<LargeSignalCircuitModel>
+    internal class NodeVoltageDifferencePrintStatement : PrintStatement<LargeSignalCircuitModel>
     {
-        private readonly string nodeNames;
         private readonly int i1;
         private readonly int i2;
+        private readonly string nodeNames;
         private LargeSignalCircuitModel model;
 
         public NodeVoltageDifferencePrintStatement(string nodeNames, int i1, int i2)
@@ -60,12 +60,12 @@ namespace NextGenSpice.Parser.Statements.Printing
         }
 
         /// <summary>
-        /// Information about what kind of data are handled by this print statement.
+        ///     Information about what kind of data are handled by this print statement.
         /// </summary>
         public override string Header => $"V({nodeNames})";
 
         /// <summary>
-        /// Prints value of handled by this print statement into given TextWriter.
+        ///     Prints value of handled by this print statement into given TextWriter.
         /// </summary>
         /// <param name="output"></param>
         public override void PrintValue(TextWriter output)
@@ -74,7 +74,7 @@ namespace NextGenSpice.Parser.Statements.Printing
         }
 
         /// <summary>
-        /// Sets analysis type circuit model from which data for printing are to be extracted.
+        ///     Sets analysis type circuit model from which data for printing are to be extracted.
         /// </summary>
         /// <param name="model"></param>
         public override void Initialize(LargeSignalCircuitModel model)

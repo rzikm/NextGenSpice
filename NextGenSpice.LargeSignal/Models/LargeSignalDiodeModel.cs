@@ -1,7 +1,4 @@
 using System;
-using System.ComponentModel.Design;
-using System.Runtime.CompilerServices;
-using System.Xml.Serialization;
 using NextGenSpice.Core;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
@@ -10,22 +7,23 @@ using NextGenSpice.LargeSignal.NumIntegration;
 
 namespace NextGenSpice.LargeSignal.Models
 {
+    /// <summary>
+    ///     Large signal model for <see cref="DiodeElement" /> device.
+    /// </summary>
     public class LargeSignalDiodeModel : TwoNodeLargeSignalModel<DiodeElement>
     {
-        private readonly double vt;
-        private readonly double smallBiasTreshold;
-        private readonly double capacitanceTreshold;
-        private double gmin;
+        private readonly double capacitanceTreshold; // cached treshold values based by model.
 
-        private readonly DiodeModelParams param;
-        
-        private IIntegrationMethod IntegrationMethod { get; }
+        private readonly double smallBiasTreshold; // cached treshold for diode model characteristic
+        private readonly double vt; // thermal voltage based on diode model values.
+        private int capacitorBranch; // variable for capacitor branch current
 
-        private double ic;
-        private double vc;
-        private int capacitorBranch;
+        private double gmin; // minimal slope of the I-V characteristic of the diode.
 
-        public LargeSignalDiodeModel(DiodeElement parent) : base(parent)
+        private double ic; // current through the capacitor that models junction capacitance
+        private double vc; // voltage across the capacitor that models junction capacitance
+
+        public LargeSignalDiodeModel(DiodeElement definitionElement) : base(definitionElement)
         {
 //            IntegrationMethod = new AdamsMoultonIntegrationMethod(2);
             IntegrationMethod = new GearIntegrationMethod(2);
@@ -33,56 +31,102 @@ namespace NextGenSpice.LargeSignal.Models
 //            IntegrationMethod = new BackwardEulerIntegrationMethod();
 //            IntegrationMethod = new AdamsMoultonIntegrationMethod(4);
 
-            param = parent.Param;
-            Voltage = param.Vd;
+            Voltage = Parameters.Vd;
 
-            vt = param.EmissionCoefficient * PhysicalConstants.Boltzmann * PhysicalConstants.CelsiusToKelvin(param.Temperature) /
+            vt = Parameters.EmissionCoefficient * PhysicalConstants.Boltzmann *
+                 PhysicalConstants.CelsiusToKelvin(Parameters.Temperature) /
                  PhysicalConstants.ElementaryCharge;
 
             smallBiasTreshold = -5 * vt;
-            capacitanceTreshold = param.ForwardBiasDepletionCapacitanceCoefficient * param.JunctionPotential;
+            capacitanceTreshold = Parameters.ForwardBiasDepletionCapacitanceCoefficient * Parameters.JunctionPotential;
         }
-        
+
+        /// <summary>
+        ///     Diode model parameters.
+        /// </summary>
+        private DiodeModelParams Parameters => DefinitionElement.Parameters;
+
+        /// <summary>
+        ///     Integration method used for modifying inner state of the device.
+        /// </summary>
+        private IIntegrationMethod IntegrationMethod { get; }
+
+        /// <summary>
+        ///     If true, the device behavior is not linear is not constant and the
+        ///     <see cref="ILargeSignalDeviceModel.ApplyModelValues" /> function is
+        ///     called every iteration during nonlinear solving.
+        /// </summary>
+        public override bool IsNonlinear => true;
+
+        /// <summary>
+        ///     If true, the device behavior is not constant over time and the
+        ///     <see cref="ILargeSignalDeviceModel.ApplyModelValues" /> function is called
+        ///     every timestep.
+        /// </summary>
+        public override bool IsTimeDependent => true;
+
+        /// <summary>
+        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
+        /// </summary>
+        /// <param name="builder">The equation system builder.</param>
+        /// <param name="context">Context of current simulation.</param>
         public override void RegisterAdditionalVariables(IEquationSystemBuilder builder, ISimulationContext context)
         {
             base.RegisterAdditionalVariables(builder, context);
             capacitorBranch = builder.AddVariable();
-            gmin = param.MinimalResistance ?? context.CircuitParameters.MinimalResistance;
+            gmin = Parameters.MinimalResistance ?? context.CircuitParameters.MinimalResistance;
         }
 
+        /// <summary>
+        ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is called
+        ///     once every Newton-Raphson iteration.
+        /// </summary>
+        /// <param name="equations">Current linearized circuit equation system.</param>
+        /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            var vd = context.GetSolutionForVariable(Parent.Anode) - context.GetSolutionForVariable(Parent.Kathode) - param.SeriesResistance * Current;
+            var vd = context.GetSolutionForVariable(DefinitionElement.Anode) -
+                     context.GetSolutionForVariable(DefinitionElement.Kathode) - Parameters.SeriesResistance * Current;
             ApplyLinearizedModel(equations, context, vd);
         }
 
+        /// <summary>
+        ///     Applies model values before first DC bias has been established for the first time.
+        /// </summary>
+        /// <param name="equations">Current linearized circuit equation system.</param>
+        /// <param name="context">Context of current simulation.</param>
         public override void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
         {
-            var vd = context.GetSolutionForVariable(Parent.Anode) - context.GetSolutionForVariable(Parent.Kathode);
-            if (vd == 0) vd = param.Vd;
-            else vd -= param.SeriesResistance * Current
-;
+            var vd = context.GetSolutionForVariable(DefinitionElement.Anode) -
+                     context.GetSolutionForVariable(DefinitionElement.Kathode);
+            if (vd == 0) vd = Parameters.Vd;
+            else
+                vd -= Parameters.SeriesResistance * Current
+                    ;
             ApplyLinearizedModel(equations, context, vd);
         }
 
-        public override bool IsNonlinear => true;
-        public override bool IsTimeDependent => true;
-
+        /// <summary>
+        ///     Applies linarized diode model to the equation system.
+        /// </summary>
+        /// <param name="equations"></param>
+        /// <param name="context"></param>
+        /// <param name="vd"></param>
         private void ApplyLinearizedModel(IEquationEditor equations, ISimulationContext context, double vd)
         {
             var (id, geq, cd) = GetModelValues(vd);
             var ieq = id - geq * vd;
+
             // Diode
             equations
                 .AddConductance(Anode, Kathode, geq)
                 .AddCurrent(Kathode, Anode, ieq)
                 ;
 
-            // Capacitor
+            // Capacitance
+            var (cieq, cgeq) = IntegrationMethod.GetEquivalents(cd / context.TimeStep);
 
-            var (cgeq, cieq) = IntegrationMethod.GetEquivalents(cd / context.TimeStep);
-
-            if (context.TimeStep > 0)
+            if (context.TimeStep > 0) // do not apply capacitor during the initial condition (model as open circuit)
             {
                 equations.AddMatrixEntry(capacitorBranch, Anode, cgeq);
                 equations.AddMatrixEntry(capacitorBranch, Kathode, -cgeq);
@@ -94,75 +138,65 @@ namespace NextGenSpice.LargeSignal.Models
 
             Voltage = vd;
             Current = id + ic;
-
-//            if (context.Time > lastTime && Name == "D1") // bias established -> advancing in time
-//            {
-//                                Console.WriteLine(logstring);
-//                lastTime = context.Time;
-//            }
-//            logstring = $"{context.Time} {vc} {ic} {id} {geq} {cd} {ieq} {cgeq} {cieq}";
         }
 
+        /// <summary>
+        ///     Notifies model class that DC bias for given timepoint is established. This method can be used for processing
+        ///     circuit equation solution
+        ///     for current timepoint.
+        /// </summary>
+        /// <param name="context">Context of current simulation.</param>
         public override void OnDcBiasEstablished(ISimulationContext context)
         {
             base.OnDcBiasEstablished(context);
             ic = context.GetSolutionForVariable(capacitorBranch);
             if (context.TimeStep == 0) // set initial condition for the capacitor
-            {
                 ic = Current;
-            }
             vc = Voltage;
 
             IntegrationMethod.SetState(ic, vc);
         }
 
+        /// <summary>
+        ///     Gets values for the device model based on voltage across the diode.
+        /// </summary>
+        /// <param name="vd"></param>
+        /// <returns></returns>
         private (double, double, double) GetModelValues(double vd)
         {
-            var m = param.JunctionGradingCoefficient;
-            var vj = param.JunctionPotential;
-            var fc = param.ForwardBiasDepletionCapacitanceCoefficient;
-            var tt = param.TransitTime;
-            var iss = param.SaturationCurrent;
-            var jc = param.JunctionCapacitance;
-            var bv = param.ReverseBreakdownVoltage;
+            var m = Parameters.JunctionGradingCoefficient;
+            var vj = Parameters.JunctionPotential;
+            var fc = Parameters.ForwardBiasDepletionCapacitanceCoefficient;
+            var tt = Parameters.TransitTime;
+            var iss = Parameters.SaturationCurrent;
+            var jc = Parameters.JunctionCapacitance;
+            var bv = Parameters.ReverseBreakdownVoltage;
 
             double id, geq, cd;
             if (vd >= smallBiasTreshold)
             {
                 id = iss * (Math.Exp(vd / vt) - 1) + vd * gmin;
                 geq = iss * Math.Exp(vd / vt) / vt + gmin;
-                //                cd = tt * geq / vt;
             }
             else if (vd > -bv)
             {
                 id = -iss;
                 geq = gmin;
-                //                geq += -iss / vd;
-                //                cd = -tt * iss / vd;
             }
             else
             {
                 id = -iss * (Math.Exp(-(bv + vd) / vt) - 1 + bv / vt);
                 geq = iss * Math.Exp(-(bv + vd) / vt) / vt;
-                //                                geq = gmin;
-                cd = 0;
             }
-
 
             cd = -tt * geq;
 
-
             if (vd < capacitanceTreshold)
-            {
                 cd += jc / Math.Pow(1 - vd / vj, m);
-            }
             else
-            {
                 cd += jc / Math.Pow(1 - fc, 1 + m) * (1 - fc * (1 + m) + m * vd / vj);
-            }
 
             return (id, geq, cd);
         }
-
     }
 }

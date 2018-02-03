@@ -20,8 +20,6 @@ namespace NextGenSpiceParserTest
 
             mapper.Set(0, 45);
             Assert.Equal(45, mapper.Target.SaturationCurrent);
-
-
         }
     }
 }

@@ -7,23 +7,13 @@ using NextGenSpice.Core.Representation;
 namespace NextGenSpice.Core.Circuit
 {
     /// <summary>
-    /// Main class for building electrical circuit representation.
+    ///     Main class for building electrical circuit representation.
     /// </summary>
     public class CircuitBuilder
     {
-        private readonly List<double> nodes;
         private readonly List<ICircuitDefinitionElement> elements;
         private readonly Dictionary<string, ICircuitDefinitionElement> namedElements;
-        
-        /// <summary>
-        /// Number of nodes in the current circuit.
-        /// </summary>
-        public int NodeCount => nodes.Count;
-
-        /// <summary>
-        /// Set of elements curently in the circuit.
-        /// </summary>
-        public IReadOnlyList<ICircuitDefinitionElement> Elements => elements;
+        private readonly List<double> nodes;
 
         public CircuitBuilder()
         {
@@ -32,9 +22,19 @@ namespace NextGenSpice.Core.Circuit
             namedElements = new Dictionary<string, ICircuitDefinitionElement>();
         }
 
+        /// <summary>
+        ///     Number of nodes in the current circuit.
+        /// </summary>
+        public int NodeCount => nodes.Count;
+
+        /// <summary>
+        ///     Set of elements curently in the circuit.
+        /// </summary>
+        public IReadOnlyList<ICircuitDefinitionElement> Elements => elements;
+
         // TODO: remove this method? this feature is currently not supported
         /// <summary>
-        /// Sets initial node voltage.
+        ///     Sets initial node voltage.
         /// </summary>
         /// <param name="id">Id of the node.</param>
         /// <param name="voltage">Target voltage value in volts</param>
@@ -49,7 +49,7 @@ namespace NextGenSpice.Core.Circuit
         }
 
         /// <summary>
-        /// Ensures that call to nodes[id] is valid and does not result in OutOfRangeExecption.
+        ///     Ensures that call to nodes[id] is valid and does not result in OutOfRangeExecption.
         /// </summary>
         /// <param name="id"></param>
         private void EnsureHasNode(int id)
@@ -57,13 +57,11 @@ namespace NextGenSpice.Core.Circuit
             if (id < 0) throw new ArgumentOutOfRangeException(nameof(id));
 
             while (NodeCount <= id)
-            {
                 nodes.Add(0);
-            }
         }
 
         /// <summary>
-        /// Adds element to the circuit and connects it to the specified nodes.
+        ///     Adds element to the circuit and connects it to the specified nodes.
         /// </summary>
         /// <param name="nodeConnections">Ids of the nodes to which the element terminals should connect.</param>
         /// <param name="element">The element to be added.</param>
@@ -92,7 +90,7 @@ namespace NextGenSpice.Core.Circuit
         }
 
         /// <summary>
-        /// Verifies correctness of the circuit topology, creates new instance of circuit representation and returns it.
+        ///     Verifies correctness of the circuit topology, creates new instance of circuit representation and returns it.
         /// </summary>
         /// <returns></returns>
         public ElectricCircuitDefinition BuildCircuit()
@@ -103,10 +101,10 @@ namespace NextGenSpice.Core.Circuit
         }
 
         /// <summary>
-        /// Verifies correctness of the circuit topology, creates new instance of subcircuit representation and returns it.
+        ///     Verifies correctness of the circuit topology, creates new instance of subcircuit representation and returns it.
         /// </summary>
         /// <returns></returns>
-        public SubcircuitElement BuildSubcircuit(int [] terminals)
+        public SubcircuitElement BuildSubcircuit(int[] terminals)
         {
             VerifySubcircuit(terminals);
 
@@ -115,29 +113,31 @@ namespace NextGenSpice.Core.Circuit
         }
 
         /// <summary>
-        /// Verifies that current subcircuit with given nodes as terminals represents valid SPICE subcircuit. That is: there are no floating nodes and there is a DC path between any two nodes not going through ground.
+        ///     Verifies that current subcircuit with given nodes as terminals represents valid SPICE subcircuit. That is: there
+        ///     are no floating nodes and there is a DC path between any two nodes not going through ground.
         /// </summary>
         /// <param name="terminals"></param>
-        private void VerifySubcircuit(int [] terminals)
+        private void VerifySubcircuit(int[] terminals)
         {
             // ground node must not be external terminal
             if (terminals == null) throw new ArgumentNullException(nameof(terminals));
             if (terminals.Length == 0) throw new ArgumentException("Subcircuit must have at least one terminal node.");
-            if (terminals.Any(n => n <= 0)) throw new ArgumentOutOfRangeException("Terminals of Subcircuit must have positive ids.");
-            if (terminals.Any(n => n >= NodeCount)) throw new ArgumentOutOfRangeException("There is no node with given id.");
+            if (terminals.Any(n => n <= 0))
+                throw new ArgumentOutOfRangeException("Terminals of Subcircuit must have positive ids.");
+            if (terminals.Any(n => n >= NodeCount))
+                throw new ArgumentOutOfRangeException("There is no node with given id.");
 
             var neighbourghs = GetNeighbourghs();
             neighbourghs[0].Clear(); // ignore connections to the ground node
 
             var components = GetComponents(neighbourghs);
             if (components.Count != 1) // incorrectly connected
-            {
                 throw new NotConnectedSubcircuit(components);
-            }
         }
 
         /// <summary>
-        /// Verifies that current subcircuit with given nodes as terminals represents valid SPICE circuit. That is: there are no floating nodes and there is a DC path between any two nodes not going through ground.
+        ///     Verifies that current subcircuit with given nodes as terminals represents valid SPICE circuit. That is: there are
+        ///     no floating nodes and there is a DC path between any two nodes not going through ground.
         /// </summary>
         /// <param name="terminals"></param>
         private void VerifyCircuit()
@@ -148,22 +148,25 @@ namespace NextGenSpice.Core.Circuit
             var visited = GetIdsInSameComponent(0, neighbourghs);
 
             // some nodes are not reachable from ground
-            if (visited.Count != NodeCount) throw new NoDcPathToGroundException(Enumerable.Range(0, NodeCount).Except(visited));
+            if (visited.Count != NodeCount)
+                throw new NoDcPathToGroundException(Enumerable.Range(0, NodeCount).Except(visited));
         }
 
         /// <summary>
-        /// Gets connectivity components of the circuit graph using simple graph search.
+        ///     Gets connectivity components of the circuit graph using simple graph search.
         /// </summary>
         /// <param name="neighbourghs">Vertex-neighbourghs representation of the graph.</param>
         /// <returns></returns>
         private List<int[]> GetComponents(Dictionary<int, HashSet<int>> neighbourghs)
         {
             var nodes = new HashSet<int>(Enumerable.Range(1, NodeCount - 1));
-            List<int[]> components = new List<int[]>();
+            var components = new List<int[]>();
 
             while (nodes.Count > 0) // while some node is uncertain
             {
-                var visited = GetIdsInSameComponent(nodes.First(), neighbourghs); // get component containing first node in the set
+                var visited =
+                    GetIdsInSameComponent(nodes.First(),
+                        neighbourghs); // get component containing first node in the set
                 visited.Remove(0); // connections to the ground are ignored
 
                 components.Add(visited.ToArray());
@@ -173,7 +176,7 @@ namespace NextGenSpice.Core.Circuit
         }
 
         /// <summary>
-        /// Creates vertex-neighbourghs representation of the circuit graph.
+        ///     Creates vertex-neighbourghs representation of the circuit graph.
         /// </summary>
         private Dictionary<int, HashSet<int>> GetNeighbourghs()
         {
@@ -181,14 +184,13 @@ namespace NextGenSpice.Core.Circuit
 
             foreach (var element in elements)
             {
-                var ids = element.ConnectedNodes; // consider the element to be a hyperedge - all pairs in the hyperedge are connected
-                for (int i = 0; i < ids.Count; i++)
+                var ids = element
+                    .ConnectedNodes; // consider the element to be a hyperedge - all pairs in the hyperedge are connected
+                for (var i = 0; i < ids.Count; i++)
+                for (var j = 0; j < ids.Count; j++)
                 {
-                    for (int j = 0; j < ids.Count; j++)
-                    {
-                        if (i == j) continue; // do not add connection to itself
-                        neighbourghs[ids[i]].Add(ids[j]);
-                    }
+                    if (i == j) continue; // do not add connection to itself
+                    neighbourghs[ids[i]].Add(ids[j]);
                 }
             }
 
@@ -196,7 +198,7 @@ namespace NextGenSpice.Core.Circuit
         }
 
         /// <summary>
-        /// Finds all nodes that can be reached from the given start node using graph.
+        ///     Finds all nodes that can be reached from the given start node using graph.
         /// </summary>
         /// <param name="startId">Start node id.</param>
         /// <param name="neighbourghs">Vertex-neighbourghs representation of the graph.</param>
@@ -204,9 +206,9 @@ namespace NextGenSpice.Core.Circuit
         private static HashSet<int> GetIdsInSameComponent(int startId, Dictionary<int, HashSet<int>> neighbourghs)
         {
             // use breadth-first search
-            Queue<int> q = new Queue<int>();
+            var q = new Queue<int>();
             q.Enqueue(startId);
-            HashSet<int> visited = new HashSet<int>();
+            var visited = new HashSet<int>();
             while (q.Count > 0) // while fringe is nonempty
             {
                 var current = q.Dequeue();

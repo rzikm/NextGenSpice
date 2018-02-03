@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using NextGenSpice.Core.Circuit;
-using NextGenSpice.LargeSignal;
-using NextGenSpice.LargeSignal.Models;
 using NextGenSpice.Parser;
 using NextGenSpice.Parser.Statements.Devices;
 using NextGenSpice.Parser.Statements.Simulation;
 
 namespace NextGenSpice
 {
-    class Program
+    internal class Program
     {
         private static void RegisterStatementProcessors(SpiceCodeParser parser)
         {
@@ -27,9 +21,8 @@ namespace NextGenSpice
             parser.RegisterSimulation(new OpStatementProcessor());
         }
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-
             if (args.Length != 1)
             {
                 Console.Error.WriteLine("Usage: NextGenSpice <input file>");
@@ -47,7 +40,7 @@ namespace NextGenSpice
                 return;
             }
 
-            
+
             var parser = new SpiceCodeParser();
             RegisterStatementProcessors(parser);
             var result = parser.Parse(new TokenStream(input));
@@ -57,9 +50,7 @@ namespace NextGenSpice
                 // display errors and exit
 
                 foreach (var error in result.Errors)
-                {
                     Console.WriteLine(error);
-                }
                 Console.WriteLine($"There were {result.Errors.Count} errors.");
                 return;
             }
@@ -70,11 +61,9 @@ namespace NextGenSpice
 //            {
 //                Stopwatch sw = Stopwatch.StartNew();
 
-                foreach (var statement in result.SimulationStatements)
-                {
+            foreach (var statement in result.SimulationStatements)
                 statement.Simulate(result.CircuitDefinition, result.PrintStatements, Console.Out);
 //                    statement.Simulate(result.CircuitDefinition, result.PrintStatements, TextWriter.Null);
-                }
 //                sw.Stop();
 //                if (i >= 0)
 //                {
@@ -83,7 +72,6 @@ namespace NextGenSpice
 //                }
 //            }
 //            Console.WriteLine($"Average: {total/10}");
-
         }
     }
 }

@@ -5,7 +5,7 @@ using NextGenSpice.Core.Elements;
 namespace NextGenSpice.Core.Representation
 {
     /// <summary>
-    /// Class implementig basic functionality for creating circuit analysis models from circuit representation.
+    ///     Class implementig basic functionality for creating circuit analysis models from circuit representation.
     /// </summary>
     /// <typeparam name="TAnalysisModel"></typeparam>
     public abstract class AnalysisModelFactory<TAnalysisModel> : IAnalysisModelFactory<TAnalysisModel>
@@ -26,7 +26,7 @@ namespace NextGenSpice.Core.Representation
         }
 
         /// <summary>
-        /// Creates new instance of analysis model of type <see cref="TAnalysisModel"/> for given circuit.
+        ///     Creates new instance of analysis model of type <see cref="TAnalysisModel" /> for given circuit.
         /// </summary>
         /// <param name="circuitDefinition">Definition of the circuit.</param>
         /// <returns></returns>
@@ -41,7 +41,7 @@ namespace NextGenSpice.Core.Representation
         }
 
         /// <summary>
-        /// Registers a factory method for creating analysis-specific device model from the representation.
+        ///     Registers a factory method for creating analysis-specific device model from the representation.
         /// </summary>
         /// <typeparam name="TRepresentation">Class representing the device in circuit definition</typeparam>
         /// <typeparam name="TModel">Analysis-specific class for the device</typeparam>
@@ -54,7 +54,7 @@ namespace NextGenSpice.Core.Representation
         }
 
         /// <summary>
-        /// Registers a factory method for creating analysis-specific device model from the representation.
+        ///     Registers a factory method for creating analysis-specific device model from the representation.
         /// </summary>
         /// <typeparam name="TRepresentation">Class representing the device in circuit definition</typeparam>
         /// <typeparam name="TModel">Analysis-specific class for the device</typeparam>
@@ -68,7 +68,7 @@ namespace NextGenSpice.Core.Representation
         }
 
         /// <summary>
-        /// Registers a function for custom parameter processing (e.g. input source behaviors).
+        ///     Registers a function for custom parameter processing (e.g. input source behaviors).
         /// </summary>
         /// <typeparam name="TParam">Defining type of the parameter.</typeparam>
         /// <param name="factoryFunc">Processing function of the parameter.</param>
@@ -78,7 +78,7 @@ namespace NextGenSpice.Core.Representation
         }
 
         /// <summary>
-        /// Registers a function for custom parameter processing (e.g. input source behaviors).
+        ///     Registers a function for custom parameter processing (e.g. input source behaviors).
         /// </summary>
         /// <typeparam name="TParam">Defining type of the parameter.</typeparam>
         /// <param name="factoryFunc">Processing function of the parameter.</param>
@@ -88,7 +88,7 @@ namespace NextGenSpice.Core.Representation
         }
 
         /// <summary>
-        /// Factory method for creating the actual instance of the analysis model.
+        ///     Factory method for creating the actual instance of the analysis model.
         /// </summary>
         /// <param name="context">Current instantiation context.</param>
         /// <returns></returns>

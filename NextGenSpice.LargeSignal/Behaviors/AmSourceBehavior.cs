@@ -1,33 +1,47 @@
 ﻿using System;
 using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.LargeSignal.Models;
 
 namespace NextGenSpice.LargeSignal.Behaviors
 {
+    /// <summary>
+    ///     Strategy class for single frequency AM behavior of <see cref="LargeSignalVoltageSourceModel" /> and
+    ///     <see cref="LargeSignalCurrentSourceModel" />.
+    /// </summary>
     internal class AmSourceBehavior : InputSourceBehavior<AmBehaviorParams>
     {
-        public AmSourceBehavior(AmBehaviorParams param) : base(param)
+        public AmSourceBehavior(AmBehaviorParams parameters) : base(parameters)
         {
         }
 
+        /// <summary>
+        ///     If true, the behavior is not constant over time and the value is refreshed every timestep.
+        /// </summary>
+        public override bool IsTimeDependent => true;
+
+        /// <summary>
+        ///     If true, the behavior depends on another element and the source value is updated in every iteration of
+        ///     Newton-Raphson loop.
+        /// </summary>
+        public override bool HasDependency => false;
+
+        /// <summary>
+        ///     Gets input source value for given timepoint.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override double GetValue(ISimulationContext context)
         {
-            var time = context.Time - param.Delay;
+            var time = context.Time - Parameters.Delay;
             var c = 2 * Math.PI * time;
 
-            var phaseCarrier = c * param.FrequencyCarrier;
-            var phaseModulation = c * param.FrequencyModulation;
+            var phaseCarrier = c * Parameters.FrequencyCarrier;
+            var phaseModulation = c * Parameters.FrequencyModulation;
 
-            //            return param.SignalAmplitude * (param.Offset + Math.Sin(phaseModulation)) * Math.Sin(phaseCarrier);
+            var m = Parameters.ModulationIndex;
 
-            var m = param.ModulationIndex;
-
-            return param.SignalAmplitude * Math.Sin(phaseCarrier) * (1 + m * Math.Cos(phaseModulation));
-
+            return Parameters.SignalAmplitude * Math.Sin(phaseCarrier) * (1 + m * Math.Cos(phaseModulation));
         }
-
-        public override bool IsTimeDependent => true;
-        public override bool HasDependency => false;
     }
 }

@@ -10,7 +10,7 @@ namespace NextGenSpiceTest
 
         private int branchVariable;
 
-        public SwitchModel(SwitchElement parent) : base(parent)
+        public SwitchModel(SwitchElement definitionElement) : base(definitionElement)
         {
         }
 

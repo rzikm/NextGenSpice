@@ -1,32 +1,49 @@
 ﻿using System;
 using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.LargeSignal.Models;
 
 namespace NextGenSpice.LargeSignal.Behaviors
 {
+    /// <summary>
+    ///     Strategy class for sinusoidal behavior of <see cref="LargeSignalVoltageSourceModel" /> and
+    ///     <see cref="LargeSignalCurrentSourceModel" />.
+    /// </summary>
     internal class SinusioidalSourceBehavior : InputSourceBehavior<SinusoidalBehaviorParams>
     {
-        public SinusioidalSourceBehavior(SinusoidalBehaviorParams param) : base(param)
+        public SinusioidalSourceBehavior(SinusoidalBehaviorParams parameters) : base(parameters)
         {
         }
 
+        /// <summary>
+        ///     If true, the behavior is not constant over time and the value is refreshed every timestep.
+        /// </summary>
+        public override bool IsTimeDependent => true;
+
+        /// <summary>
+        ///     If true, the behavior depends on another element and the source value is updated in every iteration of
+        ///     Newton-Raphson loop.
+        /// </summary>
+        public override bool HasDependency => false;
+
+        /// <summary>
+        ///     Gets input source value for given timepoint.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override double GetValue(ISimulationContext context)
         {
-            var phase = param.PhaseOffset;
-            var amplitude = param.Amplitude;
-            var elapsedTime = context.Time - param.Delay;
+            var phase = Parameters.PhaseOffset;
+            var amplitude = Parameters.Amplitude;
+            var elapsedTime = context.Time - Parameters.Delay;
 
-            if (elapsedTime > 0)
+            if (elapsedTime > 0) // source is constant during Delay time
             {
-                phase += elapsedTime * param.Frequency * 2 * Math.PI;
-                amplitude *= Math.Exp(-elapsedTime * param.DampingFactor);
+                phase += elapsedTime * Parameters.Frequency * 2 * Math.PI;
+                amplitude *= Math.Exp(-elapsedTime * Parameters.DampingFactor);
             }
 
-            return param.DcOffset + Math.Sin(phase) * amplitude;
+            return Parameters.DcOffset + Math.Sin(phase) * amplitude;
         }
-
-        public override bool IsTimeDependent => true;
-        public override bool HasDependency => false;
     }
 }

@@ -7,11 +7,12 @@ using NextGenSpice.Utils;
 namespace NextGenSpice.Parser
 {
     /// <summary>
-    /// Class holding result of input file parsing
+    ///     Class holding result of input file parsing
     /// </summary>
     public class ParserResult
     {
-        public ParserResult(ICircuitDefinition circuit, IReadOnlyList<PrintStatement> printStatements, IReadOnlyList<ISimulationStatement> simulationStatements, IReadOnlyList<ErrorInfo> errors)
+        public ParserResult(ICircuitDefinition circuit, IReadOnlyList<PrintStatement> printStatements,
+            IReadOnlyList<ISimulationStatement> simulationStatements, IReadOnlyList<ErrorInfo> errors)
         {
             CircuitDefinition = circuit;
             PrintStatements = printStatements;
@@ -20,27 +21,27 @@ namespace NextGenSpice.Parser
         }
 
         /// <summary>
-        /// Circuit defined in the input file. Is null if there was an error in input file.
+        ///     Circuit defined in the input file. Is null if there was an error in input file.
         /// </summary>
         public ICircuitDefinition CircuitDefinition { get; }
 
         /// <summary>
-        /// All print statements from the input file.
+        ///     All print statements from the input file.
         /// </summary>
         public IReadOnlyList<PrintStatement> PrintStatements { get; }
 
         /// <summary>
-        /// All siulations requested in the input file.
+        ///     All siulations requested in the input file.
         /// </summary>
         public IReadOnlyList<ISimulationStatement> SimulationStatements { get; }
 
         /// <summary>
-        /// Set of errors encountered in input file.
+        ///     Set of errors encountered in input file.
         /// </summary>
         public IReadOnlyList<ErrorInfo> Errors { get; }
 
         /// <summary>
-        /// Indicates that parsing was not successful and there were some errors in the input file.
+        ///     Indicates that parsing was not successful and there were some errors in the input file.
         /// </summary>
         public bool HasError => Errors.Count > 0;
     }

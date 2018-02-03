@@ -39,7 +39,7 @@ namespace NextGenSpice.Parser.Statements.Printing
         }
 
         /// <summary>
-        /// Creates instance of LsPrintStatementHandler for handling TRAN analysis type.
+        ///     Creates instance of LsPrintStatementHandler for handling TRAN analysis type.
         /// </summary>
         /// <returns></returns>
         public static LsPrintStatementHandler CreateTran()
@@ -49,7 +49,7 @@ namespace NextGenSpice.Parser.Statements.Printing
 
 
         /// <summary>
-        /// Creates instance of LsPrintStatementHandler for handling OP analysis type.
+        ///     Creates instance of LsPrintStatementHandler for handling OP analysis type.
         /// </summary>
         /// <returns></returns>
         public static LsPrintStatementHandler CreateOp()

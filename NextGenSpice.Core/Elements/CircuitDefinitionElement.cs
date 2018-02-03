@@ -3,7 +3,7 @@
 namespace NextGenSpice.Core.Elements
 {
     /// <summary>
-    /// Base class for representing a circuit device used in circuit definition.
+    ///     Base class for representing a circuit device used in circuit definition.
     /// </summary>
     public abstract class CircuitDefinitionElement : ICircuitDefinitionElement
     {
@@ -14,17 +14,17 @@ namespace NextGenSpice.Core.Elements
         }
 
         /// <summary>
-        /// Set of terminal connections.
+        ///     Set of terminal connections.
         /// </summary>
         public NodeConnectionSet ConnectedNodes { get; protected set; }
 
         /// <summary>
-        /// Name identifier of this device.
+        ///     Name identifier of this device.
         /// </summary>
         public string Name { get; }
 
         /// <summary>
-        /// Creates a copy of this device.
+        ///     Creates a copy of this device.
         /// </summary>
         /// <returns></returns>
         public virtual ICircuitDefinitionElement Clone()

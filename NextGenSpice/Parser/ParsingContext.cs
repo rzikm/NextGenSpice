@@ -8,7 +8,7 @@ using NextGenSpice.Utils;
 namespace NextGenSpice.Parser
 {
     /// <summary>
-    /// Class that hold intermediate data during paring of an input file.
+    ///     Class that hold intermediate data during paring of an input file.
     /// </summary>
     public class ParsingContext
     {
@@ -21,34 +21,34 @@ namespace NextGenSpice.Parser
             PrintStatements = new List<PrintStatement>();
             CircuitBuilder = new CircuitBuilder();
         }
-        
-        /// <summary>
-        /// Table containing known symbols from input file.
-        /// </summary>
-        public SymbolTable SymbolTable { get;  }
 
         /// <summary>
-        /// Set of errors from the input file.
+        ///     Table containing known symbols from input file.
         /// </summary>
-        public List<ErrorInfo> Errors { get;  }
+        public SymbolTable SymbolTable { get; }
 
         /// <summary>
-        /// Set of all syntactically correct staements encountered to be evaluated.
+        ///     Set of errors from the input file.
+        /// </summary>
+        public List<ErrorInfo> Errors { get; }
+
+        /// <summary>
+        ///     Set of all syntactically correct staements encountered to be evaluated.
         /// </summary>
         public List<DeferredStatement> DeferredStatements { get; }
 
         /// <summary>
-        /// Set of all simulation statements encountered.
+        ///     Set of all simulation statements encountered.
         /// </summary>
-        public List<ISimulationStatement> SimulationStatements { get;  }
+        public List<ISimulationStatement> SimulationStatements { get; }
 
         /// <summary>
-        /// Set of all .PRINT statements encountered.
+        ///     Set of all .PRINT statements encountered.
         /// </summary>
         public List<PrintStatement> PrintStatements { get; }
 
         /// <summary>
-        /// Builder responsible for creating the circuit definition from the statements.
+        ///     Builder responsible for creating the circuit definition from the statements.
         /// </summary>
         public CircuitBuilder CircuitBuilder { get; }
     }

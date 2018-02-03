@@ -1,11 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NextGenSpice.Core.Circuit
 {
     /// <summary>
-    /// Class for representing terminal connection of a circuit device.
+    ///     Class for representing terminal connection of a circuit device.
     /// </summary>
     public class NodeConnectionSet : IReadOnlyList<int>
     {
@@ -15,9 +14,9 @@ namespace NextGenSpice.Core.Circuit
         {
             set = new int[count];
         }
-        
+
         /// <summary>
-        /// Returns an enumerator that iterates through the connected nodes.
+        ///     Returns an enumerator that iterates through the connected nodes.
         /// </summary>
         /// <returns></returns>
         public IEnumerator<int> GetEnumerator()
@@ -31,7 +30,7 @@ namespace NextGenSpice.Core.Circuit
         }
 
         /// <summary>
-        /// Number of terminals of the device.
+        ///     Number of terminals of the device.
         /// </summary>
         public int Count => set.Length;
 
@@ -42,7 +41,7 @@ namespace NextGenSpice.Core.Circuit
         }
 
         /// <summary>
-        /// Creates a deep copy of the connection set.
+        ///     Creates a deep copy of the connection set.
         /// </summary>
         /// <returns></returns>
         public NodeConnectionSet Clone()

@@ -5,9 +5,9 @@ using NextGenSpice.LargeSignal.Models;
 namespace NextGenSpice.Parser.Statements.Printing
 {
     /// <summary>
-    /// Print statement corresponding to printing voltage across a two terminal device.
+    ///     Print statement corresponding to printing voltage across a two terminal device.
     /// </summary>
-    class ElementVoltagePrintStatement : PrintStatement<LargeSignalCircuitModel>
+    internal class ElementVoltagePrintStatement : PrintStatement<LargeSignalCircuitModel>
     {
         private readonly string elemName;
         private ITwoTerminalLargeSignalDeviceModel model;
@@ -18,12 +18,12 @@ namespace NextGenSpice.Parser.Statements.Printing
         }
 
         /// <summary>
-        /// Information about what kind of data are handled by this print statement.
+        ///     Information about what kind of data are handled by this print statement.
         /// </summary>
         public override string Header => $"V({elemName})";
 
         /// <summary>
-        /// Prints value of handled by this print statement into given TextWriter.
+        ///     Prints value of handled by this print statement into given TextWriter.
         /// </summary>
         /// <param name="output"></param>
         public override void PrintValue(TextWriter output)
@@ -32,7 +32,7 @@ namespace NextGenSpice.Parser.Statements.Printing
         }
 
         /// <summary>
-        /// Sets analysis type circuit model from which data for printing are to be extracted.
+        ///     Sets analysis type circuit model from which data for printing are to be extracted.
         /// </summary>
         /// <param name="model"></param>
         public override void Initialize(LargeSignalCircuitModel model)

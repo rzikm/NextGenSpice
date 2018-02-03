@@ -1,12 +1,12 @@
 ﻿namespace NextGenSpice.Core.Equations
 {
     /// <summary>
-    /// Defines extension methods for the IEquationEditor.
+    ///     Defines extension methods for the IEquationEditor.
     /// </summary>
     public static class EquationEditorExtensions
     {
         /// <summary>
-        /// Adds values to the linear equation system corresponding to a conductance between specified nodes.
+        ///     Adds values to the linear equation system corresponding to a conductance between specified nodes.
         /// </summary>
         /// <param name="editor">The equation editor.</param>
         /// <param name="anode">Id of the positive node of the device.</param>
@@ -24,7 +24,7 @@
         }
 
         /// <summary>
-        /// Adds values to the linear equation system corresponding to an ideal voltage source between specified nodes.
+        ///     Adds values to the linear equation system corresponding to an ideal voltage source between specified nodes.
         /// </summary>
         /// <param name="editor">The equation editor.</param>
         /// <param name="anode">Id of the positive node of the device.</param>
@@ -32,7 +32,8 @@
         /// <param name="branchVariable">Id of the variable representing the coresponding branch current.</param>
         /// <param name="value">The added voltage between the given nodes.</param>
         /// <returns></returns>
-        public static IEquationEditor AddVoltage(this IEquationEditor editor, int anode, int kathode, int branchVariable,
+        public static IEquationEditor AddVoltage(this IEquationEditor editor, int anode, int kathode,
+            int branchVariable,
             double value)
         {
             editor.AddMatrixEntry(branchVariable, anode, 1);
@@ -46,7 +47,7 @@
         }
 
         /// <summary>
-        /// Adds values to the linear equation system corresponding to an ideal current source between specified nodes.
+        ///     Adds values to the linear equation system corresponding to an ideal current source between specified nodes.
         /// </summary>
         /// <param name="editor">The equation editor.</param>
         /// <param name="anode">Id of the positive node of the device.</param>

@@ -9,15 +9,15 @@ using NextGenSpice.Utils;
 namespace NextGenSpice.Parser.Statements.Devices
 {
     /// <summary>
-    /// Class responsible for handling both current and voltage input source statements
+    ///     Class responsible for handling both current and voltage input source statements
     /// </summary>
     public abstract class InputSourceStatementProcessor : ElementStatementProcessor
     {
-        private readonly ParameterMapper<SinusoidalBehaviorParams> sinMapper;
+        private readonly ParameterMapper<AmBehaviorParams> amMapper;
         private readonly ParameterMapper<ExponentialBehaviorParams> expMapper;
         private readonly ParameterMapper<PulseBehaviorParams> pulseMapper;
-        private readonly ParameterMapper<AmBehaviorParams> amMapper;
         private readonly ParameterMapper<SffmBehaviorParams> sffmMapper;
+        private readonly ParameterMapper<SinusoidalBehaviorParams> sinMapper;
 
         protected InputSourceStatementProcessor()
         {
@@ -71,7 +71,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         }
 
         /// <summary>
-        /// Processes given set of statements.
+        ///     Processes given set of statements.
         /// </summary>
         /// <param name="tokens"></param>
         protected override void DoProcess(Token[] tokens)
@@ -89,16 +89,14 @@ namespace NextGenSpice.Parser.Statements.Devices
             if (char.IsDigit(tokens[3].Value[0])) // constant source
             {
                 var val = GetValue(tokens[3]);
-                statement = GetStatement(name, nodes, new ConstantBehaviorParams { Value = val });
+                statement = GetStatement(name, nodes, new ConstantBehaviorParams {Value = val});
             }
             else // tran function
             {
                 var paramTokens = Helper.Retokenize(tokens, Context.Errors).ToList();
                 var param = GetBehaviorParam(paramTokens);
                 if (paramTokens.Count < 3 && param != null) // every transient function must have at least 2 arguments
-                {
                     Error(paramTokens[0], $"Too few arguments for transient function '{paramTokens[0].Value}'");
-                }
                 statement = GetStatement(name, nodes, param);
             }
 
@@ -107,7 +105,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         }
 
         /// <summary>
-        /// Gets behavior parameters for given list of tokens or null if no such transient function exists.
+        ///     Gets behavior parameters for given list of tokens or null if no such transient function exists.
         /// </summary>
         /// <param name="paramTokens"></param>
         /// <returns></returns>
@@ -140,7 +138,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         }
 
         /// <summary>
-        /// Functino responsible for parsing Piece-wise linear behavior of the input source.
+        ///     Functino responsible for parsing Piece-wise linear behavior of the input source.
         /// </summary>
         /// <param name="paramTokens"></param>
         /// <returns></returns>
@@ -151,7 +149,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             var currentTime = -double.Epsilon;
 
             var definitionPoints = new Dictionary<double, double>();
-            for (int i = 1; i < paramTokens.Count; i += 2)
+            for (var i = 1; i < paramTokens.Count; i += 2)
             {
                 if (i >= paramTokens.Count - 2 && paramTokens[i].Value == "R") // repetition
                 {
@@ -190,7 +188,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         }
 
         /// <summary>
-        /// Generic function for parsing simple transient function parameters.
+        ///     Generic function for parsing simple transient function parameters.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="mapper"></param>
@@ -199,16 +197,14 @@ namespace NextGenSpice.Parser.Statements.Devices
         private T GetParameterTokens<T>(ParameterMapper<T> mapper, List<Token> paramTokens) where T : new()
         {
             mapper.Target = new T();
-            for (int i = 1; i < Math.Min(mapper.ByIndexCount, paramTokens.Count); i++) // start from 1 bc. first is method identifier
-            {
+            for (var i = 1;
+                i < Math.Min(mapper.ByIndexCount, paramTokens.Count);
+                i++) // start from 1 bc. first is method identifier
                 mapper.Set(i - 1, GetValue(paramTokens[i]));
-            }
 
             if (paramTokens.Count > mapper.ByIndexCount + 1)
-            {
                 Error(paramTokens[mapper.ByIndexCount],
                     $"Too many arguments for transient source '{paramTokens[0].Value}'");
-            }
 
             var t = mapper.Target;
             mapper.Target = default(T);
@@ -216,7 +212,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         }
 
         /// <summary>
-        /// Factory method for a deferred statement that should be processed later.
+        ///     Factory method for a deferred statement that should be processed later.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="nodes"></param>

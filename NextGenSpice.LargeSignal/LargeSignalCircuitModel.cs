@@ -15,7 +15,6 @@ using Numerics;
 
 namespace NextGenSpice.LargeSignal
 {
-
     public class LargeSignalCircuitModel : IAnalysisCircuitModel<ILargeSignalDeviceModel>
     {
         private class SimulationContext : ISimulationContext
@@ -29,11 +28,10 @@ namespace NextGenSpice.LargeSignal
             public double NodeCount { get; }
             public double Time { get; set; }
             public double TimeStep { get; set; }
-            //public double[] EquationSolution => EquationSystem.Solution;
 
             public double GetSolutionForVariable(int index)
             {
-                return (double) EquationSystem.Solution[index];
+                return EquationSystem.Solution[index];
             }
 
             public CircuitParameters CircuitParameters { get; }
@@ -211,7 +209,7 @@ namespace NextGenSpice.LargeSignal
             do
             {
                 delta = 0;
-                var prevVoltages = (double[])equationSystem.Solution.Clone();
+                var prevVoltages = (double[]) equationSystem.Solution.Clone();
 
                 equationSystem.Restore();
 
@@ -255,7 +253,7 @@ namespace NextGenSpice.LargeSignal
             m[0, 0] = new qd_real(1);
             equationSystem.RightHandSide[0] = qd_real.Zero;
 #elif dd_precision
-            for (int i = 0; i < m.SideLength; i++)
+            for (var i = 0; i < m.SideLength; i++)
             {
                 m[i, 0] = dd_real.Zero;
                 m[0, i] = dd_real.Zero;
@@ -280,20 +278,10 @@ namespace NextGenSpice.LargeSignal
                 NodeVoltages[i] = equationSystem.Solution[i];
         }
 
-        private void UpdateEquationSystem(Action<ILargeSignalDeviceModel> updater, IEnumerable<ILargeSignalDeviceModel> elements)
+        private void UpdateEquationSystem(Action<ILargeSignalDeviceModel> updater,
+            IEnumerable<ILargeSignalDeviceModel> elements)
         {
             foreach (var e in elements) updater(e);
-        }
-
-        private void DebugPrint()
-        {
-            Console.WriteLine("Results:");
-            for (var i = 0; i < NodeCount; i++)
-            {
-                var v = equationSystem.Solution[i];
-                Console.WriteLine($"node {i}: {v:##.0000}");
-            }
-            Console.WriteLine();
         }
     }
 }

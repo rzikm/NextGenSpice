@@ -1,17 +1,17 @@
 namespace NextGenSpice.Parser.Statements.Models
 {
     /// <summary>
-    /// Defines methods for handling concrete .MODEL statements
+    ///     Defines methods for handling concrete .MODEL statements
     /// </summary>
     public interface IModelStatementHandler
     {
         /// <summary>
-        /// Discriminator of model type.
+        ///     Discriminator of model type.
         /// </summary>
         string Discriminator { get; }
 
         /// <summary>
-        /// Processes the .MODEL statement in given context.
+        ///     Processes the .MODEL statement in given context.
         /// </summary>
         /// <param name="tokens"></param>
         /// <param name="context"></param>

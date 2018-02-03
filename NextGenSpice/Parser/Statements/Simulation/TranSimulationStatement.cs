@@ -9,12 +9,12 @@ using NextGenSpice.Parser.Statements.Printing;
 namespace NextGenSpice.Parser.Statements.Simulation
 {
     /// <summary>
-    /// Class responsible for handling .TRAN simulation statements.
+    ///     Class responsible for handling .TRAN simulation statements.
     /// </summary>
     public class TranSimulationStatement : ISimulationStatement
     {
-        private readonly TranSimulationParams param;
         private readonly Dictionary<int, string> nodeNames;
+        private readonly TranSimulationParams param;
 
         public TranSimulationStatement(TranSimulationParams param, Dictionary<int, string> nodeNames)
         {
@@ -23,14 +23,15 @@ namespace NextGenSpice.Parser.Statements.Simulation
         }
 
         /// <summary>
-        /// Performs the simulation and prints results to specified TextWriter.
+        ///     Performs the simulation and prints results to specified TextWriter.
         /// </summary>
         /// <param name="circuit">Circuit on which analysis should be performed.</param>
         /// <param name="printStatements">Set of all requested print statements that were requested in SPICE input file.</param>
         /// <param name="output">TextWriter instance to which the results should be written.</param>
         public void Simulate(ICircuitDefinition circuit, IEnumerable<PrintStatement> printStatements, TextWriter output)
         {
-            var printers = printStatements.OfType<PrintStatement<LargeSignalCircuitModel>>().Where(st => st.AnalysisType == "TRAN").ToList();
+            var printers = printStatements.OfType<PrintStatement<LargeSignalCircuitModel>>()
+                .Where(st => st.AnalysisType == "TRAN").ToList();
             var model = circuit.GetLargeSignalModel();
 
             if (printers.Count == 0) // if no printer here, print all data
@@ -50,23 +51,24 @@ namespace NextGenSpice.Parser.Statements.Simulation
             }
         }
 
-        private void GetPrintersForAll(LargeSignalCircuitModel model, List<PrintStatement<LargeSignalCircuitModel>> printers)
+        private void GetPrintersForAll(LargeSignalCircuitModel model,
+            List<PrintStatement<LargeSignalCircuitModel>> printers)
         {
             // get printers for all nodes and two terminal devices
 
-            for (int i = 1; i < model.NodeCount; i++) // no need to print ground voltage
-            {
+            for (var i = 1; i < model.NodeCount; i++) // no need to print ground voltage
                 printers.Add(new NodeVoltagePrintStatement(nodeNames[i], i));
-            }
 
-            foreach (var element in model.Elements.OfType<ITwoTerminalLargeSignalDeviceModel>().Where(e => !string.IsNullOrEmpty(e.Name)))
+            foreach (var element in model.Elements.OfType<ITwoTerminalLargeSignalDeviceModel>()
+                .Where(e => !string.IsNullOrEmpty(e.Name)))
             {
                 printers.Add(new ElementVoltagePrintStatement(element.Name));
                 printers.Add(new ElementCurrentPrintStatement(element.Name));
             }
         }
 
-        private void PrintHeader(LargeSignalCircuitModel model, List<PrintStatement<LargeSignalCircuitModel>> printers, TextWriter output)
+        private void PrintHeader(LargeSignalCircuitModel model, List<PrintStatement<LargeSignalCircuitModel>> printers,
+            TextWriter output)
         {
             output.Write("Time");
             foreach (var printer in printers)
@@ -78,7 +80,8 @@ namespace NextGenSpice.Parser.Statements.Simulation
             output.WriteLine();
         }
 
-        private void PrintValues(LargeSignalCircuitModel model, List<PrintStatement<LargeSignalCircuitModel>> printers, TextWriter output)
+        private void PrintValues(LargeSignalCircuitModel model, List<PrintStatement<LargeSignalCircuitModel>> printers,
+            TextWriter output)
         {
             output.Write(model.CurrentTimePoint);
             foreach (var printer in printers)

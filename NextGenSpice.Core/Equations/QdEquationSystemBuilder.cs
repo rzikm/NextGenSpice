@@ -1,31 +1,30 @@
 using System.Collections.Generic;
-using System.Linq;
 using Numerics;
 
 namespace NextGenSpice.Core.Equations
 {
     /// <summary>
-    /// Class that is used to build equation system with qd_real coefficients.
+    ///     Class that is used to build equation system with qd_real coefficients.
     /// </summary>
     public class QdEquationSystemBuilder : IEquationSystemBuilder
     {
         private readonly List<List<qd_real>> matrix;
-        readonly List<qd_real> rhs;
+        private readonly List<qd_real> rhs;
 
         public QdEquationSystemBuilder()
         {
-            this.matrix = new List<List<qd_real>>();
-            this.rhs = new List<qd_real>();
+            matrix = new List<List<qd_real>>();
+            rhs = new List<qd_real>();
         }
 
         /// <summary>
-        /// Adds a variable to the equation system. Returns the index of the variable.
+        ///     Adds a variable to the equation system. Returns the index of the variable.
         /// </summary>
         /// <returns></returns>
         public int AddVariable()
         {
             var newRow = new List<qd_real>();
-            for (int i = 0; i < matrix.Count; i++)
+            for (var i = 0; i < matrix.Count; i++)
             {
                 matrix[i].Add(qd_real.Zero);
                 newRow.Add(qd_real.Zero);
@@ -38,12 +37,12 @@ namespace NextGenSpice.Core.Equations
         }
 
         /// <summary>
-        /// Count of the variables in the equation.
+        ///     Count of the variables in the equation.
         /// </summary>
         public int VariablesCount => rhs.Count;
 
         /// <summary>
-        /// Adds a value to coefficient on the given row and column of the equation matrix.
+        ///     Adds a value to coefficient on the given row and column of the equation matrix.
         /// </summary>
         /// <param name="row">The row.</param>
         /// <param name="column">The column.</param>
@@ -54,7 +53,7 @@ namespace NextGenSpice.Core.Equations
         }
 
         /// <summary>
-        /// Adds a value to coefficient on the given position of the right hand side of the equation matrix.
+        ///     Adds a value to coefficient on the given position of the right hand side of the equation matrix.
         /// </summary>
         /// <param name="index">Index of the position.</param>
         /// <param name="value">The value.</param>
@@ -64,16 +63,16 @@ namespace NextGenSpice.Core.Equations
         }
 
         /// <summary>
-        /// Creates equation system with fixed number of variables.
+        ///     Creates equation system with fixed number of variables.
         /// </summary>
         /// <returns></returns>
         public QdEquationSystem Build()
         {
-            Array2DWrapper<qd_real> m = new Array2DWrapper<qd_real>(VariablesCount);
+            var m = new Array2DWrapper<qd_real>(VariablesCount);
 
 
-            for (int i = 0; i < VariablesCount; i++)
-            for (int j = 0; j < VariablesCount; j++)
+            for (var i = 0; i < VariablesCount; i++)
+            for (var j = 0; j < VariablesCount; j++)
                 m[i, j] = matrix[i][j];
 
             return new QdEquationSystem(m, rhs.ToArray());

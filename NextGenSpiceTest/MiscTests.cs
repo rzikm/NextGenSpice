@@ -5,6 +5,8 @@ namespace NextGenSpiceTest
 {
     public class MiscTests
     {
+        // coeffitients taken from http://qucs.sourceforge.net/tech/node24.html
+
         [Fact]
         public void GeneratesAdamsMoultonCoefficients()
         {

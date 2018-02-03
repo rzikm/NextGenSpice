@@ -1,17 +1,21 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NextGenSpice.Core.Equations;
 using Numerics;
 
 namespace NextGenSpice.LargeSignal.NumIntegration
 {
+    /// <summary>
+    ///     Class implementing the Gear integration method of given order.
+    /// </summary>
     public class GearIntegrationMethod : IIntegrationMethod
     {
         private readonly double[] coefficients;
-        private readonly double normalizingCoeff;
         private readonly double[] derivatives;
+        private readonly double normalizingCoeff;
+        private int baseIndex;
 
         private int stateCount;
-        private int baseIndex;
 
         public GearIntegrationMethod(int order)
         {
@@ -22,6 +26,11 @@ namespace NextGenSpice.LargeSignal.NumIntegration
             derivatives = new double[order];
         }
 
+        /// <summary>
+        ///     Adds state and derivative of current timepoint to history.
+        /// </summary>
+        /// <param name="state">Value of current state variable</param>
+        /// <param name="derivative">Derivative of current state variable</param>
         public void SetState(double state, double derivative)
         {
             baseIndex = (baseIndex - 1 + derivatives.Length) % derivatives.Length;
@@ -29,35 +38,43 @@ namespace NextGenSpice.LargeSignal.NumIntegration
             stateCount++;
         }
 
-        public (double, double) GetEquivalents(double timeDerivative)
+        /// <summary>
+        ///     Gets next values of state and derivative based on history and current timepoint.
+        /// </summary>
+        /// <param name="timeStep">How far to predict values of state and derivative.</param>
+        /// <returns></returns>
+        public (double state, double derivative) GetEquivalents(double timeStep)
         {
             if (stateCount < derivatives.Length)
             {
                 var rec = new GearIntegrationMethod(stateCount);
-                for (int i = 0; i < stateCount; i++)
-                {
-                    rec.SetState(0,derivatives[derivatives.Length - 1 - i]);
-                }
-                return rec.GetEquivalents(timeDerivative);
+                for (var i = 0; i < stateCount; i++)
+                    rec.SetState(0, derivatives[derivatives.Length - 1 - i]);
+                return rec.GetEquivalents(timeStep);
             }
 
-            var geq = timeDerivative / normalizingCoeff;
+            var geq = timeStep / normalizingCoeff;
             var state = 0.0;
-            for (int i = 0; i < derivatives.Length; i++)
-            {
-                state += coefficients[i] * timeDerivative * derivatives[(baseIndex + i) % derivatives.Length];
-            }
+            for (var i = 0; i < derivatives.Length; i++)
+                state += coefficients[i] * timeStep * derivatives[(baseIndex + i) % derivatives.Length];
             state /= normalizingCoeff;
 
             return (geq, state);
         }
 
+        /// <summary>
+        ///     Gets coeffitients for Gear integration method of given order.
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
         public static double[] GetCoefficients(int order)
         {
-            // see http://qucs.sourceforge.net/tech/node24.html#eq:MoultonInt for details
-            EquationSystem es = new EquationSystem(new Array2DWrapper<double>(order + 1), new double[order + 1]);
+            if (order < 0) throw new ArgumentOutOfRangeException(nameof(order));
+
+            // see http://qucs.sourceforge.net/tech/node24.html#SECTION00713100000000000000 for details
+            var es = new EquationSystem(new Array2DWrapper<double>(order + 1), new double[order + 1]);
             es.AddRightHandSideEntry(0, 1);
-            for (int i = 1; i < es.VariablesCount; i++)
+            for (var i = 1; i < es.VariablesCount; i++)
             {
                 es.AddRightHandSideEntry(i, 1);
                 es.AddMatrixEntry(0, i, 1);
@@ -65,7 +82,7 @@ namespace NextGenSpice.LargeSignal.NumIntegration
 
 
                 var b = -(i - 1);
-                for (int row = 1; row < es.VariablesCount; row++)
+                for (var row = 1; row < es.VariablesCount; row++)
                 {
                     es.AddMatrixEntry(row, i, b);
                     b *= -(i - 1);

@@ -6,7 +6,7 @@ using NextGenSpice.Utils;
 namespace NextGenSpice.Parser.Statements.Deferring
 {
     /// <summary>
-    /// Class representing element statement for simple elements (without a model)
+    ///     Class representing element statement for simple elements (without a model)
     /// </summary>
     public class SimpleElementStatement : DeferredStatement
     {
@@ -18,7 +18,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
         }
 
         /// <summary>
-        /// Returns true if all prerequisites for the statements have been fulfilled and statement is ready to be applied.
+        ///     Returns true if all prerequisites for the statements have been fulfilled and statement is ready to be applied.
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
@@ -28,7 +28,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
         }
 
         /// <summary>
-        /// Calling this function always results in InvalidOperationException as this statement can always be processed.
+        ///     Calling this function always results in InvalidOperationException as this statement can always be processed.
         /// </summary>
         /// <returns></returns>
         public override IEnumerable<ErrorInfo> GetErrors()
@@ -37,7 +37,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
         }
 
         /// <summary>
-        /// Applies the statement in the given context.
+        ///     Applies the statement in the given context.
         /// </summary>
         /// <param name="context"></param>
         public override void Apply(ParsingContext ctx)

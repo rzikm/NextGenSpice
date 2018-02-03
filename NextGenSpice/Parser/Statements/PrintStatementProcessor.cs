@@ -6,7 +6,7 @@ using NextGenSpice.Utils;
 namespace NextGenSpice.Parser.Statements
 {
     /// <summary>
-    /// Class responsible for processing .PRINT [analysis type] [...data] statements.
+    ///     Class responsible for processing .PRINT [analysis type] [...data] statements.
     /// </summary>
     public class PrintStatementProcessor : StatementProcessor
     {
@@ -20,7 +20,12 @@ namespace NextGenSpice.Parser.Statements
         }
 
         /// <summary>
-        /// Adds a handler for a certain analysis type.
+        ///     Statement discriminator, that this class can handle.
+        /// </summary>
+        public override string Discriminator => ".PRINT";
+
+        /// <summary>
+        ///     Adds a handler for a certain analysis type.
         /// </summary>
         /// <param name="handler">The handler.</param>
         public void AddHandler(IPrintStatementHandler handler)
@@ -29,12 +34,7 @@ namespace NextGenSpice.Parser.Statements
         }
 
         /// <summary>
-        /// Statement discriminator, that this class can handle.
-        /// </summary>
-        public override string Discriminator => ".PRINT";
-
-        /// <summary>
-        /// Processes given statement.
+        ///     Processes given statement.
         /// </summary>
         /// <param name="tokens">All tokens of the statement.</param>
         protected override void DoProcess(Token[] tokens)
@@ -45,7 +45,7 @@ namespace NextGenSpice.Parser.Statements
                 Context.Errors.Add(tokens[1].ToErrorInfo($"Unrecognized analysis type: '{analysisType}'."));
                 return;
             }
-            
+
             proc.ProcessPrintStatement(tokens, Context);
         }
     }

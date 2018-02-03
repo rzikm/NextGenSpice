@@ -1,27 +1,44 @@
 ﻿using System;
 using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.LargeSignal.Models;
 
 namespace NextGenSpice.LargeSignal.Behaviors
 {
+    /// <summary>
+    ///     Strategy class for single frequency FM behavior of <see cref="LargeSignalVoltageSourceModel" /> and
+    ///     <see cref="LargeSignalCurrentSourceModel" />.
+    /// </summary>
     internal class SffmSourceBehavior : InputSourceBehavior<SffmBehaviorParams>
     {
-        public SffmSourceBehavior(SffmBehaviorParams param) : base(param)
+        public SffmSourceBehavior(SffmBehaviorParams parameters) : base(parameters)
         {
         }
 
+        /// <summary>
+        ///     If true, the behavior is not constant over time and the value is refreshed every timestep.
+        /// </summary>
+        public override bool IsTimeDependent => true;
+
+        /// <summary>
+        ///     If true, the behavior depends on another element and the source value is updated in every iteration of
+        ///     Newton-Raphson loop.
+        /// </summary>
+        public override bool HasDependency => false;
+
+        /// <summary>
+        ///     Gets input source value for given timepoint.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override double GetValue(ISimulationContext context)
         {
-            var c = 2 * Math.PI * (context.Time);
-            var phaseCarrier = c * param.FrequencyCarrier;
-            var phaseSignal = c * param.FrequencySignal;
+            var c = 2 * Math.PI * context.Time;
+            var phaseCarrier = c * Parameters.FrequencyCarrier;
+            var phaseSignal = c * Parameters.FrequencySignal;
 
-            return param.DcOffset +
-                   param.Amplitude * Math.Sin(phaseCarrier + param.ModulationIndex * Math.Sin(phaseSignal));
+            return Parameters.DcOffset +
+                   Parameters.Amplitude * Math.Sin(phaseCarrier + Parameters.ModulationIndex * Math.Sin(phaseSignal));
         }
-
-        public override bool IsTimeDependent => true;
-        public override bool HasDependency => false;
     }
 }

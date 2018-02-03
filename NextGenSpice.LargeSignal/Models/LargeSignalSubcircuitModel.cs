@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
@@ -7,28 +6,52 @@ using NextGenSpice.Core.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
 {
+    /// <summary>
+    ///     Large signal model for <see cref="SubcircuitElement" />.
+    /// </summary>
     public class LargeSignalSubcircuitModel : LargeSignalModelBase<SubcircuitElement>
     {
-        private readonly BiasedEquationEditor biasedEquationEditor;
-        private readonly BiasedSimulationContext subContext;
-        private readonly int[] nodeMap;
-
         private readonly ILargeSignalDeviceModel[] elements;
+        private readonly int[] nodeMap;
+        private readonly RedirectingEquationEditor redirectingEquationEditor;
+        private readonly RedirectingSimulationContext subContext;
 
-        public IReadOnlyList<ILargeSignalDeviceModel> Elements => elements;
-
-        public LargeSignalSubcircuitModel(SubcircuitElement parent, IEnumerable<ILargeSignalDeviceModel> elements) :
-            base(parent)
+        public LargeSignalSubcircuitModel(SubcircuitElement definitionElement,
+            IEnumerable<ILargeSignalDeviceModel> elements) :
+            base(definitionElement)
         {
             this.elements = elements.ToArray();
 
-            nodeMap = new int[parent.InnerNodeCount + 1];
-            biasedEquationEditor = new BiasedEquationEditor(nodeMap);
-            subContext = new BiasedSimulationContext(nodeMap);
+            nodeMap = new int[definitionElement.InnerNodeCount + 1];
+            redirectingEquationEditor = new RedirectingEquationEditor(nodeMap);
+            subContext = new RedirectingSimulationContext(nodeMap);
         }
+
+        /// <summary>
+        ///     Set of classes that model this subcircuit.
+        /// </summary>
+        public IReadOnlyList<ILargeSignalDeviceModel> Elements => elements;
+
+        /// <summary>
+        ///     If true, the device behavior is not linear is not constant and the
+        ///     <see cref="ILargeSignalDeviceModel.ApplyModelValues" /> function is
+        ///     called every iteration during nonlinear solving.
+        /// </summary>
         public override bool IsNonlinear => false;
+
+        /// <summary>
+        ///     If true, the device behavior is not constant over time and the
+        ///     <see cref="ILargeSignalDeviceModel.ApplyModelValues" /> function is called
+        ///     every timestep.
+        /// </summary>
         public override bool IsTimeDependent => false;
 
+        /// <summary>
+        ///     Notifies model class that DC bias for given timepoint is established. This method can be used for processing
+        ///     circuit equation solution
+        ///     for current timepoint.
+        /// </summary>
+        /// <param name="context">Context of current simulation.</param>
         public override void OnDcBiasEstablished(ISimulationContext context)
         {
             base.OnDcBiasEstablished(context);
@@ -38,6 +61,11 @@ namespace NextGenSpice.LargeSignal.Models
                 model.OnDcBiasEstablished(context);
         }
 
+        /// <summary>
+        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
+        /// </summary>
+        /// <param name="builder">The equation system builder.</param>
+        /// <param name="context">Context of current simulation.</param>
         public override void RegisterAdditionalVariables(IEquationSystemBuilder builder, ISimulationContext context)
         {
             base.RegisterAdditionalVariables(builder, context);
@@ -45,25 +73,151 @@ namespace NextGenSpice.LargeSignal.Models
             for (var i = 1; i < nodeMap.Length; i++)
                 nodeMap[i] = -1;
 
-            for (int i = 0; i < Parent.TerminalNodes.Length; i++)
-                nodeMap[Parent.TerminalNodes[i]] = Parent.ConnectedNodes[i];
+            for (var i = 0; i < DefinitionElement.TerminalNodes.Length; i++)
+                nodeMap[DefinitionElement.TerminalNodes[i]] = DefinitionElement.ConnectedNodes[i];
 
             for (var i = 1; i < nodeMap.Length; i++)
                 nodeMap[i] = nodeMap[i] < 0 ? builder.AddVariable() : nodeMap[i];
 
-            biasedEquationEditor.TrueEquationEditor = builder;
+            redirectingEquationEditor.TrueEquationEditor = builder;
 
             foreach (var model in elements)
                 model.RegisterAdditionalVariables(builder, context);
         }
 
+        /// <summary>
+        ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is called
+        ///     once every Newton-Raphson iteration.
+        /// </summary>
+        /// <param name="equations">Current linearized circuit equation system.</param>
+        /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            biasedEquationEditor.TrueEquationEditor = equations;
+            redirectingEquationEditor.TrueEquationEditor = equations;
             subContext.TrueContext = context;
 
             foreach (var model in elements)
-                model.ApplyModelValues(biasedEquationEditor, context);
+                model.ApplyModelValues(redirectingEquationEditor, context);
+        }
+
+        /// <summary>
+        ///     Equation editor with redirection layer for using inside subcircuit model.
+        /// </summary>
+        private class RedirectingEquationEditor : RedirectorBase, IEquationSystemBuilder
+        {
+            public RedirectingEquationEditor(int[] nodeMap) : base(nodeMap)
+            {
+            }
+
+            /// <summary>
+            ///     Decorated equation editor.
+            /// </summary>
+            public IEquationEditor TrueEquationEditor { get; set; }
+
+            /// <summary>
+            ///     Count of the variables in the equation.
+            /// </summary>
+            public int VariablesCount => TrueEquationEditor.VariablesCount;
+
+            /// <summary>
+            ///     Adds a value to coefficient on the given row and column of the equation matrix.
+            /// </summary>
+            /// <param name="row">The row.</param>
+            /// <param name="column">The column.</param>
+            /// <param name="value">The value to be added to the coefficients.</param>
+            public void AddMatrixEntry(int row, int column, double value)
+            {
+                TrueEquationEditor.AddMatrixEntry(GetMappedIndex(row), GetMappedIndex(column), value);
+            }
+
+            /// <summary>
+            ///     Adds a value to coefficient on the given position of the right hand side of the equation matrix.
+            /// </summary>
+            /// <param name="index">Index of the position.</param>
+            /// <param name="value">The value.</param>
+            public void AddRightHandSideEntry(int index, double value)
+            {
+                TrueEquationEditor.AddRightHandSideEntry(GetMappedIndex(index), value);
+            }
+
+            /// <summary>
+            ///     Adds a variable to the equation system. Returns the index of the variable.
+            /// </summary>
+            /// <returns></returns>
+            public int AddVariable()
+            {
+                return ((IEquationSystemBuilder) TrueEquationEditor).AddVariable();
+            }
+        }
+
+        /// <summary>
+        ///     Simulation context with redirection layer to be used inside subcircuit model.
+        /// </summary>
+        private class RedirectingSimulationContext : RedirectorBase, ISimulationContext
+        {
+            public RedirectingSimulationContext(int[] nodeMap) : base(nodeMap)
+            {
+            }
+
+
+            /// <summary>
+            ///     Decorated simulation context.
+            /// </summary>
+            public ISimulationContext TrueContext { get; set; }
+
+            /// <summary>
+            ///     Number of inner nodes.
+            /// </summary>
+            public double NodeCount => TrueContext.NodeCount;
+
+            /// <summary>
+            ///     Curent timepoint of the simulation.
+            /// </summary>
+            public double Time => TrueContext.Time;
+
+            /// <summary>
+            ///     Last timestep that was used to advance the timepoint.
+            /// </summary>
+            public double TimeStep => TrueContext.TimeStep;
+
+            /// <summary>
+            ///     Gets numerical solution for vairable with given index - either a node voltage or branch current.
+            /// </summary>
+            /// <param name="index"></param>
+            /// <returns></returns>
+            public double GetSolutionForVariable(int index)
+            {
+                return TrueContext.GetSolutionForVariable(GetMappedIndex(index));
+            }
+
+            /// <summary>
+            ///     General parameters of the circuit that is simulated.
+            /// </summary>
+            public CircuitParameters CircuitParameters => TrueContext.CircuitParameters;
+        }
+
+        /// <summary>
+        ///     Base class for <see cref="RedirectingEquationEditor" /> and <see cref="RedirectingSimulationContext" />
+        ///     implementing calculation of redirected index.
+        /// </summary>
+        private class RedirectorBase
+        {
+            private readonly int[] nodeMap;
+
+            public RedirectorBase(int[] nodeMap)
+            {
+                this.nodeMap = nodeMap;
+            }
+
+            /// <summary>
+            ///     Gets redirected index for using in decorated EquationEditor.
+            /// </summary>
+            /// <param name="i"></param>
+            /// <returns></returns>
+            protected int GetMappedIndex(int i)
+            {
+                return i < nodeMap.Length ? nodeMap[i] : i;
+            }
         }
     }
 }

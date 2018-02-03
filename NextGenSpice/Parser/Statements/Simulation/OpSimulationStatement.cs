@@ -9,12 +9,12 @@ using NextGenSpice.Parser.Statements.Printing;
 namespace NextGenSpice.Parser.Statements.Simulation
 {
     /// <summary>
-    /// Class representing a call to .OP statement.
+    ///     Class representing a call to .OP statement.
     /// </summary>
     public class OpSimulationStatement : ISimulationStatement
     {
-        private readonly OpSimulationParams param;
         private readonly Dictionary<int, string> nodeNames;
+        private readonly OpSimulationParams param;
 
         public OpSimulationStatement(OpSimulationParams param, Dictionary<int, string> nodeNames)
         {
@@ -24,7 +24,7 @@ namespace NextGenSpice.Parser.Statements.Simulation
 
 
         /// <summary>
-        /// Performs the simulation and prints results to specified TextWriter.
+        ///     Performs the simulation and prints results to specified TextWriter.
         /// </summary>
         /// <param name="circuit">Circuit on which analysis should be performed.</param>
         /// <param name="printStatements">Set of all requested print statements that were requested in SPICE input file.</param>
@@ -35,16 +35,15 @@ namespace NextGenSpice.Parser.Statements.Simulation
             var prints = printStatements.OfType<PrintStatement<LargeSignalCircuitModel>>()
                 .Where(s => s.AnalysisType == "OP").ToList();
             model.EstablishDcBias();
-            
+
             if (prints.Count == 0)
             {
                 // print all values from the circuit that are available. 
-                for (int i = 1; i < model.NodeCount; i++) // no need to print ground voltage
-                {
+                for (var i = 1; i < model.NodeCount; i++) // no need to print ground voltage
                     output.WriteLine($"V({nodeNames[i]}) = {model.NodeVoltages[i]}");
-                }
 
-                foreach (var element in model.Elements.OfType<ITwoTerminalLargeSignalDeviceModel>().Where(e => !string.IsNullOrEmpty(e.Name)))
+                foreach (var element in model.Elements.OfType<ITwoTerminalLargeSignalDeviceModel>()
+                    .Where(e => !string.IsNullOrEmpty(e.Name)))
                 {
                     output.WriteLine();
                     output.WriteLine($"V({element.Name}) = {element.Voltage}");
@@ -61,7 +60,6 @@ namespace NextGenSpice.Parser.Statements.Simulation
                     output.WriteLine();
                 }
             }
-            
         }
     }
 }

@@ -7,7 +7,7 @@ using NextGenSpice.Parser.Statements.Models;
 namespace NextGenSpice.Parser
 {
     /// <summary>
-    /// Class aggregating all encountered symbols in the input file.
+    ///     Class aggregating all encountered symbols in the input file.
     /// </summary>
     public class SymbolTable
     {
@@ -22,22 +22,22 @@ namespace NextGenSpice.Parser
         }
 
         /// <summary>
-        /// Set of all device element identifiers.
+        ///     Set of all device element identifiers.
         /// </summary>
         public ISet<string> DefinedElements { get; }
 
         /// <summary>
-        /// Sets of all device models (parameter sets) for each device type.
+        ///     Sets of all device models (parameter sets) for each device type.
         /// </summary>
         public Dictionary<DeviceType, Dictionary<string, object>> Models { get; }
 
         /// <summary>
-        /// Set of all node identifiers with associated ids that will be used during simulation.
+        ///     Set of all node identifiers with associated ids that will be used during simulation.
         /// </summary>
         public IDictionary<string, int> NodeIndices { get; }
 
         /// <summary>
-        /// Returns whether given symbol is already used for a device or node.
+        ///     Returns whether given symbol is already used for a device or node.
         /// </summary>
         /// <param name="symbol"></param>
         /// <returns></returns>
@@ -48,7 +48,7 @@ namespace NextGenSpice.Parser
         }
 
         /// <summary>
-        /// Adds given symbol to the set of element names, returns true if it not already used.
+        ///     Adds given symbol to the set of element names, returns true if it not already used.
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -58,7 +58,7 @@ namespace NextGenSpice.Parser
         }
 
         /// <summary>
-        /// Tries to get node index corresponding to given node name. Returns true on success.
+        ///     Tries to get node index corresponding to given node name. Returns true on success.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="index"></param>
@@ -66,7 +66,8 @@ namespace NextGenSpice.Parser
         public bool TryGetNodeIndex(string name, out int index)
         {
             index = 0;
-            if (string.IsNullOrWhiteSpace(name)) throw new InvalidEnumArgumentException($"Parameter {nameof(name)} must be nonempty.");
+            if (string.IsNullOrWhiteSpace(name))
+                throw new InvalidEnumArgumentException($"Parameter {nameof(name)} must be nonempty.");
             if (NodeIndices.TryGetValue(name, out index)) return true;
 
             if (IsDefined(name)) return false; // symbol 'name' is already used for a device
@@ -77,7 +78,7 @@ namespace NextGenSpice.Parser
         }
 
         /// <summary>
-        /// Gives set of node names for given set of indexes
+        ///     Gives set of node names for given set of indexes
         /// </summary>
         /// <param name="indexes"></param>
         /// <returns></returns>

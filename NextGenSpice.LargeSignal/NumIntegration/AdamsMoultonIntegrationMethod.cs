@@ -1,19 +1,24 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NextGenSpice.Core.Equations;
 using Numerics;
 
 namespace NextGenSpice.LargeSignal.NumIntegration
 {
+    /// <summary>
+    ///     Class performing Adams-Moulton integration method of given order.
+    /// </summary>
     public class AdamsMoultonIntegrationMethod : IIntegrationMethod
     {
         private readonly double[] coefficients;
         private readonly double derivativeCoeff;
         private readonly double[] states;
+
+        private int baseIndex;
         private double derivative;
 
         private int stateCount;
 
-        private int baseIndex;
         public AdamsMoultonIntegrationMethod(int order)
         {
             var coef = GetCoefficients(order);
@@ -23,6 +28,11 @@ namespace NextGenSpice.LargeSignal.NumIntegration
             states = new double[order - 1];
         }
 
+        /// <summary>
+        ///     Adds state and derivative of current timepoint to history.
+        /// </summary>
+        /// <param name="state">Value of current state variable</param>
+        /// <param name="derivative">Derivative of current state variable</param>
         public void SetState(double state, double derivative)
         {
             this.derivative = derivative;
@@ -31,36 +41,48 @@ namespace NextGenSpice.LargeSignal.NumIntegration
             stateCount++;
         }
 
-        public (double, double) GetEquivalents(double timeDerivative)
+
+        /// <summary>
+        ///     Gets next values of state and derivative based on history and current timepoint.
+        /// </summary>
+        /// <param name="timeStep">How far to predict values of state and derivative.</param>
+        /// <returns></returns>
+        public (double state, double derivative) GetEquivalents(double timeStep)
         {
+            if (timeStep <= 0) throw new ArgumentOutOfRangeException(nameof(timeStep));
+
             if (stateCount < states.Length)
             {
                 var rec = new AdamsMoultonIntegrationMethod(stateCount + 1);
-                for (int i = 0; i < stateCount; i++)
-                {
+                for (var i = 0; i < stateCount; i++)
                     rec.SetState(states[states.Length - 1 - i], derivative);
-                }
-                return rec.GetEquivalents(timeDerivative);
+                return rec.GetEquivalents(timeStep);
             }
 
-            var geq = timeDerivative / derivativeCoeff;
-            var state = derivative * timeDerivative;
-            for (int i = 0; i < states.Length; i++)
-            {
+            var geq = timeStep / derivativeCoeff;
+            var state = derivative * timeStep;
+            for (var i = 0; i < states.Length; i++)
                 state += coefficients[i] * states[(baseIndex + i) % states.Length];
-            }
             state /= derivativeCoeff;
 
             return (geq, state);
         }
 
+        /// <summary>
+        ///     Gets coefficients for the Adams-Moulton integration of given order.
+        /// </summary>
+        /// <param name="order">Order of the integration method</param>
+        /// <returns></returns>
         public static double[] GetCoefficients(int order)
         {
+            if (order <= 0) throw new ArgumentOutOfRangeException(nameof(order));
+
             // see http://qucs.sourceforge.net/tech/node24.html#eq:MoultonInt for details
-            EquationSystem es = new EquationSystem(new Array2DWrapper<double>(order), new double[order]);
+
+            var es = new EquationSystem(new Array2DWrapper<double>(order), new double[order]);
             es.AddMatrixEntry(0, 0, 1);
             es.AddRightHandSideEntry(0, 1);
-            for (int i = 1; i < order; i++)
+            for (var i = 1; i < order; i++)
             {
                 var parity = i % 2 > 0 ? -1 : 1;
 
@@ -69,10 +91,10 @@ namespace NextGenSpice.LargeSignal.NumIntegration
                 es.AddRightHandSideEntry(i, parity / (i + 1.0));
 
                 var b = i - 1;
-                for (int row = 1; row < order; row++)
+                for (var row = 1; row < order; row++)
                 {
                     es.AddMatrixEntry(row, i, b);
-                    b *= (i - 1);
+                    b *= i - 1;
                 }
             }
 

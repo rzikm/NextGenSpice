@@ -6,24 +6,24 @@ using NextGenSpice.Utils;
 namespace NextGenSpice.Parser.Statements.Devices
 {
     /// <summary>
-    /// Class representing processor for a given element type.
+    ///     Class representing processor for a given element type.
     /// </summary>
     public abstract class ElementStatementProcessor : IElementStatementProcessor
     {
+        private int oldErrors;
         protected SymbolTable SymbolTable => Context.SymbolTable;
 
         protected int Errors => Context.Errors.Count - oldErrors;
-        private int oldErrors;
 
         protected ParsingContext Context { get; private set; }
 
         /// <summary>
-        /// Discriminator of the element type this processor can parse.
+        ///     Discriminator of the element type this processor can parse.
         /// </summary>
         public abstract char Discriminator { get; }
 
         /// <summary>
-        /// Parses given line of tokens, adds statement to be processed later or adds errors to Errors collection.
+        ///     Parses given line of tokens, adds statement to be processed later or adds errors to Errors collection.
         /// </summary>
         /// <param name="tokens"></param>
         /// <param name="ctx"></param>
@@ -40,20 +40,29 @@ namespace NextGenSpice.Parser.Statements.Devices
         }
 
         /// <summary>
-        /// Processes given set of statements.
+        ///     Gets list of model statement handlers that are responsible to parsing respective models of this device.
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<IModelStatementHandler> GetModelStatementHandlers()
+        {
+            return Enumerable.Empty<IModelStatementHandler>();
+        }
+
+        /// <summary>
+        ///     Processes given set of statements.
         /// </summary>
         /// <param name="tokens"></param>
         protected abstract void DoProcess(Token[] tokens);
 
         /// <summary>
-        /// Returns generic error message
+        ///     Returns generic error message
         /// </summary>
         /// <param name="source"></param>
         /// <param name="message"></param>
         /// <returns></returns>
         protected void Error(Token source, string message)
         {
-            Context.Errors.Add( new ErrorInfo
+            Context.Errors.Add(new ErrorInfo
             {
                 Messsage = message,
                 LineNumber = source.LineNumber,
@@ -62,7 +71,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         }
 
         /// <summary>
-        /// Returns message, that some element with given name has been already defined.
+        ///     Returns message, that some element with given name has been already defined.
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
@@ -72,7 +81,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         }
 
         /// <summary>
-        /// Return message, that given token cannot be converted to a numeric representation.
+        ///     Return message, that given token cannot be converted to a numeric representation.
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
@@ -82,7 +91,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         }
 
         /// <summary>
-        /// Returns message indicating that given token does not represent a node name.
+        ///     Returns message indicating that given token does not represent a node name.
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
@@ -92,7 +101,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         }
 
         /// <summary>
-        /// Return message indicatiing that there was wrong number of arguments for given element type.
+        ///     Return message indicatiing that there was wrong number of arguments for given element type.
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
@@ -102,7 +111,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         }
 
         /// <summary>
-        /// Gets element name and sets it in symbol table, adds relevant errors into the errors collection
+        ///     Gets element name and sets it in symbol table, adds relevant errors into the errors collection
         /// </summary>
         /// <param name="token"></param>
         /// <param name="errors"></param>
@@ -115,7 +124,8 @@ namespace NextGenSpice.Parser.Statements.Devices
         }
 
         /// <summary>
-        /// Gets indices of the nodes represented by tokens starting at startIndex. Adds relevant errors into the errors collection
+        ///     Gets indices of the nodes represented by tokens starting at startIndex. Adds relevant errors into the errors
+        ///     collection
         /// </summary>
         /// <param name="tokens"></param>
         /// <param name="startIndex"></param>
@@ -125,7 +135,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         protected int[] GetNodeIndices(Token[] tokens, int startIndex, int count)
         {
             var ret = new int[count];
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 var token = tokens[startIndex + i];
                 if (!SymbolTable.TryGetNodeIndex(token.Value, out var node))
@@ -140,7 +150,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         }
 
         /// <summary>
-        /// Parses numeric value from given token, adds relevant error into the errors collection and returns NaN if failed.
+        ///     Parses numeric value from given token, adds relevant error into the errors collection and returns NaN if failed.
         /// </summary>
         /// <param name="token"></param>
         /// <param name="errors"></param>
@@ -150,15 +160,6 @@ namespace NextGenSpice.Parser.Statements.Devices
             var value = Helper.ConvertValue(token.Value);
             if (double.IsNaN(value)) NotANumber(token);
             return value;
-        }
-
-        /// <summary>
-        /// Gets list of model statement handlers that are responsible to parsing respective models of this device.
-        /// </summary>
-        /// <returns></returns>
-        public virtual IEnumerable<IModelStatementHandler> GetModelStatementHandlers()
-        {
-            return Enumerable.Empty<IModelStatementHandler>();
         }
     }
 }

@@ -1,22 +1,22 @@
 ﻿namespace NextGenSpice.Parser
 {
     /// <summary>
-    /// Class representing occurence of a token in a source file
+    ///     Class representing occurence of a token in a source file
     /// </summary>
     public class Token
     {
         /// <summary>
-        /// String value of the token.
+        ///     String value of the token.
         /// </summary>
         public string Value { get; set; }
 
         /// <summary>
-        /// Number of line, on which the token occured in the source file.
+        ///     Number of line, on which the token occured in the source file.
         /// </summary>
         public int LineNumber { get; set; }
 
         /// <summary>
-        /// One based index from beginning of the line, where the token occured in the source file.
+        ///     One based index from beginning of the line, where the token occured in the source file.
         /// </summary>
         public int LineColumn { get; set; }
     }

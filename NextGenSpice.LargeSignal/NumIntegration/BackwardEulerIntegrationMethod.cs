@@ -1,18 +1,31 @@
 ﻿namespace NextGenSpice.LargeSignal.NumIntegration
 {
+    /// <summary>
+    ///     Class implementing basic backward euler integration method.
+    /// </summary>
     public class BackwardEulerIntegrationMethod : IIntegrationMethod
     {
         private double derivative;
 
+        /// <summary>
+        ///     Adds state and derivative of current timepoint to history.
+        /// </summary>
+        /// <param name="state">Value of current state variable</param>
+        /// <param name="derivative">Derivative of current state variable</param>
         public void SetState(double state, double derivative)
         {
             this.derivative = derivative;
         }
 
-        public (double, double) GetEquivalents(double timeDerivative)
+        /// <summary>
+        ///     Gets next values of state and derivative based on history and current timepoint.
+        /// </summary>
+        /// <param name="timeStep">How far to predict values of state and derivative.</param>
+        /// <returns></returns>
+        public (double state, double derivative) GetEquivalents(double timeStep)
         {
-            var geq = timeDerivative;
-            var ieq = timeDerivative * derivative;
+            var geq = timeStep;
+            var ieq = timeStep * derivative;
 
             return (geq, ieq);
         }
