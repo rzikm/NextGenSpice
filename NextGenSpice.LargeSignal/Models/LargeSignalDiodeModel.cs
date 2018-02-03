@@ -124,7 +124,7 @@ namespace NextGenSpice.LargeSignal.Models
                 ;
 
             // Capacitance
-            var (cieq, cgeq) = IntegrationMethod.GetEquivalents(cd / context.TimeStep);
+            var (cgeq, cieq) = IntegrationMethod.GetEquivalents(cd / context.TimeStep);
 
             if (context.TimeStep > 0) // do not apply capacitor during the initial condition (model as open circuit)
             {

@@ -20,7 +20,7 @@ namespace Numerics
         private static extern void gauss_solve_dd(dd_real* mat, dd_real* b, uint size);
 
         [Conditional("DEBUG")]
-        public static void PrintSystem<T>(Array2DWrapper<T> m, T[] b)
+        public static void PrintSystem<T>(Array2DWrapper<T> m, T[] b) where T : struct
         {
             var size = m.SideLength;
             Trace.WriteLine("-----------------------------------------------------");
@@ -29,10 +29,10 @@ namespace Numerics
             {
                 for (var j = 0; j < size; j++)
                 {
-                    Trace.Write($"{m[i, j],10:G4} ");
+                    Trace.Write($"{Convert.ToDouble(m[i, j]),10:G4} ");
                 }
 
-                Trace.WriteLine($"| {b[i],10:G4}");
+                Trace.WriteLine($"| {Convert.ToDouble(b[i]),10:G4}");
             }
 
             Trace.WriteLine("-----------------------------------------------------");

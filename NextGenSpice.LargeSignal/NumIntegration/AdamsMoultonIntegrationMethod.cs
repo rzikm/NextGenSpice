@@ -59,13 +59,13 @@ namespace NextGenSpice.LargeSignal.NumIntegration
                 return rec.GetEquivalents(timeStep);
             }
 
-            var geq = timeStep / derivativeCoeff;
-            var state = derivative * timeStep;
+            var dx = timeStep / derivativeCoeff;
+            var x = derivative * timeStep;
             for (var i = 0; i < states.Length; i++)
-                state += coefficients[i] * states[(baseIndex + i) % states.Length];
-            state /= derivativeCoeff;
+                x += coefficients[i] * states[(baseIndex + i) % states.Length];
+            x /= derivativeCoeff;
 
-            return (geq, state);
+            return (x, dx);
         }
 
         /// <summary>

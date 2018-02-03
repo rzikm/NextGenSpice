@@ -24,10 +24,10 @@
         /// <returns></returns>
         public (double state, double derivative) GetEquivalents(double timeStep)
         {
-            var geq = timeStep;
-            var ieq = timeStep * derivative;
+            var dx = timeStep;
+            var x = timeStep * derivative;
 
-            return (geq, ieq);
+            return (x, dx);
         }
     }
 }
