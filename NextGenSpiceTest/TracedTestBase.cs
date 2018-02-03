@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 
 namespace NextGenSpiceTest
 {
-    public class TracedTestBase
+    public class TracedTestBase : IDisposable
     {
 
         [ThreadStatic]
@@ -16,6 +16,8 @@ namespace NextGenSpiceTest
 
         [ThreadStatic]
         protected static bool DoTrace;
+
+        private static MyTraceListener myTraceListener;
 
         protected ITestOutputHelper Output => output;
 
@@ -28,7 +30,8 @@ namespace NextGenSpiceTest
 
         static TracedTestBase()
         {
-            Trace.Listeners.Add(new MyTraceListener());
+            myTraceListener = new MyTraceListener();
+            Trace.Listeners.Add(myTraceListener);
         }
 
         private class MyTraceListener : TraceListener
@@ -48,6 +51,12 @@ namespace NextGenSpiceTest
                 output.WriteLine(sb.ToString());
                 sb.Clear();
             }
+        }
+
+        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+        public void Dispose()
+        {
+            Trace.Listeners.Remove(myTraceListener);
         }
     }
 }
