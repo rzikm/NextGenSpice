@@ -1,6 +1,4 @@
-﻿using NextGenSpice.Core.BehaviorParams;
-
-namespace NextGenSpice.Core.Elements
+﻿namespace NextGenSpice.Core.BehaviorParams
 {
     /// <summary>
     ///     Specifies behavior parameters for input source with constant output.

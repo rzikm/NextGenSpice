@@ -2,6 +2,7 @@ using System;
 using NextGenSpice.Core;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Elements.Parameters;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.LargeSignal.NumIntegration;
 

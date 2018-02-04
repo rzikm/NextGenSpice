@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Numerics
+namespace Numerics.Precision
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct qd_real : IConvertible, IComparable<qd_real>, IEquatable<qd_real>

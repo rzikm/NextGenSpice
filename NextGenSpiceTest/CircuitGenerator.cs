@@ -1,6 +1,7 @@
 ﻿using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Elements.Parameters;
 using NextGenSpice.Core.Extensions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal;

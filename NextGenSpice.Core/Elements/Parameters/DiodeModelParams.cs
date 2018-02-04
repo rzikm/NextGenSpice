@@ -1,4 +1,4 @@
-﻿namespace NextGenSpice.Core.Elements
+﻿namespace NextGenSpice.Core.Elements.Parameters
 {
     /// <summary>
     ///     Represents set of model parameters for the diode device.

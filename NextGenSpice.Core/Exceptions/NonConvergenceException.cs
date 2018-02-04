@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace NextGenSpice.Core
+namespace NextGenSpice.Core.Exceptions
 {
     [Serializable]
     public class NonConvergenceException : SimulationException

@@ -44,7 +44,7 @@ namespace NextGenSpice.Parser.Statements.Devices
 
             CreateModelParams();
 
-            foreach (var token in Helper.Retokenize(tokens, 3, context.Errors))
+            foreach (var token in Helper.Retokenize(tokens, 3))
             {
                 // parameters are must be in key-value pairs <parameter name>=<value> (without whitespace)
                 var index = token.Value.IndexOf('=');

@@ -32,7 +32,6 @@ namespace NextGenSpice.Utils
         /// <returns></returns>
         public static double ConvertValue(string s)
         {
-            //TODO: use more sophisticated algorithm for determining maximum valid preffix
             var i = s.LastIndexOfAny(new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' });
 
             var suff = s.Substring(i + 1);
@@ -90,11 +89,10 @@ namespace NextGenSpice.Utils
         /// <example>
         ///     Token set "V 0 1 SIN(0 1 100)" becomes "SIN 0 1 100"
         /// </example>
-        /// <param name="tokens"></param>
-        /// <param name="startPos"></param>
-        /// <param name="errors"></param>
+        /// <param name="tokens">Array of line tokens.</param>
+        /// <param name="startPos">Starting position where to start retokenizing.</param>
         /// <returns></returns>
-        public static List<Token> Retokenize(Token[] tokens, int startPos, List<ErrorInfo> errors)
+        public static List<Token> Retokenize(Token[] tokens, int startPos)
         {
             if (startPos < 0 || startPos >= tokens.Length) throw new ArgumentOutOfRangeException(nameof(startPos));
 

@@ -1,4 +1,4 @@
-﻿namespace NextGenSpice.Core.Elements
+﻿namespace NextGenSpice.Core.Elements.Parameters
 {
     /// <summary>
     ///     Represents set of parameters for Homo-Junction Bipolar Transistor.
@@ -43,22 +43,22 @@
         /// <summary>
         ///     Base-emitter leakage saturation current in ampers.
         /// </summary>
-        public double EmitterLeakageCurrent { get; set; } = 0;
+        public double EmitterSaturationCurrent { get; set; } = 0;
 
         /// <summary>
         ///     Base-emitter leakage emission coefficient.
         /// </summary>
-        public double EmitterLeakageCoefficient { get; set; } = 1.5;
+        public double EmitterSaturationCoefficient { get; set; } = 1.5;
 
         /// <summary>
         ///     Base-collector leakage saturation current in ampers.
         /// </summary>
-        public double CollectorLeakageCurrent { get; set; } = 0;
+        public double CollectorSaturationCurrent { get; set; } = 0;
 
         /// <summary>
         ///     Base-collector leakage emission coefficient.
         /// </summary>
-        public double CollectorLeakageCoefficient { get; set; } = 2;
+        public double CollectorSaturationCoefficient { get; set; } = 2;
 
         /// <summary>
         ///     Forward beta.
@@ -125,11 +125,11 @@
         /// </summary>
         public double CollectorExponentialFactor { get; set; } = 0.33;
 
-        /// <summary>
-        ///     The area of the transistor.
-        /// </summary>
-        //TODO: Remove this?
-        public double Area { get; set; } = 1;
+//        /// <summary>
+//        ///     The area of the transistor.
+//        /// </summary>
+//        //TODO: Remove this?
+//        public double Area { get; set; } = 1;
 
         /// <summary>
         ///     Ideal forward transit time in seconds;

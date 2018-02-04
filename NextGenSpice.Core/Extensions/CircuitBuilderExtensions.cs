@@ -2,6 +2,7 @@
 using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Elements.Parameters;
 
 namespace NextGenSpice.Core.Extensions
 {

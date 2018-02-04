@@ -19,5 +19,14 @@
         ///     One based index from beginning of the line, where the token occured in the source file.
         /// </summary>
         public int LineColumn { get; set; }
+
+        /// <summary>
+        ///     Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
+        public override string ToString()
+        {
+            return $"({LineNumber},{LineColumn}) '{Value}'";
+        }
     }
 }

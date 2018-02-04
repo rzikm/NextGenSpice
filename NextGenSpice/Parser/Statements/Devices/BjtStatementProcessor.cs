@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Elements.Parameters;
 using NextGenSpice.Parser.Statements.Deferring;
 using NextGenSpice.Parser.Statements.Models;
 using NextGenSpice.Utils;
@@ -74,14 +75,14 @@ namespace NextGenSpice.Parser.Statements.Devices
                 mapper.Map(x => x.ForwardEmissionCoefficient, "NF");
                 mapper.Map(x => x.ForwardEarlyVoltage, "VAF");
                 mapper.Map(x => x.ForwardCurrentCorner, "IKF");
-                mapper.Map(x => x.EmitterLeakageCurrent, "ISE");
-                mapper.Map(x => x.EmitterLeakageCoefficient, "NE");
+                mapper.Map(x => x.EmitterSaturationCurrent, "ISE");
+                mapper.Map(x => x.EmitterSaturationCoefficient, "NE");
                 mapper.Map(x => x.ReverseBeta, "BR");
                 mapper.Map(x => x.ReverseEmissionCoefficient, "NR");
                 mapper.Map(x => x.ReverseEarlyVoltage, "VAR");
                 mapper.Map(x => x.ReverseCurrentCorner, "IKR");
-                mapper.Map(x => x.CollectorLeakageCurrent, "ISC");
-                mapper.Map(x => x.CollectorLeakageCoefficient, "NC");
+                mapper.Map(x => x.CollectorSaturationCurrent, "ISC");
+                mapper.Map(x => x.CollectorSaturationCoefficient, "NC");
                 mapper.Map(x => x.BaseResistance, "RB");
                 mapper.Map(x => x.CurrentBaseResistanceMidpoint, "IRB");
 

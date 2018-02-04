@@ -33,7 +33,7 @@ namespace NextGenSpiceParserTest
         private IEnumerable<string> Retokenize(string line, int startPos = 0)
         {
             TokenStream stream = new TokenStream(new StringReader(line));
-            return Helper.Retokenize(stream.ReadLogicalLine().ToArray(), startPos, new List<ErrorInfo>()).Select(c => c.Value);
+            return Helper.Retokenize(stream.ReadLogicalLine().ToArray(), startPos).Select(c => c.Value);
         }
     }
 }

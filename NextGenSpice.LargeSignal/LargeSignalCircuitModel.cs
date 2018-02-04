@@ -9,9 +9,11 @@ using NextGenSpice.Core;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Equations;
+using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Models;
 using Numerics;
+using Numerics.Precision;
 
 namespace NextGenSpice.LargeSignal
 {

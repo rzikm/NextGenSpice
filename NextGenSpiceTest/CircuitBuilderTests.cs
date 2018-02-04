@@ -1,6 +1,7 @@
 ﻿using System;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Elements.Parameters;
 using NextGenSpice.Core.Extensions;
 using Xunit;
 

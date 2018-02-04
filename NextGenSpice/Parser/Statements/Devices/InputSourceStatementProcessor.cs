@@ -93,7 +93,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             }
             else // tran function
             {
-                var paramTokens = Helper.Retokenize(tokens, 3, Context.Errors).ToList();
+                var paramTokens = Helper.Retokenize(tokens, 3).ToList();
                 var param = GetBehaviorParam(paramTokens);
                 if (paramTokens.Count < 3 && param != null) // every transient function must have at least 2 arguments
                     Error(paramTokens[0], $"Too few arguments for transient function '{paramTokens[0].Value}'");

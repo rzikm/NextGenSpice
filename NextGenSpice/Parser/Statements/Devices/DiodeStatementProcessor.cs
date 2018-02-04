@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Elements.Parameters;
 using NextGenSpice.Parser.Statements.Deferring;
 using NextGenSpice.Parser.Statements.Models;
 using NextGenSpice.Utils;

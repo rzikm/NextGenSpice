@@ -1,3 +1,5 @@
+using NextGenSpice.Core.Elements.Parameters;
+
 namespace NextGenSpice.Core.Elements
 {
     /// <summary>

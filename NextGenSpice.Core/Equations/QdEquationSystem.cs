@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Numerics;
+using Numerics.Precision;
 
 namespace NextGenSpice.Core.Equations
 {

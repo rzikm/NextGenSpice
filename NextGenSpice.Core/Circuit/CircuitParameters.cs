@@ -1,4 +1,4 @@
-﻿namespace NextGenSpice.Core.Elements
+﻿namespace NextGenSpice.Core.Circuit
 {
     /// <summary>
     ///     Class for aggregating device independent parameters for the simulation.
