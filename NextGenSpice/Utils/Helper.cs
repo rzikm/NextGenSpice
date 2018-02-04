@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using NextGenSpice.Parser;
 
 namespace NextGenSpice.Utils
@@ -31,7 +33,7 @@ namespace NextGenSpice.Utils
         public static double ConvertValue(string s)
         {
             //TODO: use more sophisticated algorithm for determining maximum valid preffix
-            var i = s.LastIndexOfAny(new[] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'});
+            var i = s.LastIndexOfAny(new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' });
 
             var suff = s.Substring(i + 1);
             s = s.Substring(0, i + 1);
@@ -89,78 +91,56 @@ namespace NextGenSpice.Utils
         ///     Token set "V 0 1 SIN(0 1 100)" becomes "SIN 0 1 100"
         /// </example>
         /// <param name="tokens"></param>
+        /// <param name="startPos"></param>
         /// <param name="errors"></param>
         /// <returns></returns>
-        public static List<Token> Retokenize(Token[] tokens, List<ErrorInfo> errors)
+        public static List<Token> Retokenize(Token[] tokens, int startPos, List<ErrorInfo> errors)
         {
-            // TODO: reimplement so that it correctly handles parentheses (currently, D 1 (111) does not couse errors)
-            var result = new List<Token>();
-
-            var parentheses = false;
-
-            for (var t = 3; t < tokens.Length; t++)
-            {
-                var line = tokens[t].LineNumber;
-                var col = tokens[t].LineColumn;
-                var s = tokens[t].Value;
-
-                int i;
-                if (!parentheses && (i = s.IndexOf('(')) >= 0)
-                {
-                    parentheses = true;
-
-                    if (i > 0)
-                        result.Add(new Token
-                        {
-                            LineNumber = line,
-                            LineColumn = col,
-                            Value = s.Substring(0, i)
-                        });
-
-                    col += i + 1;
-                    s = s.Substring(i + 1);
-                }
-
-                if (parentheses && (i = s.IndexOf(')')) >= 0)
-                {
-                    if (i > 0)
-                        result.Add(new Token
-                        {
-                            LineNumber = line,
-                            LineColumn = col,
-                            Value = s.Substring(0, i)
-                        });
-
-                    col += i;
-                    if (t < tokens.Length - 1)
-                        errors.Add(tokens[t + 1].ToErrorInfo("Unexpected tokens after end of statement."));
-
-                    return result;
-                }
-
-                if (s.Length > 0)
-                    result.Add(new Token
-                    {
-                        LineNumber = line,
-                        LineColumn = col,
-                        Value = s
-                    });
-            }
+            if (startPos < 0 || startPos >= tokens.Length) throw new ArgumentOutOfRangeException(nameof(startPos));
 
             var last = tokens[tokens.Length - 1];
-            if (parentheses) // unterminated parentheses
+            var parenthesized = false;
+            if (last.Value.EndsWith(")"))
             {
-                var t = new Token
-                {
-                    LineNumber = last.LineNumber,
-                    LineColumn = last.LineColumn,
-                    Value = last.Value
-                };
-                t.LineColumn += t.Value.Length;
-                t.Value = "";
 
-                errors.Add(t.ToErrorInfo("Unterminated transient function"));
+                if (tokens[startPos].Value.Contains('(') ||
+                    startPos + 1 < tokens.Length && tokens[startPos + 1].Value.StartsWith('('))
+                    parenthesized = true;
             }
+            if (!parenthesized)
+                return tokens.Skip(startPos).ToList();
+
+            var first = tokens[startPos];
+            // params are parenthesized
+            last.Value = last.Value.Substring(0, last.Value.Length - 1); // remove last closing parenthesis.
+            List<Token> result = new List<Token>();
+
+            // parenthesis inside first token
+            var index = first.Value.IndexOf('(');
+            if (index >= 0)
+            {
+                var second = new Token();
+                second.LineNumber = first.LineNumber;
+                second.LineColumn = first.LineColumn + index + 1;
+                second.Value = first.Value.Substring(index + 1);
+
+                first.Value = first.Value.Substring(0, index);
+
+                result.Add(first);
+                result.Add(second);
+            }
+            else // on the beginning of second token
+            {
+                result.Add(first);
+                tokens[startPos + 1].Value = tokens[startPos +1].Value.Substring(1);
+                ++tokens[startPos + 1].LineColumn;
+            }
+
+            // add following unmodified tokens
+            result.AddRange(tokens.Skip(startPos + 1));
+
+            // remove all empty tokens
+            result.RemoveAll(t => t.Value.Length == 0);
 
             return result;
         }

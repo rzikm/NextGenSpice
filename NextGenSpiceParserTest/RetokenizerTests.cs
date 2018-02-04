@@ -1,0 +1,39 @@
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using NextGenSpice.Parser;
+using NextGenSpice.Utils;
+using Xunit;
+
+namespace NextGenSpiceParserTest
+{
+    public class RetokenizerTests
+    {
+        [Fact]
+        public void HandlesWithParentheses()
+        {
+            Assert.Equal(new []{"SIN", "1"}, Retokenize("SIN(1)"));
+            Assert.Equal(new []{"SIN", "1"}, Retokenize("SIN (1)"));
+            Assert.Equal(new []{"SIN", "1", "0"}, Retokenize("SIN(1 0)"));
+            Assert.Equal(new []{"SIN", "1", "0"}, Retokenize("SIN (1 0)"));
+            Assert.Equal(new []{"SIN", "1", "0"}, Retokenize("SIN( 1 0 )"));
+            Assert.Equal(new []{"SIN", "1", "0"}, Retokenize("SIN ( 1 0 )"));
+        }
+
+        [Fact]
+        public void HandlesWithoutParentheses()
+        {
+            Assert.Equal(new []{"SIN", "1", "(1", "0)"}, Retokenize("SIN 1 (1 0)"));
+            Assert.Equal(new []{"SIN", "(1", "0"}, Retokenize("SIN (1 0"));
+            Assert.Equal(new []{"SIN", "1", "0"}, Retokenize("SIN 1 0"));
+            Assert.Equal(new []{"EXP", "2", "3"}, Retokenize("V1 0 1 Exp 2 3 ", 3));
+        }
+
+
+        private IEnumerable<string> Retokenize(string line, int startPos = 0)
+        {
+            TokenStream stream = new TokenStream(new StringReader(line));
+            return Helper.Retokenize(stream.ReadLogicalLine().ToArray(), startPos, new List<ErrorInfo>()).Select(c => c.Value);
+        }
+    }
+}

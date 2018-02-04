@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using NextGenSpice.Parser;
 using NextGenSpice.Parser.Statements.Devices;
+using NextGenSpice.Utils;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -50,11 +52,11 @@ namespace NextGenSpiceParserTest
         [Fact]
         public void RecognisesTransientInputSourceStatement()
         {
-            Assert.True(!ParseString("V1 0 1 Exp( 2 3 )").Errors.Any());
-            Assert.True(!ParseString("V1 0 1 Exp ( 2 3 )").Errors.Any());
-            Assert.True(!ParseString("V1 0 1 Exp (2 3 )").Errors.Any());
-            Assert.True(!ParseString("V1 0 1 Exp(2 3)").Errors.Any());
-            Assert.True(!ParseString("V1 0 1 Exp 2 3 ").Errors.Any());
+            Assert.Equal(0, ParseString("V1 0 1 Exp( 2 3 )").Errors.Count);
+            Assert.Equal(0, ParseString("V1 0 1 Exp ( 2 3 )").Errors.Count);
+            Assert.Equal(0, ParseString("V1 0 1 Exp (2 3 )").Errors.Count);
+            Assert.Equal(0, ParseString("V1 0 1 Exp(2 3)").Errors.Count);
+            Assert.Equal(0, ParseString("V1 0 1 Exp 2 3 ").Errors.Count);
         }
 
 
