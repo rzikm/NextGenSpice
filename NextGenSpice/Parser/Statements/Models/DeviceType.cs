@@ -5,6 +5,7 @@ namespace NextGenSpice.Parser.Statements.Models
     /// </summary>
     public enum DeviceType
     {
-        Diode
+        Diode,
+        Bjt
     }
 }

@@ -56,14 +56,16 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <summary>
         ///     Class that handles diode element model statements.
         /// </summary>
-        private class DiodeModelStatementHandler : IModelStatementHandler
+        private class DiodeModelStatementHandler : ModelStatementHandlerBase<DiodeModelParams>,
+            IModelStatementHandler
         {
             private readonly ParameterMapper<DiodeModelParams> mapper;
 
             public DiodeModelStatementHandler()
             {
-                mapper = new ParameterMapper<DiodeModelParams>();
+                DeviceType = DeviceType.Diode;
 
+                mapper = new ParameterMapper<DiodeModelParams>();
                 mapper.Map(p => p.SaturationCurrent, "IS");
                 mapper.Map(p => p.SeriesResistance, "RS");
                 mapper.Map(p => p.EmissionCoefficient, "N");
@@ -81,57 +83,27 @@ namespace NextGenSpice.Parser.Statements.Devices
             }
 
             /// <summary>
-            ///     Discriminator of model type.
+            ///     Mapper for mapping parsed parameters onto properties.
             /// </summary>
-            public string Discriminator => "D";
+            protected override ParameterMapper<DiodeModelParams> Mapper => mapper;
 
             /// <summary>
-            ///     Processes the .MODEL statement in given context.
+            ///     Type of the device that handled models are for.
             /// </summary>
-            /// <param name="tokens"></param>
-            /// <param name="context"></param>
-            public void Process(Token[] tokens, ParsingContext context)
+            protected override DeviceType DeviceType { get; }
+
+            /// <summary>
+            ///     Discriminator of handled model type.
+            /// </summary>
+            public override string Discriminator => "D";
+
+            /// <summary>
+            ///     Creates new instance of parameter class for this device model.
+            /// </summary>
+            /// <returns></returns>
+            protected override DiodeModelParams CreateModelParams()
             {
-                var name = tokens[1].Value;
-                var symbolTableModel = context.SymbolTable.Models[DeviceType.Diode];
-
-                //TODO: Should model names be unique across model types (Diode, PNP etc.)?
-                if (symbolTableModel.ContainsKey(name))
-                {
-                    context.Errors.Add(tokens[1]
-                        .ToErrorInfo($"There already exists model with name '{name} for this device type."));
-                    return; // no additional processing required
-                }
-
-                mapper.Target = new DiodeModelParams();
-
-                foreach (var token in Helper.Retokenize(tokens, context.Errors))
-                {
-                    // parameters are must be in key-value pairs <parameter name>=<value> (without whitespace)
-                    var index = token.Value.IndexOf('=');
-
-                    if (index <= 0 || index >= token.Value.Length - 1) // no '=' 
-                    {
-                        context.Errors.Add(
-                            token.ToErrorInfo($"Model parameters must be in form <parameter name>=<value>."));
-                        continue;
-                    }
-
-                    var paramName = token.Value.Substring(0, index);
-
-                    // check validity of the parameter name
-                    if (!mapper.HasKey(paramName))
-                        context.Errors.Add(token.ToErrorInfo($"Unknown model parameter name '{paramName}'."));
-
-                    // reuse token instance for parsing the value part of the pair
-                    token.LineColumn += index + 1; // modify offset to get correct error location.
-                    token.Value = token.Value.Substring(index + 1);
-
-                    if (mapper.HasKey(paramName)) mapper.Set(paramName, token.GetNumericValue(context.Errors));
-                }
-
-                symbolTableModel[name] = mapper.Target;
-                mapper.Target = null; // free memory
+                return new DiodeModelParams();
             }
         }
     }

@@ -1,0 +1,142 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using NextGenSpice.Core.Elements;
+using NextGenSpice.Parser.Statements.Deferring;
+using NextGenSpice.Parser.Statements.Models;
+using NextGenSpice.Utils;
+
+namespace NextGenSpice.Parser.Statements.Devices
+{
+    /// <summary>
+    ///     Class that handles Homo-Junction Bipolar Transistor element statements.
+    /// </summary>
+    public class BjtStatementProcessor : ElementStatementProcessor
+    {
+        /// <summary>
+        ///     Discriminator of the element type this processor can parse.
+        /// </summary>
+        public override char Discriminator => 'Q';
+
+        /// <summary>
+        ///     Processes given set of statements.
+        /// </summary>
+        /// <param name="tokens"></param>
+        protected override void DoProcess(Token[] tokens)
+        {
+            if (tokens.Length < 5 || tokens.Length > 6) // name, NCollector, NBase, NEmitter, <NSubstrate>, model
+                InvalidNumberOfArguments(tokens[0]);
+
+            var name = DeclareElement(tokens[0]);
+
+            var nodes = tokens.Length == 5
+                ? GetNodeIndices(tokens, 1, 3).Concat(new[] { 0 }).ToArray() // substrate node not specified.
+                : GetNodeIndices(tokens, 1, 4);
+
+            // cannot check for model existence yet, defer checking for model later
+            if (Errors == 0)
+            {
+                var modelToken = tokens.Last();
+                var symbolTableModel =
+                    Context.SymbolTable.Models[DeviceType.Bjt]; // make local variable to be captured inside lambda
+                Context.DeferredStatements.Add(
+                    new ModeledElementStatement<BjtModelParams>(
+                        (par, cb) => cb.AddElement(nodes, new BjtElement(par, name)),
+                        () => (BjtModelParams)symbolTableModel.GetValueOrDefault(modelToken
+                            .Value), // deferred evaluation.
+                        modelToken));
+            }
+        }
+
+        /// <summary>
+        ///     Gets list of model statement handlers that are responsible to parsing respective models of this device.
+        /// </summary>
+        /// <returns></returns>
+        public override IEnumerable<IModelStatementHandler> GetModelStatementHandlers()
+        {
+            return new IModelStatementHandler[] { new BjtModelStatementHandler() };
+        }
+
+
+
+        /// <summary>
+        ///     Class that handles Homo-Junction Bipolar Trannsistor element model statements.
+        /// </summary>
+        private class BjtModelStatementHandler : ModelStatementHandlerBase<BjtModelParams>
+        {
+            public BjtModelStatementHandler()
+            {
+                DeviceType = DeviceType.Bjt;
+                var mapper = new ParameterMapper<BjtModelParams>();
+
+                mapper.Map(x => x.SaturationCurrent, "IS");
+
+                mapper.Map(x => x.ForwardBeta, "BF");
+                mapper.Map(x => x.ForwardEmissionCoefficient, "NF");
+                mapper.Map(x => x.ForwardEarlyVoltage, "VAF");
+                mapper.Map(x => x.ForwardCurrentCorner, "IKF");
+                mapper.Map(x => x.EmitterLeakageCurrent, "ISE");
+                mapper.Map(x => x.EmitterLeakageCoefficient, "NE");
+                mapper.Map(x => x.ReverseBeta, "BR");
+                mapper.Map(x => x.ReverseEmissionCoefficient, "NR");
+                mapper.Map(x => x.ReverseEarlyVoltage, "VAR");
+                mapper.Map(x => x.ReverseCurrentCorner, "IKR");
+                mapper.Map(x => x.CollectorLeakageCurrent, "ISC");
+                mapper.Map(x => x.CollectorLeakageCoefficient, "NC");
+                mapper.Map(x => x.BaseResistance, "RB");
+                mapper.Map(x => x.CurrentBaseResistanceMidpoint, "IRB");
+
+                mapper.Map(x => x.MinimumBaseResistance, "RBM");
+                mapper.Map(x => x.EmitterResistance, "RE");
+                mapper.Map(x => x.CollectorResistance, "RC");
+                mapper.Map(x => x.EmitterCapacitance, "CJE");
+                mapper.Map(x => x.EmitterPotential, "VJE");
+                mapper.Map(x => x.EmitterExponentialFactor, "MJE");
+                mapper.Map(x => x.ForwardTransitTime, "TF");
+                mapper.Map(x => x.CurrentBaseResistanceMidpoint, "XTF");
+                mapper.Map(x => x.VbcDependenceOfTransitTime, "VTF");
+                mapper.Map(x => x.ForwardTransitHighCurrent, "ITF");
+//                mapper.Map(x => x., "PTF");
+                mapper.Map(x => x.CollectorCapacitance, "CJC");
+                mapper.Map(x => x.CollectorPotential, "VJC");
+                mapper.Map(x => x.CollectorExponentialFactor, "MJC");
+                mapper.Map(x => x.CurrentBaseResistanceMidpoint, "XCJC");
+                mapper.Map(x => x.ReverseTransitTime, "TR");
+                mapper.Map(x => x.SubstrateCapacitance, "CJS");
+                mapper.Map(x => x.SubstrateExponentialFactor, "MJS");
+                mapper.Map(x => x.TemperatureExponentBeta, "XTB");
+                mapper.Map(x => x.EnergyGap, "EG");
+                mapper.Map(x => x.TemperatureExponentSaturationCurrent, "XTI");
+                mapper.Map(x => x.FlickerNoiseCoeffitient, "KF");
+                mapper.Map(x => x.FlickerNoiseExponent, "AF");
+                mapper.Map(x => x.ForwardBiasDepletionCoefficient, "FC");
+                mapper.Map(x => x.NominalTemperature, "TNOM");
+
+                Mapper = mapper;
+            }
+
+            /// <summary>
+            ///     Mapper for mapping parsed parameters onto properties.
+            /// </summary>
+            protected override ParameterMapper<BjtModelParams> Mapper { get; }
+
+            /// <summary>
+            ///     Type of the device that handled models are for.
+            /// </summary>
+            protected override DeviceType DeviceType { get; }
+
+            /// <summary>
+            ///     Discriminator of handled model type.
+            /// </summary>
+            public override string Discriminator => "NPN";
+
+            /// <summary>
+            ///     Creates new instance of parameter class for this device model.
+            /// </summary>
+            /// <returns></returns>
+            protected override BjtModelParams CreateModelParams()
+            {
+                return new BjtModelParams();
+            }
+        }
+    }
+}

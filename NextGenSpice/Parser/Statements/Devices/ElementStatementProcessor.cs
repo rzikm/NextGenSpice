@@ -75,7 +75,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        protected void ElementAlreadyDefined(Token token)
+        private void ElementAlreadyDefined(Token token)
         {
             Error(token, $"Element with name {token.Value} is already defined.");
         }
@@ -85,7 +85,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        protected void NotANumber(Token token)
+        private void NotANumber(Token token)
         {
             Error(token, $"Cannot convert {token.Value} to numeric representation.");
         }
@@ -95,7 +95,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        protected void NotANode(Token token)
+        private void NotANode(Token token)
         {
             Error(token, $"Symbol {token.Value} is not a node");
         }
@@ -114,7 +114,6 @@ namespace NextGenSpice.Parser.Statements.Devices
         ///     Gets element name and sets it in symbol table, adds relevant errors into the errors collection
         /// </summary>
         /// <param name="token"></param>
-        /// <param name="errors"></param>
         /// <returns></returns>
         protected string DeclareElement(Token token)
         {
@@ -130,7 +129,6 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <param name="tokens"></param>
         /// <param name="startIndex"></param>
         /// <param name="count"></param>
-        /// <param name="errors"></param>
         /// <returns></returns>
         protected int[] GetNodeIndices(Token[] tokens, int startIndex, int count)
         {
@@ -153,7 +151,6 @@ namespace NextGenSpice.Parser.Statements.Devices
         ///     Parses numeric value from given token, adds relevant error into the errors collection and returns NaN if failed.
         /// </summary>
         /// <param name="token"></param>
-        /// <param name="errors"></param>
         /// <returns></returns>
         protected double GetValue(Token token)
         {

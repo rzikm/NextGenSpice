@@ -17,7 +17,6 @@ namespace NextGenSpice.LargeSignal
         public LargeSignalAnalysisModelFactory()
         {
             // register default models
-            SetModel<DiodeElement, LargeSignalDiodeModel>(e => new LargeSignalDiodeModel(e));
             SetModel<ResistorElement, LargeSignalResistorModel>(e => new LargeSignalResistorModel(e));
             SetModel<CurrentSourceElement, LargeSignalCurrentSourceModel>((e, ctx) =>
                 new LargeSignalCurrentSourceModel(e, (IInputSourceBehavior) ctx.GetParam(e.BehaviorParams)));
@@ -25,6 +24,9 @@ namespace NextGenSpice.LargeSignal
                 new LargeSignalVoltageSourceModel(e, (IInputSourceBehavior) ctx.GetParam(e.BehaviorParams)));
             SetModel<CapacitorElement, LargeSignalCapacitorModel>(e => new LargeSignalCapacitorModel(e));
             SetModel<InductorElement, LargeSignalInductorModel>(e => new LargeSignalInductorModel(e));
+            SetModel<DiodeElement, LargeSignalDiodeModel>(e => new LargeSignalDiodeModel(e));
+            SetModel<BjtElement, LargeSignalBjtModel>(e => new LargeSignalBjtModel(e));
+
             SetModel<SubcircuitElement, LargeSignalSubcircuitModel>((e, ctx) =>
                 new LargeSignalSubcircuitModel(e, e.Elements.Select(ctx.GetModel).Cast<ILargeSignalDeviceModel>()));
 
