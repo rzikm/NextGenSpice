@@ -70,7 +70,6 @@ namespace NextGenSpice.LargeSignal.Models
         //            private double i_ceeq;
 
 
-        private double g0;
         private double g_m;
         private double i_ceeq;
 
@@ -182,27 +181,27 @@ namespace NextGenSpice.LargeSignal.Models
 
             i_beeq = i_be - g_be * v_be;
             i_bceq = i_bc - g_bc * v_bc;
-            //             i_ceeq = i_t - g_mf * v_be + g_mr * v_bc;
+//            i_ceeq = i_t - g_mf * v_be + g_mr * v_bc;
 
-
-            g0 = 1 / q_b * (g_ir + i_t * d_qbd_vbc);
-            g_m = 1 / q_b * (g_if - i_t * d_qbd_vbe) - g0;
-            double v_ce = Voltage(Collector, Emitter, context);
-            i_ceeq = i_t - g_m * v_be - g0 * v_ce;
 
             i_b = i_be + i_bc;
 
-            //            equations.AddMatrixEntry(Base, Base, g_be + g_bc);
-            //            equations.AddMatrixEntry(Base, Collector, -g_bc);
-            //            equations.AddMatrixEntry(Base, Emitter, -g_be);
-            //
-            //            equations.AddMatrixEntry(Collector, Base, -g_bc + g_mf - g_mr);
-            //            equations.AddMatrixEntry(Collector, Collector, g_bc + g_mf);
-            //            equations.AddMatrixEntry(Collector, Emitter, -g_mf);
-            //
-            //            equations.AddMatrixEntry(Emitter, Base, -g_be - g_mf + g_mr);
-            //            equations.AddMatrixEntry(Emitter, Collector, -g_mr);
-            //            equations.AddMatrixEntry(Emitter, Emitter, g_be + g_mr);
+
+            //                        equations.AddMatrixEntry(Base, Base, g_be + g_bc);
+//                        equations.AddMatrixEntry(Base, Collector, -g_bc);
+//                        equations.AddMatrixEntry(Base, Emitter, -g_be);
+//            
+//                        equations.AddMatrixEntry(Collector, Base, -g_bc + g_mf - g_mr);
+//                        equations.AddMatrixEntry(Collector, Collector, g_bc + g_mf);
+//                        equations.AddMatrixEntry(Collector, Emitter, -g_mf);
+//            
+//                        equations.AddMatrixEntry(Emitter, Base, -g_be - g_mf + g_mr);
+//                        equations.AddMatrixEntry(Emitter, Collector, -g_mr);
+//                        equations.AddMatrixEntry(Emitter, Emitter, g_be + g_mr);
+
+            double g0 = -g_mr;
+            g_m = g_mf + g_mr;
+            i_ceeq = i_t - g_m * v_be - g0 * Voltage(Collector, Emitter, context);
 
             equations.AddMatrixEntry(Base, Base, g_be + g_bc);
             equations.AddMatrixEntry(Base, Collector, -g_bc);
@@ -215,6 +214,7 @@ namespace NextGenSpice.LargeSignal.Models
             equations.AddMatrixEntry(Emitter, Base, -g_be - g_m);
             equations.AddMatrixEntry(Emitter, Collector, -g0);
             equations.AddMatrixEntry(Emitter, Emitter, g_be + g_m + g0);
+
 
             equations.AddRightHandSideEntry(Base, -i_beeq - i_bceq);
             equations.AddRightHandSideEntry(Collector, i_bceq - i_ceeq);
