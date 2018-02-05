@@ -16,12 +16,16 @@ namespace NextGenSpice
     {
         private static void RegisterStatementProcessors(SpiceCodeParser parser)
         {
+            parser.RegisterElement(new ResistorStatementProcessor());
             parser.RegisterElement(new CurrentSourceStatementProcessor());
             parser.RegisterElement(new VoltageSourceStatementProcessor());
-            parser.RegisterElement(new ResistorStatementProcessor());
-            parser.RegisterElement(new DiodeStatementProcessor());
+
             parser.RegisterElement(new CapacitorStatementProcessor());
             parser.RegisterElement(new InductorStatementProcessor());
+
+            parser.RegisterElement(new DiodeStatementProcessor());
+            parser.RegisterElement(new BjtStatementProcessor());
+
 
             parser.RegisterSimulation(new TranStatementProcessor());
             parser.RegisterSimulation(new OpStatementProcessor());

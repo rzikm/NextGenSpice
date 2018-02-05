@@ -54,7 +54,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <returns></returns>
         public override IEnumerable<IModelStatementHandler> GetModelStatementHandlers()
         {
-            return new IModelStatementHandler[] { new BjtModelStatementHandler() };
+            return new IModelStatementHandler[] { new BjtModelStatementHandler(true), new BjtModelStatementHandler(false), };
         }
 
 
@@ -64,8 +64,12 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// </summary>
         private class BjtModelStatementHandler : ModelStatementHandlerBase<BjtModelParams>
         {
-            public BjtModelStatementHandler()
+            private readonly bool isPnp;
+
+            public BjtModelStatementHandler(bool isPnp)
             {
+                this.isPnp = isPnp;
+                Discriminator = isPnp ? "PNP" : "NPN";
                 DeviceType = DeviceType.Bjt;
                 var mapper = new ParameterMapper<BjtModelParams>();
 
@@ -96,7 +100,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                 mapper.Map(x => x.CurrentBaseResistanceMidpoint, "XTF");
                 mapper.Map(x => x.VbcDependenceOfTransitTime, "VTF");
                 mapper.Map(x => x.ForwardTransitHighCurrent, "ITF");
-//                mapper.Map(x => x., "PTF");
+                //                mapper.Map(x => x., "PTF");
                 mapper.Map(x => x.CollectorCapacitance, "CJC");
                 mapper.Map(x => x.CollectorPotential, "VJC");
                 mapper.Map(x => x.CollectorExponentialFactor, "MJC");
@@ -123,20 +127,20 @@ namespace NextGenSpice.Parser.Statements.Devices
             /// <summary>
             ///     Type of the device that handled models are for.
             /// </summary>
-            protected override DeviceType DeviceType { get; }
+            public override DeviceType DeviceType { get; }
 
             /// <summary>
             ///     Discriminator of handled model type.
             /// </summary>
-            public override string Discriminator => "NPN";
+            public override string Discriminator { get; }
 
             /// <summary>
             ///     Creates new instance of parameter class for this device model.
             /// </summary>
             /// <returns></returns>
-            protected override BjtModelParams CreateModelParams()
+            protected override BjtModelParams CreateDefaultModel()
             {
-                return new BjtModelParams();
+                return new BjtModelParams() { IsPnp = isPnp };
             }
         }
     }

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using NextGenSpice.Parser.Statements.Models;
 using NextGenSpice.Utils;
 
@@ -39,6 +41,7 @@ namespace NextGenSpice.Parser.Statements
         /// <param name="tokens">All tokens of the statement.</param>
         protected override void DoProcess(Token[] tokens)
         {
+            tokens = tokens.Take(2).Concat(Helper.Retokenize(tokens, 2)).ToArray();
             var discriminatorToken = tokens[2];
             if (!handlers.TryGetValue(discriminatorToken.Value, out var handler))
             {
@@ -48,6 +51,15 @@ namespace NextGenSpice.Parser.Statements
             }
 
             handler.Process(tokens, Context);
+        }
+
+        public void RegisterDefaultModels(ParsingContext ctx)
+        {
+            foreach (var kvp in handlers)
+            {
+                var handler = kvp.Value;
+                ctx.SymbolTable.Models[handler.DeviceType][handler.Discriminator] = handler.CreateDefaultModel();
+            }
         }
     }
 }

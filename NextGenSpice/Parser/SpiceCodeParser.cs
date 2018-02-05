@@ -78,6 +78,7 @@ namespace NextGenSpice.Parser
 
             Token[] tokens;
             var ctx = new ParsingContext();
+            modelProcessor.RegisterDefaultModels(ctx);
 
             // parse input file by logical lines, each line is an independent statement
             while ((tokens = stream.ReadLogicalLine().ToArray()).Length > 0) // while not EOF

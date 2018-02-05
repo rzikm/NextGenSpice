@@ -1,4 +1,5 @@
-﻿using NextGenSpice.Parser.Statements.Models;
+﻿using System.Linq;
+using NextGenSpice.Parser.Statements.Models;
 using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements.Devices
@@ -17,7 +18,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <summary>
         ///     Type of the device that handled models are for.
         /// </summary>
-        protected abstract DeviceType DeviceType { get; }
+        public abstract DeviceType DeviceType { get; }
 
         /// <summary>
         ///     Discriminator of handled model type.
@@ -42,9 +43,8 @@ namespace NextGenSpice.Parser.Statements.Devices
                 return; // no additional processing required
             }
 
-            CreateModelParams();
-
-            foreach (var token in Helper.Retokenize(tokens, 3))
+            Mapper.Target = CreateDefaultModel();
+            foreach (var token in tokens.Skip(3)) // skip .MODEL <model name> <discriminator> tokens
             {
                 // parameters are must be in key-value pairs <parameter name>=<value> (without whitespace)
                 var index = token.Value.IndexOf('=');
@@ -52,7 +52,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                 if (index <= 0 || index >= token.Value.Length - 1) // no '=' 
                 {
                     context.Errors.Add(
-                        token.ToErrorInfo($"Model parameters must be in form <parameter name>=<value>."));
+                        token.ToErrorInfo("Model parameters must be in form <parameter name>=<value>."));
                     continue;
                 }
 
@@ -74,9 +74,18 @@ namespace NextGenSpice.Parser.Statements.Devices
         }
 
         /// <summary>
+        ///     Creates new instance of model parameter class with default values.
+        /// </summary>
+        /// <returns></returns>
+        object IModelStatementHandler.CreateDefaultModel()
+        {
+            return CreateDefaultModel();
+        }
+
+        /// <summary>
         ///     Creates new instance of parameter class for this device model.
         /// </summary>
         /// <returns></returns>
-        protected abstract T CreateModelParams();
+        protected abstract T CreateDefaultModel();
     }
 }

@@ -35,7 +35,7 @@ namespace NextGenSpice.LargeSignal.Models
             Voltage = Parameters.Vd;
 
             vt = Parameters.EmissionCoefficient * PhysicalConstants.Boltzmann *
-                 PhysicalConstants.CelsiusToKelvin(Parameters.Temperature) /
+                 PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
                  PhysicalConstants.ElementaryCharge;
 
             smallBiasTreshold = -5 * vt;

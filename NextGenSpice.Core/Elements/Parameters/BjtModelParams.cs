@@ -8,7 +8,7 @@
         /// <summary>
         ///     Saturation current in ampers.
         /// </summary>
-        public double SaturationCurrent { get; set; } = 10e-16;
+        public double SaturationCurrent { get; set; } = 1e-16;
 
         /// <summary>
         ///     Forward current emission coefficient.
@@ -205,6 +205,11 @@
         /// <summary>
         ///     Parameter measurement temperature in degrees celsius.
         /// </summary>
-        public double NominalTemperature { get; set; }
+        public double NominalTemperature { get; set; } = 26.85;
+
+        /// <summary>
+        ///     True if this is a PNP BJT model, otherwise this is a NPN model.
+        /// </summary>
+        public bool IsPnp { get; set; }
     }
 }

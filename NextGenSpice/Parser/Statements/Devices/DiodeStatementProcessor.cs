@@ -91,7 +91,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             /// <summary>
             ///     Type of the device that handled models are for.
             /// </summary>
-            protected override DeviceType DeviceType { get; }
+            public override DeviceType DeviceType { get; }
 
             /// <summary>
             ///     Discriminator of handled model type.
@@ -102,7 +102,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             ///     Creates new instance of parameter class for this device model.
             /// </summary>
             /// <returns></returns>
-            protected override DiodeModelParams CreateModelParams()
+            protected override DiodeModelParams CreateDefaultModel()
             {
                 return new DiodeModelParams();
             }

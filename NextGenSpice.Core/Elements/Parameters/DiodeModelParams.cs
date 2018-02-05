@@ -25,7 +25,7 @@
             SeriesResistance = 0.568,
             Vd = 0.0
         };
-
+        
         /// <summary>
         ///     Saturation current (from diode equation) in amperes.
         /// </summary>
@@ -54,7 +54,9 @@
         /// </summary>
         public double JunctionPotential { get; set; } = 1;
 
-
+        /// <summary>
+        ///     Junction grading coefficient.
+        /// </summary>
         public double JunctionGradingCoefficient { get; set; } = 0.5;
 
         /// <summary>
@@ -66,10 +68,19 @@
         // TODO: comment physical meaning of these (unused) parameters
         public double SaturationCurrentTemperatureExponent { get; set; } = 3;
 
+        /// <summary>
+        ///     Flicker-noise coefficient.
+        /// </summary>
         public double FlickerNoiseCoefficient { get; set; }
+
+        /// <summary>
+        ///     Flicker-noise exponent.
+        /// </summary>
         public double FlickerNoiseExponent { get; set; } = 1;
 
-
+        /// <summary>
+        ///     Forward bias depletion capacitance coefficient.
+        /// </summary>
         public double ForwardBiasDepletionCapacitanceCoefficient { get; set; } = 0.5;
 
         /// <summary>
@@ -85,7 +96,7 @@
         /// <summary>
         ///     Nominal temperature in °C for simulation and at which all parameters are assumed to have been measured.
         /// </summary>
-        public double Temperature { get; set; } = 27;
+        public double NominalTemperature { get; set; } = 27;
 
         /// <summary>
         ///     Optional parameter - convergence aid for the simulation, if not set, global (circuits) GMIN parameter will be used.
