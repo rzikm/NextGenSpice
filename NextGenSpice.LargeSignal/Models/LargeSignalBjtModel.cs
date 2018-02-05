@@ -12,93 +12,58 @@ namespace NextGenSpice.LargeSignal.Models
     /// </summary>
     internal class LargeSignalBjtModel : LargeSignalModelBase<BjtElement>
     {
-        private readonly double i_s;
-        private readonly double i_se;
-        private readonly double i_sc;
+        private readonly double bF;
+        private readonly double bR;
 
-        private readonly double n_f;
-        private readonly double n_r;
-        private readonly double n_e;
-        private readonly double n_c;
+        private readonly double iKf;
+        private readonly double iKr;
+        private readonly double iS;
+        private readonly double iSc;
+        private readonly double iSe;
+        private readonly double nC;
+        private readonly double nE;
 
-        private readonly double b_f;
-        private readonly double b_r;
+        private readonly double nF;
+        private readonly double nR;
 
-        private readonly double v_af;
-        private readonly double v_ar;
+        private readonly double vAf;
+        private readonly double vAr;
 
-        private readonly double i_kf;
-        private readonly double i_kr;
+        private readonly double vT; // thermal voltage
 
-        private readonly double v_t; // thermal voltage
+        private double iB;
+        private double iBc;
 
-        private double i_b;
+        private double iBe;
+        private double iC;
+        private double iE;
+        private double vBc;
 
-
-        private double v_be;
-        private double v_bc;
-
-        private double i_f;
-        private double i_r;
-
-        private double q1;
-        private double q2;
-
-        private double q_b;
-
-        private double i_be;
-        private double g_bei;
-        private double g_be;
-
-        private double i_bc;
-        private double g_bci;
-        private double g_bc;
-
-        private double i_t;
-
-        private double g_if;
-        private double d_qbd_vbe;
-
-        private double g_ir;
-        private double d_qbd_vbc;
-
-        private double g_mf;
-        private double g_mr;
-
-        private double i_beeq;
-        private double i_bceq;
-        //            private double i_ceeq;
-
-
-        private double g_m;
-        private double i_ceeq;
-
-
-
+        private double vBe;
 
         public LargeSignalBjtModel(BjtElement definitionElement) : base(definitionElement)
         {
-            v_t = PhysicalConstants.Boltzmann *
-                 PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
-                 PhysicalConstants.ElementaryCharge;
+            vT = PhysicalConstants.Boltzmann *
+                  PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
+                  PhysicalConstants.ElementaryCharge;
 
-            i_s = Parameters.SaturationCurrent;
-            i_se = Parameters.EmitterSaturationCurrent;
-            i_sc = Parameters.CollectorSaturationCurrent;
+            iS = Parameters.SaturationCurrent;
+            iSe = Parameters.EmitterSaturationCurrent;
+            iSc = Parameters.CollectorSaturationCurrent;
 
-            n_f = Parameters.ForwardEmissionCoefficient;
-            n_r = Parameters.ReverseEmissionCoefficient;
-            n_e = Parameters.EmitterSaturationCoefficient;
-            n_c = Parameters.CollectorSaturationCoefficient;
+            nF = Parameters.ForwardEmissionCoefficient;
+            nR = Parameters.ReverseEmissionCoefficient;
+            nE = Parameters.EmitterSaturationCoefficient;
+            nC = Parameters.CollectorSaturationCoefficient;
 
-            b_f = Parameters.ForwardBeta;
-            b_r = Parameters.ReverseBeta;
+            bF = Parameters.ForwardBeta;
+            bR = Parameters.ReverseBeta;
 
-            v_af = Parameters.ForwardEarlyVoltage;
-            v_ar = Parameters.ReverseEarlyVoltage;
+            vAf = Parameters.ForwardEarlyVoltage;
+            vAr = Parameters.ReverseEarlyVoltage;
 
-            i_kf = Parameters.ForwardCurrentCorner;
-            i_kr = Parameters.ReverseCurrentCorner;
+            iKf = Parameters.ForwardCurrentCorner;
+            iKr = Parameters.ReverseCurrentCorner;
         }
 
         /// <summary>
@@ -141,6 +106,21 @@ namespace NextGenSpice.LargeSignal.Models
         public override bool IsNonlinear => true;
 
         /// <summary>
+        ///     Current flowing through the base terminal.
+        /// </summary>
+        public double BaseCurrent => iB;
+
+        /// <summary>
+        ///     Current flowing through the collector terminal.
+        /// </summary>
+        public double CollectorCurrent => iC;
+
+        /// <summary>
+        ///     Current flowing through the emitter terminal.
+        /// </summary>
+        public double EmitterCurrent => iE;
+
+        /// <summary>
         ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is called
         ///     once every Newton-Raphson iteration.
         /// </summary>
@@ -149,76 +129,71 @@ namespace NextGenSpice.LargeSignal.Models
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
             // calculate values according to Gummel-Poon model
-            v_be = Voltage(Base, Emitter, context);
-            v_bc = Voltage(Base, Collector, context);
+            vBe = Voltage(Base, Emitter, context);
+            vBc = Voltage(Base, Collector, context);
 
-            i_f = DiodeCurrent(i_s, v_be, n_f);
-            i_r = DiodeCurrent(i_s, v_bc, n_r);
+            var (gBe, gBc, gMf, gMr, iT) = CalculateModelValues();
 
-            q1 = 1 / (1 - v_bc / v_af - v_be / v_ar);
-            q2 = i_f / i_kf + i_r / i_kr;
+            double iBeeq = iBe - gBe * vBe;
+            double iBceq = iBc - gBc * vBc;
+            double iCeeq = iT - gMf * vBe - gMr * vBc;
 
-            q_b = q1 / 2 * (1 + Math.Sqrt(1 + 4 * q2));
+            iB = iBe + iBc;
 
-            i_be = i_f / b_f + DiodeCurrent(i_se, v_be, n_e);
-            g_bei = i_s * Slope(v_be, n_f) / (n_f * v_t * b_f);
-            g_be = g_bei + i_se * Slope(v_be, n_e) / (n_e * v_t);
+            equations.AddMatrixEntry(Base, Base, gBe + gBc);
+            equations.AddMatrixEntry(Base, Collector, -gBc);
+            equations.AddMatrixEntry(Base, Emitter, -gBe);
 
-            i_bc = i_r / b_r + DiodeCurrent(i_sc, v_bc, n_c);
-            g_bci = i_s * Slope(v_bc, n_r) / (n_r * v_t * b_r);
-            g_bc = g_bci + i_sc * Slope(v_bc, n_c) / (n_c * v_t);
+            equations.AddMatrixEntry(Collector, Base, -gBc + gMf + gMr);
+            equations.AddMatrixEntry(Collector, Collector, gBc - gMr);
+            equations.AddMatrixEntry(Collector, Emitter, -gMf);
 
-            i_t = (i_f - i_r) / q_b;
-
-            g_if = g_bei * b_f;
-            d_qbd_vbe = q1 * (q_b / v_ar + g_if / (i_kf * Math.Sqrt(1 + 4 * q2)));
-
-            g_ir = g_bci * b_r;
-            d_qbd_vbc = q1 * (q_b / v_af + g_ir / (i_kr * Math.Sqrt(1 + 4 * q2)));
-
-            g_mf = 1 / q_b * (g_if - i_t * d_qbd_vbe);
-            g_mr = 1 / q_b * (-g_ir - i_t * d_qbd_vbc);
-
-            i_beeq = i_be - g_be * v_be;
-            i_bceq = i_bc - g_bc * v_bc;
-//            i_ceeq = i_t - g_mf * v_be + g_mr * v_bc;
+            equations.AddMatrixEntry(Emitter, Base, -gBe - gMf - gMr);
+            equations.AddMatrixEntry(Emitter, Collector, +gMr);
+            equations.AddMatrixEntry(Emitter, Emitter, gBe + gMf);
 
 
-            i_b = i_be + i_bc;
+            equations.AddRightHandSideEntry(Base, -iBeeq - iBceq);
+            equations.AddRightHandSideEntry(Collector, iBceq - iCeeq);
+            equations.AddRightHandSideEntry(Emitter, iBeeq + iCeeq);
+        }
 
+        private (double g_be, double g_bc, double g_mf, double g_mr, double i_t) CalculateModelValues()
+        {
+            // for details see http://qucs.sourceforge.net/tech/node70.html
 
-            //                        equations.AddMatrixEntry(Base, Base, g_be + g_bc);
-//                        equations.AddMatrixEntry(Base, Collector, -g_bc);
-//                        equations.AddMatrixEntry(Base, Emitter, -g_be);
-//            
-//                        equations.AddMatrixEntry(Collector, Base, -g_bc + g_mf - g_mr);
-//                        equations.AddMatrixEntry(Collector, Collector, g_bc + g_mf);
-//                        equations.AddMatrixEntry(Collector, Emitter, -g_mf);
-//            
-//                        equations.AddMatrixEntry(Emitter, Base, -g_be - g_mf + g_mr);
-//                        equations.AddMatrixEntry(Emitter, Collector, -g_mr);
-//                        equations.AddMatrixEntry(Emitter, Emitter, g_be + g_mr);
+            double iF = DiodeCurrent(iS, vBe, nF);
+            double iR = DiodeCurrent(iS, vBc, nR);
 
-            double g0 = -g_mr;
-            g_m = g_mf + g_mr;
-            i_ceeq = i_t - g_m * v_be - g0 * Voltage(Collector, Emitter, context);
+            double q1 = 1 / (1 - vBc / vAf - vBe / vAr);
+            double q2 = iF / iKf + iR / iKr;
 
-            equations.AddMatrixEntry(Base, Base, g_be + g_bc);
-            equations.AddMatrixEntry(Base, Collector, -g_bc);
-            equations.AddMatrixEntry(Base, Emitter, -g_be);
+            double qB = q1 / 2 * (1 + Math.Sqrt(1 + 4 * q2));
 
-            equations.AddMatrixEntry(Collector, Base, -g_bc + g_m);
-            equations.AddMatrixEntry(Collector, Collector, g_bc + g0);
-            equations.AddMatrixEntry(Collector, Emitter, -g0 - g_m);
+            iBe = iF / bF + DiodeCurrent(iSe, vBe, nE);
+            double gBei = iS * Slope(vBe, nF) / (nF * vT * bF);
+            double gBe = gBei + iSe * Slope(vBe, nE) / (nE * vT);
 
-            equations.AddMatrixEntry(Emitter, Base, -g_be - g_m);
-            equations.AddMatrixEntry(Emitter, Collector, -g0);
-            equations.AddMatrixEntry(Emitter, Emitter, g_be + g_m + g0);
+            iBc = iR / bR + DiodeCurrent(iSc, vBc, nC);
+            double gBci = iS * Slope(vBc, nR) / (nR * vT * bR);
+            double gBc = gBci + iSc * Slope(vBc, nC) / (nC * vT);
 
+            double iT = (iF - iR) / qB;
 
-            equations.AddRightHandSideEntry(Base, -i_beeq - i_bceq);
-            equations.AddRightHandSideEntry(Collector, i_bceq - i_ceeq);
-            equations.AddRightHandSideEntry(Emitter, i_beeq + i_ceeq);
+            double gIf = gBei * bF;
+            double dQbdVbe = q1 * (qB / vAr + gIf / (iKf * Math.Sqrt(1 + 4 * q2)));
+
+            double gIr = gBci * bR;
+            double dQbdVbc = q1 * (qB / vAf + gIr / (iKr * Math.Sqrt(1 + 4 * q2)));
+
+            double gMf = 1 / qB * (gIf - iT * dQbdVbe);
+            double gMr = 1 / qB * (-gIr - iT * dQbdVbc);
+
+            // calculate terminal currents
+            iC = iT - 1 / bR * iR;
+            iE = -iT - 1 / bF * iF;
+
+            return (gBe, gBc, gMf, gMr, iT);
         }
 
         private double DiodeCurrent(double saturationCurrent, double voltage, double emissionCoef)
@@ -228,7 +203,7 @@ namespace NextGenSpice.LargeSignal.Models
 
         private double Slope(double voltage, double emissionCoef)
         {
-            return Math.Exp(voltage / (emissionCoef * v_t));
+            return Math.Exp(voltage / (emissionCoef * vT));
         }
 
         private double Voltage(int n1, int n2, ISimulationContext context)
