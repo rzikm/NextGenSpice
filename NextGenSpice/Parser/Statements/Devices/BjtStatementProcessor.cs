@@ -37,13 +37,10 @@ namespace NextGenSpice.Parser.Statements.Devices
             if (Errors == 0)
             {
                 var modelToken = tokens.Last();
-                var symbolTableModel =
-                    Context.SymbolTable.Models[DeviceType.Bjt]; // make local variable to be captured inside lambda
+
                 Context.DeferredStatements.Add(
                     new ModeledElementStatement<BjtModelParams>(
-                        (par, cb) => cb.AddElement(nodes, new BjtElement(par, name)),
-                        () => (BjtModelParams)symbolTableModel.GetValueOrDefault(modelToken
-                            .Value), // deferred evaluation.
+                        (par, cb) => cb.AddElement(nodes, new BjtElement(par, name)), // deferred evaluation.
                         modelToken));
             }
         }
@@ -70,7 +67,6 @@ namespace NextGenSpice.Parser.Statements.Devices
             {
                 this.isPnp = isPnp;
                 Discriminator = isPnp ? "PNP" : "NPN";
-                DeviceType = DeviceType.Bjt;
                 var mapper = new ParameterMapper<BjtModelParams>();
 
                 mapper.Map(x => x.SaturationCurrent, "IS");
@@ -123,11 +119,6 @@ namespace NextGenSpice.Parser.Statements.Devices
             ///     Mapper for mapping parsed parameters onto properties.
             /// </summary>
             protected override ParameterMapper<BjtModelParams> Mapper { get; }
-
-            /// <summary>
-            ///     Type of the device that handled models are for.
-            /// </summary>
-            public override DeviceType DeviceType { get; }
 
             /// <summary>
             ///     Discriminator of handled model type.

@@ -125,7 +125,7 @@ namespace NextGenSpice.LargeSignal.Models
                 ;
 
             // Capacitance
-            var (cgeq, cieq) = IntegrationMethod.GetEquivalents(cd / context.TimeStep);
+            var (cieq, cgeq) = IntegrationMethod.GetEquivalents(cd / context.TimeStep);
 
             if (context.TimeStep > 0) // do not apply capacitor during the initial condition (model as open circuit)
             {
@@ -161,9 +161,9 @@ namespace NextGenSpice.LargeSignal.Models
         /// <summary>
         ///     Gets values for the device model based on voltage across the diode.
         /// </summary>
-        /// <param name="vd"></param>
+        /// <param name="vd">Voltage across the diode.</param>
         /// <returns></returns>
-        private (double, double, double) GetModelValues(double vd)
+        private (double id, double geq, double) GetModelValues(double vd)
         {
             var m = Parameters.JunctionGradingCoefficient;
             var vj = Parameters.JunctionPotential;

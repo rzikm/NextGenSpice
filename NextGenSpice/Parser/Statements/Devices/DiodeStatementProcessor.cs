@@ -30,18 +30,12 @@ namespace NextGenSpice.Parser.Statements.Devices
             var nodes = GetNodeIndices(tokens, 1, 2);
             // cannot check for model existence yet, defer checking for model later
 
-
             if (Errors == 0)
             {
                 var modelToken = tokens[3];
-                var symbolTableModel =
-                    Context.SymbolTable.Models[DeviceType.Diode]; // make local variable to be captured inside lambda
                 Context.DeferredStatements.Add(
                     new ModeledElementStatement<DiodeModelParams>(
-                        (par, cb) => cb.AddElement(nodes, new DiodeElement(par, name)),
-                        () => (DiodeModelParams) symbolTableModel.GetValueOrDefault(modelToken
-                            .Value), // deferred evaluation.
-                        modelToken));
+                        (par, cb) => cb.AddElement(nodes, new DiodeElement(par, name)), modelToken));
             }
         }
 
@@ -64,8 +58,6 @@ namespace NextGenSpice.Parser.Statements.Devices
 
             public DiodeModelStatementHandler()
             {
-                DeviceType = DeviceType.Diode;
-
                 mapper = new ParameterMapper<DiodeModelParams>();
                 mapper.Map(p => p.SaturationCurrent, "IS");
                 mapper.Map(p => p.SeriesResistance, "RS");
@@ -87,11 +79,6 @@ namespace NextGenSpice.Parser.Statements.Devices
             ///     Mapper for mapping parsed parameters onto properties.
             /// </summary>
             protected override ParameterMapper<DiodeModelParams> Mapper => mapper;
-
-            /// <summary>
-            ///     Type of the device that handled models are for.
-            /// </summary>
-            public override DeviceType DeviceType { get; }
 
             /// <summary>
             ///     Discriminator of handled model type.

@@ -12,17 +12,14 @@ namespace NextGenSpice.Parser.Statements.Deferring
     public class ModeledElementStatement<TModel> : DeferredStatement
     {
         private readonly Action<TModel, CircuitBuilder> builderFunc;
-        private readonly Func<TModel> modelFactory;
-        private readonly Token token;
+        private readonly Token modelNameToken;
 
         private TModel model;
 
-        public ModeledElementStatement(Action<TModel, CircuitBuilder> builderFunc, Func<TModel> modelFactory,
-            Token token)
+        public ModeledElementStatement(Action<TModel, CircuitBuilder> builderFunc, Token modelNameToken)
         {
             this.builderFunc = builderFunc;
-            this.modelFactory = modelFactory;
-            this.token = token;
+            this.modelNameToken = modelNameToken;
         }
 
         /// <summary>
@@ -32,7 +29,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
         /// <returns></returns>
         public override bool CanApply(ParsingContext context)
         {
-            return (model = modelFactory()) != null;
+            return context.SymbolTable.TryGetModel(modelNameToken.Value, out model);
         }
 
         /// <summary>
@@ -41,7 +38,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
         /// <returns></returns>
         public override IEnumerable<ErrorInfo> GetErrors()
         {
-            return new[] {token.ToErrorInfo($"There is no model named '{token.Value}' for this device type.")};
+            return new[] {modelNameToken.ToErrorInfo($"There is no model named '{modelNameToken.Value}' for this device type.")};
         }
 
         /// <summary>

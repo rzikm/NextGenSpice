@@ -58,7 +58,8 @@ namespace NextGenSpice.Parser.Statements
             foreach (var kvp in handlers)
             {
                 var handler = kvp.Value;
-                ctx.SymbolTable.Models[handler.DeviceType][handler.Discriminator] = handler.CreateDefaultModel();
+                var model = handler.CreateDefaultModel();
+                ctx.SymbolTable.AddModel(model.GetType(), handler.Discriminator);
             }
         }
     }

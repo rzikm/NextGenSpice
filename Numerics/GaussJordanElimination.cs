@@ -100,7 +100,7 @@ namespace Numerics
 
             var size = m.Size;
 
-            //            PrintSystem(m, b);
+                        PrintSystem(m, b);
 
             for (var i = 0; i < size - 1; i++)
             {

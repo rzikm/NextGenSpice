@@ -11,12 +11,13 @@ namespace NextGenSpice.Parser
     /// </summary>
     public class SymbolTable
     {
+        private readonly Dictionary<Type, Dictionary<string, object>> models;
+
         public SymbolTable()
         {
             DefinedElements = new HashSet<string>();
 
-            Models = ((DeviceType[]) Enum.GetValues(typeof(DeviceType))).ToDictionary(type => type,
-                type => new Dictionary<string, object>());
+            models = new Dictionary<Type, Dictionary<string, object>>();
 
             NodeIndices = new Dictionary<string, int> {["0"] = 0}; // enforce ground node on index 0
         }
@@ -27,14 +28,86 @@ namespace NextGenSpice.Parser
         public ISet<string> DefinedElements { get; }
 
         /// <summary>
-        ///     Sets of all device models (parameter sets) for each device type.
-        /// </summary>
-        public Dictionary<DeviceType, Dictionary<string, object>> Models { get; }
-
-        /// <summary>
         ///     Set of all node identifiers with associated ids that will be used during simulation.
         /// </summary>
         public IDictionary<string, int> NodeIndices { get; }
+
+        /// <summary>
+        ///     Gets the model parameters of given type associated with given name.
+        /// </summary>
+        /// <param name="modelType">Type of the model parameters.</param>
+        /// <param name="name">Name of the model.</param>
+        /// <param name="model">If this function returns true, contains the found model, otherwise null.</param>
+        /// <returns>True if given model was found, false otherwise.</returns>
+        public bool TryGetModel(Type modelType, string name, out object model)
+        {
+            model = null;
+            if (!models.ContainsKey(modelType)) return false;
+            return models[modelType].TryGetValue(name, out model);
+        }
+
+        /// <summary>
+        ///     Gets the model parameters of given type associated with given name.
+        /// </summary>
+        /// <typeparam T="modelType">Type of the model parameters.</typeparam>
+        /// <param name="name">Name of the model.</param>
+        /// <param name="model">If this function returns true, contains the found model, otherwise null.</param>
+        /// <returns>True if given model was found, false otherwise.</returns>
+        public bool TryGetModel<T>(string name, out T model)
+        {
+            var ret = TryGetModel(typeof(T), name, out var m);
+            model = (T) m;
+            return ret;
+        }
+
+        /// <summary>
+        ///     Gets model of given type associated with given name.
+        /// </summary>
+        /// <param name="T">Type of the model parameters.</param>
+        /// <param name="name">Name of the model.</param>
+        /// <returns>The model.</returns>
+        public object GetModel(Type modelType, string name)
+        {
+            if (!TryGetModel(modelType, name, out var model))
+                throw new ArgumentException($"There is no model of type {modelType}, named {name}.");
+            return model;
+        }
+
+        /// <summary>
+        ///     Gets model of given type associated with given name.
+        /// </summary>
+        /// <typeparam name="T">Type of the model parameters.</typeparam>
+        /// <param name="name">Name of the model.</param>
+        /// <returns>The model.</returns>
+        public T GetModel<T>(string name)
+        {
+            return (T) GetModel(typeof(T), name);
+        }
+
+        /// <summary>
+        ///     Adds model of given type and name to the symbol tables.
+        /// </summary>
+        /// <param name="modelType">Type of the model parameters.</param>
+        /// <param name="name">Name of the model.</param>
+        /// <param name="model">If this function returns true, contains the found model, otherwise null.</param>
+        public void AddModel(Type modelType, object model, string name)
+        {
+            if (!models.ContainsKey(modelType))
+                models[modelType] = new Dictionary<string, object>();
+
+            models[modelType].Add(name, model);
+        }
+
+        /// <summary>
+        ///     Adds model of given type and name to the symbol tables.
+        /// </summary>
+        /// <typeparam name="T">Type of the model type.</typeparam>
+        /// <param name="name">Name of the model.</param>
+        /// <param name="model">If this function returns true, contains the found model, otherwise null.</param>
+        public void AddModel<T>(T model, string name)
+        {
+            AddModel(typeof(T), model, name);
+        }
 
         /// <summary>
         ///     Returns whether given symbol is already used for a device or node.

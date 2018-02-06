@@ -16,11 +16,6 @@ namespace NextGenSpice.Parser.Statements.Devices
         protected abstract ParameterMapper<T> Mapper { get; }
 
         /// <summary>
-        ///     Type of the device that handled models are for.
-        /// </summary>
-        public abstract DeviceType DeviceType { get; }
-
-        /// <summary>
         ///     Discriminator of handled model type.
         /// </summary>
         public abstract string Discriminator { get; }
@@ -33,10 +28,9 @@ namespace NextGenSpice.Parser.Statements.Devices
         public void Process(Token[] tokens, ParsingContext context)
         {
             var name = tokens[1].Value;
-            var symbolTableModel = context.SymbolTable.Models[DeviceType];
 
             //TODO: Should model names be unique across model types (Diode, PNP etc.)?
-            if (symbolTableModel.ContainsKey(name))
+            if (context.SymbolTable.TryGetModel<T>(name, out _))
             {
                 context.Errors.Add(tokens[1]
                     .ToErrorInfo($"There already exists model with name '{name} for this device type."));
@@ -69,7 +63,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                 if (Mapper.HasKey(paramName)) Mapper.Set(paramName, token.GetNumericValue(context.Errors));
             }
 
-            symbolTableModel[name] = Mapper.Target;
+            context.SymbolTable.AddModel(Mapper.Target, name);
             Mapper.Target = default(T); // free memory
         }
 

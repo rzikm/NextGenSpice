@@ -11,11 +11,6 @@ namespace NextGenSpice.Parser.Statements.Models
         string Discriminator { get; }
 
         /// <summary>
-        ///     Device type this handler creates models for.
-        /// </summary>
-        DeviceType DeviceType { get; }
-
-        /// <summary>
         ///     Processes the .MODEL statement in given context.
         /// </summary>
         /// <param name="tokens"></param>

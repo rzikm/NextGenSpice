@@ -1,4 +1,4 @@
-﻿#define dd_precision
+﻿//#define dd_precision
 //#define qd_precision
 
 
@@ -246,7 +246,7 @@ namespace NextGenSpice.LargeSignal
             var m = equationSystem.Matrix;
 
 #if qd_precision
-            for (int i = 0; i < m.SideLength; i++)
+            for (int i = 0; i < m.Size; i++)
             {
                 m[i, 0] = qd_real.Zero;
                 m[0, i] = qd_real.Zero;
@@ -264,7 +264,7 @@ namespace NextGenSpice.LargeSignal
             m[0, 0] = new dd_real(1);
             equationSystem.RightHandSide[0] = dd_real.Zero;
 #else
-            for (int i = 0; i < m.SideLength; i++)
+            for (int i = 0; i < m.Size; i++)
             {
                 m[i, 0] = 0;
                 m[0, i] = 0;

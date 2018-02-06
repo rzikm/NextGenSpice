@@ -210,16 +210,5 @@ namespace NextGenSpice.LargeSignal.Models
         {
             return context.GetSolutionForVariable(n1) - context.GetSolutionForVariable(n2);
         }
-
-        /// <summary>
-        ///     Notifies model class that DC bias for given timepoint is established. This method can be used for processing
-        ///     circuit equation solution
-        ///     for current timepoint.
-        /// </summary>
-        /// <param name="context">Context of current simulation.</param>
-        public override void OnDcBiasEstablished(ISimulationContext context)
-        {
-            base.OnDcBiasEstablished(context);
-        }
     }
 }
