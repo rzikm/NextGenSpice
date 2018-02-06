@@ -29,12 +29,16 @@ namespace NextGenSpice.Parser.Statements.Printing
             {
                 var t = tokens[i];
                 var s = t.Value;
-
-                // expected token in format V(element), I(element), V(node), V(node1, node2)
-                if (s.Length > 3 && (s[0] == 'I' || s[0] == 'V') && s[1] == '(' && s[s.Length - 1] == ')')
-                    context.DeferredStatements.Add(new DeferredPrintStatement(t, AnalysisTypeIdentifer));
-                else
+                var parStart = s.IndexOf('(');
+                var parEnd = s.LastIndexOf(')');
+                
+                // expected token in format <Stat>(element), V(node), V(node1,node2)
+                if (parStart < 1 || parEnd < s.Length -1 || s.Length <= 3)
                     context.Errors.Add(tokens[i].ToErrorInfo($"Unsupported .PRINT statement format: '{s}'."));
+                else
+                {
+                    context.DeferredStatements.Add(new DeferredPrintStatement(t, AnalysisTypeIdentifer));
+                }
             }
         }
 

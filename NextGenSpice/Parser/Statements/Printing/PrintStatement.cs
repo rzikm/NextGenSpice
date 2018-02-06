@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements.Printing
 {
@@ -18,15 +20,16 @@ namespace NextGenSpice.Parser.Statements.Printing
         public string AnalysisType { get; set; }
 
         /// <summary>
-        ///     Sets analysis type circuit model from which data for printing are to be extracted.
+        ///     Initializes print statement for given circuit model and returns set of errors that occured (if any).
         /// </summary>
-        /// <param name="model"></param>
-        public abstract void Initialize(object model);
+        /// <param name="circuitModel">Current model of the circuit.</param>
+        /// <returns>Set of errors that errored (if any).</returns>
+        public abstract IEnumerable<ErrorInfo> Initialize(object circuitModel);
 
         /// <summary>
         ///     Prints value of handled by this print statement into given TextWriter.
         /// </summary>
-        /// <param name="output"></param>
+        /// <param name="output">Output TextWriter where to write.</param>
         public abstract void PrintValue(TextWriter output);
     }
 
@@ -38,18 +41,20 @@ namespace NextGenSpice.Parser.Statements.Printing
     public abstract class PrintStatement<TModel> : PrintStatement
     {
         /// <summary>
-        ///     Sets analysis type circuit model from which data for printing are to be extracted.
+        ///     Initializes print statement for given circuit model and returns set of errors that occured (if any).
         /// </summary>
-        /// <param name="model"></param>
-        public override void Initialize(object model)
+        /// <param name="circuitModel">Current model of the circuit.</param>
+        /// <returns>Set of errors that errored (if any).</returns>
+        public override IEnumerable<ErrorInfo> Initialize(object circuitModel)
         {
-            Initialize((TModel) model);
+            return Initialize((TModel) circuitModel);
         }
 
         /// <summary>
-        ///     Sets analysis type circuit model from which data for printing are to be extracted.
+        ///     Initializes print statement for given circuit model and returns set of errors that occured (if any).
         /// </summary>
-        /// <param name="model"></param>
-        public abstract void Initialize(TModel model);
+        /// <param name="circuitModel">Current model of the circuit.</param>
+        /// <returns>Set of errors that errored (if any).</returns>>
+        public abstract IEnumerable<ErrorInfo> Initialize(TModel circuitModel);
     }
 }

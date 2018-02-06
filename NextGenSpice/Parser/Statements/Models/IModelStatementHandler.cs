@@ -20,7 +20,7 @@ namespace NextGenSpice.Parser.Statements.Models
         /// <summary>
         ///     Creates new instance of model parameter class with default values.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Default device model.</returns>
         object CreateDefaultModel();
     }
 }

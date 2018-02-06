@@ -1,4 +1,5 @@
-﻿using NextGenSpice.Core.Elements;
+﻿using System.Collections.Generic;
+using NextGenSpice.Core.Elements;
 
 namespace NextGenSpice.LargeSignal.Models
 {
@@ -33,5 +34,21 @@ namespace NextGenSpice.LargeSignal.Models
         ///     Voltage across this device, difference of potential between positive and negative terminals.
         /// </summary>
         public double Voltage { get; protected set; }
+
+
+        /// <summary>
+        ///     Gets provider instance for specified attribute value or null if no provider for requested parameter exists. For
+        ///     example "I" for the current flowing throught the two
+        ///     terminal element.
+        /// </summary>
+        /// <returns>IPrintValueProvider for specified attribute.</returns>
+        public override IEnumerable<IDeviceStatsProvider> GetPrintValueProviders()
+        {
+            return new[]
+            {
+                new SimpleDeviceStatsProvider("I", () => Current),
+                new SimpleDeviceStatsProvider("V", () => Voltage),
+            };
+        }
     }
 }

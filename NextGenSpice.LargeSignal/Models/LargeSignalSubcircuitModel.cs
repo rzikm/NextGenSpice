@@ -62,6 +62,17 @@ namespace NextGenSpice.LargeSignal.Models
         }
 
         /// <summary>
+        ///     Gets provider instance for specified attribute value or null if no provider for requested parameter exists. For
+        ///     example "I" for the current flowing throught the two
+        ///     terminal element.
+        /// </summary>
+        /// <returns>IPrintValueProvider for specified attribute.</returns>
+        public override IEnumerable<IDeviceStatsProvider> GetPrintValueProviders()
+        {
+            return null; // no stats for subcircuit
+        }
+
+        /// <summary>
         ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
         /// </summary>
         /// <param name="builder">The equation system builder.</param>

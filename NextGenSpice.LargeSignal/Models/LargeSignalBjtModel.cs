@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NextGenSpice.Core;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
@@ -40,6 +41,7 @@ namespace NextGenSpice.LargeSignal.Models
         private double vBc;
 
         private double vBe;
+        private double vCe;
 
         public LargeSignalBjtModel(BjtElement definitionElement) : base(definitionElement)
         {
@@ -108,17 +110,42 @@ namespace NextGenSpice.LargeSignal.Models
         /// <summary>
         ///     Current flowing through the base terminal.
         /// </summary>
-        public double BaseCurrent => iB;
+        public double CurrentBase => iB;
 
         /// <summary>
         ///     Current flowing through the collector terminal.
         /// </summary>
-        public double CollectorCurrent => iC;
+        public double CurrentCollector => iC;
 
         /// <summary>
         ///     Current flowing through the emitter terminal.
         /// </summary>
-        public double EmitterCurrent => iE;
+        public double CurrentEmitter => iE;
+
+        /// <summary>
+        /// Current flowing from base terminal to collector terminal.
+        /// </summary>
+        public double CurrentBaseCollector => iBc;
+
+        /// <summary>
+        /// Current flowing from base terminal to emitter terminal.
+        /// </summary>
+        public double CurrentBaseEmitter => iBe;
+
+        /// <summary>
+        /// Voltage between base and collector terminal.
+        /// </summary>
+        public double VoltageBaseCollector => vBc;
+
+        /// <summary>
+        /// Voltage between base and emitter terminal.
+        /// </summary>
+        public double VoltageBaseEmitter => vBe;
+
+        /// <summary>
+        /// Voltage between collector and emitter terminal.
+        /// </summary>
+        public double VoltageCollectorEmitter => vCe;
 
         /// <summary>
         ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is called
@@ -131,6 +158,7 @@ namespace NextGenSpice.LargeSignal.Models
             // calculate values according to Gummel-Poon model
             vBe = Voltage(Base, Emitter, context);
             vBc = Voltage(Base, Collector, context);
+            vCe = Voltage(Collector, Emitter, context);
 
             var (gBe, gBc, gMf, gMr, iT) = CalculateModelValues();
 
@@ -158,7 +186,30 @@ namespace NextGenSpice.LargeSignal.Models
             equations.AddRightHandSideEntry(Emitter, iBeeq + iCeeq);
         }
 
-        private (double g_be, double g_bc, double g_mf, double g_mr, double i_t) CalculateModelValues()
+        /// <summary>
+        ///     Gets provider instance for specified attribute value or null if no provider for requested parameter exists. For
+        ///     example "I" for the current flowing throught the two
+        ///     terminal element.
+        /// </summary>
+        /// <returns>IPrintValueProvider for specified attribute.</returns>
+        public override IEnumerable<IDeviceStatsProvider> GetPrintValueProviders()
+        {
+            return new[]
+            {
+                new SimpleDeviceStatsProvider("IB", () => CurrentBase),
+                new SimpleDeviceStatsProvider("IC", () => CurrentCollector),
+                new SimpleDeviceStatsProvider("IE", () => CurrentEmitter),
+                new SimpleDeviceStatsProvider("IBE", () => CurrentBaseEmitter),
+                new SimpleDeviceStatsProvider("IBC", () => CurrentBaseCollector),
+                new SimpleDeviceStatsProvider("VBE", () => VoltageBaseEmitter),
+                new SimpleDeviceStatsProvider("VBC", () => VoltageBaseCollector),
+                new SimpleDeviceStatsProvider("VCE", () => VoltageCollectorEmitter),
+            };
+
+        }
+
+
+        private (double gBe, double gBc, double gMf, double gMr, double iT) CalculateModelValues()
         {
             // for details see http://qucs.sourceforge.net/tech/node70.html
 

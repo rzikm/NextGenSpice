@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using NextGenSpice.Core.Circuit;
+using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal;
 using NextGenSpice.Parser;
@@ -63,8 +64,30 @@ namespace NextGenSpice
                 return;
             }
 
+            bool first = true;
             foreach (var statement in result.SimulationStatements)
+            {
+                if (!first) Console.WriteLine();
+                first = false;
+                RunStatement(statement, result);
+            }
+        }
+
+        private static void RunStatement(ISimulationStatement statement, ParserResult result)
+        {
+            try
+            {
                 statement.Simulate(result.CircuitDefinition, result.PrintStatements, Console.Out);
+            }
+            catch (PrinterInitializationException e)
+            {
+                foreach (var error in e.Errors)
+                    Console.WriteLine(error);
+            }
+            catch (NonConvergenceException e)
+            {
+                Console.WriteLine("ERROR: Simulation did not converge");
+            }
         }
     }
 }

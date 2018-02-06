@@ -31,6 +31,7 @@ namespace NextGenSpice.Parser.Statements.Simulation
         /// <param name="output">TextWriter instance to which the results should be written.</param>
         public void Simulate(ICircuitDefinition circuit, IEnumerable<PrintStatement> printStatements, TextWriter output)
         {
+            output.WriteLine($".OP");
             var model = circuit.GetLargeSignalModel();
             var prints = printStatements.OfType<PrintStatement<LargeSignalCircuitModel>>()
                 .Where(s => s.AnalysisType == "OP").ToList();
@@ -42,6 +43,17 @@ namespace NextGenSpice.Parser.Statements.Simulation
                 for (var i = 1; i < model.NodeCount; i++) // no need to print ground voltage
                     output.WriteLine($"V({nodeNames[i]}) = {model.NodeVoltages[i]}");
 
+               
+                foreach (var element in model.Elements)
+                {
+                    var providers = element.GetPrintValueProviders();
+                    if (providers.Any()) output.WriteLine(); // separate from previous data
+                    foreach (var provider in providers)
+                    {
+                        output.WriteLine($"{provider.StatName}({element.Name}) = {provider.GetValue()}"); 
+                    }
+                }
+
                 foreach (var element in model.Elements.OfType<ITwoTerminalLargeSignalDeviceModel>()
                     .Where(e => !string.IsNullOrEmpty(e.Name)))
                 {
@@ -52,9 +64,10 @@ namespace NextGenSpice.Parser.Statements.Simulation
             }
             else // only requested values
             {
+                var errors = prints.SelectMany(pr => pr.Initialize(model)).ToList();
+                if (errors.Count > 0) throw new PrinterInitializationException(errors);
                 foreach (var statement in prints)
                 {
-                    statement.Initialize(model);
                     output.Write($"{statement.Header} = ");
                     statement.PrintValue(output);
                     output.WriteLine();

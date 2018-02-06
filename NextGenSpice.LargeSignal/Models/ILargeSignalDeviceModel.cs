@@ -1,4 +1,5 @@
-﻿using NextGenSpice.Core.Circuit;
+﻿using System.Collections.Generic;
+using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.Representation;
 
@@ -55,5 +56,11 @@ namespace NextGenSpice.LargeSignal.Models
         /// </summary>
         /// <param name="context">Context of current simulation.</param>
         void OnDcBiasEstablished(ISimulationContext context);
+
+        /// <summary>
+        ///     Gets provider instances for this device stats.
+        /// </summary>
+        /// <returns>IPrintValueProviders for specified attribute.</returns>
+        IEnumerable<IDeviceStatsProvider> GetPrintValueProviders();
     }
 }

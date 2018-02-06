@@ -1,6 +1,9 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using NextGenSpice.LargeSignal;
 using NextGenSpice.LargeSignal.Models;
+using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements.Printing
 {
@@ -25,19 +28,21 @@ namespace NextGenSpice.Parser.Statements.Printing
         /// <summary>
         ///     Prints value of handled by this print statement into given TextWriter.
         /// </summary>
-        /// <param name="output"></param>
+        /// <param name="output">Output TextWriter where to write.</param>
         public override void PrintValue(TextWriter output)
         {
             output.Write(model.Voltage);
         }
 
         /// <summary>
-        ///     Sets analysis type circuit model from which data for printing are to be extracted.
+        ///     Initializes print statement for given circuit model and returns set of errors that occured (if any).
         /// </summary>
-        /// <param name="model"></param>
-        public override void Initialize(LargeSignalCircuitModel model)
+        /// <param name="circuitModel">Current model of the circuit.</param>
+        /// <returns>Set of errors that errored (if any).</returns>
+        public override IEnumerable<ErrorInfo> Initialize(LargeSignalCircuitModel circuitModel)
         {
-            this.model = (ITwoTerminalLargeSignalDeviceModel) model.GetElement(elemName);
+            this.model = (ITwoTerminalLargeSignalDeviceModel) circuitModel.GetElement(elemName);
+            return Enumerable.Empty<ErrorInfo>();
         }
     }
 }

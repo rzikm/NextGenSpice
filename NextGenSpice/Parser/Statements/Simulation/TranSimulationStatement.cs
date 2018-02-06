@@ -1,10 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal;
 using NextGenSpice.LargeSignal.Models;
+using NextGenSpice.Parser.Statements.Deferring;
 using NextGenSpice.Parser.Statements.Printing;
+using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements.Simulation
 {
@@ -34,8 +38,14 @@ namespace NextGenSpice.Parser.Statements.Simulation
                 .Where(st => st.AnalysisType == "TRAN").ToList();
             var model = circuit.GetLargeSignalModel();
 
+            output.WriteLine($".TRAN {param.TimeStep} {param.StopTime} {param.StartTime}");
+
             if (printers.Count == 0) // if no printer here, print all data
                 GetPrintersForAll(model, printers);
+
+            var errors = printers.SelectMany(pr => pr.Initialize(model)).ToList();
+
+            if (errors.Count > 0) throw new PrinterInitializationException(errors);
 
             model.MaxTimeStep = param.TimeStep;
             model.AdvanceInTime(param.StartTime);
@@ -59,11 +69,9 @@ namespace NextGenSpice.Parser.Statements.Simulation
             for (var i = 1; i < model.NodeCount; i++) // no need to print ground voltage
                 printers.Add(new NodeVoltagePrintStatement(nodeNames[i], i));
 
-            foreach (var element in model.Elements.OfType<ITwoTerminalLargeSignalDeviceModel>()
-                .Where(e => !string.IsNullOrEmpty(e.Name)))
+            foreach (var element in model.Elements)
             {
-                printers.Add(new ElementVoltagePrintStatement(element.Name));
-                printers.Add(new ElementCurrentPrintStatement(element.Name));
+                printers.AddRange(element.GetPrintValueProviders().Select(pr => new ElementPrintStatement(pr.StatName, element.Name, new Token())));
             }
         }
 
@@ -74,7 +82,6 @@ namespace NextGenSpice.Parser.Statements.Simulation
             foreach (var printer in printers)
             {
                 output.Write(" ");
-                printer.Initialize(model);
                 output.Write(printer.Header);
             }
             output.WriteLine();
@@ -90,6 +97,30 @@ namespace NextGenSpice.Parser.Statements.Simulation
                 printer.PrintValue(output);
             }
             output.WriteLine();
+        }
+    }
+
+    [Serializable]
+    public class PrinterInitializationException : InvalidOperationException
+    {
+        //
+        // For guidelines regarding the creation of new exception types, see
+        //    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpgenref/html/cpconerrorraisinghandlingguidelines.asp
+        // and
+        //    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dncscol/html/csharp07192001.asp
+        //
+
+        public PrinterInitializationException(IEnumerable<ErrorInfo> errors) : base("There were errors during printer initializations.")
+        {
+            Errors = errors;
+        }
+
+        public IEnumerable<ErrorInfo> Errors { get; }
+
+        protected PrinterInitializationException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
         }
     }
 }

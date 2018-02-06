@@ -1,4 +1,5 @@
-﻿using NextGenSpice.Core.Circuit;
+﻿using System.Collections.Generic;
+using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Equations;
 
@@ -76,5 +77,13 @@ namespace NextGenSpice.LargeSignal.Models
         public virtual void OnDcBiasEstablished(ISimulationContext context)
         {
         }
+
+        /// <summary>
+        ///     Gets provider instance for specified attribute value or null if no provider for requested parameter exists. For
+        ///     example "I" for the current flowing throught the two
+        ///     terminal element.
+        /// </summary>
+        /// <returns>IPrintValueProvider for specified attribute.</returns>
+        public abstract IEnumerable<IDeviceStatsProvider> GetPrintValueProviders();
     }
 }
