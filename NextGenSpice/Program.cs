@@ -34,6 +34,7 @@ namespace NextGenSpice
 
         private static void Main(string[] args)
         {
+//            Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
             if (args.Length != 1)
             {
                 Console.Error.WriteLine("Usage: NextGenSpice <input file>");

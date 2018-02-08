@@ -23,7 +23,7 @@ namespace NextGenSpice.LargeSignal.Models
         /// <summary>
         ///     Id of node connected to negative terminal of this device.
         /// </summary>
-        public int Kathode => DefinitionElement.ConnectedNodes[1];
+        public int Cathode => DefinitionElement.ConnectedNodes[1];
 
         /// <summary>
         ///     Current flowing from positive terminal to negative terminal through the device.

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
@@ -54,7 +55,11 @@ namespace NextGenSpice.LargeSignal.Behaviors
                 i = ~i; // if not found, returned value of BinarySearch is bitwise negation of index where to insert the value (minimal greater element or one-after-last index)
 
             if (i >= timepoints.Count) return values[timepoints.Count - 1];
-            if (i == 0) return MathHelper.LinearInterpolation(Parameters.InitialValue, values[i], time / timepoints[i]);
+            if (i == 0)
+            {
+                if (Math.Abs(timepoints[0]) < Double.Epsilon) return Parameters.InitialValue;
+                return MathHelper.LinearInterpolation(Parameters.InitialValue, values[i], time / timepoints[i]);
+            }
             return MathHelper.LinearInterpolation(values[i - 1], values[i],
                 (time - timepoints[i - 1]) / (timepoints[i] - timepoints[i - 1]));
         }

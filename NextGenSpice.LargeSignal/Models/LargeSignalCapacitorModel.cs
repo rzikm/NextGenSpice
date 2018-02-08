@@ -2,6 +2,7 @@
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.LargeSignal.NumIntegration;
+using NextGenSpice.LargeSignal.Stamping;
 
 namespace NextGenSpice.LargeSignal.Models
 {
@@ -11,12 +12,12 @@ namespace NextGenSpice.LargeSignal.Models
     public class LargeSignalCapacitorModel : TwoNodeLargeSignalModel<CapacitorElement>
     {
         private int branchVariable;
-
+        private LargeSignalCapacitorStamper stamper;
         public LargeSignalCapacitorModel(CapacitorElement definitionElement) : base(definitionElement)
         {
             IntegrationMethod = new GearIntegrationMethod(2);
-//            IntegrationMethod = new AdamsMoultonIntegrationMethod(4);
-//            IntegrationMethod = new BackwardEulerIntegrationMethod();
+            //            IntegrationMethod = new AdamsMoultonIntegrationMethod(4);
+            //            IntegrationMethod = new BackwardEulerIntegrationMethod();
         }
 
         /// <summary>
@@ -48,6 +49,7 @@ namespace NextGenSpice.LargeSignal.Models
         {
             base.RegisterAdditionalVariables(builder, context);
             branchVariable = builder.AddVariable();
+            stamper = new LargeSignalCapacitorStamper(Anode, Cathode, branchVariable);
         }
 
         /// <summary>
@@ -59,25 +61,7 @@ namespace NextGenSpice.LargeSignal.Models
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
             var (ieq, geq) = IntegrationMethod.GetEquivalents(DefinitionElement.Capacity / context.TimeStep);
-
-            equations.AddMatrixEntry(branchVariable, Anode, geq);
-            equations.AddMatrixEntry(branchVariable, Kathode, -geq);
-            AddBranchCurrent(equations, ieq);
-        }
-
-        /// <summary>
-        ///     Adds current flowing through the capacitor to the equation system.
-        /// </summary>
-        /// <param name="equations"></param>
-        /// <param name="ieq"></param>
-        private void AddBranchCurrent(IEquationEditor equations, double ieq)
-        {
-            equations.AddMatrixEntry(Anode, branchVariable, 1);
-            equations.AddMatrixEntry(Kathode, branchVariable, -1);
-
-            equations.AddMatrixEntry(branchVariable, branchVariable, -1);
-
-            equations.AddRightHandSideEntry(branchVariable, ieq);
+            stamper.Stamp(equations, ieq, geq);
         }
 
         /// <summary>
@@ -87,10 +71,7 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
         {
-            if (DefinitionElement.InitialVoltage.HasValue) // model using voltage source
-                equations.AddVoltage(Anode, Kathode, branchVariable, DefinitionElement.InitialVoltage.Value);
-            else // model as open circuit
-                AddBranchCurrent(equations, 0);
+            stamper.StampInitialCondition(equations, DefinitionElement.InitialVoltage);
         }
 
         /// <summary>
@@ -105,7 +86,7 @@ namespace NextGenSpice.LargeSignal.Models
             Current = context.GetSolutionForVariable(branchVariable);
 
             var vc = context.GetSolutionForVariable(DefinitionElement.Anode) -
-                     context.GetSolutionForVariable(DefinitionElement.Kathode);
+                     context.GetSolutionForVariable(DefinitionElement.Cathode);
             Voltage = vc;
 
             IntegrationMethod.SetState(Current, Voltage);

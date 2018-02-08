@@ -11,6 +11,7 @@ namespace NextGenSpice.LargeSignal.Models
     public class LargeSignalInductorModel : TwoNodeLargeSignalModel<InductorElement>
     {
         private int branchVariable;
+        private LargeSignalInductorStamper stamper;
 
         public LargeSignalInductorModel(InductorElement definitionElement) : base(definitionElement)
         {
@@ -45,6 +46,7 @@ namespace NextGenSpice.LargeSignal.Models
         {
             branchVariable = builder.AddVariable();
             base.RegisterAdditionalVariables(builder, context);
+            stamper = new LargeSignalInductorStamper(Anode, Cathode, branchVariable);
         }
 
         /// <summary>
@@ -56,9 +58,7 @@ namespace NextGenSpice.LargeSignal.Models
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
             var (veq, req) = IntegrationMethod.GetEquivalents(DefinitionElement.Inductance / context.TimeStep);
-
-            equations.AddVoltage(Anode, Kathode, branchVariable, -veq);
-            equations.AddMatrixEntry(branchVariable, branchVariable, -req);
+            stamper.Stamp(equations, veq, req);
         }
 
         /// <summary>
@@ -68,10 +68,7 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
         {
-            if (DefinitionElement.InitialCurrent.HasValue)
-                equations.AddCurrent(Anode, Kathode, DefinitionElement.InitialCurrent.Value);
-            else
-                equations.AddVoltage(Anode, Kathode, branchVariable, 0);
+            stamper.StampInitialCondition(equations, DefinitionElement.InitialCurrent);
         }
 
         /// <summary>
@@ -84,7 +81,7 @@ namespace NextGenSpice.LargeSignal.Models
         {
             base.OnDcBiasEstablished(context);
             Current = context.GetSolutionForVariable(branchVariable);
-            Voltage = context.GetSolutionForVariable(Anode) - context.GetSolutionForVariable(Kathode);
+            Voltage = context.GetSolutionForVariable(Anode) - context.GetSolutionForVariable(Cathode);
 
             IntegrationMethod.SetState(Voltage, Current);
         }

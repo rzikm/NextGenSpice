@@ -39,12 +39,12 @@ namespace NextGenSpiceTest
         {
             if (IsOn)
             {
-                equations.AddVoltage(Anode, Kathode, branchVariable, 0);
+                equations.AddVoltage(Anode, Cathode, branchVariable, 0);
             }
             else
             {
                 equations.AddMatrixEntry(Anode, branchVariable, 1);
-                equations.AddMatrixEntry(Kathode, branchVariable, -1);
+                equations.AddMatrixEntry(Cathode, branchVariable, -1);
 
                 equations.AddMatrixEntry(branchVariable, branchVariable, -1);
 

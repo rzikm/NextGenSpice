@@ -69,7 +69,7 @@ namespace NextGenSpice.LargeSignal.Models
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
             Voltage = Behavior.GetValue(context);
-            equations.AddVoltage(Anode, Kathode, branchVariable, Voltage);
+            equations.AddVoltage(Anode, Cathode, branchVariable, Voltage);
         }
     }
 }

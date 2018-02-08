@@ -32,7 +32,6 @@ namespace NextGenSpiceTest
                 .AddCurrentSource(0, 1, 0.1)
                 .AddDiode(2, 0, p =>
                 {
-                    p.Vd = 0.7;
                     p.SaturationCurrent = 1e-15;
                 })
                 .BuildCircuit();

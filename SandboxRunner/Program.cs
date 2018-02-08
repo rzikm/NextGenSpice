@@ -129,7 +129,6 @@ namespace SandboxRunner
                 .AddDiode(1, 0, d =>
                 {
                     d.ReverseBreakdownVoltage = 2;
-                    d.Vd = -3;
                 }, "D")
                 .BuildCircuit();
 

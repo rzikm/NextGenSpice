@@ -23,7 +23,6 @@
             JunctionPotential = 20,
             ReverseBreakdownVoltage = 75,
             SeriesResistance = 0.568,
-            Vd = 0.0
         };
         
         /// <summary>
@@ -105,9 +104,5 @@
 
 
         //TODO: consider moving this thing elsewhere
-        /// <summary>
-        ///     Initial guess of the voltage across the diode.
-        /// </summary>
-        public double Vd { get; set; } = 0.9;
     }
 }

@@ -5,6 +5,7 @@ using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Elements.Parameters;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.LargeSignal.NumIntegration;
+using NextGenSpice.LargeSignal.Stamping;
 
 namespace NextGenSpice.LargeSignal.Models
 {
@@ -24,15 +25,20 @@ namespace NextGenSpice.LargeSignal.Models
         private double ic; // current through the capacitor that models junction capacitance
         private double vc; // voltage across the capacitor that models junction capacitance
 
+        private bool initialConditionCapacitor;
+        private bool initialConditionDiode;
+
+        private LargeSignalCapacitorStamper capacitorStamper;
+
         public LargeSignalDiodeModel(DiodeElement definitionElement) : base(definitionElement)
         {
-//            IntegrationMethod = new AdamsMoultonIntegrationMethod(2);
+            //            IntegrationMethod = new AdamsMoultonIntegrationMethod(2);
             IntegrationMethod = new GearIntegrationMethod(2);
-//            IntegrationMethod = new TrapezoidalIntegrationMethod();
-//            IntegrationMethod = new BackwardEulerIntegrationMethod();
-//            IntegrationMethod = new AdamsMoultonIntegrationMethod(4);
+            //            IntegrationMethod = new TrapezoidalIntegrationMethod();
+            //            IntegrationMethod = new BackwardEulerIntegrationMethod();
+            //            IntegrationMethod = new AdamsMoultonIntegrationMethod(4);
 
-            Voltage = Parameters.Vd;
+            Voltage = DefinitionElement.VoltageHint;
 
             vt = Parameters.EmissionCoefficient * PhysicalConstants.Boltzmann *
                  PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
@@ -75,7 +81,11 @@ namespace NextGenSpice.LargeSignal.Models
         {
             base.RegisterAdditionalVariables(builder, context);
             capacitorBranch = builder.AddVariable();
+            capacitorStamper = new LargeSignalCapacitorStamper(Anode, Cathode, capacitorBranch);
+
             gmin = Parameters.MinimalResistance ?? context.CircuitParameters.MinimalResistance;
+            initialConditionCapacitor = true;
+            initialConditionDiode = true;
         }
 
         /// <summary>
@@ -87,7 +97,7 @@ namespace NextGenSpice.LargeSignal.Models
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
             var vd = context.GetSolutionForVariable(DefinitionElement.Anode) -
-                     context.GetSolutionForVariable(DefinitionElement.Kathode) - Parameters.SeriesResistance * Current;
+                     context.GetSolutionForVariable(DefinitionElement.Cathode) - Parameters.SeriesResistance * Current;
             ApplyLinearizedModel(equations, context, vd);
         }
 
@@ -99,12 +109,15 @@ namespace NextGenSpice.LargeSignal.Models
         public override void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
         {
             var vd = context.GetSolutionForVariable(DefinitionElement.Anode) -
-                     context.GetSolutionForVariable(DefinitionElement.Kathode);
-            if (vd == 0) vd = Parameters.Vd;
-            else
-                vd -= Parameters.SeriesResistance * Current
-                    ;
-            ApplyLinearizedModel(equations, context, vd);
+                     context.GetSolutionForVariable(DefinitionElement.Cathode);
+            if (initialConditionDiode)
+            {
+                vd = DefinitionElement.VoltageHint;
+                initialConditionDiode = false; // use hint only for the very first iteration
+            }
+            else vd -= Parameters.SeriesResistance * Current;
+            
+            ApplyLinearizedModel(equations, context, vd); 
         }
 
         /// <summary>
@@ -120,22 +133,15 @@ namespace NextGenSpice.LargeSignal.Models
 
             // Diode
             equations
-                .AddConductance(Anode, Kathode, geq)
-                .AddCurrent(Kathode, Anode, ieq)
-                ;
+                .AddConductance(Anode, Cathode, geq)
+                .AddCurrent(Cathode, Anode, ieq);
 
             // Capacitance
             var (cieq, cgeq) = IntegrationMethod.GetEquivalents(cd / context.TimeStep);
 
-            if (context.TimeStep > 0) // do not apply capacitor during the initial condition (model as open circuit)
-            {
-                equations.AddMatrixEntry(capacitorBranch, Anode, cgeq);
-                equations.AddMatrixEntry(capacitorBranch, Kathode, -cgeq);
-                equations.AddRightHandSideEntry(capacitorBranch, cieq);
-            }
-            equations.AddMatrixEntry(Anode, capacitorBranch, +1);
-            equations.AddMatrixEntry(Kathode, capacitorBranch, -1);
-            equations.AddMatrixEntry(capacitorBranch, capacitorBranch, -1);
+            if (initialConditionCapacitor) // initial condition
+                capacitorStamper.StampInitialCondition(equations, null);
+            else capacitorStamper.Stamp(equations, cieq, cgeq); 
 
             Voltage = vd;
             Current = id + ic;
@@ -156,6 +162,7 @@ namespace NextGenSpice.LargeSignal.Models
             vc = Voltage;
 
             IntegrationMethod.SetState(ic, vc);
+            initialConditionCapacitor = false; // capacitor no longer needs initial condition
         }
 
         /// <summary>
@@ -163,7 +170,7 @@ namespace NextGenSpice.LargeSignal.Models
         /// </summary>
         /// <param name="vd">Voltage across the diode.</param>
         /// <returns></returns>
-        private (double id, double geq, double) GetModelValues(double vd)
+        private (double id, double geq, double cd) GetModelValues(double vd)
         {
             var m = Parameters.JunctionGradingCoefficient;
             var vj = Parameters.JunctionPotential;

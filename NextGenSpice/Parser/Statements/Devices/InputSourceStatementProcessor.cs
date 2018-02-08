@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NextGenSpice.Core.BehaviorParams;
-using NextGenSpice.Core.Elements;
 using NextGenSpice.Parser.Statements.Deferring;
 using NextGenSpice.Utils;
 
@@ -14,6 +13,7 @@ namespace NextGenSpice.Parser.Statements.Devices
     public abstract class InputSourceStatementProcessor : ElementStatementProcessor
     {
         private readonly ParameterMapper<AmBehaviorParams> amMapper;
+        private readonly ParameterMapper<ConstantBehaviorParams> dcMapper;
         private readonly ParameterMapper<ExponentialBehaviorParams> expMapper;
         private readonly ParameterMapper<PulseBehaviorParams> pulseMapper;
         private readonly ParameterMapper<SffmBehaviorParams> sffmMapper;
@@ -26,6 +26,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             pulseMapper = new ParameterMapper<PulseBehaviorParams>();
             amMapper = new ParameterMapper<AmBehaviorParams>();
             sffmMapper = new ParameterMapper<SffmBehaviorParams>();
+            dcMapper = new ParameterMapper<ConstantBehaviorParams>();
 
             InitMappers();
         }
@@ -68,6 +69,8 @@ namespace NextGenSpice.Parser.Statements.Devices
             amMapper.Map(c => c.ModulationIndex, 3);
             amMapper.Map(c => c.PhaseOffset, 4, v => v / 180.0 * Math.PI); // convert from degrees to radians
             amMapper.Map(c => c.Delay, 5);
+
+            dcMapper.Map(c => c.Value, 0);
         }
 
         /// <summary>
@@ -89,14 +92,12 @@ namespace NextGenSpice.Parser.Statements.Devices
             if (char.IsDigit(tokens[3].Value[0])) // constant source
             {
                 var val = GetValue(tokens[3]);
-                statement = GetStatement(name, nodes, new ConstantBehaviorParams {Value = val});
+                statement = GetStatement(name, nodes, new ConstantBehaviorParams { Value = val });
             }
             else // tran function
             {
                 var paramTokens = Helper.Retokenize(tokens, 3).ToList();
                 var param = GetBehaviorParam(paramTokens);
-                if (paramTokens.Count < 3 && param != null) // every transient function must have at least 2 arguments
-                    Error(paramTokens[0], $"Too few arguments for transient function '{paramTokens[0].Value}'");
                 statement = GetStatement(name, nodes, param);
             }
 
@@ -114,22 +115,25 @@ namespace NextGenSpice.Parser.Statements.Devices
             switch (paramTokens[0].Value)
             {
                 case "PULSE":
-                    return GetParameterTokens(pulseMapper, paramTokens);
+                    return GetParameterTokens(pulseMapper, paramTokens, 3);
 
                 case "PWL":
                     return GetPwlParams(paramTokens);
 
                 case "EXP":
-                    return GetParameterTokens(expMapper, paramTokens);
+                    return GetParameterTokens(expMapper, paramTokens, 3);
 
                 case "SIN":
-                    return GetParameterTokens(sinMapper, paramTokens);
+                    return GetParameterTokens(sinMapper, paramTokens, 3);
 
                 case "AM":
-                    return GetParameterTokens(amMapper, paramTokens);
+                    return GetParameterTokens(amMapper, paramTokens, 3);
 
                 case "SFFM":
-                    return GetParameterTokens(sffmMapper, paramTokens);
+                    return GetParameterTokens(sffmMapper, paramTokens, 3);
+
+                case "DC":
+                    return GetParameterTokens(dcMapper, paramTokens, 1);
 
                 default:
                     Error(paramTokens[0], $"Unknown transient source function: '{paramTokens[0].Value}'");
@@ -193,14 +197,18 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <typeparam name="T"></typeparam>
         /// <param name="mapper"></param>
         /// <param name="paramTokens"></param>
+        /// <param name="minArgc"></param>
         /// <returns></returns>
-        private T GetParameterTokens<T>(ParameterMapper<T> mapper, List<Token> paramTokens) where T : new()
+        private T GetParameterTokens<T>(ParameterMapper<T> mapper, List<Token> paramTokens, int minArgc) where T : new()
         {
             mapper.Target = new T();
             for (var i = 1;
-                i < Math.Min(mapper.ByIndexCount, paramTokens.Count);
+                i <= Math.Min(mapper.ByIndexCount, paramTokens.Count - 1);
                 i++) // start from 1 bc. first is method identifier
                 mapper.Set(i - 1, GetValue(paramTokens[i]));
+
+            if (paramTokens.Count < minArgc)
+                Error(paramTokens[0], $"Too few arguments for transient function '{paramTokens[0].Value}'");
 
             if (paramTokens.Count > mapper.ByIndexCount + 1)
                 Error(paramTokens[mapper.ByIndexCount],

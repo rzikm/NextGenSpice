@@ -17,6 +17,6 @@
         /// <summary>
         ///     Negative terminal of the device.
         /// </summary>
-        public int Kathode => ConnectedNodes[1];
+        public int Cathode => ConnectedNodes[1];
     }
 }

@@ -40,7 +40,7 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            equations.AddConductance(Anode, Kathode, 1 / Resistance);
+            equations.AddConductance(Anode, Cathode, 1 / Resistance);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace NextGenSpice.LargeSignal.Models
         public override void OnDcBiasEstablished(ISimulationContext context)
         {
             base.OnDcBiasEstablished(context);
-            Voltage = context.GetSolutionForVariable(Anode) - context.GetSolutionForVariable(Kathode);
+            Voltage = context.GetSolutionForVariable(Anode) - context.GetSolutionForVariable(Cathode);
             Current = Voltage / Resistance;
         }
     }
