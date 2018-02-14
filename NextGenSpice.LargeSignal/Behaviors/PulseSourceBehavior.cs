@@ -16,6 +16,11 @@ namespace NextGenSpice.LargeSignal.Behaviors
         }
 
         /// <summary>
+        ///     Specifies how often the model should be updated.
+        /// </summary>
+        public override ModelUpdateMode UpdateMode => ModelUpdateMode.TimePoint;
+
+        /// <summary>
         ///     If true, the behavior is not constant over time and the value is refreshed every timestep.
         /// </summary>
         public override bool IsTimeDependent => true;

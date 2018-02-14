@@ -32,22 +32,11 @@ namespace NextGenSpice.LargeSignal.Models
 
         private readonly double vT; // thermal voltage
 
-        private double iB;
-        private double iBc;
-
-        private double iBe;
-        private double iC;
-        private double iE;
-        private double vBc;
-
-        private double vBe;
-        private double vCe;
-
         public LargeSignalBjtModel(BjtElement definitionElement) : base(definitionElement)
         {
             vT = PhysicalConstants.Boltzmann *
-                  PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
-                  PhysicalConstants.ElementaryCharge;
+                 PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
+                 PhysicalConstants.ElementaryCharge;
 
             iS = Parameters.SaturationCurrent;
             iSe = Parameters.EmitterSaturationCurrent;
@@ -94,58 +83,49 @@ namespace NextGenSpice.LargeSignal.Models
         public BjtModelParams Parameters => DefinitionElement.Parameters;
 
         /// <summary>
-        ///     If true, the device behavior is not constant over time and the
-        ///     <see cref="ILargeSignalDeviceModel.ApplyModelValues" /> function is called
-        ///     every timestep.
+        ///     Specifies how often the model should be updated.
         /// </summary>
-        public override bool IsTimeDependent => false;
-
-        /// <summary>
-        ///     If true, the device behavior is not linear is not constant and the
-        ///     <see cref="ILargeSignalDeviceModel.ApplyModelValues" /> function is
-        ///     called every iteration during nonlinear solving.
-        /// </summary>
-        public override bool IsNonlinear => true;
+        public override ModelUpdateMode UpdateMode => ModelUpdateMode.Always;
 
         /// <summary>
         ///     Current flowing through the base terminal.
         /// </summary>
-        public double CurrentBase => iB;
+        public double CurrentBase { get; private set; }
 
         /// <summary>
         ///     Current flowing through the collector terminal.
         /// </summary>
-        public double CurrentCollector => iC;
+        public double CurrentCollector { get; private set; }
 
         /// <summary>
         ///     Current flowing through the emitter terminal.
         /// </summary>
-        public double CurrentEmitter => iE;
+        public double CurrentEmitter { get; private set; }
 
         /// <summary>
-        /// Current flowing from base terminal to collector terminal.
+        ///     Current flowing from base terminal to collector terminal.
         /// </summary>
-        public double CurrentBaseCollector => iBc;
+        public double CurrentBaseCollector { get; private set; }
 
         /// <summary>
-        /// Current flowing from base terminal to emitter terminal.
+        ///     Current flowing from base terminal to emitter terminal.
         /// </summary>
-        public double CurrentBaseEmitter => iBe;
+        public double CurrentBaseEmitter { get; private set; }
 
         /// <summary>
-        /// Voltage between base and collector terminal.
+        ///     Voltage between base and collector terminal.
         /// </summary>
-        public double VoltageBaseCollector => vBc;
+        public double VoltageBaseCollector { get; private set; }
 
         /// <summary>
-        /// Voltage between base and emitter terminal.
+        ///     Voltage between base and emitter terminal.
         /// </summary>
-        public double VoltageBaseEmitter => vBe;
+        public double VoltageBaseEmitter { get; private set; }
 
         /// <summary>
-        /// Voltage between collector and emitter terminal.
+        ///     Voltage between collector and emitter terminal.
         /// </summary>
-        public double VoltageCollectorEmitter => vCe;
+        public double VoltageCollectorEmitter { get; private set; }
 
         /// <summary>
         ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is called
@@ -156,17 +136,17 @@ namespace NextGenSpice.LargeSignal.Models
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
             // calculate values according to Gummel-Poon model
-            vBe = Voltage(Base, Emitter, context);
-            vBc = Voltage(Base, Collector, context);
-            vCe = Voltage(Collector, Emitter, context);
+            VoltageBaseEmitter = Voltage(Base, Emitter, context);
+            VoltageBaseCollector = Voltage(Base, Collector, context);
+            VoltageCollectorEmitter = Voltage(Collector, Emitter, context);
 
             var (gBe, gBc, gMf, gMr, iT) = CalculateModelValues();
 
-            double iBeeq = iBe - gBe * vBe;
-            double iBceq = iBc - gBc * vBc;
-            double iCeeq = iT - gMf * vBe - gMr * vBc;
+            var iBeeq = CurrentBaseEmitter - gBe * VoltageBaseEmitter;
+            var iBceq = CurrentBaseCollector - gBc * VoltageBaseCollector;
+            var iCeeq = iT - gMf * VoltageBaseEmitter - gMr * VoltageBaseCollector;
 
-            iB = iBe + iBc;
+            CurrentBase = CurrentBaseEmitter + CurrentBaseCollector;
 
             equations.AddMatrixEntry(Base, Base, gBe + gBc);
             equations.AddMatrixEntry(Base, Collector, -gBc);
@@ -192,7 +172,7 @@ namespace NextGenSpice.LargeSignal.Models
         ///     terminal element.
         /// </summary>
         /// <returns>IPrintValueProvider for specified attribute.</returns>
-        public override IEnumerable<IDeviceStatsProvider> GetPrintValueProviders()
+        public override IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders()
         {
             return new[]
             {
@@ -203,9 +183,8 @@ namespace NextGenSpice.LargeSignal.Models
                 new SimpleDeviceStatsProvider("IBC", () => CurrentBaseCollector),
                 new SimpleDeviceStatsProvider("VBE", () => VoltageBaseEmitter),
                 new SimpleDeviceStatsProvider("VBC", () => VoltageBaseCollector),
-                new SimpleDeviceStatsProvider("VCE", () => VoltageCollectorEmitter),
+                new SimpleDeviceStatsProvider("VCE", () => VoltageCollectorEmitter)
             };
-
         }
 
 
@@ -213,36 +192,36 @@ namespace NextGenSpice.LargeSignal.Models
         {
             // for details see http://qucs.sourceforge.net/tech/node70.html
 
-            double iF = DiodeCurrent(iS, vBe, nF);
-            double iR = DiodeCurrent(iS, vBc, nR);
+            var iF = DiodeCurrent(iS, VoltageBaseEmitter, nF);
+            var iR = DiodeCurrent(iS, VoltageBaseCollector, nR);
 
-            double q1 = 1 / (1 - vBc / vAf - vBe / vAr);
-            double q2 = iF / iKf + iR / iKr;
+            var q1 = 1 / (1 - VoltageBaseCollector / vAf - VoltageBaseEmitter / vAr);
+            var q2 = iF / iKf + iR / iKr;
 
-            double qB = q1 / 2 * (1 + Math.Sqrt(1 + 4 * q2));
+            var qB = q1 / 2 * (1 + Math.Sqrt(1 + 4 * q2));
 
-            iBe = iF / bF + DiodeCurrent(iSe, vBe, nE);
-            double gBei = iS * Slope(vBe, nF) / (nF * vT * bF);
-            double gBe = gBei + iSe * Slope(vBe, nE) / (nE * vT);
+            CurrentBaseEmitter = iF / bF + DiodeCurrent(iSe, VoltageBaseEmitter, nE);
+            var gBei = iS * Slope(VoltageBaseEmitter, nF) / (nF * vT * bF);
+            var gBe = gBei + iSe * Slope(VoltageBaseEmitter, nE) / (nE * vT);
 
-            iBc = iR / bR + DiodeCurrent(iSc, vBc, nC);
-            double gBci = iS * Slope(vBc, nR) / (nR * vT * bR);
-            double gBc = gBci + iSc * Slope(vBc, nC) / (nC * vT);
+            CurrentBaseCollector = iR / bR + DiodeCurrent(iSc, VoltageBaseCollector, nC);
+            var gBci = iS * Slope(VoltageBaseCollector, nR) / (nR * vT * bR);
+            var gBc = gBci + iSc * Slope(VoltageBaseCollector, nC) / (nC * vT);
 
-            double iT = (iF - iR) / qB;
+            var iT = (iF - iR) / qB;
 
-            double gIf = gBei * bF;
-            double dQbdVbe = q1 * (qB / vAr + gIf / (iKf * Math.Sqrt(1 + 4 * q2)));
+            var gIf = gBei * bF;
+            var dQbdVbe = q1 * (qB / vAr + gIf / (iKf * Math.Sqrt(1 + 4 * q2)));
 
-            double gIr = gBci * bR;
-            double dQbdVbc = q1 * (qB / vAf + gIr / (iKr * Math.Sqrt(1 + 4 * q2)));
+            var gIr = gBci * bR;
+            var dQbdVbc = q1 * (qB / vAf + gIr / (iKr * Math.Sqrt(1 + 4 * q2)));
 
-            double gMf = 1 / qB * (gIf - iT * dQbdVbe);
-            double gMr = 1 / qB * (-gIr - iT * dQbdVbc);
+            var gMf = 1 / qB * (gIf - iT * dQbdVbe);
+            var gMr = 1 / qB * (-gIr - iT * dQbdVbc);
 
             // calculate terminal currents
-            iC = iT - 1 / bR * iR;
-            iE = -iT - 1 / bF * iF;
+            CurrentCollector = iT - 1 / bR * iR;
+            CurrentEmitter = -iT - 1 / bF * iF;
 
             return (gBe, gBc, gMf, gMr, iT);
         }

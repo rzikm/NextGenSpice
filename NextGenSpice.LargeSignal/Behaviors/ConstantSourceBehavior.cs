@@ -1,6 +1,5 @@
 ﻿using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
 using NextGenSpice.LargeSignal.Models;
 
 namespace NextGenSpice.LargeSignal.Behaviors
@@ -14,6 +13,11 @@ namespace NextGenSpice.LargeSignal.Behaviors
         public ConstantSourceBehavior(ConstantBehaviorParams parameters) : base(parameters)
         {
         }
+
+        /// <summary>
+        ///     Specifies how often the model should be updated.
+        /// </summary>
+        public override ModelUpdateMode UpdateMode => ModelUpdateMode.NoUpdate;
 
         /// <summary>
         ///     If true, the behavior is not constant over time and the value is refreshed every timestep.

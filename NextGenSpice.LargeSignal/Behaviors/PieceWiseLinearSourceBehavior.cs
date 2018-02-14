@@ -24,6 +24,11 @@ namespace NextGenSpice.LargeSignal.Behaviors
         }
 
         /// <summary>
+        ///     Specifies how often the model should be updated.
+        /// </summary>
+        public override ModelUpdateMode UpdateMode => ModelUpdateMode.TimePoint;
+
+        /// <summary>
         ///     If true, the behavior is not constant over time and the value is refreshed every timestep.
         /// </summary>
         public override bool IsTimeDependent => true;
@@ -57,7 +62,7 @@ namespace NextGenSpice.LargeSignal.Behaviors
             if (i >= timepoints.Count) return values[timepoints.Count - 1];
             if (i == 0)
             {
-                if (Math.Abs(timepoints[0]) < Double.Epsilon) return Parameters.InitialValue;
+                if (Math.Abs(timepoints[0]) < double.Epsilon) return Parameters.InitialValue;
                 return MathHelper.LinearInterpolation(Parameters.InitialValue, values[i], time / timepoints[i]);
             }
             return MathHelper.LinearInterpolation(values[i - 1], values[i],

@@ -62,9 +62,9 @@ namespace NextGenSpice.LargeSignal
             NodeVoltages = initialVoltages.ToArray();
             Elements = elements;
 
-            constElements = elements.Where(e => !e.IsNonlinear && !e.IsTimeDependent).ToArray();
-            linearTimeDependentElements = elements.Where(e => !e.IsNonlinear && e.IsTimeDependent).ToArray();
-            nonlinearElements = elements.Where(e => e.IsNonlinear).ToArray();
+            constElements = elements.Where(e => e.UpdateMode == ModelUpdateMode.NoUpdate).ToArray();
+            linearTimeDependentElements = elements.Where(e => e.UpdateMode == ModelUpdateMode.TimePoint).ToArray();
+            nonlinearElements = elements.Where(e => e.UpdateMode == ModelUpdateMode.Always).ToArray();
 
             elementLookup = elements.Where(e => !string.IsNullOrEmpty(e.Name)).ToDictionary(e => e.Name);
         }
@@ -98,6 +98,7 @@ namespace NextGenSpice.LargeSignal
         public int MaxDcPointIterations { get; set; } = 1000;
         public double MaxTimeStep { get; set; } = 1e-6;
 
+        // TODO: Remove this?
         public double TimestepAbsoluteEpsilon { get; set; }
         public double TimestepRelativeEpsilon { get; set; }
 
@@ -107,17 +108,6 @@ namespace NextGenSpice.LargeSignal
 
 
         public double CurrentTimePoint => context?.Time ?? 0.0;
-
-        public void Simulate(Action<double[]> callback)
-        {
-            EnsureInitialized();
-
-            while (true)
-            {
-                EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context));
-                callback(NodeVoltages);
-            }
-        }
 
         public void AdvanceInTime(double milliseconds)
         {

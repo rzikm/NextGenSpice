@@ -9,8 +9,6 @@ namespace NextGenSpice.LargeSignal.Behaviors
     /// </summary>
     public interface IInputSourceBehavior
     {
-        //TODO: consider using an enum like ModelUpdateMode.
-
         /// <summary>
         ///     If true, the behavior is not constant over time and the value is refreshed every timestep.
         /// </summary>
@@ -21,6 +19,11 @@ namespace NextGenSpice.LargeSignal.Behaviors
         ///     Newton-Raphson loop.
         /// </summary>
         bool HasDependency { get; }
+
+        /// <summary>
+        ///     Specifies how often the model should be updated.
+        /// </summary>
+        ModelUpdateMode UpdateMode { get; }
 
         /// <summary>
         ///     Gets input source value for given timepoint.

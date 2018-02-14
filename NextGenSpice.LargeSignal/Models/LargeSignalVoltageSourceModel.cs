@@ -19,23 +19,14 @@ namespace NextGenSpice.LargeSignal.Models
         }
 
         /// <summary>
+        ///     Specifies how often the model should be updated.
+        /// </summary>
+        public override ModelUpdateMode UpdateMode => Behavior.UpdateMode;
+
+        /// <summary>
         ///     Strategy class specifying behavior of this source.
         /// </summary>
         private IInputSourceBehavior Behavior { get; }
-
-        /// <summary>
-        ///     If true, the device behavior is not linear is not constant and the
-        ///     <see cref="ILargeSignalDeviceModel.ApplyModelValues" /> function is
-        ///     called every iteration during nonlinear solving.
-        /// </summary>
-        public override bool IsNonlinear => Behavior.HasDependency;
-
-        /// <summary>
-        ///     If true, the device behavior is not constant over time and the
-        ///     <see cref="ILargeSignalDeviceModel.ApplyModelValues" /> function is called
-        ///     every timestep.
-        /// </summary>
-        public override bool IsTimeDependent => Behavior.IsTimeDependent;
 
         /// <summary>
         ///     Notifies model class that DC bias for given timepoint is established. This method can be used for processing

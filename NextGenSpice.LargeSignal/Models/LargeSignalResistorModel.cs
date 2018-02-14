@@ -14,18 +14,9 @@ namespace NextGenSpice.LargeSignal.Models
         }
 
         /// <summary>
-        ///     If true, the device behavior is not linear is not constant and the
-        ///     <see cref="ILargeSignalDeviceModel.ApplyModelValues" /> function is
-        ///     called every iteration during nonlinear solving.
+        ///     Specifies how often the model should be updated.
         /// </summary>
-        public override bool IsNonlinear => false;
-
-        /// <summary>
-        ///     If true, the device behavior is not constant over time and the
-        ///     <see cref="ILargeSignalDeviceModel.ApplyModelValues" /> function is called
-        ///     every timestep.
-        /// </summary>
-        public override bool IsTimeDependent => false;
+        public override ModelUpdateMode UpdateMode => ModelUpdateMode.NoUpdate;
 
         /// <summary>
         ///     Resistance of the device in ohms.

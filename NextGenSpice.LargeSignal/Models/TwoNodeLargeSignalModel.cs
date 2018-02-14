@@ -42,12 +42,12 @@ namespace NextGenSpice.LargeSignal.Models
         ///     terminal element.
         /// </summary>
         /// <returns>IPrintValueProvider for specified attribute.</returns>
-        public override IEnumerable<IDeviceStatsProvider> GetPrintValueProviders()
+        public override IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders()
         {
             return new[]
             {
                 new SimpleDeviceStatsProvider("I", () => Current),
-                new SimpleDeviceStatsProvider("V", () => Voltage),
+                new SimpleDeviceStatsProvider("V", () => Voltage)
             };
         }
     }

@@ -23,18 +23,9 @@ namespace NextGenSpice.LargeSignal.Models
         protected TDefinitionElement DefinitionElement { get; }
 
         /// <summary>
-        ///     If true, the device behavior is not constant over time and the
-        ///     <see cref="ILargeSignalDeviceModel.ApplyModelValues" /> function is called
-        ///     every timestep.
+        ///     Specifies how often the model should be updated.
         /// </summary>
-        public abstract bool IsTimeDependent { get; }
-
-        /// <summary>
-        ///     If true, the device behavior is not linear is not constant and the
-        ///     <see cref="ILargeSignalDeviceModel.ApplyModelValues" /> function is
-        ///     called every iteration during nonlinear solving.
-        /// </summary>
-        public abstract bool IsNonlinear { get; }
+        public abstract ModelUpdateMode UpdateMode { get; }
 
         /// <summary>
         ///     Name identifier of the corresponding element.
@@ -84,6 +75,6 @@ namespace NextGenSpice.LargeSignal.Models
         ///     terminal element.
         /// </summary>
         /// <returns>IPrintValueProvider for specified attribute.</returns>
-        public abstract IEnumerable<IDeviceStatsProvider> GetPrintValueProviders();
+        public abstract IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders();
     }
 }

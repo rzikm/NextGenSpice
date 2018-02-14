@@ -156,7 +156,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
         public override IEnumerable<ErrorInfo> Initialize(LargeSignalCircuitModel circuitModel)
         {
             var model = circuitModel.GetElement(name);
-            provider = model.GetPrintValueProviders().SingleOrDefault(pr => pr.StatName == stat);
+            provider = model.GetDeviceStatsProviders().SingleOrDefault(pr => pr.StatName == stat);
             var errorInfos = provider == null
                 ? new[]
                 {

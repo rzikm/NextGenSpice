@@ -46,7 +46,7 @@ namespace NextGenSpice.Parser.Statements.Simulation
                
                 foreach (var element in model.Elements)
                 {
-                    var providers = element.GetPrintValueProviders();
+                    var providers = element.GetDeviceStatsProviders();
                     if (providers.Any()) output.WriteLine(); // separate from previous data
                     foreach (var provider in providers)
                     {

@@ -25,7 +25,7 @@ namespace NextGenSpice.LargeSignal.Models
         }
 
         /// <summary>
-        /// Name of the stat of this provider. That is e.g. "I" for two current throught a two-node device.
+        ///     Name of the stat of this provider. That is e.g. "I" for two current throught a two-node device.
         /// </summary>
         public string StatName { get; }
     }

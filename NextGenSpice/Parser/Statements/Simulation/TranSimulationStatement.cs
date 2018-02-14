@@ -71,7 +71,7 @@ namespace NextGenSpice.Parser.Statements.Simulation
 
             foreach (var element in model.Elements)
             {
-                printers.AddRange(element.GetPrintValueProviders().Select(pr => new ElementPrintStatement(pr.StatName, element.Name, new Token())));
+                printers.AddRange(element.GetDeviceStatsProviders().Select(pr => new ElementPrintStatement(pr.StatName, element.Name, new Token())));
             }
         }
 

@@ -33,18 +33,10 @@ namespace NextGenSpice.LargeSignal.Models
         public IReadOnlyList<ILargeSignalDeviceModel> Elements => elements;
 
         /// <summary>
-        ///     If true, the device behavior is not linear is not constant and the
-        ///     <see cref="ILargeSignalDeviceModel.ApplyModelValues" /> function is
-        ///     called every iteration during nonlinear solving.
+        ///     Specifies how often the model should be updated.
         /// </summary>
-        public override bool IsNonlinear => false;
-
-        /// <summary>
-        ///     If true, the device behavior is not constant over time and the
-        ///     <see cref="ILargeSignalDeviceModel.ApplyModelValues" /> function is called
-        ///     every timestep.
-        /// </summary>
-        public override bool IsTimeDependent => false;
+        public override ModelUpdateMode UpdateMode =>
+            elements.Max(e => e.UpdateMode); // act like the most updating element.
 
         /// <summary>
         ///     Notifies model class that DC bias for given timepoint is established. This method can be used for processing
@@ -67,7 +59,7 @@ namespace NextGenSpice.LargeSignal.Models
         ///     terminal element.
         /// </summary>
         /// <returns>IPrintValueProvider for specified attribute.</returns>
-        public override IEnumerable<IDeviceStatsProvider> GetPrintValueProviders()
+        public override IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders()
         {
             return null; // no stats for subcircuit
         }

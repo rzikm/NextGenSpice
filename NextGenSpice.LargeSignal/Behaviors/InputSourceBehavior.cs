@@ -29,6 +29,11 @@ namespace NextGenSpice.LargeSignal.Behaviors
         public abstract double GetValue(ISimulationContext context);
 
         /// <summary>
+        ///     Specifies how often the model should be updated.
+        /// </summary>
+        public abstract ModelUpdateMode UpdateMode { get; }
+
+        /// <summary>
         ///     If true, the behavior is not constant over time and the value is refreshed every timestep.
         /// </summary>
         public abstract bool IsTimeDependent { get; }

@@ -20,15 +20,15 @@ namespace NextGenSpice.LargeSignal.Models
         private readonly double vt; // thermal voltage based on diode model values.
         private int capacitorBranch; // variable for capacitor branch current
 
+        private LargeSignalCapacitorStamper capacitorStamper;
+
         private double gmin; // minimal slope of the I-V characteristic of the diode.
 
         private double ic; // current through the capacitor that models junction capacitance
-        private double vc; // voltage across the capacitor that models junction capacitance
 
         private bool initialConditionCapacitor;
         private bool initialConditionDiode;
-
-        private LargeSignalCapacitorStamper capacitorStamper;
+        private double vc; // voltage across the capacitor that models junction capacitance
 
         public LargeSignalDiodeModel(DiodeElement definitionElement) : base(definitionElement)
         {
@@ -59,18 +59,9 @@ namespace NextGenSpice.LargeSignal.Models
         private IIntegrationMethod IntegrationMethod { get; }
 
         /// <summary>
-        ///     If true, the device behavior is not linear is not constant and the
-        ///     <see cref="ILargeSignalDeviceModel.ApplyModelValues" /> function is
-        ///     called every iteration during nonlinear solving.
+        ///     Specifies how often the model should be updated.
         /// </summary>
-        public override bool IsNonlinear => true;
-
-        /// <summary>
-        ///     If true, the device behavior is not constant over time and the
-        ///     <see cref="ILargeSignalDeviceModel.ApplyModelValues" /> function is called
-        ///     every timestep.
-        /// </summary>
-        public override bool IsTimeDependent => true;
+        public override ModelUpdateMode UpdateMode => ModelUpdateMode.Always;
 
         /// <summary>
         ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
@@ -115,9 +106,12 @@ namespace NextGenSpice.LargeSignal.Models
                 vd = DefinitionElement.VoltageHint;
                 initialConditionDiode = false; // use hint only for the very first iteration
             }
-            else vd -= Parameters.SeriesResistance * Current;
-            
-            ApplyLinearizedModel(equations, context, vd); 
+            else
+            {
+                vd -= Parameters.SeriesResistance * Current;
+            }
+
+            ApplyLinearizedModel(equations, context, vd);
         }
 
         /// <summary>
@@ -141,7 +135,7 @@ namespace NextGenSpice.LargeSignal.Models
 
             if (initialConditionCapacitor) // initial condition
                 capacitorStamper.StampInitialCondition(equations, null);
-            else capacitorStamper.Stamp(equations, cieq, cgeq); 
+            else capacitorStamper.Stamp(equations, cieq, cgeq);
 
             Voltage = vd;
             Current = id + ic;

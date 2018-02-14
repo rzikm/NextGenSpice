@@ -14,8 +14,13 @@ namespace NextGenSpiceTest
 
         public bool IsOn { get; set; } = true;
 
-        public override bool IsNonlinear => true;
-        public override bool IsTimeDependent => true;
+        /// <summary>
+        ///     Specifies how often the model should be updated.
+        /// </summary>
+        public override ModelUpdateMode UpdateMode
+        {
+            get => ModelUpdateMode.TimePoint;
+        }
 
         public void UpdateTimeDependentModel(ISimulationContext context)
         {

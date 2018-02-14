@@ -16,16 +16,9 @@ namespace NextGenSpice.LargeSignal.Models
         string Name { get; }
 
         /// <summary>
-        ///     If true, the device behavior is not linear is not constant and the <see cref="ApplyModelValues" /> function is
-        ///     called every iteration during nonlinear solving.
+        ///     Specifies how often the model should be updated.
         /// </summary>
-        bool IsNonlinear { get; }
-
-        /// <summary>
-        ///     If true, the device behavior is not constant over time and the <see cref="ApplyModelValues" /> function is called
-        ///     every timestep.
-        /// </summary>
-        bool IsTimeDependent { get; }
+        ModelUpdateMode UpdateMode { get; }
 
         /// <summary>
         ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
@@ -58,9 +51,9 @@ namespace NextGenSpice.LargeSignal.Models
         void OnDcBiasEstablished(ISimulationContext context);
 
         /// <summary>
-        ///     Gets provider instances for this device stats.
+        ///     Gets stats provider instances for this device.
         /// </summary>
         /// <returns>IPrintValueProviders for specified attribute.</returns>
-        IEnumerable<IDeviceStatsProvider> GetPrintValueProviders();
+        IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders();
     }
 }
