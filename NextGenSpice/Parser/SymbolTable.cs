@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using NextGenSpice.Parser.Statements.Models;
 
 namespace NextGenSpice.Parser
 {
@@ -11,26 +10,35 @@ namespace NextGenSpice.Parser
     /// </summary>
     public class SymbolTable
     {
-        private readonly Dictionary<Type, Dictionary<string, object>> models;
+        private readonly Stack<StackEntry> scopes;
+
+        private Dictionary<Type, Dictionary<string, object>> models;
+
 
         public SymbolTable()
         {
             DefinedElements = new HashSet<string>();
 
             models = new Dictionary<Type, Dictionary<string, object>>();
+            scopes = new Stack<StackEntry>();
 
             NodeIndices = new Dictionary<string, int> {["0"] = 0}; // enforce ground node on index 0
         }
 
         /// <summary>
+        ///     How deep into nested subcircuit are we during parsing. 0 means that we are in the global scope.
+        /// </summary>
+        public int SubcircuitDepth => scopes.Count;
+
+        /// <summary>
         ///     Set of all device element identifiers.
         /// </summary>
-        public ISet<string> DefinedElements { get; }
+        public ISet<string> DefinedElements { get; private set; }
 
         /// <summary>
         ///     Set of all node identifiers with associated ids that will be used during simulation.
         /// </summary>
-        public IDictionary<string, int> NodeIndices { get; }
+        public IDictionary<string, int> NodeIndices { get; private set; }
 
         /// <summary>
         ///     Gets the model parameters of given type associated with given name.
@@ -41,15 +49,31 @@ namespace NextGenSpice.Parser
         /// <returns>True if given model was found, false otherwise.</returns>
         public bool TryGetModel(Type modelType, string name, out object model)
         {
+            // search current scope;
+            var succ = TryGetModel(modelType, name, out model, models);
+
+            if (!succ) // if not found, search upper scopes
+                foreach (var frame in scopes)
+                {
+                    succ = TryGetModel(modelType, name, out model, frame.Models);
+                    if (succ) break; // model found
+                }
+
+            return succ;
+        }
+
+        private bool TryGetModel(Type modelType, string name, out object model,
+            Dictionary<Type, Dictionary<string, object>> modelSet)
+        {
             model = null;
-            if (!models.ContainsKey(modelType)) return false;
-            return models[modelType].TryGetValue(name, out model);
+            if (!modelSet.ContainsKey(modelType)) return false;
+            return modelSet[modelType].TryGetValue(name, out model);
         }
 
         /// <summary>
         ///     Gets the model parameters of given type associated with given name.
         /// </summary>
-        /// <typeparam T="modelType">Type of the model parameters.</typeparam>
+        /// <typeparam name="T">Type of the model parameters.</typeparam>
         /// <param name="name">Name of the model.</param>
         /// <param name="model">If this function returns true, contains the found model, otherwise null.</param>
         /// <returns>True if given model was found, false otherwise.</returns>
@@ -63,7 +87,7 @@ namespace NextGenSpice.Parser
         /// <summary>
         ///     Gets model of given type associated with given name.
         /// </summary>
-        /// <param name="T">Type of the model parameters.</param>
+        /// <param name="modelType">Type of the model parameters.</param>
         /// <param name="name">Name of the model.</param>
         /// <returns>The model.</returns>
         public object GetModel(Type modelType, string name)
@@ -114,7 +138,6 @@ namespace NextGenSpice.Parser
         /// </summary>
         /// <param name="symbol"></param>
         /// <returns></returns>
-        //TODO: consider including models => nodes/elements/models(even for different devices) shall have unique names
         private bool IsDefined(string symbol)
         {
             return DefinedElements.Contains(symbol) || NodeIndices.ContainsKey(symbol);
@@ -158,6 +181,50 @@ namespace NextGenSpice.Parser
         public IEnumerable<string> GetNodeNames(IEnumerable<int> indexes)
         {
             return indexes.Select(id => NodeIndices.First(kvp => kvp.Value == id).Key);
+        }
+
+        /// <summary>
+        ///     Enters a new scope for managing entries inside subcircuit.
+        /// </summary>
+        public void EnterSubcircuit()
+        {
+            scopes.Push(new StackEntry(DefinedElements, NodeIndices, models));
+
+            DefinedElements = new HashSet<string>();
+            NodeIndices = new Dictionary<string, int> {["0"] = 0};
+            models = new Dictionary<Type, Dictionary<string, object>>();
+        }
+
+        /// <summary>
+        ///     Exits current subcircuit scope and returns to upper scope.
+        /// </summary>
+        public void ExitSubcircuit()
+        {
+            var frame = scopes.Pop();
+            (DefinedElements, NodeIndices, models) = frame;
+        }
+
+        private struct StackEntry
+        {
+            public StackEntry(ISet<string> definedElements, IDictionary<string, int> nodeIndices,
+                Dictionary<Type, Dictionary<string, object>> models)
+            {
+                DefinedElements = definedElements;
+                NodeIndices = nodeIndices;
+                Models = models;
+            }
+
+            public ISet<string> DefinedElements { get; }
+            public IDictionary<string, int> NodeIndices { get; }
+            public Dictionary<Type, Dictionary<string, object>> Models { get; }
+
+            public void Deconstruct(out ISet<string> definedElements, out IDictionary<string, int> nodeIndices,
+                out Dictionary<Type, Dictionary<string, object>> models)
+            {
+                definedElements = DefinedElements;
+                nodeIndices = NodeIndices;
+                models = Models;
+            }
         }
     }
 }

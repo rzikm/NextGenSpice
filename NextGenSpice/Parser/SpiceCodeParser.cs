@@ -5,6 +5,7 @@ using System.Linq;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.Parser.Statements;
+using NextGenSpice.Parser.Statements.Deferring;
 using NextGenSpice.Parser.Statements.Devices;
 using NextGenSpice.Parser.Statements.Simulation;
 using NextGenSpice.Utils;
@@ -22,6 +23,8 @@ namespace NextGenSpice.Parser
         private readonly PrintStatementProcessor printProcessor;
         private readonly IDictionary<string, IStatementProcessor> statementProcessors;
 
+        private readonly IDictionary<string, IStatementProcessor> insubcircuitStatementProcessors;
+
         public SpiceCodeParser()
         {
             modelProcessor = new ModelStatementProcessor();
@@ -32,6 +35,10 @@ namespace NextGenSpice.Parser
             {
                 [modelProcessor.Discriminator] = modelProcessor,
                 [printProcessor.Discriminator] = printProcessor
+            };
+            insubcircuitStatementProcessors = new Dictionary<string, IStatementProcessor>
+            {
+                [modelProcessor.Discriminator] = modelProcessor
             };
         }
 
@@ -86,13 +93,14 @@ namespace NextGenSpice.Parser
                 var c = firstToken.Value[0];
 
                 if (char.IsLetter(c)) // possible element statement
-                    ProcessElement(c, tokens, ctx);
+                    ProcessElement(tokens, ctx, elementProcessors);
                 else if (c != '.') // syntactic error
                     ctx.Errors.Add(firstToken.ToErrorInfo($"Unexpected character: '{c}'."));
-                else if (tokens[0].Value == ".END")
+                else if (tokens[0].Value == ".END" && tokens.Length == 1)
                     break; // end parsing now
                 else // other .[keyword] statement
-                    ProcessStatement(tokens, ctx);
+                // if currently inside a subcircuit definition, use different statement processors
+                    ProcessStatement(tokens, ctx, statementProcessors);
             }
 
             return ApplyStatements(ctx);
@@ -115,11 +123,10 @@ namespace NextGenSpice.Parser
 
         private static void ProcessDeferredStatements(ParsingContext ctx)
         {
-            //TODO: Use some ordering of statements and sort them beforehand (=> linear complexity)
-
             // repeatedly try to process all statements until no more statements can be processed in the iteration
+            // these repetitions are there to handle yet unknown statements with dependencies on later statements
 
-            var deferred = ctx.DeferredStatements.ToList();
+            var deferred = ctx.DeferredStatements.OrderBy(GetDeferredStatementPriority).ToList();
             do
             {
                 ctx.DeferredStatements.Clear();
@@ -132,6 +139,16 @@ namespace NextGenSpice.Parser
                     else
                         deferred.Add(statement);
             } while (deferred.Count < ctx.DeferredStatements.Count);
+        }
+
+        private static int GetDeferredStatementPriority(DeferredStatement statement)
+        {
+            switch (statement)
+            {
+                case SimpleElementStatement _: return 1;
+                case DeferredPrintStatement _: return 50; // process these last
+                default: return 20; // includes generic ModeledElementStatement<>
+            }
         }
 
         private static ElectricCircuitDefinition TryCreateCircuitDefinition(ParsingContext ctx)
@@ -172,23 +189,24 @@ namespace NextGenSpice.Parser
             return circuitDefinition;
         }
 
-        private void ProcessStatement(Token[] tokens, ParsingContext ctx)
+        private void ProcessStatement(Token[] tokens, ParsingContext ctx, IDictionary<string, IStatementProcessor> processors)
         {
             // find processor that can handle this statement
             var discriminator = tokens[0].Value;
-            if (statementProcessors.TryGetValue(discriminator, out var proc))
+            if (processors.TryGetValue(discriminator, out var proc))
                 proc.Process(tokens, ctx);
             else // unknown statement
-                ctx.Errors.Add(tokens[0].ToErrorInfo($"Statement invalid or not implemented: {discriminator}."));
+                ctx.Errors.Add(tokens[0].ToErrorInfo($"Statement invalid: '{string.Join(" ", tokens.Select(t => t.Value))}'."));
         }
 
-        private void ProcessElement(char discriminator, Token[] tokens, ParsingContext ctx)
+        private void ProcessElement(Token[] tokens, ParsingContext ctx, IDictionary<char, IElementStatementProcessor> elementStatementProcessors)
         {
+            var discriminator = tokens[0].Value[0];
             // find processor that can handle this element
-            if (elementProcessors.TryGetValue(discriminator, out var proc))
+            if (elementStatementProcessors.TryGetValue(discriminator, out var proc))
                 proc.Process(tokens, ctx);
             else // unknown element
-                ctx.Errors.Add(tokens[0].ToErrorInfo($"Element type invalid or not implemented: {discriminator}."));
+                ctx.Errors.Add(tokens[0].ToErrorInfo($"Element type invalid: '{string.Join(" ", tokens.Select(t => t.Value))}'."));
         }
     }
 }

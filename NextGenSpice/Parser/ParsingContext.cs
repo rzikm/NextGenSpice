@@ -51,5 +51,10 @@ namespace NextGenSpice.Parser
         ///     Builder responsible for creating the circuit definition from the statements.
         /// </summary>
         public CircuitBuilder CircuitBuilder { get; }
+
+        /// <summary>
+        ///     How many nested subcircuits are currently being parsed.
+        /// </summary>
+        public int SubcircuitLevel { get; set; }
     }
 }
