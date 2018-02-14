@@ -73,7 +73,6 @@ namespace NextGenSpice.Parser
         /// <returns></returns>
         public ParserResult Parse(ITokenStream stream)
         {
-            // TODO: .END statement
             // TODO: Subcircuits
 
             Token[] tokens;
@@ -90,7 +89,9 @@ namespace NextGenSpice.Parser
                     ProcessElement(c, tokens, ctx);
                 else if (c != '.') // syntactic error
                     ctx.Errors.Add(firstToken.ToErrorInfo($"Unexpected character: '{c}'."));
-                else // .[keyword] statement
+                else if (tokens[0].Value == ".END")
+                    break; // end parsing now
+                else // other .[keyword] statement
                     ProcessStatement(tokens, ctx);
             }
 
