@@ -11,34 +11,52 @@ namespace NextGenSpice.Parser
     public class SymbolTable
     {
         private readonly Stack<StackEntry> scopes;
-
-        private Dictionary<Type, Dictionary<string, object>> models;
-
+        private StackEntry defaultsScope;
 
         public SymbolTable()
         {
-            DefinedElements = new HashSet<string>();
+            var definedElements = new HashSet<string>();
+            var models = new Dictionary<Type, Dictionary<string, object>>();
+            var nodeIndices = new Dictionary<string, int> {["0"] = 0}; // enforce ground node on index 0
 
-            models = new Dictionary<Type, Dictionary<string, object>>();
             scopes = new Stack<StackEntry>();
-
-            NodeIndices = new Dictionary<string, int> {["0"] = 0}; // enforce ground node on index 0
+            scopes.Push(new StackEntry(definedElements, nodeIndices, models));
         }
+
+        private Dictionary<Type, Dictionary<string, object>> Models => StackTop.Models;
+
+        private StackEntry StackTop => scopes.Peek();
 
         /// <summary>
         ///     How deep into nested subcircuit are we during parsing. 0 means that we are in the global scope.
         /// </summary>
-        public int SubcircuitDepth => scopes.Count;
+        public int SubcircuitDepth => scopes.Count - 1;
 
         /// <summary>
         ///     Set of all device element identifiers.
         /// </summary>
-        public ISet<string> DefinedElements { get; private set; }
+        public ISet<string> DefinedElements => StackTop.DefinedElements;
 
         /// <summary>
         ///     Set of all node identifiers with associated ids that will be used during simulation.
         /// </summary>
-        public IDictionary<string, int> NodeIndices { get; private set; }
+        public IDictionary<string, int> NodeIndices => StackTop.NodeIndices;
+
+        public void FreezeDefaults()
+        {
+            if (defaultsScope.Models != null) throw new InvalidOperationException("Already frozen");
+            defaultsScope = scopes.Pop();
+            scopes.Push(DuplicateStackEntry(defaultsScope));
+        }
+
+        private StackEntry DuplicateStackEntry(StackEntry stackEntry)
+        {
+            return new StackEntry(
+                new HashSet<string>(stackEntry.DefinedElements),
+                new Dictionary<string, int>(stackEntry.NodeIndices),
+                stackEntry.Models.ToDictionary(kvp => kvp.Key,
+                    kvp => kvp.Value.ToDictionary(kp => kp.Key, kp => kp.Value)));
+        }
 
         /// <summary>
         ///     Gets the model parameters of given type associated with given name.
@@ -49,25 +67,9 @@ namespace NextGenSpice.Parser
         /// <returns>True if given model was found, false otherwise.</returns>
         public bool TryGetModel(Type modelType, string name, out object model)
         {
-            // search current scope;
-            var succ = TryGetModel(modelType, name, out model, models);
-
-            if (!succ) // if not found, search upper scopes
-                foreach (var frame in scopes)
-                {
-                    succ = TryGetModel(modelType, name, out model, frame.Models);
-                    if (succ) break; // model found
-                }
-
-            return succ;
-        }
-
-        private bool TryGetModel(Type modelType, string name, out object model,
-            Dictionary<Type, Dictionary<string, object>> modelSet)
-        {
             model = null;
-            if (!modelSet.ContainsKey(modelType)) return false;
-            return modelSet[modelType].TryGetValue(name, out model);
+            if (!Models.ContainsKey(modelType)) return false;
+            return Models[modelType].TryGetValue(name, out model);            
         }
 
         /// <summary>
@@ -116,10 +118,10 @@ namespace NextGenSpice.Parser
         /// <param name="model">If this function returns true, contains the found model, otherwise null.</param>
         public void AddModel(Type modelType, object model, string name)
         {
-            if (!models.ContainsKey(modelType))
-                models[modelType] = new Dictionary<string, object>();
+            if (!Models.ContainsKey(modelType))
+                Models[modelType] = new Dictionary<string, object>();
 
-            models[modelType].Add(name, model);
+            Models[modelType].Add(name, model);
         }
 
         /// <summary>
@@ -188,11 +190,8 @@ namespace NextGenSpice.Parser
         /// </summary>
         public void EnterSubcircuit()
         {
-            scopes.Push(new StackEntry(DefinedElements, NodeIndices, models));
-
-            DefinedElements = new HashSet<string>();
-            NodeIndices = new Dictionary<string, int> {["0"] = 0};
-            models = new Dictionary<Type, Dictionary<string, object>>();
+            if (defaultsScope.Models == null) throw new InvalidOperationException("Symbol table defaults must be frozen first");
+            scopes.Push(DuplicateStackEntry(defaultsScope));
         }
 
         /// <summary>
@@ -200,8 +199,7 @@ namespace NextGenSpice.Parser
         /// </summary>
         public void ExitSubcircuit()
         {
-            var frame = scopes.Pop();
-            (DefinedElements, NodeIndices, models) = frame;
+            scopes.Pop();
         }
 
         private struct StackEntry
