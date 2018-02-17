@@ -32,16 +32,5 @@ namespace NextGenSpice.LargeSignal.Behaviors
         ///     Specifies how often the model should be updated.
         /// </summary>
         public abstract ModelUpdateMode UpdateMode { get; }
-
-        /// <summary>
-        ///     If true, the behavior is not constant over time and the value is refreshed every timestep.
-        /// </summary>
-        public abstract bool IsTimeDependent { get; }
-
-        /// <summary>
-        ///     If true, the behavior depends on another element and the source value is updated in every iteration of
-        ///     Newton-Raphson loop.
-        /// </summary>
-        public abstract bool HasDependency { get; }
     }
 }

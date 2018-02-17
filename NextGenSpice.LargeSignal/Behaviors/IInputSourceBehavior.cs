@@ -10,17 +10,6 @@ namespace NextGenSpice.LargeSignal.Behaviors
     public interface IInputSourceBehavior
     {
         /// <summary>
-        ///     If true, the behavior is not constant over time and the value is refreshed every timestep.
-        /// </summary>
-        bool IsTimeDependent { get; }
-
-        /// <summary>
-        ///     If true, the behavior depends on another element and the source value is updated in every iteration of
-        ///     Newton-Raphson loop.
-        /// </summary>
-        bool HasDependency { get; }
-
-        /// <summary>
         ///     Specifies how often the model should be updated.
         /// </summary>
         ModelUpdateMode UpdateMode { get; }

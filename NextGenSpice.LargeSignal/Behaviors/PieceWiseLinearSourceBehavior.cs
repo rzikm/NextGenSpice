@@ -29,17 +29,6 @@ namespace NextGenSpice.LargeSignal.Behaviors
         public override ModelUpdateMode UpdateMode => ModelUpdateMode.TimePoint;
 
         /// <summary>
-        ///     If true, the behavior is not constant over time and the value is refreshed every timestep.
-        /// </summary>
-        public override bool IsTimeDependent => true;
-
-        /// <summary>
-        ///     If true, the behavior depends on another element and the source value is updated in every iteration of
-        ///     Newton-Raphson loop.
-        /// </summary>
-        public override bool HasDependency => false;
-
-        /// <summary>
         ///     Gets input source value for given timepoint.
         /// </summary>
         /// <param name="context"></param>
