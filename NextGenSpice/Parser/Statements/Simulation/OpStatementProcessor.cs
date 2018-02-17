@@ -42,14 +42,7 @@ namespace NextGenSpice.Parser.Statements.Simulation
         /// </summary>
         protected override void UseParam()
         {
-            Dictionary<int, string> names = new Dictionary<int, string>();
-
-            for (int i = 0; i < Context.CircuitBuilder.NodeCount; i++)
-            {
-                names[i] = Context.SymbolTable.GetNodeNames(new[] {i}).Single();
-            }
-
-            Context.SimulationStatements.Add(new OpSimulationStatement(Mapper.Target, names));
+            Context.SimulationStatements.Add(new OpSimulationStatement(Mapper.Target, Context.SymbolTable.GetNodeIdMappings()));
         }
     }
 }

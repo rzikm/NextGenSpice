@@ -107,5 +107,11 @@ namespace NextGenSpice.Parser
         /// <param name="name">Name of the subcircuit.</param>
         /// <param name="subcircuit">The subcircuit deinition.</param>
         void AddSubcircuit(string name, SubcircuitElement subcircuit);
+
+        /// <summary>
+        ///     Returns dictionary with mappings from node id to their respective names.
+        /// </summary>
+        /// <returns></returns>
+        IDictionary<int, string> GetNodeIdMappings();
     }
 }

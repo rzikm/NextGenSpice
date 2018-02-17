@@ -13,10 +13,10 @@ namespace NextGenSpice.Parser.Statements.Simulation
     /// </summary>
     public class OpSimulationStatement : ISimulationStatement
     {
-        private readonly Dictionary<int, string> nodeNames;
+        private readonly IDictionary<int, string> nodeNames;
         private readonly OpSimulationParams param;
 
-        public OpSimulationStatement(OpSimulationParams param, Dictionary<int, string> nodeNames)
+        public OpSimulationStatement(OpSimulationParams param, IDictionary<int, string> nodeNames)
         {
             this.param = param;
             this.nodeNames = nodeNames;

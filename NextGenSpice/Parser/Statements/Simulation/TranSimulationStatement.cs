@@ -17,10 +17,10 @@ namespace NextGenSpice.Parser.Statements.Simulation
     /// </summary>
     public class TranSimulationStatement : ISimulationStatement
     {
-        private readonly Dictionary<int, string> nodeNames;
+        private readonly IDictionary<int, string> nodeNames;
         private readonly TranSimulationParams param;
 
-        public TranSimulationStatement(TranSimulationParams param, Dictionary<int, string> nodeNames)
+        public TranSimulationStatement(TranSimulationParams param, IDictionary<int, string> nodeNames)
         {
             this.param = param;
             this.nodeNames = nodeNames;

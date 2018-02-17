@@ -122,14 +122,9 @@ namespace NextGenSpice.Parser.Statements
                 {
                     // translate node indexes to node names used in the input file
                     var message =
-                        $"No path connecting node sets {string.Join(", ", e.Components.Select(c => $"({string.Join(", ", Context.SymbolTable.GetNodeNames(c))})"))}.";
+                        $"'{name.Value}' - No path connecting node sets {string.Join(", ", e.Components.Select(c => $"({string.Join(", ", Context.SymbolTable.GetNodeNames(c))})"))}.";
 
-                    Context.Errors.Add(new ErrorInfo
-                    {
-                        LineColumn = 0, // no coordinates shall be displayed when printing this error
-                        LineNumber = 0,
-                        Messsage = message
-                    });
+                    Context.Errors.Add(name.ToErrorInfo(message));
                 }
             }
 

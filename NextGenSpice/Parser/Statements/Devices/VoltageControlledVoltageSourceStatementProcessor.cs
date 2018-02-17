@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Parser.Statements.Deferring;
 
@@ -31,14 +30,9 @@ namespace NextGenSpice.Parser.Statements.Devices
             if (Errors == 0)
                 Context.DeferredStatements.Add(new SimpleElementDeferredStatement(builder =>
                     builder.AddElement(
-                        nodes.Take(2).ToArray(),
-                        new VoltageSourceElement(
-                            new VoltageControlledBehaviorParams
-                            {
-                                Gain = gain,
-                                ReferenceAnode = nodes[2],
-                                ReferenceCathode = nodes[3]
-                            },
+                        nodes,
+                        new VoltageControlledVoltageSourceElement(
+                            gain,
                             name
                         )
                     )

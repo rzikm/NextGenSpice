@@ -2,18 +2,17 @@
 using System.Linq;
 using NextGenSpice.LargeSignal;
 using NextGenSpice.Parser;
+using NextGenSpiceTest;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace NextGenSpiceParserTest
 {
-    public class SubcircuitTests
+    public class SubcircuitTests : TracedTestBase
     {
-        private ITestOutputHelper output;
 
-        public SubcircuitTests(ITestOutputHelper output)
+        public SubcircuitTests(ITestOutputHelper output) : base(output)
         {
-            this.output = output;
         }
 
 
@@ -136,7 +135,7 @@ v 1 22 5         *oops forgot to connect to node 2
         {
             SpiceCodeParser parser = new SpiceCodeParser();
             var result = parser.Parse(new TokenStream(new StringReader(code)));
-            output.WriteLine(string.Join("\n", result.Errors));
+            Output.WriteLine(string.Join("\n", result.Errors));
             return result;
         }
 
@@ -153,7 +152,7 @@ d1 1 2 D
 x1 1 2 voltageAlias
 
 .subckt voltageAlias 1 2
-v1 1 2 5v
+i1 1 2 5v
 .ends
 
 .ends
@@ -164,7 +163,7 @@ v1 1 2 5v
 v1 1 0 5V
 r1 1 2 5OHM
 d-x1.d1 0 1 D
-v-x1.x1.v1 0 1 5v
+i-x1.x1.v1 0 1 5v
 ").CircuitDefinition.GetLargeSignalModel();
             v2.EstablishDcBias();
 

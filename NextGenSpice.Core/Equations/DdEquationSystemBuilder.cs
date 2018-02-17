@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Numerics;
 using Numerics.Precision;
@@ -50,6 +51,7 @@ namespace NextGenSpice.Core.Equations
         /// <param name="value">The value to be added to the coefficients.</param>
         public void AddMatrixEntry(int row, int column, double value)
         {
+            if (double.IsNaN(value)) throw new InvalidOperationException("Cannot insert NaN");
             matrix[row][column] += value;
         }
 
@@ -60,6 +62,7 @@ namespace NextGenSpice.Core.Equations
         /// <param name="value">The value.</param>
         public void AddRightHandSideEntry(int index, double value)
         {
+            if (double.IsNaN(value)) throw new InvalidOperationException("Cannot insert NaN");
             rhs[index] += value;
         }
 

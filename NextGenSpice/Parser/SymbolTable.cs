@@ -244,6 +244,15 @@ namespace NextGenSpice.Parser
         }
 
         /// <summary>
+        ///     Returns dictionary with mappings from node id to their respective names.
+        /// </summary>
+        /// <returns></returns>
+        public IDictionary<int, string> GetNodeIdMappings()
+        {
+            return NodeIndices.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
+        }
+
+        /// <summary>
         ///     Exits current subcircuit scope and returns to upper scope.
         /// </summary>
         public void ExitSubcircuit()

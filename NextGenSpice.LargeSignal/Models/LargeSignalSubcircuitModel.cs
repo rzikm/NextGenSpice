@@ -61,7 +61,7 @@ namespace NextGenSpice.LargeSignal.Models
         /// <returns>IPrintValueProvider for specified attribute.</returns>
         public override IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders()
         {
-            return null; // no stats for subcircuit
+            return Enumerable.Empty<IDeviceStatsProvider>(); // no stats for subcircuit
         }
 
         /// <summary>
@@ -101,6 +101,20 @@ namespace NextGenSpice.LargeSignal.Models
 
             foreach (var model in elements)
                 model.ApplyModelValues(redirectingEquationEditor, context);
+        }
+
+        /// <summary>
+        ///     Applies model values before first DC bias has been established for the first time.
+        /// </summary>
+        /// <param name="equations">Current linearized circuit equation system.</param>
+        /// <param name="context">Context of current simulation.</param>
+        public override void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
+        {
+            redirectingEquationEditor.TrueEquationEditor = equations;
+            subContext.TrueContext = context;
+
+            foreach (var model in elements)
+                model.ApplyInitialCondition(redirectingEquationEditor, context);
         }
 
         /// <summary>
