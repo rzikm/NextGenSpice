@@ -23,23 +23,43 @@ namespace NextGenSpice.Parser
         private readonly PrintStatementProcessor printProcessor;
         private readonly IDictionary<string, IStatementProcessor> statementProcessors;
 
-        private readonly IDictionary<string, IStatementProcessor> insubcircuitStatementProcessors;
-
         public SpiceCodeParser()
         {
             modelProcessor = new ModelStatementProcessor();
             printProcessor = new PrintStatementProcessor();
 
             elementProcessors = new Dictionary<char, IElementStatementProcessor>();
-            statementProcessors = new Dictionary<string, IStatementProcessor>
-            {
-                [modelProcessor.Discriminator] = modelProcessor,
-                [printProcessor.Discriminator] = printProcessor
-            };
-            insubcircuitStatementProcessors = new Dictionary<string, IStatementProcessor>
-            {
-                [modelProcessor.Discriminator] = modelProcessor
-            };
+            statementProcessors = new Dictionary<string, IStatementProcessor>();
+            insubcircuitStatementProcessors = new Dictionary<string, IStatementProcessor>();
+
+            RegisterStatement(modelProcessor, true, true);
+            RegisterStatement(printProcessor, true, false);
+
+            RegisterDefaults();
+        }
+
+        private readonly IDictionary<string, IStatementProcessor> insubcircuitStatementProcessors;
+
+        private void RegisterDefaults()
+        {
+            RegisterElement(new ResistorStatementProcessor());
+            RegisterElement(new CurrentSourceStatementProcessor());
+            RegisterElement(new VoltageSourceStatementProcessor());
+
+            RegisterElement(new CapacitorStatementProcessor());
+            RegisterElement(new InductorStatementProcessor());
+
+            RegisterElement(new DiodeStatementProcessor());
+            RegisterElement(new BjtStatementProcessor());
+
+            RegisterElement(new SubcircuitElementStatementProcessor());
+
+            var root = new SubcircuitStatementRoot();
+            RegisterStatement(new SubcircuitStatementProcessor(root), true, true);
+            RegisterStatement(new SubcircuitEndStatementProcessor(root), false, true);
+            
+            RegisterSimulation(new TranStatementProcessor());
+            RegisterSimulation(new OpStatementProcessor());
         }
 
         /// <summary>
@@ -62,6 +82,16 @@ namespace NextGenSpice.Parser
             statementProcessors.Add(processor.Discriminator, processor);
             printProcessor.AddHandler(processor.GetPrintStatementHandler());
         }
+
+        private void RegisterStatement(IStatementProcessor processor, bool global, bool subcircuit)
+        {
+            if (global)
+                statementProcessors.Add(processor.Discriminator, processor);
+            if (subcircuit)
+                insubcircuitStatementProcessors.Add(processor.Discriminator, processor);
+        }
+
+
 
         /// <summary>
         ///     Parses SPICE code in the input stream.
@@ -100,8 +130,8 @@ namespace NextGenSpice.Parser
                 else if (tokens[0].Value == ".END" && tokens.Length == 1)
                     break; // end parsing now
                 else // other .[keyword] statement
-                // if currently inside a subcircuit definition, use different statement processors
-                    ProcessStatement(tokens, ctx, statementProcessors);
+                     // if currently inside a subcircuit definition, use different statement processors
+                    ProcessStatement(tokens, ctx);
             }
 
             return ApplyStatements(ctx);
@@ -109,11 +139,7 @@ namespace NextGenSpice.Parser
 
         private ParserResult ApplyStatements(ParsingContext ctx)
         {
-            ProcessDeferredStatements(ctx);
-
-            // get error messages from not processed statements
-            foreach (var statement in ctx.DeferredStatements)
-                ctx.Errors.AddRange(statement.GetErrors());
+            ctx.FlushStatements();
 
             // create circuit only if there were no errors
             var circuitDefinition = ctx.Errors.Count == 0 ? TryCreateCircuitDefinition(ctx) : null;
@@ -121,37 +147,7 @@ namespace NextGenSpice.Parser
             return new ParserResult(circuitDefinition, ctx.PrintStatements, ctx.SimulationStatements,
                 ctx.Errors.OrderBy(e => e.LineNumber).ThenBy(e => e.LineColumn).ToList());
         }
-
-        private static void ProcessDeferredStatements(ParsingContext ctx)
-        {
-            // repeatedly try to process all statements until no more statements can be processed in the iteration
-            // these repetitions are there to handle yet unknown statements with dependencies on later statements
-
-            var deferred = ctx.DeferredStatements.OrderBy(GetDeferredStatementPriority).ToList();
-            do
-            {
-                ctx.DeferredStatements.Clear();
-                ctx.DeferredStatements.AddRange(deferred);
-                deferred.Clear();
-
-                foreach (var statement in ctx.DeferredStatements)
-                    if (statement.CanApply(ctx))
-                        statement.Apply(ctx);
-                    else
-                        deferred.Add(statement);
-            } while (deferred.Count < ctx.DeferredStatements.Count);
-        }
-
-        private static int GetDeferredStatementPriority(DeferredStatement statement)
-        {
-            switch (statement)
-            {
-                case SimpleElementStatement _: return 1;
-                case DeferredPrintStatement _: return 50; // process these last
-                default: return 20; // includes generic ModeledElementStatement<>
-            }
-        }
-
+        
         private static ElectricCircuitDefinition TryCreateCircuitDefinition(ParsingContext ctx)
         {
             ElectricCircuitDefinition circuitDefinition = null;
@@ -190,10 +186,11 @@ namespace NextGenSpice.Parser
             return circuitDefinition;
         }
 
-        private void ProcessStatement(Token[] tokens, ParsingContext ctx, IDictionary<string, IStatementProcessor> processors)
+        private void ProcessStatement(Token[] tokens, ParsingContext ctx)
         {
             // find processor that can handle this statement
             var discriminator = tokens[0].Value;
+            var processors = ctx.SubcircuitDepth == 0 ? statementProcessors : insubcircuitStatementProcessors;
             if (processors.TryGetValue(discriminator, out var proc))
                 proc.Process(tokens, ctx);
             else // unknown statement

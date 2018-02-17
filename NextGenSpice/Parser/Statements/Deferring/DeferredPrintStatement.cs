@@ -47,7 +47,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
             if (stat == "V") // output voltage
             {
                 int i;
-                if (context.SymbolTable.NodeIndices.TryGetValue(name, out var id)) // a node
+                if (context.SymbolTable.TryGetNodeIndex(name, out var id)) // a node
                 {
                     printStatement = new NodeVoltagePrintStatement(name, id);
                 }
@@ -55,10 +55,6 @@ namespace NextGenSpice.Parser.Statements.Deferring
                 {
                     printStatement = new ElementPrintStatement(stat, name, token); 
                 }
-//                else if (element != null && element.ConnectedNodes.Count == 2) // an element
-//                {
-//                    printStatement = new ElementVoltagePrintStatement(name);
-//                }
                 else if ((i = name.IndexOf(',')) > 0 && i < name.Length - 1) // two nodes
                 {
                     var n1 = name.Substring(0, i);

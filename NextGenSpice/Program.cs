@@ -15,23 +15,6 @@ namespace NextGenSpice
 {
     internal class Program
     {
-        private static void RegisterStatementProcessors(SpiceCodeParser parser)
-        {
-            parser.RegisterElement(new ResistorStatementProcessor());
-            parser.RegisterElement(new CurrentSourceStatementProcessor());
-            parser.RegisterElement(new VoltageSourceStatementProcessor());
-
-            parser.RegisterElement(new CapacitorStatementProcessor());
-            parser.RegisterElement(new InductorStatementProcessor());
-
-            parser.RegisterElement(new DiodeStatementProcessor());
-            parser.RegisterElement(new BjtStatementProcessor());
-
-
-            parser.RegisterSimulation(new TranStatementProcessor());
-            parser.RegisterSimulation(new OpStatementProcessor());
-        }
-
         private static void Main(string[] args)
         {
 //            Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
@@ -53,7 +36,6 @@ namespace NextGenSpice
             }
 
             var parser = new SpiceCodeParser();
-            RegisterStatementProcessors(parser);
             var result = parser.Parse(new TokenStream(input));
 
             if (result.HasError)

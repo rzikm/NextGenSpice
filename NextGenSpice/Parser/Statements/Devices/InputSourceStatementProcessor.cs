@@ -215,7 +215,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                     $"Too many arguments for transient source '{paramTokens[0].Value}'");
 
             var t = mapper.Target;
-            mapper.Target = default(T);
+            mapper.Target = default(T); // free memory
             return t;
         }
 

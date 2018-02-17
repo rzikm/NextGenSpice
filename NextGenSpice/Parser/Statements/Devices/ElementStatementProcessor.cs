@@ -11,7 +11,7 @@ namespace NextGenSpice.Parser.Statements.Devices
     public abstract class ElementStatementProcessor : IElementStatementProcessor
     {
         private int oldErrors;
-        protected SymbolTable SymbolTable => Context.SymbolTable;
+        protected ISymbolTable SymbolTable => Context.SymbolTable;
 
         protected int Errors => Context.Errors.Count - oldErrors;
 

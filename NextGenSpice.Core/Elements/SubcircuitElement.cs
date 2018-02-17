@@ -8,7 +8,7 @@ namespace NextGenSpice.Core.Elements
     /// </summary>
     public class SubcircuitElement : CircuitDefinitionElement
     {
-        protected internal SubcircuitElement(int innerNodeCount, int[] terminalNodes,
+        public SubcircuitElement(int innerNodeCount, int[] terminalNodes,
             IEnumerable<ICircuitDefinitionElement> elements, string name = null) : base(terminalNodes.Length, name)
         {
             TerminalNodes = terminalNodes;
@@ -30,7 +30,6 @@ namespace NextGenSpice.Core.Elements
         ///     Inner elements that define behavior of this subcircuit.
         /// </summary>
         public IEnumerable<ICircuitDefinitionElement> Elements { get; }
-
 
         /// <summary>
         ///     Creates a copy of this device.

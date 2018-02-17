@@ -8,11 +8,11 @@ namespace NextGenSpice.Parser.Statements.Deferring
     /// <summary>
     ///     Class representing element statement for simple elements (without a model)
     /// </summary>
-    public class SimpleElementStatement : DeferredStatement
+    public class SimpleElementDeferredStatement : DeferredStatement
     {
         private readonly Action<CircuitBuilder> builderFunc;
 
-        public SimpleElementStatement(Action<CircuitBuilder> builderFunc)
+        public SimpleElementDeferredStatement(Action<CircuitBuilder> builderFunc)
         {
             this.builderFunc = builderFunc;
         }

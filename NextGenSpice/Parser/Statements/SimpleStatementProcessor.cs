@@ -34,6 +34,7 @@ namespace NextGenSpice.Parser.Statements
             for (var i = 1; i < tokens.Length; i++)
                 Mapper.Set(i, tokens[i].GetNumericValue(Context.Errors));
             UseParam();
+            Mapper.Target = default(TParam); // free memory;
         }
 
         /// <summary>

@@ -38,7 +38,11 @@ namespace NextGenSpiceParserTest
             table.EnterSubcircuit();
             Assert.False(table.TryGetModel<DiodeModelParams>("D", out m));
             Assert.Null(m);
-        }
+            table.ExitSubcircuit();
+ 
+            Assert.True(table.TryGetModel<DiodeModelParams>("D", out m));
+            Assert.NotNull(m);
+       }
 
         [Fact]
         public void ShowsDefaultModels()

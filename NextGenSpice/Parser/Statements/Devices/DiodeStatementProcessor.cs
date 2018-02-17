@@ -34,7 +34,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             {
                 var modelToken = tokens[3];
                 Context.DeferredStatements.Add(
-                    new ModeledElementStatement<DiodeModelParams>(
+                    new ModeledElementDeferedStatement<DiodeModelParams>(
                         (par, cb) => cb.AddElement(nodes, new DiodeElement(par, name)), modelToken));
             }
         }

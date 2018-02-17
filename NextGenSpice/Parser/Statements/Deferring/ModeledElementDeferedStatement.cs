@@ -9,14 +9,14 @@ namespace NextGenSpice.Parser.Statements.Deferring
     ///     Statement responsible for adding models into the circuit definition.
     /// </summary>
     /// <typeparam name="TModel"></typeparam>
-    public class ModeledElementStatement<TModel> : DeferredStatement
+    public class ModeledElementDeferedStatement<TModel> : DeferredStatement
     {
         private readonly Action<TModel, CircuitBuilder> builderFunc;
         private readonly Token modelNameToken;
 
         private TModel model;
 
-        public ModeledElementStatement(Action<TModel, CircuitBuilder> builderFunc, Token modelNameToken)
+        public ModeledElementDeferedStatement(Action<TModel, CircuitBuilder> builderFunc, Token modelNameToken)
         {
             this.builderFunc = builderFunc;
             this.modelNameToken = modelNameToken;

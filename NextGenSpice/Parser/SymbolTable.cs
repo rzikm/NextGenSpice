@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using NextGenSpice.Core.Elements;
 
 namespace NextGenSpice.Parser
 {
     /// <summary>
     ///     Class aggregating all encountered symbols in the input file.
     /// </summary>
-    public class SymbolTable
+    public class SymbolTable : ISymbolTable
     {
         private readonly Stack<StackEntry> scopes;
         private StackEntry defaultsScope;
@@ -18,9 +19,10 @@ namespace NextGenSpice.Parser
             var definedElements = new HashSet<string>();
             var models = new Dictionary<Type, Dictionary<string, object>>();
             var nodeIndices = new Dictionary<string, int> {["0"] = 0}; // enforce ground node on index 0
+            var subcircuits = new Dictionary<string, SubcircuitElement>();
 
             scopes = new Stack<StackEntry>();
-            scopes.Push(new StackEntry(definedElements, nodeIndices, models));
+            scopes.Push(new StackEntry(definedElements, nodeIndices, models, subcircuits));
         }
 
         private Dictionary<Type, Dictionary<string, object>> Models => StackTop.Models;
@@ -33,15 +35,23 @@ namespace NextGenSpice.Parser
         public int SubcircuitDepth => scopes.Count - 1;
 
         /// <summary>
-        ///     Set of all device element identifiers.
+        ///     Set of all device element identifiers from current scope.
         /// </summary>
         public ISet<string> DefinedElements => StackTop.DefinedElements;
 
         /// <summary>
-        ///     Set of all node identifiers with associated ids that will be used during simulation.
+        ///     Set of all node identifiers from current scope with associated ids that will be used during simulation.
         /// </summary>
         public IDictionary<string, int> NodeIndices => StackTop.NodeIndices;
 
+        /// <summary>
+        ///     Set of all subcircuits defined in current scope.
+        /// </summary>
+        public IDictionary<string, SubcircuitElement> SubcircuitElements => StackTop.Subcircuits;
+
+        /// <summary>
+        ///     Locks all contents of symbol tables as defaultly visible in all scopes and starts global scope.
+        /// </summary>
         public void FreezeDefaults()
         {
             if (defaultsScope.Models != null) throw new InvalidOperationException("Already frozen");
@@ -49,13 +59,19 @@ namespace NextGenSpice.Parser
             scopes.Push(DuplicateStackEntry(defaultsScope));
         }
 
+        /// <summary>
+        ///     Creates new instance of StackEntry with shallow clones of the respective containers.
+        /// </summary>
+        /// <param name="stackEntry">StackEntry to copy.</param>
+        /// <returns></returns>
         private StackEntry DuplicateStackEntry(StackEntry stackEntry)
         {
             return new StackEntry(
                 new HashSet<string>(stackEntry.DefinedElements),
                 new Dictionary<string, int>(stackEntry.NodeIndices),
                 stackEntry.Models.ToDictionary(kvp => kvp.Key,
-                    kvp => kvp.Value.ToDictionary(kp => kp.Key, kp => kp.Value)));
+                    kvp => kvp.Value.ToDictionary(kp => kp.Key, kp => kp.Value)),
+                new Dictionary<string, SubcircuitElement>(stackEntry.Subcircuits));
         }
 
         /// <summary>
@@ -69,7 +85,7 @@ namespace NextGenSpice.Parser
         {
             model = null;
             if (!Models.ContainsKey(modelType)) return false;
-            return Models[modelType].TryGetValue(name, out model);            
+            return Models[modelType].TryGetValue(name, out model);
         }
 
         /// <summary>
@@ -136,6 +152,38 @@ namespace NextGenSpice.Parser
         }
 
         /// <summary>
+        ///     Adds subcircuit under given name to the symbol tables.
+        /// </summary>
+        /// <param name="name">Name of the subcircuit.</param>
+        /// <param name="subcircuit">The subcircuit deinition.</param>
+        public void AddSubcircuit(string name, SubcircuitElement subcircuit)
+        {
+            SubcircuitElements.Add(name, subcircuit);
+        }
+
+        /// <summary>
+        ///     Gets the subcircuit associated with given name.
+        /// </summary>
+        /// <param name="name">Name of the subcircuit.</param>
+        /// <param name="subcircuit">Out variable to store found model in.</param>
+        /// <returns></returns>
+        public bool TryGetSubcircuit(string name, out SubcircuitElement subcircuit)
+        {
+            return SubcircuitElements.TryGetValue(name, out subcircuit);
+        }
+
+        /// <summary>
+        ///     Returns the subcircuit instance with corresponding name.
+        /// </summary>
+        /// <param name="name">The subcircuit name</param>
+        /// <returns></returns>
+        public SubcircuitElement GetSubcircuit(string name)
+        {
+            if (!TryGetSubcircuit(name, out var result)) throw new ArgumentException($"Subcircuit with name '{name}' does not exist");
+            return result;
+        }
+
+        /// <summary>
         ///     Returns whether given symbol is already used for a device or node.
         /// </summary>
         /// <param name="symbol"></param>
@@ -190,7 +238,8 @@ namespace NextGenSpice.Parser
         /// </summary>
         public void EnterSubcircuit()
         {
-            if (defaultsScope.Models == null) throw new InvalidOperationException("Symbol table defaults must be frozen first");
+            if (defaultsScope.Models == null)
+                throw new InvalidOperationException("Symbol table defaults must be frozen first");
             scopes.Push(DuplicateStackEntry(defaultsScope));
         }
 
@@ -205,24 +254,18 @@ namespace NextGenSpice.Parser
         private struct StackEntry
         {
             public StackEntry(ISet<string> definedElements, IDictionary<string, int> nodeIndices,
-                Dictionary<Type, Dictionary<string, object>> models)
+                Dictionary<Type, Dictionary<string, object>> models, IDictionary<string, SubcircuitElement> subcircuits)
             {
                 DefinedElements = definedElements;
                 NodeIndices = nodeIndices;
                 Models = models;
+                Subcircuits = subcircuits;
             }
 
             public ISet<string> DefinedElements { get; }
             public IDictionary<string, int> NodeIndices { get; }
             public Dictionary<Type, Dictionary<string, object>> Models { get; }
-
-            public void Deconstruct(out ISet<string> definedElements, out IDictionary<string, int> nodeIndices,
-                out Dictionary<Type, Dictionary<string, object>> models)
-            {
-                definedElements = DefinedElements;
-                nodeIndices = NodeIndices;
-                models = Models;
-            }
+            public IDictionary<string, SubcircuitElement> Subcircuits { get; }
         }
     }
 }

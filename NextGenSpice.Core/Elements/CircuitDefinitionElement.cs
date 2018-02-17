@@ -21,7 +21,7 @@ namespace NextGenSpice.Core.Elements
         /// <summary>
         ///     Name identifier of this device.
         /// </summary>
-        public string Name { get; }
+        public string Name { get; protected set; }
 
         /// <summary>
         ///     Creates a copy of this device.

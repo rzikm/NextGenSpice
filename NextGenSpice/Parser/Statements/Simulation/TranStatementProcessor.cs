@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using NextGenSpice.Parser.Statements.Printing;
 
@@ -48,9 +49,14 @@ namespace NextGenSpice.Parser.Statements.Simulation
         /// </summary>
         protected override void UseParam()
         {
-            Context.SimulationStatements.Add(new TranSimulationStatement(Mapper.Target,
-                Context.SymbolTable.NodeIndices.ToDictionary(kvp => kvp.Value, kvp => kvp.Key)));
-            Mapper.Target = null;
+            Dictionary<int, string> names = new Dictionary<int, string>();
+
+            for (int i = 0; i < Context.CircuitBuilder.NodeCount; i++)
+            {
+                names[i] = Context.SymbolTable.GetNodeNames(new[] { i }).Single();
+            }
+
+            Context.SimulationStatements.Add(new TranSimulationStatement(Mapper.Target, names));
         }
     }
 }

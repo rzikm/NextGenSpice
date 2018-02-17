@@ -29,7 +29,7 @@ namespace NextGenSpice.Parser.Statements.Devices
 
 
             if (Errors == 0)
-                Context.DeferredStatements.Add(new SimpleElementStatement(cb =>
+                Context.DeferredStatements.Add(new SimpleElementDeferredStatement(cb =>
                     cb.AddElement(nodes, new InductorElement(lvalue, ic, name))));
         }
     }

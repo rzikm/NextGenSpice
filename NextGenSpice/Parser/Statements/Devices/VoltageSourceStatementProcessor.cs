@@ -24,7 +24,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <returns></returns>
         protected override DeferredStatement GetStatement(string name, int[] nodes, SourceBehaviorParams par)
         {
-            return new SimpleElementStatement(builder =>
+            return new SimpleElementDeferredStatement(builder =>
                 builder.AddElement(nodes, new VoltageSourceElement(par, name)));
         }
     }

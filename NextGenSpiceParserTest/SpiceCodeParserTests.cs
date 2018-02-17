@@ -15,8 +15,6 @@ namespace NextGenSpiceParserTest
         {
             this.output = output;
             parser = new SpiceCodeParser();
-            parser.RegisterElement(new ResistorStatementProcessor());
-            parser.RegisterElement(new VoltageSourceStatementProcessor());
         }
 
         private readonly ITestOutputHelper output;
@@ -85,5 +83,6 @@ v7 1 0    pwl 0 1 -1 3 R              * negative timepoint
 v7 1 0    pwl 0 1 -1 3 5              * odd number of pairs
 ");
         }
+
     }
 }

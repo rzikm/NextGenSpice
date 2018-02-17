@@ -28,7 +28,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             var ic = tokens.Length == 5 ? GetValue(tokens[4]) : (double?) null;
 
             if (Errors == 0)
-                Context.DeferredStatements.Add(new SimpleElementStatement(cb =>
+                Context.DeferredStatements.Add(new SimpleElementDeferredStatement(cb =>
                     cb.AddElement(nodes, new CapacitorElement(cvalue, ic, name))));
         }
     }

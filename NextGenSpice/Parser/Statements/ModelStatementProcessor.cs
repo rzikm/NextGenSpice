@@ -59,7 +59,7 @@ namespace NextGenSpice.Parser.Statements
             {
                 var handler = kvp.Value;
                 var model = handler.CreateDefaultModel();
-                ctx.SymbolTable.AddModel(model.GetType(), handler.Discriminator);
+                ctx.SymbolTable.AddModel(model.GetType(), model, handler.Discriminator);
             }
         }
     }
