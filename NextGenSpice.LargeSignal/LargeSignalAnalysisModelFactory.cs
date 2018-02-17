@@ -38,6 +38,7 @@ namespace NextGenSpice.LargeSignal
             SetParam<ExponentialBehaviorParams>(def => new ExponentialSourceBehavior(def));
             SetParam<SffmBehaviorParams>(def => new SffmSourceBehavior(def));
             SetParam<AmBehaviorParams>(def => new AmSourceBehavior(def));
+            SetParam<VoltageControlledBehaviorParams>(def => new VoltageControlledSourceBehavior(def));
         }
 
 

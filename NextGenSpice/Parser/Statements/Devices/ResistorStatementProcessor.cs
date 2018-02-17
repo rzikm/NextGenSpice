@@ -24,7 +24,7 @@ namespace NextGenSpice.Parser.Statements.Devices
 
             var name = DeclareElement(tokens[0]);
             var nodes = GetNodeIndices(tokens, 1, 2);
-            var rvalue = GetValue(tokens[3]);
+            var rvalue = GetValue(tokens[3]); // TODO: Repair, unsafe
 
             if (Errors == 0)
                 Context.DeferredStatements.Add(new SimpleElementDeferredStatement(builder =>
