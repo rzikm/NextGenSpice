@@ -29,7 +29,7 @@ namespace NextGenSpice.LargeSignal.Behaviors
         {
             var phase = Parameters.PhaseOffset;
             var amplitude = Parameters.Amplitude;
-            var elapsedTime = context.Time - Parameters.Delay;
+            var elapsedTime = context.TimePoint - Parameters.Delay;
 
             if (elapsedTime > 0) // source is constant during Delay time
             {

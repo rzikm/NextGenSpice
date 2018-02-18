@@ -27,7 +27,7 @@ namespace NextGenSpice.LargeSignal.Behaviors
         /// <returns></returns>
         public override double GetValue(ISimulationContext context)
         {
-            var c = 2 * Math.PI * context.Time;
+            var c = 2 * Math.PI * context.TimePoint;
             var phaseCarrier = c * Parameters.FrequencyCarrier;
             var phaseSignal = c * Parameters.FrequencySignal;
 

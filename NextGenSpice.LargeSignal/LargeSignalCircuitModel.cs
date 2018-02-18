@@ -5,48 +5,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NextGenSpice.Core;
 using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Models;
-using Numerics;
 using Numerics.Precision;
 
 namespace NextGenSpice.LargeSignal
 {
+    /// <summary>
+    ///     Main class for performing large signal analysis on electrical circuits.
+    /// </summary>
     public class LargeSignalCircuitModel : IAnalysisCircuitModel<ILargeSignalDeviceModel>
     {
-        private class SimulationContext : ISimulationContext
-        {
-            public SimulationContext(int nodeCount)
-            {
-                NodeCount = nodeCount;
-                CircuitParameters = new CircuitParameters();
-            }
-
-            public double NodeCount { get; }
-            public double Time { get; set; }
-            public double TimeStep { get; set; }
-
-            public double GetSolutionForVariable(int index)
-            {
-                return EquationSystem.Solution[index];
-            }
-
-            public CircuitParameters CircuitParameters { get; }
-
-#if qd_precision
-            public QdEquationSystem EquationSystem { get; set; }
-#elif dd_precision
-            public DdEquationSystem EquationSystem { get; set; }
-#else
-            public EquationSystem EquationSystem { get; set; }
-#endif
-        }
-
         private SimulationContext context;
 
 #if qd_precision
@@ -69,62 +41,121 @@ namespace NextGenSpice.LargeSignal
             elementLookup = elements.Where(e => !string.IsNullOrEmpty(e.Name)).ToDictionary(e => e.Name);
         }
 
+        /// <summary>
+        ///     Last computed node voltages.
+        /// </summary>
         public double[] NodeVoltages { get; }
+
+        /// <summary>
+        ///     Number of node in the circuit.
+        /// </summary>
         public int NodeCount => NodeVoltages.Length;
+
+        /// <summary>
+        ///     Set of all elements that this circuit model consists of.
+        /// </summary>
         public IReadOnlyList<ILargeSignalDeviceModel> Elements { get; }
 
-        private readonly IReadOnlyList<ILargeSignalDeviceModel> constElements;
-        private readonly IReadOnlyList<ILargeSignalDeviceModel> nonlinearElements;
-        private readonly IReadOnlyList<ILargeSignalDeviceModel> linearTimeDependentElements;
+        private readonly ILargeSignalDeviceModel[] constElements;
+        private readonly ILargeSignalDeviceModel[] nonlinearElements;
+        private readonly ILargeSignalDeviceModel[] linearTimeDependentElements;
 
         private readonly Dictionary<string, ILargeSignalDeviceModel> elementLookup;
 
+        /// <summary>
+        ///     Gets model for the device identified by given name.
+        /// </summary>
+        /// <param name="name">Name of the device.</param>
+        /// <returns></returns>
         public ILargeSignalDeviceModel GetElement(string name)
         {
             return elementLookup[name];
         }
 
+        /// <summary>
+        ///     Gets model for the device identified by given name.
+        /// </summary>
+        /// <param name="name">Name of the device.</param>
+        /// <param name="value">The device model.</param>
+        /// <returns></returns>
         public bool TryGetElement(string name, out ILargeSignalDeviceModel value)
         {
             return elementLookup.TryGetValue(name, out value);
         }
 
-        public bool IsLinear => !nonlinearElements.Any();
+        private bool IsLinear => !nonlinearElements.Any();
 
 
         // iteration dependent variables
 
+        /// <summary>
+        ///     Minimum absolute difference between two consecutive Newton-Raphson iterations before stable solution is assumed.
+        /// </summary>
         public double NonlinearIterationEpsilon { get; set; } = 1e-4;
+
+        /// <summary>
+        ///     Maximumum number of Newton-Raphson iterations per timepoint.
+        /// </summary>
         public int MaxDcPointIterations { get; set; } = 1000;
+
+        /// <summary>
+        ///     Maximal timestep between two time points during transient analysis.
+        /// </summary>
         public double MaxTimeStep { get; set; } = 1e-6;
 
-
+        /// <summary>
+        ///     How many Newton-Raphson iterations were needed in last operating point calculation.
+        /// </summary>
         public int LastNonLinearIterationCount { get; private set; }
+
+        /// <summary>
+        ///     Difference between last two Newton-Raphson solutions during last operating point calculation.
+        /// </summary>
         public double LastNonLinearIterationDelta { get; private set; }
 
+        /// <summary>
+        ///     Current timepoint of the transient analysis in seconds.
+        /// </summary>
+        public double CurrentTimePoint => context?.TimePoint ?? 0.0;
 
-        public double CurrentTimePoint => context?.Time ?? 0.0;
-
-        public void AdvanceInTime(double milliseconds)
+        /// <summary>
+        ///     Advances transient simulation of the circuit by given ammount in seconds, respecting the maximum allowed timestep.
+        /// </summary>
+        /// <param name="timestep"></param>
+        public void AdvanceInTime(double timestep)
         {
-            if (milliseconds < 0) throw new ArgumentOutOfRangeException(nameof(milliseconds));
+            if (timestep < 0) throw new ArgumentOutOfRangeException(nameof(timestep));
             if (context == null) EstablishInitialDcBias();
 
-            while (milliseconds > 0)
+            while (timestep > 0)
             {
-                var step = 2 * Math.Min(MaxTimeStep, milliseconds);
+                var step = 2 * Math.Min(MaxTimeStep, timestep);
 
-                var timePoint = context.Time;
+                var timePoint = context.TimePoint;
                 //                do
                 //                {
                 step /= 2;
-                context.Time = timePoint + step;
+                context.TimePoint = timePoint + step;
                 context.TimeStep = step;
                 EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context));
                 //                } while (!EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context)));
 
-                milliseconds -= step;
+                timestep -= step;
             }
+        }
+
+        /// <summary>
+        ///     Establishes initial operating point for the transient analysis.
+        /// </summary>
+        public void EstablishInitialDcBias()
+        {
+            EnsureInitialized();
+
+            context.TimeStep = 0;
+            context.TimePoint = 0;
+
+            if (!EstablishDcBias_Internal(e => e.ApplyInitialCondition(equationSystem, context)))
+                throw new NonConvergenceException();
         }
 
         private void EnsureInitialized()
@@ -155,17 +186,6 @@ namespace NextGenSpice.LargeSignal
                 element.ApplyModelValues(b, context);
 
             equationSystem = b.Build();
-        }
-
-        public void EstablishInitialDcBias()
-        {
-            EnsureInitialized();
-
-            context.TimeStep = 0;
-            context.Time = 0;
-
-            if (!EstablishDcBias_Internal(e => e.ApplyInitialCondition(equationSystem, context)))
-                throw new NonConvergenceException();
         }
 
         private bool EstablishDcBias_Internal(Action<ILargeSignalDeviceModel> updater)
@@ -217,7 +237,7 @@ namespace NextGenSpice.LargeSignal
 
             return true;
         }
-        
+
         private void OnDcBiasEstablished()
         {
             foreach (var el in Elements)
@@ -268,6 +288,34 @@ namespace NextGenSpice.LargeSignal
             IEnumerable<ILargeSignalDeviceModel> elements)
         {
             foreach (var e in elements) updater(e);
+        }
+
+        private class SimulationContext : ISimulationContext
+        {
+            public SimulationContext(int nodeCount)
+            {
+                NodeCount = nodeCount;
+                CircuitParameters = new CircuitParameters();
+            }
+
+            public double NodeCount { get; }
+            public double TimePoint { get; set; }
+            public double TimeStep { get; set; }
+
+            public double GetSolutionForVariable(int index)
+            {
+                return EquationSystem.Solution[index];
+            }
+
+            public CircuitParameters CircuitParameters { get; }
+
+#if qd_precision
+            public QdEquationSystem EquationSystem { get; set; }
+#elif dd_precision
+            public DdEquationSystem EquationSystem { get; set; }
+#else
+            public EquationSystem EquationSystem { get; set; }
+#endif
         }
     }
 }

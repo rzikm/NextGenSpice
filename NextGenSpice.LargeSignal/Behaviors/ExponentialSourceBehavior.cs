@@ -28,7 +28,7 @@ namespace NextGenSpice.LargeSignal.Behaviors
         /// <returns></returns>
         public override double GetValue(ISimulationContext context)
         {
-            var time = context.Time;
+            var time = context.TimePoint;
 
             if (time <= Parameters.RiseDelay)
                 return Parameters.InitialLevel;

@@ -15,7 +15,7 @@ namespace NextGenSpice.Core.Circuit
         /// <summary>
         ///     Curent timepoint of the simulation.
         /// </summary>
-        double Time { get; }
+        double TimePoint { get; }
 
         /// <summary>
         ///     Last timestep that was used to advance the timepoint.
@@ -30,7 +30,7 @@ namespace NextGenSpice.Core.Circuit
         /// <summary>
         ///     Gets numerical solution for vairable with given index - either a node voltage or branch current.
         /// </summary>
-        /// <param name="index"></param>
+        /// <param name="index">Index of the variable.</param>
         /// <returns></returns>
         double GetSolutionForVariable(int index);
     }

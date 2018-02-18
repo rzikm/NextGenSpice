@@ -190,7 +190,7 @@ namespace NextGenSpice.LargeSignal.Models
             /// <summary>
             ///     Curent timepoint of the simulation.
             /// </summary>
-            public double Time => TrueContext.Time;
+            public double TimePoint => TrueContext.TimePoint;
 
             /// <summary>
             ///     Last timestep that was used to advance the timepoint.
