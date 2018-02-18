@@ -125,12 +125,6 @@
         /// </summary>
         public double CollectorExponentialFactor { get; set; } = 0.33;
 
-//        /// <summary>
-//        ///     The area of the transistor.
-//        /// </summary>
-//        //TODO: Remove this?
-//        public double Area { get; set; } = 1;
-
         /// <summary>
         ///     Ideal forward transit time in seconds;
         /// </summary>
@@ -144,7 +138,6 @@
         /// <summary>
         ///     Voltage describing VBC dependence of transit time in volts.
         /// </summary>
-        //TODO: more descriptive
         public double VbcDependenceOfTransitTime { get; set; } = double.PositiveInfinity;
 
         /// <summary>

@@ -63,8 +63,9 @@
         /// </summary>
         public double ActivationEnergy { get; set; } = 1.11;
 
-
-        // TODO: comment physical meaning of these (unused) parameters
+        /// <summary>
+        ///     Exponent for temperature influence on saturation current.
+        /// </summary>
         public double SaturationCurrentTemperatureExponent { get; set; } = 3;
 
         /// <summary>
@@ -101,8 +102,5 @@
         ///     Optional parameter - convergence aid for the simulation, if not set, global (circuits) GMIN parameter will be used.
         /// </summary>
         public double? MinimalResistance { get; set; }
-
-
-        //TODO: consider moving this thing elsewhere
     }
 }
