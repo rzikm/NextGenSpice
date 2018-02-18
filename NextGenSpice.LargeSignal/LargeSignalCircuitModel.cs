@@ -98,13 +98,9 @@ namespace NextGenSpice.LargeSignal
         public int MaxDcPointIterations { get; set; } = 1000;
         public double MaxTimeStep { get; set; } = 1e-6;
 
-        // TODO: Remove this?
-        public double TimestepAbsoluteEpsilon { get; set; }
-        public double TimestepRelativeEpsilon { get; set; }
 
-
-        public int IterationCount { get; private set; }
-        public double DeltaSquared { get; private set; }
+        public int LastNonLinearIterationCount { get; private set; }
+        public double LastNonLinearIterationDelta { get; private set; }
 
 
         public double CurrentTimePoint => context?.Time ?? 0.0;
@@ -112,7 +108,7 @@ namespace NextGenSpice.LargeSignal
         public void AdvanceInTime(double milliseconds)
         {
             if (milliseconds < 0) throw new ArgumentOutOfRangeException(nameof(milliseconds));
-            if (context == null) EstablishDcBias();
+            if (context == null) EstablishInitialDcBias();
 
             while (milliseconds > 0)
             {
@@ -161,11 +157,10 @@ namespace NextGenSpice.LargeSignal
             equationSystem = b.Build();
         }
 
-        public void EstablishDcBias()
+        public void EstablishInitialDcBias()
         {
             EnsureInitialized();
 
-            // TODO: really reinitialize?
             context.TimeStep = 0;
             context.Time = 0;
 
@@ -175,8 +170,8 @@ namespace NextGenSpice.LargeSignal
 
         private bool EstablishDcBias_Internal(Action<ILargeSignalDeviceModel> updater)
         {
-            IterationCount = 0;
-            DeltaSquared = 0;
+            LastNonLinearIterationCount = 0;
+            LastNonLinearIterationDelta = 0;
 
             equationSystem.Clear();
 
@@ -184,12 +179,12 @@ namespace NextGenSpice.LargeSignal
             equationSystem.Backup();
             UpdateEquationSystem(updater, nonlinearElements);
 
-            UpdateNodeValues();
+            SolveAndUpdateVoltages();
             //            DebugPrint();
             if (!IsLinear && !IterateUntilConvergence(updater))
                 return false;
 
-            PostProcess();
+            OnDcBiasEstablished();
 
             return true;
         }
@@ -206,7 +201,7 @@ namespace NextGenSpice.LargeSignal
                 equationSystem.Restore();
 
                 UpdateEquationSystem(updater, nonlinearElements);
-                UpdateNodeValues();
+                SolveAndUpdateVoltages();
                 //            DebugPrint();
 
                 for (var i = 0; i < prevVoltages.Length; i++)
@@ -215,22 +210,21 @@ namespace NextGenSpice.LargeSignal
                     delta += d * d;
                 }
 
-                if (++IterationCount == MaxDcPointIterations) return false;
+                if (++LastNonLinearIterationCount == MaxDcPointIterations) return false;
             } while (delta > NonlinearIterationEpsilon * NonlinearIterationEpsilon);
 
-            DeltaSquared = delta;
+            LastNonLinearIterationDelta = Math.Sqrt(delta);
 
             return true;
         }
-
-
-        private void PostProcess()
+        
+        private void OnDcBiasEstablished()
         {
             foreach (var el in Elements)
                 el.OnDcBiasEstablished(context);
         }
 
-        private void UpdateNodeValues()
+        private void SolveAndUpdateVoltages()
         {
             // ensure ground has 0 voltage
             var m = equationSystem.Matrix;

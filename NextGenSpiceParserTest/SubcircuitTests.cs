@@ -157,7 +157,7 @@ i1 1 2 5v
 
 .ends
 ").CircuitDefinition.GetLargeSignalModel();
-            v1.EstablishDcBias();
+            v1.EstablishInitialDcBias();
 
             var v2 = Parse(@"
 v1 1 0 5V
@@ -165,7 +165,7 @@ r1 1 2 5OHM
 d-x1.d1 0 1 D
 i-x1.x1.v1 0 1 5v
 ").CircuitDefinition.GetLargeSignalModel();
-            v2.EstablishDcBias();
+            v2.EstablishInitialDcBias();
 
             Assert.Equal(v2.NodeVoltages, v1.NodeVoltages);
         }

@@ -53,7 +53,7 @@ namespace NextGenSpiceTest
                 .AddElement(new[] {0, 1}, subcircuit)
                 .AddResistor(1, 0, 5)
                 .BuildCircuit().GetLargeSignalModel();
-            circuitWithSubcircuit.EstablishDcBias();
+            circuitWithSubcircuit.EstablishInitialDcBias();
 
             Output.WriteLine("Without subcircuit:");
             var originalCircuit = new CircuitBuilder()
@@ -61,7 +61,7 @@ namespace NextGenSpiceTest
                 .AddResistor(1, 2, 1)
                 .AddResistor(2, 0, 5)
                 .BuildCircuit().GetLargeSignalModel();
-            originalCircuit.EstablishDcBias();
+            originalCircuit.EstablishInitialDcBias();
 
 //            Assert.Equal(circuitWithSubcircuit.NodeVoltages[1], originalCircuit.NodeVoltages[2]);    
         }

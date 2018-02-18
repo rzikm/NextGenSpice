@@ -29,7 +29,6 @@ namespace NextGenSpice.Parser.Statements.Devices
         {
             var name = tokens[1].Value;
 
-            //TODO: Should model names be unique across model types (Diode, PNP etc.)?
             if (context.SymbolTable.TryGetModel<T>(name, out _))
             {
                 context.Errors.Add(tokens[1]

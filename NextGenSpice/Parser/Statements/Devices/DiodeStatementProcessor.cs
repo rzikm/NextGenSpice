@@ -12,6 +12,10 @@ namespace NextGenSpice.Parser.Statements.Devices
     /// </summary>
     public class DiodeStatementProcessor : ElementStatementProcessor
     {
+        public DiodeStatementProcessor()
+        {
+            MinArgs = MaxArgs = 3;
+        }
         /// <summary>
         ///     Discriminator of the element type this processor can parse.
         /// </summary>
@@ -20,19 +24,15 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <summary>
         ///     Processes given set of statements.
         /// </summary>
-        /// <param name="tokens"></param>
-        protected override void DoProcess(Token[] tokens)
+        protected override void DoProcess()
         {
-            if (tokens.Length != 4) // name, +N, -N, model
-                InvalidNumberOfArguments(tokens[0]);
-
-            var name = DeclareElement(tokens[0]);
-            var nodes = GetNodeIndices(tokens, 1, 2);
+            var name = ElementName;
+            var nodes = GetNodeIndices(1, 2);
             // cannot check for model existence yet, defer checking for model later
 
             if (Errors == 0)
             {
-                var modelToken = tokens[3];
+                var modelToken = RawStatement[3]; // capture
                 Context.DeferredStatements.Add(
                     new ModeledElementDeferedStatement<DiodeModelParams>(
                         (par, cb) => cb.AddElement(nodes, new DiodeElement(par, name)), modelToken));

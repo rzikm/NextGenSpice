@@ -35,7 +35,7 @@ namespace NextGenSpice.Parser.Statements.Simulation
             var model = circuit.GetLargeSignalModel();
             var prints = printStatements.OfType<PrintStatement<LargeSignalCircuitModel>>()
                 .Where(s => s.AnalysisType == "OP").ToList();
-            model.EstablishDcBias();
+            model.EstablishInitialDcBias();
 
             if (prints.Count == 0)
             {

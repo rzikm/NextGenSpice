@@ -8,6 +8,11 @@ namespace NextGenSpice.Parser.Statements.Devices
     /// </summary>
     public class ResistorStatementProcessor : ElementStatementProcessor
     {
+        public ResistorStatementProcessor()
+        {
+            MinArgs = MaxArgs = 3;
+        }
+
         /// <summary>
         ///     Discriminator of the element type this processor can parse.
         /// </summary>
@@ -16,15 +21,11 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <summary>
         ///     Processes given set of statements.
         /// </summary>
-        /// <param name="tokens"></param>
-        protected override void DoProcess(Token[] tokens)
+        protected override void DoProcess()
         {
-            if (tokens.Length != 4)
-                InvalidNumberOfArguments(tokens[0]);
-
-            var name = DeclareElement(tokens[0]);
-            var nodes = GetNodeIndices(tokens, 1, 2);
-            var rvalue = GetValue(tokens[3]); // TODO: Repair, unsafe
+            var name = ElementName;
+            var nodes = GetNodeIndices(1, 2);
+            var rvalue = GetValue(3);
 
             if (Errors == 0)
                 Context.DeferredStatements.Add(new SimpleElementDeferredStatement(builder =>

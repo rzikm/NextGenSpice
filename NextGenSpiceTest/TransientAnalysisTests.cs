@@ -36,7 +36,7 @@ namespace NextGenSpiceTest
                 .BuildCircuit();
 
             var model = circuit.GetLargeSignalModel();
-            model.EstablishDcBias();
+            model.EstablishInitialDcBias();
 
             var device = model.Elements.OfType<LargeSignalCapacitorModel>().Single();
 
@@ -66,7 +66,7 @@ namespace NextGenSpiceTest
             var inductor = model.Elements.OfType<LargeSignalInductorModel>().Single();
 
             switchModel.IsOn = false;
-            model.EstablishDcBias();
+            model.EstablishInitialDcBias();
             switchModel.IsOn = true;
 
             Output.WriteLine("Voltages:");
@@ -96,7 +96,7 @@ namespace NextGenSpiceTest
             var circuit = CircuitGenerator.GetSimpleCircuitWithCapacitor();
 
             var model = circuit.GetLargeSignalModel();
-            model.EstablishDcBias();
+            model.EstablishInitialDcBias();
             Output.PrintCircuitStats(model);
 
             var expected = model.NodeVoltages.ToArray();
@@ -112,7 +112,7 @@ namespace NextGenSpiceTest
             var circuit = CircuitGenerator.GetSimpleCircuitWithInductor();
 
             var model = circuit.GetLargeSignalModel();
-            model.EstablishDcBias();
+            model.EstablishInitialDcBias();
             Output.PrintCircuitStats(model);
 
             var expected = model.NodeVoltages.ToArray();

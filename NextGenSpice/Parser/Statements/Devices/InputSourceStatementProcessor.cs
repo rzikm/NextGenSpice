@@ -29,6 +29,8 @@ namespace NextGenSpice.Parser.Statements.Devices
             dcMapper = new ParameterMapper<ConstantBehaviorParams>();
 
             InitMappers();
+
+            MinArgs = 3;
         }
 
         private void InitMappers()
@@ -76,27 +78,22 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <summary>
         ///     Processes given set of statements.
         /// </summary>
-        /// <param name="tokens"></param>
-        protected override void DoProcess(Token[] tokens)
+        protected override void DoProcess()
         {
-            if (tokens.Length < 4)
-            {
-                InvalidNumberOfArguments(tokens[0]);
-                return;
-            }
+            var name = ElementName;
+            var nodes = GetNodeIndices(1, 2);
 
-            var name = DeclareElement(tokens[0]);
-            var nodes = GetNodeIndices(tokens, 1, 2);
+            if (RawStatement.Length < 4) return; // nothing more to do here
 
             DeferredStatement statement;
-            if (char.IsDigit(tokens[3].Value[0])) // constant source
+            if (char.IsDigit(RawStatement[3].Value[0])) // constant source
             {
-                var val = GetValue(tokens[3]);
+                var val = GetValue(3);
                 statement = GetStatement(name, nodes, new ConstantBehaviorParams { Value = val });
             }
             else // tran function
             {
-                var paramTokens = Helper.Retokenize(tokens, 3).ToList();
+                var paramTokens = Helper.Retokenize(RawStatement, 3).ToList();
                 var param = GetBehaviorParam(paramTokens);
                 statement = GetStatement(name, nodes, param);
             }

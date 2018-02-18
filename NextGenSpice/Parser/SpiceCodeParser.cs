@@ -112,8 +112,6 @@ namespace NextGenSpice.Parser
         /// <returns></returns>
         public ParserResult Parse(ITokenStream stream)
         {
-            // TODO: Subcircuits
-
             Token[] tokens;
             var ctx = new ParsingContext();
             modelProcessor.RegisterDefaultModels(ctx);

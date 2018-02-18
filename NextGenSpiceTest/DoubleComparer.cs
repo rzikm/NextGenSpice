@@ -19,7 +19,7 @@ namespace NextGenSpiceTest
 
         public int GetHashCode(double obj)
         {
-            throw new NotImplementedException();
+            return obj.GetHashCode();
         }
 
         public int Compare(double x, double y)

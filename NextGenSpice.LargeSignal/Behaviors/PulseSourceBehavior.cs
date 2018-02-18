@@ -27,7 +27,6 @@ namespace NextGenSpice.LargeSignal.Behaviors
         /// <returns></returns>
         public override double GetValue(ISimulationContext context)
         {
-            // TODO: make more efficient (precompute boundaries)
             var phase = context.Time;
             if (Parameters.Period > 0)
                 phase = context.Time % Parameters.Period;

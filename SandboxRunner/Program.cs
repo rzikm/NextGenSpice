@@ -41,7 +41,7 @@ namespace SandboxRunner
             model.NonlinearIterationEpsilon = 1e-10;
             model.MaxDcPointIterations = 100;
             model.MaxTimeStep = 10e-6;
-            model.EstablishDcBias();
+            model.EstablishInitialDcBias();
             SimulateAndPrint(model, 10e-3, model.MaxTimeStep);
         }
 
@@ -137,7 +137,7 @@ namespace SandboxRunner
             model.NonlinearIterationEpsilon = 1e-10;
             model.MaxDcPointIterations = 10000;
 
-            model.EstablishDcBias();
+            model.EstablishInitialDcBias();
             SimulateAndPrint(model, 1000e-6, 1e-6);
         }
 

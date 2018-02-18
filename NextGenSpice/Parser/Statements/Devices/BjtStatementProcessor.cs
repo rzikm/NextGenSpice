@@ -13,6 +13,11 @@ namespace NextGenSpice.Parser.Statements.Devices
     /// </summary>
     public class BjtStatementProcessor : ElementStatementProcessor
     {
+        public BjtStatementProcessor()
+        {
+            MinArgs = 4;
+            MaxArgs = 5;
+        }
         /// <summary>
         ///     Discriminator of the element type this processor can parse.
         /// </summary>
@@ -21,22 +26,17 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <summary>
         ///     Processes given set of statements.
         /// </summary>
-        /// <param name="tokens"></param>
-        protected override void DoProcess(Token[] tokens)
+        protected override void DoProcess()
         {
-            if (tokens.Length < 5 || tokens.Length > 6) // name, NCollector, NBase, NEmitter, <NSubstrate>, model
-                InvalidNumberOfArguments(tokens[0]);
-
-            var name = DeclareElement(tokens[0]);
-
-            var nodes = tokens.Length == 5
-                ? GetNodeIndices(tokens, 1, 3).Concat(new[] { 0 }).ToArray() // substrate node not specified.
-                : GetNodeIndices(tokens, 1, 4);
-
+            var name = ElementName;
+            var nodes = RawStatement.Length == 5
+                ? GetNodeIndices(1, 3).Concat(new[] { 0 }).ToArray() // substrate node not specified.
+                : GetNodeIndices(1, 4);
+            
             // cannot check for model existence yet, defer checking for model later
             if (Errors == 0)
             {
-                var modelToken = tokens.Last();
+                var modelToken = RawStatement.Last(); // capture
 
                 Context.DeferredStatements.Add(
                     new ModeledElementDeferedStatement<BjtModelParams>(

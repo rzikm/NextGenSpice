@@ -25,7 +25,7 @@ namespace NextGenSpiceParserTest
 
             public int GetHashCode(Token obj)
             {
-                throw new NotImplementedException();
+                return obj.LineColumn.GetHashCode() * obj.LineNumber.GetHashCode() * obj.Value.GetHashCode();
             }
 
             public int Compare(Token x, Token y)

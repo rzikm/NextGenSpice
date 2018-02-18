@@ -35,12 +35,12 @@ namespace NextGenSpiceTest
 
             Output.WriteLine("Switch is on");
             sw.IsOn = true;
-            model.EstablishDcBias();
+            model.EstablishInitialDcBias();
             Output.PrintCircuitStats(model);
 
             Output.WriteLine("Switch is off");
             sw.IsOn = false;
-            model.EstablishDcBias();
+            model.EstablishInitialDcBias();
             Output.PrintCircuitStats(model);
         }
 
@@ -59,7 +59,7 @@ namespace NextGenSpiceTest
                 Assert.Equal(3, circuit.NodeCount);
                 model = circuit.GetModel<LargeSignalCircuitModel>();
             }
-            model.EstablishDcBias();
+            model.EstablishInitialDcBias();
             Output.PrintCircuitStats(model);
 
             var withCapacitorVoltages = model.NodeVoltages.ToArray();
@@ -72,7 +72,7 @@ namespace NextGenSpiceTest
                     .AddResistor(2, 0, 5).BuildCircuit();
                 model = circuit.GetModel<LargeSignalCircuitModel>();
             }
-            model.EstablishDcBias();
+            model.EstablishInitialDcBias();
             Output.PrintCircuitStats(model);
 
             var withoutCapacitorVoltages = model.NodeVoltages.ToArray();
@@ -93,7 +93,7 @@ namespace NextGenSpiceTest
                     .AddInductor(1, 2, 1).BuildCircuit();
                 model = circuit.GetModel<LargeSignalCircuitModel>();
             }
-            model.EstablishDcBias();
+            model.EstablishInitialDcBias();
             Output.PrintCircuitStats(model);
 
             var withInductorVoltages = model.NodeVoltages.ToArray();
@@ -106,7 +106,7 @@ namespace NextGenSpiceTest
                     .AddResistor(1, 0, 5).BuildCircuit();
                 model = circuit.GetModel<LargeSignalCircuitModel>();
             }
-            model.EstablishDcBias();
+            model.EstablishInitialDcBias();
             Output.PrintCircuitStats(model);
 
             var withoutInductorVoltages = model.NodeVoltages.ToList();
@@ -121,7 +121,7 @@ namespace NextGenSpiceTest
         {
             var circuit = CircuitGenerator.GetLinearCircuit();
             var model = circuit.GetModel<LargeSignalCircuitModel>();
-            model.EstablishDcBias();
+            model.EstablishInitialDcBias();
 
             Output.PrintCircuitStats(model);
 
@@ -135,7 +135,7 @@ namespace NextGenSpiceTest
             var circuit = CircuitGenerator.GetNonlinearCircuit();
 
             var model = circuit.GetModel<LargeSignalCircuitModel>();
-            model.EstablishDcBias();
+            model.EstablishInitialDcBias();
             Output.PrintCircuitStats(model);
 
             Assert.Equal(new[] {0, 9.90804460268287, 0.71250487096788},
@@ -148,7 +148,7 @@ namespace NextGenSpiceTest
             var circuit = CircuitGenerator.GetCircuitWithVoltageSource();
 
             var model = circuit.GetModel<LargeSignalCircuitModel>();
-            model.EstablishDcBias();
+            model.EstablishInitialDcBias();
             Output.PrintCircuitStats(model);
 
             Assert.Equal(new double[] {0, 5, 3},
@@ -163,7 +163,7 @@ namespace NextGenSpiceTest
             var model = circuit.GetModel<LargeSignalCircuitModel>();
             model.MaxDcPointIterations = 3; // some unrealistic low bound
 
-            Assert.Throws<NonConvergenceException>(() => model.EstablishDcBias());
+            Assert.Throws<NonConvergenceException>(() => model.EstablishInitialDcBias());
             Output.PrintCircuitStats(model);
         }
     }

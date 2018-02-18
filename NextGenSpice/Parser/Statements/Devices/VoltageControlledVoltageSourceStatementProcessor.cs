@@ -9,6 +9,10 @@ namespace NextGenSpice.Parser.Statements.Devices
     /// </summary>
     public class VoltageControlledVoltageSourceStatementProcessor : ElementStatementProcessor
     {
+        public VoltageControlledVoltageSourceStatementProcessor()
+        {
+            MinArgs = MaxArgs = 5;
+        }
         /// <summary>
         ///     Discriminator of the element type this processor can parse.
         /// </summary>
@@ -17,15 +21,11 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <summary>
         ///     Processes given set of statements.
         /// </summary>
-        /// <param name="tokens"></param>
-        protected override void DoProcess(Token[] tokens)
+        protected override void DoProcess()
         {
-            if (tokens.Length != 6)
-                InvalidNumberOfArguments(tokens[0]);
-
-            var name = DeclareElement(tokens[0]);
-            var nodes = GetNodeIndices(tokens, 1, 4);
-            var gain = GetValue(tokens[5]); // TODO: unsafe! repair
+            var name = ElementName;
+            var nodes = GetNodeIndices(1, 4);
+            var gain = GetValue(5);
 
             if (Errors == 0)
                 Context.DeferredStatements.Add(new SimpleElementDeferredStatement(builder =>
