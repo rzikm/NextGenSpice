@@ -71,7 +71,8 @@ namespace NextGenSpice.Parser.Statements
 
             var name = stack[1].Value;
             var terminals = GetNodeIndices(stack.Skip(2));
-            Context.CircuitBuilder.SetNodeVoltage(terminals.Max(), 0); // enforce node existence
+            // enforce node existence, initial condition for nodes inside subcircuit is not supported and not used
+            Context.CircuitBuilder.SetNodeVoltage(terminals.Max(), null);
 
             var subcircuitElement = CreateSubcircuit(stack[1], terminals);
             Context.ExitSubcircuit();
@@ -89,7 +90,7 @@ namespace NextGenSpice.Parser.Statements
         {
             return tokens.Select(token =>
             {
-                if (!Context.SymbolTable.TryGetNodeIndex(token.Value, out var node))
+                if (!Context.SymbolTable.TryGetOrCreateNode(token.Value, out var node))
                 {
                     node = -1;
                     Context.Errors.Add(token.ToErrorInfo($"Symbol {token.Value} is not a node"));

@@ -206,20 +206,33 @@ namespace NextGenSpice.Parser
         /// <summary>
         ///     Tries to get node index corresponding to given node name. Returns true on success.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="index"></param>
+        /// <param name="name">Name of the node.</param>
+        /// <param name="index">Index of the node.</param>
         /// <returns></returns>
         public bool TryGetNodeIndex(string name, out int index)
         {
             index = 0;
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidEnumArgumentException($"Parameter {nameof(name)} must be nonempty.");
-            if (NodeIndices.TryGetValue(name, out index)) return true;
 
-            if (IsDefined(name)) return false; // symbol 'name' is already used for a device
+            return NodeIndices.TryGetValue(name, out index);
+        }
+
+        /// <summary>
+        ///     Defines new node with given name and assigns it a new index. Returns true on success.
+        /// </summary>
+        /// <param name="name">Name of the node.</param>
+        /// <param name="index">Index of the node.</param>
+        /// <returns></returns>
+        public bool TryGetOrCreateNode(string name, out int index)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new InvalidEnumArgumentException($"Parameter {nameof(name)} must be nonempty.");
+
+            if (TryGetNodeIndex(name, out index)) return true;
+            if (IsDefined(name)) return false;
 
             NodeIndices[name] = index = NodeIndices.Count;
-
             return true;
         }
 

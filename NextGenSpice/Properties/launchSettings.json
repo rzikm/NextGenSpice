@@ -2,7 +2,7 @@
   "profiles": {
     "NextGenSpice": {
       "commandName": "Project",
-      "commandLineArgs": "subcircuit.txt",
+      "commandLineArgs": "doubledouble.txt",
       "workingDirectory": "D:\\Visual Studio 2017\\Projects\\NextGen Spice\\Debug"
     }
   }

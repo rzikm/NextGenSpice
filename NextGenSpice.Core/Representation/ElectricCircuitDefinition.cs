@@ -17,7 +17,7 @@ namespace NextGenSpice.Core.Representation
 
         private readonly Dictionary<Type, object> factories;
 
-        public ElectricCircuitDefinition(IReadOnlyList<double> initialVoltages,
+        public ElectricCircuitDefinition(IReadOnlyList<double?> initialVoltages,
             IReadOnlyList<ICircuitDefinitionElement> elements)
         {
             factories = new Dictionary<Type, object>();
@@ -36,7 +36,7 @@ namespace NextGenSpice.Core.Representation
         /// <summary>
         ///     Initial voltages of nodes by their id.
         /// </summary>
-        public IReadOnlyList<double> InitialVoltages { get; }
+        public IReadOnlyList<double?> InitialVoltages { get; }
 
         /// <summary>
         ///     Set of elements that define this circuit.

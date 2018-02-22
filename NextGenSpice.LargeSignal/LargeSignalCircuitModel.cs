@@ -10,6 +10,7 @@ using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Models;
+using Numerics;
 using Numerics.Precision;
 
 namespace NextGenSpice.LargeSignal
@@ -21,6 +22,8 @@ namespace NextGenSpice.LargeSignal
     {
         private SimulationContext context;
 
+        private double[] previousSolution;
+
 #if qd_precision
         private QdEquationSystem equationSystem;
 #elif dd_precision
@@ -29,9 +32,10 @@ namespace NextGenSpice.LargeSignal
         private EquationSystem equationSystem;
 #endif
 
-        public LargeSignalCircuitModel(IEnumerable<double> initialVoltages, List<ILargeSignalDeviceModel> elements)
+        public LargeSignalCircuitModel(IEnumerable<double?> initialVoltages, List<ILargeSignalDeviceModel> elements)
         {
-            NodeVoltages = initialVoltages.ToArray();
+            this.initialVoltages = initialVoltages.ToArray();
+            NodeVoltages = new double[this.initialVoltages.Length];
             Elements = elements;
 
             constElements = elements.Where(e => e.UpdateMode == ModelUpdateMode.NoUpdate).ToArray();
@@ -47,7 +51,7 @@ namespace NextGenSpice.LargeSignal
         public double[] NodeVoltages { get; }
 
         /// <summary>
-        ///     Number of node in the circuit.
+        ///     Number of node in the circuit.
         /// </summary>
         public int NodeCount => NodeVoltages.Length;
 
@@ -61,6 +65,7 @@ namespace NextGenSpice.LargeSignal
         private readonly ILargeSignalDeviceModel[] linearTimeDependentElements;
 
         private readonly Dictionary<string, ILargeSignalDeviceModel> elementLookup;
+        private readonly double?[] initialVoltages;
 
         /// <summary>
         ///     Gets model for the device identified by given name.
@@ -138,8 +143,9 @@ namespace NextGenSpice.LargeSignal
                 context.TimePoint = timePoint + step;
                 context.TimeStep = step;
                 EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context));
-                //                } while (!EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context)));
 
+                //                } while (!EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context)));
+                OnDcBiasEstablished();
                 timestep -= step;
             }
         }
@@ -147,15 +153,27 @@ namespace NextGenSpice.LargeSignal
         /// <summary>
         ///     Establishes initial operating point for the transient analysis.
         /// </summary>
-        public void EstablishInitialDcBias()
+        public void EstablishInitialDcBias(bool initCond = false)
         {
+            context = null;
             EnsureInitialized();
+            //            context.TimeStep = 0;
+            //            context.TimePoint = 0;
 
-            context.TimeStep = 0;
-            context.TimePoint = 0;
+            for (int i = 0; i < initialVoltages.Length; i++)
+            {
+                if (initialVoltages[i].HasValue) // initial condition
+                {
+                    context.EquationSystem
+                        .AddCurrent(i, 0, initialVoltages[i].Value)
+                        .AddConductance(i, 0, 1);
+                }
+            }
 
             if (!EstablishDcBias_Internal(e => e.ApplyInitialCondition(equationSystem, context)))
                 throw new NonConvergenceException();
+
+            OnDcBiasEstablished();
         }
 
         private void EnsureInitialized()
@@ -165,6 +183,7 @@ namespace NextGenSpice.LargeSignal
             context = new SimulationContext(NodeCount);
             BuildEquationSystem();
             context.EquationSystem = equationSystem;
+            previousSolution = new double[context.EquationSystem.VariablesCount];
         }
 
         private void BuildEquationSystem()
@@ -193,20 +212,14 @@ namespace NextGenSpice.LargeSignal
             LastNonLinearIterationCount = 0;
             LastNonLinearIterationDelta = 0;
 
-            equationSystem.Clear();
 
             UpdateEquationSystem(updater, linearTimeDependentElements);
-            equationSystem.Backup();
+            equationSystem.Backup(1);
             UpdateEquationSystem(updater, nonlinearElements);
 
             SolveAndUpdateVoltages();
             //            DebugPrint();
-            if (!IsLinear && !IterateUntilConvergence(updater))
-                return false;
-
-            OnDcBiasEstablished();
-
-            return true;
+            return IsLinear || IterateUntilConvergence(updater);
         }
 
         private bool IterateUntilConvergence(Action<ILargeSignalDeviceModel> updater)
@@ -216,17 +229,18 @@ namespace NextGenSpice.LargeSignal
             do
             {
                 delta = 0;
-                var prevVoltages = (double[]) equationSystem.Solution.Clone();
 
-                equationSystem.Restore();
+                equationSystem.Solution.CopyTo(previousSolution, 0);
+
+                equationSystem.Restore(1);
 
                 UpdateEquationSystem(updater, nonlinearElements);
                 SolveAndUpdateVoltages();
                 //            DebugPrint();
 
-                for (var i = 0; i < prevVoltages.Length; i++)
+                for (var i = 0; i < previousSolution.Length; i++)
                 {
-                    var d = prevVoltages[i] - equationSystem.Solution[i];
+                    var d = previousSolution[i] - equationSystem.Solution[i];
                     delta += d * d;
                 }
 
@@ -242,6 +256,7 @@ namespace NextGenSpice.LargeSignal
         {
             foreach (var el in Elements)
                 el.OnDcBiasEstablished(context);
+            equationSystem.Restore(0);
         }
 
         private void SolveAndUpdateVoltages()

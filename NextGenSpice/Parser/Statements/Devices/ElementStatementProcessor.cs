@@ -169,7 +169,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             for (var i = 0; i < Math.Min(tokens.Length - startIndex, count); i++)
             {
                 var token = tokens[startIndex + i];
-                if (!SymbolTable.TryGetNodeIndex(token.Value, out var node))
+                if (!SymbolTable.TryGetOrCreateNode(token.Value, out var node))
                 {
                     node = -1;
                     NotANode(token);

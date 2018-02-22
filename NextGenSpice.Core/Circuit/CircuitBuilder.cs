@@ -13,11 +13,11 @@ namespace NextGenSpice.Core.Circuit
     {
         private readonly List<ICircuitDefinitionElement> elements;
         private readonly Dictionary<string, ICircuitDefinitionElement> namedElements;
-        private readonly List<double> nodes;
+        private readonly List<double?> nodes;
 
         public CircuitBuilder()
         {
-            nodes = new List<double>();
+            nodes = new List<double?>();
             elements = new List<ICircuitDefinitionElement>();
             namedElements = new Dictionary<string, ICircuitDefinitionElement>();
             EnsureHasNode(0);
@@ -40,7 +40,7 @@ namespace NextGenSpice.Core.Circuit
         /// <param name="id">Id of the node.</param>
         /// <param name="voltage">Target voltage value in volts</param>
         /// <returns></returns>
-        public CircuitBuilder SetNodeVoltage(int id, double voltage)
+        public CircuitBuilder SetNodeVoltage(int id, double? voltage)
         {
             if (voltage < 0) throw new ArgumentOutOfRangeException(nameof(voltage));
 
@@ -58,7 +58,7 @@ namespace NextGenSpice.Core.Circuit
             if (id < 0) throw new ArgumentOutOfRangeException(nameof(id));
 
             while (NodeCount <= id)
-                nodes.Add(0);
+                nodes.Add(null);
         }
 
         /// <summary>

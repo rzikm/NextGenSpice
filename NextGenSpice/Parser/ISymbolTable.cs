@@ -95,6 +95,14 @@ namespace NextGenSpice.Parser
         bool TryGetNodeIndex(string name, out int index);
 
         /// <summary>
+        ///     Defines new node with given name and assigns it a new index. Returns true on success.
+        /// </summary>
+        /// <param name="name">Name of the node.</param>
+        /// <param name="index">Index of the node.</param>
+        /// <returns></returns>
+        bool TryGetOrCreateNode(string name, out int index);
+
+        /// <summary>
         ///     Gives set of node names for given set of indexes
         /// </summary>
         /// <param name="indexes"></param>

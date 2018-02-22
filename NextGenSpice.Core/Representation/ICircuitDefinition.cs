@@ -16,7 +16,7 @@ namespace NextGenSpice.Core.Representation
         /// <summary>
         ///     Initial voltages of nodes by their id.
         /// </summary>
-        IReadOnlyList<double> InitialVoltages { get; }
+        IReadOnlyList<double?> InitialVoltages { get; }
 
         /// <summary>
         ///     Set of elements that define this circuit.
