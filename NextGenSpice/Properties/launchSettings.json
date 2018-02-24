@@ -2,8 +2,8 @@
   "profiles": {
     "NextGenSpice": {
       "commandName": "Project",
-      "commandLineArgs": "doubledouble.txt",
-      "workingDirectory": "D:\\Visual Studio 2017\\Projects\\NextGen Spice\\Debug"
+      "commandLineArgs": "bjt.txt",
+      "workingDirectory": "D:\\Visual Studio 2017\\Projects\\NextGen Spice\\Release"
     }
   }
 }

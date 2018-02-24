@@ -36,13 +36,15 @@ namespace NextGenSpice.LargeSignal
         {
             this.initialVoltages = initialVoltages.ToArray();
             NodeVoltages = new double[this.initialVoltages.Length];
-            Elements = elements;
+            this.elements = elements.ToArray();
 
             constElements = elements.Where(e => e.UpdateMode == ModelUpdateMode.NoUpdate).ToArray();
             linearTimeDependentElements = elements.Where(e => e.UpdateMode == ModelUpdateMode.TimePoint).ToArray();
             nonlinearElements = elements.Where(e => e.UpdateMode == ModelUpdateMode.Always).ToArray();
 
             elementLookup = elements.Where(e => !string.IsNullOrEmpty(e.Name)).ToDictionary(e => e.Name);
+            updaterInitCondition = e => e.ApplyInitialCondition(equationSystem, context);
+            updaterModelValues = e => e.ApplyModelValues(equationSystem, context);
         }
 
         /// <summary>
@@ -58,7 +60,7 @@ namespace NextGenSpice.LargeSignal
         /// <summary>
         ///     Set of all elements that this circuit model consists of.
         /// </summary>
-        public IReadOnlyList<ILargeSignalDeviceModel> Elements { get; }
+        public IReadOnlyList<ILargeSignalDeviceModel> Elements => elements;
 
         private readonly ILargeSignalDeviceModel[] constElements;
         private readonly ILargeSignalDeviceModel[] nonlinearElements;
@@ -66,6 +68,11 @@ namespace NextGenSpice.LargeSignal
 
         private readonly Dictionary<string, ILargeSignalDeviceModel> elementLookup;
         private readonly double?[] initialVoltages;
+        private readonly ILargeSignalDeviceModel[] elements;
+
+        // cached functors to prevent excessive allocations
+        private readonly Action<ILargeSignalDeviceModel> updaterInitCondition;
+        private readonly Action<ILargeSignalDeviceModel> updaterModelValues;
 
         /// <summary>
         ///     Gets model for the device identified by given name.
@@ -142,7 +149,7 @@ namespace NextGenSpice.LargeSignal
                 step /= 2;
                 context.TimePoint = timePoint + step;
                 context.TimeStep = step;
-                EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context));
+                EstablishDcBias_Internal(updaterModelValues);
 
                 //                } while (!EstablishDcBias_Internal(e => e.ApplyModelValues(equationSystem, context)));
                 OnDcBiasEstablished();
@@ -170,7 +177,7 @@ namespace NextGenSpice.LargeSignal
                 }
             }
 
-            if (!EstablishDcBias_Internal(e => e.ApplyInitialCondition(equationSystem, context)))
+            if (!EstablishDcBias_Internal(updaterInitCondition))
                 throw new NonConvergenceException();
 
             OnDcBiasEstablished();
@@ -254,8 +261,8 @@ namespace NextGenSpice.LargeSignal
 
         private void OnDcBiasEstablished()
         {
-            foreach (var el in Elements)
-                el.OnDcBiasEstablished(context);
+            for (var i = 0; i < elements.Length; i++)
+                elements[i].OnDcBiasEstablished(context);
             equationSystem.Restore(0);
         }
 
@@ -300,9 +307,10 @@ namespace NextGenSpice.LargeSignal
         }
 
         private void UpdateEquationSystem(Action<ILargeSignalDeviceModel> updater,
-            IEnumerable<ILargeSignalDeviceModel> elements)
+            ILargeSignalDeviceModel[] elem)
         {
-            foreach (var e in elements) updater(e);
+            for (var i = 0; i < elem.Length; i++)
+                updater(elem[i]);
         }
 
         private class SimulationContext : ISimulationContext
