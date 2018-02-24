@@ -95,7 +95,7 @@ namespace NextGenSpice.LargeSignal
             return elementLookup.TryGetValue(name, out value);
         }
 
-        private bool IsLinear => !nonlinearElements.Any();
+        private bool IsLinear => nonlinearElements.Length == 0;
 
 
         // iteration dependent variables
