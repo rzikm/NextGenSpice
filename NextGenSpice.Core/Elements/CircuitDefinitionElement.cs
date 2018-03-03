@@ -24,7 +24,7 @@ namespace NextGenSpice.Core.Elements
         public string Name { get; protected set; }
 
         /// <summary>
-        ///     Creates a copy of this device.
+        ///     Creates a deep copy of this device.
         /// </summary>
         /// <returns></returns>
         public virtual ICircuitDefinitionElement Clone()

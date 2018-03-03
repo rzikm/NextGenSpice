@@ -1,9 +1,11 @@
-﻿namespace NextGenSpice.Core.Elements.Parameters
+﻿using System;
+
+namespace NextGenSpice.Core.Elements.Parameters
 {
     /// <summary>
     ///     Represents set of model parameters for the diode device.
     /// </summary>
-    public class DiodeModelParams
+    public class DiodeModelParams : ICloneable
     {
         /// <summary>
         ///     Default set of model parameters for the diode.
@@ -102,5 +104,12 @@
         ///     Optional parameter - convergence aid for the simulation, if not set, global (circuits) GMIN parameter will be used.
         /// </summary>
         public double? MinimalResistance { get; set; }
+
+        /// <summary>Creates a new object that is a copy of the current instance.</summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }

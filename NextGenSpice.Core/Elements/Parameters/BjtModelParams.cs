@@ -1,9 +1,11 @@
-﻿namespace NextGenSpice.Core.Elements.Parameters
+﻿using System;
+
+namespace NextGenSpice.Core.Elements.Parameters
 {
     /// <summary>
     ///     Represents set of parameters for Homo-Junction Bipolar Transistor.
     /// </summary>
-    public class BjtModelParams
+    public class BjtModelParams: ICloneable
     {
         /// <summary>
         ///     Saturation current in ampers.
@@ -204,5 +206,12 @@
         ///     True if this is a PNP BJT model, otherwise this is a NPN model.
         /// </summary>
         public bool IsPnp { get; set; }
+
+        /// <summary>Creates a new object that is a copy of the current instance.</summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }

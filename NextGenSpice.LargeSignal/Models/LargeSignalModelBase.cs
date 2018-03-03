@@ -2,6 +2,7 @@
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Equations;
+using NextGenSpice.Core.Representation;
 
 namespace NextGenSpice.LargeSignal.Models
 {
@@ -20,7 +21,7 @@ namespace NextGenSpice.LargeSignal.Models
         /// <summary>
         ///     Parent definition element that this model instance corresponds to.
         /// </summary>
-        protected TDefinitionElement DefinitionElement { get; }
+        public TDefinitionElement DefinitionElement { get; }
 
         /// <summary>
         ///     Specifies how often the model should be updated.
@@ -31,6 +32,8 @@ namespace NextGenSpice.LargeSignal.Models
         ///     Name identifier of the corresponding element.
         /// </summary>
         public string Name => DefinitionElement.Name;
+
+        ICircuitDefinitionElement IAnalysisDeviceModel<LargeSignalCircuitModel>.DefinitionElement => DefinitionElement;
 
         /// <summary>
         ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables. And

@@ -35,6 +35,17 @@ namespace NextGenSpice.Core.Elements
         /// <summary>
         ///     Set of model parameters for this device.
         /// </summary>
-        public BjtModelParams Parameters { get; }
+        public BjtModelParams Parameters { get; set; }
+
+        /// <summary>
+        ///     Creates a deep copy of this device.
+        /// </summary>
+        /// <returns></returns>
+        public override ICircuitDefinitionElement Clone()
+        {
+            var clone = (BjtElement) base.Clone();
+            clone.Parameters = (BjtModelParams) clone.Parameters.Clone();
+            return clone;
+        }
     }
 }

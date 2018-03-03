@@ -23,5 +23,16 @@ namespace NextGenSpice.Core.Elements
         ///     Hint for initial voltage across the diode in volts for faster first dc-bias calculation.
         /// </summary>
         public double VoltageHint { get; set; }
+
+        /// <summary>
+        ///     Creates a deep copy of this device.
+        /// </summary>
+        /// <returns></returns>
+        public override ICircuitDefinitionElement Clone()
+        {
+            var clone = (DiodeElement) base.Clone();
+            clone.Parameters = (DiodeModelParams) clone.Parameters.Clone();
+            return clone;
+        }
     }
 }

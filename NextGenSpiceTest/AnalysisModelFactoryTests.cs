@@ -52,6 +52,10 @@ namespace NextGenSpiceTest
 
         private class TestDeviceModel : ITestDeviceModel
         {
+            /// <summary>
+            ///     Instance of definition element that corresponds to this device analysis model.
+            /// </summary>
+            public ICircuitDefinitionElement DefinitionElement => throw new NotImplementedException();
         }
 
 
