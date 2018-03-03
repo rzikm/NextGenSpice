@@ -1,4 +1,6 @@
-﻿namespace NextGenSpice.Core.Elements
+﻿using System.Collections.Generic;
+
+namespace NextGenSpice.Core.Elements
 {
     /// <summary>
     ///     Class representing voltage controlled voltage source element.
@@ -34,5 +36,28 @@
         ///     Multiplier of the reference voltage.
         /// </summary>
         public double Gain { get; set; }
+
+        /// <summary>
+        ///     Gets metadata about this device interconnections in the circuit.
+        /// </summary>
+        /// <returns></returns>
+        public override IEnumerable<CircuitBranchMetadata> GetBranchMetadata()
+        {
+            return new[]
+            {
+                new CircuitBranchMetadata
+                {
+                    N1 = Anode,
+                    N2 = Cathode,
+                    BranchType = BranchType.VoltageDefined
+                },
+//                new CircuitBranchMetadata
+//                {
+//                    N1 = ReferenceAnode,
+//                    N2 = ReferenceCathode,
+//                    BranchType = BranchType.VoltageDefined
+//                }
+            };
+        }
     }
 }

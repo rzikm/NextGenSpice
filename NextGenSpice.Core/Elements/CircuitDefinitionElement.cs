@@ -1,4 +1,5 @@
-﻿using NextGenSpice.Core.Circuit;
+﻿using System.Collections.Generic;
+using NextGenSpice.Core.Circuit;
 
 namespace NextGenSpice.Core.Elements
 {
@@ -33,5 +34,11 @@ namespace NextGenSpice.Core.Elements
             circuitDefinitionElement.ConnectedNodes = ConnectedNodes.Clone();
             return circuitDefinitionElement;
         }
+
+        /// <summary>
+        ///     Gets metadata about this device interconnections in the circuit.
+        /// </summary>
+        /// <returns></returns>
+        public abstract IEnumerable<CircuitBranchMetadata> GetBranchMetadata();
     }
 }

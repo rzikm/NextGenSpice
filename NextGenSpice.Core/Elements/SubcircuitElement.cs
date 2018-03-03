@@ -41,5 +41,14 @@ namespace NextGenSpice.Core.Elements
             clone.Elements.Select(e => e.Clone()).ToArray();
             return clone;
         }
+
+        /// <summary>
+        ///     Gets metadata about this device interconnections in the circuit.
+        /// </summary>
+        /// <returns></returns>
+        public override IEnumerable<CircuitBranchMetadata> GetBranchMetadata()
+        {
+            return Elements.SelectMany(e => e.GetBranchMetadata());
+        }
     }
 }

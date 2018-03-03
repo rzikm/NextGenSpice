@@ -1,4 +1,5 @@
-﻿using NextGenSpice.Core.BehaviorParams;
+﻿using System.Collections.Generic;
+using NextGenSpice.Core.BehaviorParams;
 
 namespace NextGenSpice.Core.Elements
 {
@@ -31,6 +32,23 @@ namespace NextGenSpice.Core.Elements
             var clone = (CurrentSourceElement) base.Clone();
             clone.BehaviorParams = (SourceBehaviorParams) clone.BehaviorParams.Clone();
             return clone;
+        }
+
+        /// <summary>
+        ///     Gets metadata about this device interconnections in the circuit.
+        /// </summary>
+        /// <returns></returns>
+        public override IEnumerable<CircuitBranchMetadata> GetBranchMetadata()
+        {
+            return new[]
+            {
+                new CircuitBranchMetadata
+                {
+                    N1 = Anode,
+                    N2 = Cathode,
+                    BranchType = BranchType.CurrentDefined
+                }
+            };
         }
     }
 }

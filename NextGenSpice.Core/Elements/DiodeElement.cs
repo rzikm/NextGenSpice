@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NextGenSpice.Core.Elements.Parameters;
 
 namespace NextGenSpice.Core.Elements
@@ -33,6 +34,24 @@ namespace NextGenSpice.Core.Elements
             var clone = (DiodeElement) base.Clone();
             clone.Parameters = (DiodeModelParams) clone.Parameters.Clone();
             return clone;
+        }
+
+        /// <summary>
+        ///     Gets metadata about this device interconnections in the circuit.
+        /// </summary>
+        /// <returns></returns>
+        public override IEnumerable<CircuitBranchMetadata> GetBranchMetadata()
+        {
+            //TODO: verify this
+            return new[]
+            {
+                new CircuitBranchMetadata
+                {
+                    N1 = Anode,
+                    N2 = Cathode,
+                    BranchType = BranchType.Mixed
+                }
+            };
         }
     }
 }
