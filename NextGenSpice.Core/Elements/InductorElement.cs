@@ -14,11 +14,11 @@
         /// <summary>
         ///     Inductance of the device in henry.
         /// </summary>
-        public double Inductance { get; }
+        public double Inductance { get; set; }
 
         /// <summary>
         ///     Initial current flowing from the positive node to the negative node through the inductor in volts.
         /// </summary>
-        public double? InitialCurrent { get; }
+        public double? InitialCurrent { get; set; }
     }
 }

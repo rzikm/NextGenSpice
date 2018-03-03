@@ -38,10 +38,6 @@ namespace NextGenSpice.LargeSignal
             NodeVoltages = new double[this.initialVoltages.Length];
             Elements = elements;
 
-            constElements = elements.Where(e => e.UpdateMode == ModelUpdateMode.NoUpdate).ToArray();
-            linearTimeDependentElements = elements.Where(e => e.UpdateMode == ModelUpdateMode.TimePoint).ToArray();
-            nonlinearElements = elements.Where(e => e.UpdateMode == ModelUpdateMode.Always).ToArray();
-
             elementLookup = elements.Where(e => !string.IsNullOrEmpty(e.Name)).ToDictionary(e => e.Name);
         }
 
@@ -60,9 +56,9 @@ namespace NextGenSpice.LargeSignal
         /// </summary>
         public IReadOnlyList<ILargeSignalDeviceModel> Elements { get; }
 
-        private readonly ILargeSignalDeviceModel[] constElements;
-        private readonly ILargeSignalDeviceModel[] nonlinearElements;
-        private readonly ILargeSignalDeviceModel[] linearTimeDependentElements;
+        private ILargeSignalDeviceModel[] constElements;
+        private ILargeSignalDeviceModel[] nonlinearElements;
+        private ILargeSignalDeviceModel[] linearTimeDependentElements;
 
         private readonly Dictionary<string, ILargeSignalDeviceModel> elementLookup;
         private readonly double?[] initialVoltages;
@@ -178,6 +174,11 @@ namespace NextGenSpice.LargeSignal
 
         private void EnsureInitialized()
         {
+
+            constElements = Elements.Where(e => e.UpdateMode == ModelUpdateMode.NoUpdate).ToArray();
+            linearTimeDependentElements = Elements.Where(e => e.UpdateMode == ModelUpdateMode.TimePoint).ToArray();
+            nonlinearElements = Elements.Where(e => e.UpdateMode == ModelUpdateMode.Always).ToArray();
+
             if (context != null) return;
 
             context = new SimulationContext(NodeCount);

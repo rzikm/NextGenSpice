@@ -20,6 +20,6 @@ namespace NextGenSpice.Core.Elements
         /// <summary>
         ///     Behavior parameters of the input source.
         /// </summary>
-        public SourceBehaviorParams BehaviorParams { get; }
+        public SourceBehaviorParams BehaviorParams { get; set; }
     }
 }

@@ -16,12 +16,12 @@ namespace NextGenSpice.Core.Elements
         /// <summary>
         ///     Diode model parameters.
         /// </summary>
-        public DiodeModelParams Parameters { get; }
+        public DiodeModelParams Parameters { get; set; }
 
 
         /// <summary>
         ///     Hint for initial voltage across the diode in volts for faster first dc-bias calculation.
         /// </summary>
-        public double VoltageHint { get; }
+        public double VoltageHint { get; set; }
     }
 }

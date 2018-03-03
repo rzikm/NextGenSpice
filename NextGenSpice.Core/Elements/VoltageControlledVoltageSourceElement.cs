@@ -33,6 +33,6 @@
         /// <summary>
         ///     Multiplier of the reference voltage.
         /// </summary>
-        public double Gain { get; }
+        public double Gain { get; set; }
     }
 }

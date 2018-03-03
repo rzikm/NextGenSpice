@@ -14,11 +14,11 @@
         /// <summary>
         ///     Capacity in farads.
         /// </summary>
-        public double Capacity { get; }
+        public double Capacity { get; set; }
 
         /// <summary>
         ///     Initial voltage across the capacitor in volts.
         /// </summary>
-        public double? InitialVoltage { get; }
+        public double? InitialVoltage { get; set; }
     }
 }
