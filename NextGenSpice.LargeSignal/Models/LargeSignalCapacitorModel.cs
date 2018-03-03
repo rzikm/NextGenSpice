@@ -1,7 +1,7 @@
 ﻿using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Equations;
-using NextGenSpice.LargeSignal.NumIntegration;
+using NextGenSpice.Core.NumIntegration;
 using NextGenSpice.LargeSignal.Stamping;
 
 namespace NextGenSpice.LargeSignal.Models
@@ -16,15 +16,12 @@ namespace NextGenSpice.LargeSignal.Models
 
         public LargeSignalCapacitorModel(CapacitorElement definitionElement) : base(definitionElement)
         {
-            IntegrationMethod = new GearIntegrationMethod(2);
-            //            IntegrationMethod = new AdamsMoultonIntegrationMethod(4);
-            //            IntegrationMethod = new BackwardEulerIntegrationMethod();
         }
 
         /// <summary>
         ///     Integration method used for modifying inner state of the device.
         /// </summary>
-        private IIntegrationMethod IntegrationMethod { get; }
+        private IIntegrationMethod IntegrationMethod { get; set; }
 
         /// <summary>
         ///     Specifies how often the model should be updated.
@@ -32,15 +29,17 @@ namespace NextGenSpice.LargeSignal.Models
         public override ModelUpdateMode UpdateMode => ModelUpdateMode.TimePoint;
 
         /// <summary>
-        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
+        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables. And
+        ///     perform other necessary initialization
         /// </summary>
         /// <param name="builder">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>
-        public override void RegisterAdditionalVariables(IEquationSystemBuilder builder, ISimulationContext context)
+        public override void Initialize(IEquationSystemBuilder builder, ISimulationContext context)
         {
-            base.RegisterAdditionalVariables(builder, context);
+            base.Initialize(builder, context);
             branchVariable = builder.AddVariable();
             stamper = new LargeSignalCapacitorStamper(Anode, Cathode, branchVariable);
+            IntegrationMethod = context.CircuitParameters.IntegrationMethodFactory.CreateInstance();
         }
 
         /// <summary>

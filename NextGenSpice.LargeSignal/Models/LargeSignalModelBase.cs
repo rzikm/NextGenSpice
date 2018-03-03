@@ -33,11 +33,12 @@ namespace NextGenSpice.LargeSignal.Models
         public string Name => DefinitionElement.Name;
 
         /// <summary>
-        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
+        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables. And
+        ///     perform other necessary initialization
         /// </summary>
         /// <param name="builder">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>
-        public virtual void RegisterAdditionalVariables(IEquationSystemBuilder builder, ISimulationContext context)
+        public virtual void Initialize(IEquationSystemBuilder builder, ISimulationContext context)
         {
         }
 

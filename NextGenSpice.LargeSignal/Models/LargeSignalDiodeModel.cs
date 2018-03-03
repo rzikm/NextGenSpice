@@ -4,7 +4,7 @@ using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Elements.Parameters;
 using NextGenSpice.Core.Equations;
-using NextGenSpice.LargeSignal.NumIntegration;
+using NextGenSpice.Core.NumIntegration;
 using NextGenSpice.LargeSignal.Stamping;
 
 namespace NextGenSpice.LargeSignal.Models
@@ -14,38 +14,25 @@ namespace NextGenSpice.LargeSignal.Models
     /// </summary>
     public class LargeSignalDiodeModel : TwoNodeLargeSignalModel<DiodeElement>
     {
-        private readonly double capacitanceTreshold; // cached treshold values based by model.
-
-        private readonly double smallBiasTreshold; // cached treshold for diode model characteristic
-        private readonly double vt; // thermal voltage based on diode model values.
+        private double capacitanceTreshold; // cached treshold values based by model.
+        private double smallBiasTreshold; // cached treshold for diode model characteristic
+        private double vt; // thermal voltage based on diode model values.
+        
         private int capacitorBranch; // variable for capacitor branch current
 
         private LargeSignalCapacitorStamper capacitorStamper;
 
         private double gmin; // minimal slope of the I-V characteristic of the diode.
-
         private double ic; // current through the capacitor that models junction capacitance
 
+        // flags if initial condition for given subdevice should be applied
         private bool initialConditionCapacitor;
         private bool initialConditionDiode;
+
         private double vc; // voltage across the capacitor that models junction capacitance
 
         public LargeSignalDiodeModel(DiodeElement definitionElement) : base(definitionElement)
         {
-            //            IntegrationMethod = new AdamsMoultonIntegrationMethod(2);
-            IntegrationMethod = new GearIntegrationMethod(2);
-            //            IntegrationMethod = new TrapezoidalIntegrationMethod();
-            //            IntegrationMethod = new BackwardEulerIntegrationMethod();
-            //            IntegrationMethod = new AdamsMoultonIntegrationMethod(4);
-
-            Voltage = DefinitionElement.VoltageHint;
-
-            vt = Parameters.EmissionCoefficient * PhysicalConstants.Boltzmann *
-                 PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
-                 PhysicalConstants.ElementaryCharge;
-
-            smallBiasTreshold = -5 * vt;
-            capacitanceTreshold = Parameters.ForwardBiasDepletionCapacitanceCoefficient * Parameters.JunctionPotential;
         }
 
         /// <summary>
@@ -56,7 +43,7 @@ namespace NextGenSpice.LargeSignal.Models
         /// <summary>
         ///     Integration method used for modifying inner state of the device.
         /// </summary>
-        private IIntegrationMethod IntegrationMethod { get; }
+        private IIntegrationMethod IntegrationMethod { get; set; }
 
         /// <summary>
         ///     Specifies how often the model should be updated.
@@ -64,19 +51,30 @@ namespace NextGenSpice.LargeSignal.Models
         public override ModelUpdateMode UpdateMode => ModelUpdateMode.Always;
 
         /// <summary>
-        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
+        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables. And
+        ///     perform other necessary initialization
         /// </summary>
         /// <param name="builder">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>
-        public override void RegisterAdditionalVariables(IEquationSystemBuilder builder, ISimulationContext context)
+        public override void Initialize(IEquationSystemBuilder builder, ISimulationContext context)
         {
-            base.RegisterAdditionalVariables(builder, context);
+            base.Initialize(builder, context);
             capacitorBranch = builder.AddVariable();
             capacitorStamper = new LargeSignalCapacitorStamper(Anode, Cathode, capacitorBranch);
 
             gmin = Parameters.MinimalResistance ?? context.CircuitParameters.MinimalResistance;
             initialConditionCapacitor = true;
             initialConditionDiode = true;
+            IntegrationMethod = context.CircuitParameters.IntegrationMethodFactory.CreateInstance();
+
+            Voltage = DefinitionElement.VoltageHint;
+
+            vt = Parameters.EmissionCoefficient * PhysicalConstants.Boltzmann *
+                 PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
+                 PhysicalConstants.ElementaryCharge;
+
+            smallBiasTreshold = -5 * vt;
+            capacitanceTreshold = Parameters.ForwardBiasDepletionCapacitanceCoefficient * Parameters.JunctionPotential;
         }
 
         /// <summary>
@@ -151,7 +149,7 @@ namespace NextGenSpice.LargeSignal.Models
         {
             base.OnDcBiasEstablished(context);
             ic = context.GetSolutionForVariable(capacitorBranch);
-            if (context.TimeStep == 0) // set initial condition for the capacitor
+            if (Math.Abs(context.TimeStep) < double.Epsilon) // set initial condition for the capacitor
                 ic = Current;
             vc = Voltage;
 
@@ -174,7 +172,7 @@ namespace NextGenSpice.LargeSignal.Models
             var jc = Parameters.JunctionCapacitance;
             var bv = Parameters.ReverseBreakdownVoltage;
 
-            double id, geq, cd;
+            double id, geq;
             if (vd >= smallBiasTreshold)
             {
                 id = iss * (Math.Exp(vd / vt) - 1) + vd * gmin;
@@ -191,7 +189,7 @@ namespace NextGenSpice.LargeSignal.Models
                 geq = iss * Math.Exp(-(bv + vd) / vt) / vt;
             }
 
-            cd = -tt * geq;
+            var cd = -tt * geq;
 
             if (vd < capacitanceTreshold)
                 cd += jc / Math.Pow(1 - vd / vj, m);

@@ -86,8 +86,6 @@ namespace NextGenSpiceTest
                 results.Add(model.NodeVoltages[2]);
             }
 
-            //            Assert.Equal(0.77, results[4], new DoubleComparer(0.15));
-            //            Assert.Equal(0.90, results[8], new DoubleComparer(0.15));
         }
 
         [Fact]

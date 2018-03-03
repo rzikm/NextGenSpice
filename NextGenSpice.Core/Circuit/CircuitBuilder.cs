@@ -14,6 +14,8 @@ namespace NextGenSpice.Core.Circuit
         private readonly List<ICircuitDefinitionElement> elements;
         private readonly Dictionary<string, ICircuitDefinitionElement> namedElements;
         private readonly List<double?> nodes;
+        private bool validatedCircuit;
+        private CircuitTopologyException circuitException;
 
         public CircuitBuilder()
         {
@@ -33,7 +35,6 @@ namespace NextGenSpice.Core.Circuit
         /// </summary>
         public IReadOnlyList<ICircuitDefinitionElement> Elements => elements;
 
-        // TODO: remove this method? this feature is currently not supported
         /// <summary>
         ///     Sets initial node voltage.
         /// </summary>
@@ -87,6 +88,10 @@ namespace NextGenSpice.Core.Circuit
             elements.Add(element);
             if (element.Name != null)
                 namedElements[element.Name] = element;
+
+            // invalidate cached validation result
+            validatedCircuit = false;
+            circuitException = null;
             return this;
         }
 
@@ -96,8 +101,7 @@ namespace NextGenSpice.Core.Circuit
         /// <returns></returns>
         public ElectricCircuitDefinition BuildCircuit()
         {
-            VerifyCircuit();
-
+            if (!ValidateCircuit()) throw circuitException;
             return new ElectricCircuitDefinition(nodes.ToArray(), elements.Select(e => e.Clone()).ToArray());
         }
 
@@ -107,8 +111,9 @@ namespace NextGenSpice.Core.Circuit
         /// <returns></returns>
         public SubcircuitElement BuildSubcircuit(int[] terminals)
         {
-            VerifySubcircuit(terminals);
-
+            circuitException = ValidateSubcircuit_Internal(terminals);
+            if (circuitException != null) throw circuitException;
+            
             // subtract ground node from total node count
             return new SubcircuitElement(NodeCount - 1, terminals, elements.Select(e => e.Clone()));
         }
@@ -118,8 +123,20 @@ namespace NextGenSpice.Core.Circuit
         ///     are no floating nodes and there is a DC path between any two nodes not going through ground.
         /// </summary>
         /// <param name="terminals"></param>
-        private void VerifySubcircuit(int[] terminals)
+        public bool ValidateSubcircuit(int[] terminals)
         {
+            return ValidateSubcircuit_Internal(terminals) == null;
+        }
+
+        /// <summary>
+        ///     Verifies that current subcircuit with given nodes as terminals represents valid SPICE subcircuit. That is: there
+        ///     are no floating nodes and there is a DC path between any two nodes not going through ground.
+        /// </summary>
+        /// <param name="terminals"></param>
+        private CircuitTopologyException ValidateSubcircuit_Internal(int[] terminals)
+        {
+            CircuitTopologyException res = null;
+
             // ground node must not be external terminal
             if (terminals == null) throw new ArgumentNullException(nameof(terminals));
             if (terminals.Length == 0) throw new ArgumentException("Subcircuit must have at least one terminal node.");
@@ -128,21 +145,36 @@ namespace NextGenSpice.Core.Circuit
             if (terminals.Any(n => n >= NodeCount))
                 throw new ArgumentOutOfRangeException("There is no node with given id.");
 
+            if (validatedCircuit) return circuitException;
+
             var neighbourghs = GetNeighbourghs();
             neighbourghs[0].Clear(); // ignore connections to the ground node
 
             var components = GetComponents(neighbourghs);
             if (components.Count != 1) // incorrectly connected
-                throw new NotConnectedSubcircuit(components);
+                res = new NotConnectedSubcircuit(components);
+
+            return res;
         }
 
         /// <summary>
         ///     Verifies that current subcircuit with given nodes as terminals represents valid SPICE circuit. That is: there are
         ///     no floating nodes and there is a DC path between any two nodes not going through ground.
         /// </summary>
-        /// <param name="terminals"></param>
-        private void VerifyCircuit()
+        public bool ValidateCircuit()
         {
+            if (!validatedCircuit) circuitException = ValidateCircuit_Internal();
+            return circuitException == null;
+        }
+
+        /// <summary>
+        ///     Verifies that current subcircuit with given nodes as terminals represents valid SPICE circuit. That is: there are
+        ///     no floating nodes and there is a DC path between any two nodes not going through ground.
+        /// </summary>
+        private CircuitTopologyException ValidateCircuit_Internal()
+        {
+            CircuitTopologyException res = null;
+            if (validatedCircuit) return circuitException;
             // every node must be transitively connected to 0 (ground)
             var neighbourghs = GetNeighbourghs();
 
@@ -150,7 +182,9 @@ namespace NextGenSpice.Core.Circuit
 
             // some nodes are not reachable from ground
             if (visited.Count != NodeCount)
-                throw new NoDcPathToGroundException(Enumerable.Range(0, NodeCount).Except(visited));
+                res = new NoDcPathToGroundException(Enumerable.Range(0, NodeCount).Except(visited));
+
+            return res;
         }
 
         /// <summary>

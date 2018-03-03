@@ -13,26 +13,30 @@ namespace NextGenSpice.LargeSignal.Models
     /// </summary>
     internal class LargeSignalBjtModel : LargeSignalModelBase<BjtElement>
     {
-        private readonly double bF;
-        private readonly double bR;
+        private double bF;
+        private double bR;
 
-        private readonly double iKf;
-        private readonly double iKr;
-        private readonly double iS;
-        private readonly double iSc;
-        private readonly double iSe;
-        private readonly double nC;
-        private readonly double nE;
+        private double iKf;
+        private double iKr;
+        private double iS;
+        private double iSc;
+        private double iSe;
+        private double nC;
+        private double nE;
 
-        private readonly double nF;
-        private readonly double nR;
+        private double nF;
+        private double nR;
 
-        private readonly double vAf;
-        private readonly double vAr;
+        private double vAf;
+        private double vAr;
 
-        private readonly double vT; // thermal voltage
+        private double vT; // thermal voltage
 
         public LargeSignalBjtModel(BjtElement definitionElement) : base(definitionElement)
+        {
+        }
+
+        private void CacheModelParams()
         {
             vT = PhysicalConstants.Boltzmann *
                  PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
@@ -126,6 +130,19 @@ namespace NextGenSpice.LargeSignal.Models
         ///     Voltage between collector and emitter terminal.
         /// </summary>
         public double VoltageCollectorEmitter { get; private set; }
+
+
+        /// <summary>
+        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables. And
+        ///     perform other necessary initialization
+        /// </summary>
+        /// <param name="builder">The equation system builder.</param>
+        /// <param name="context">Context of current simulation.</param>
+        public override void Initialize(IEquationSystemBuilder builder, ISimulationContext context)
+        {
+            base.Initialize(builder, context);
+            CacheModelParams();
+        }
 
         /// <summary>
         ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is called

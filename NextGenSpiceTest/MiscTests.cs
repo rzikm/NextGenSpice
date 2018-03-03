@@ -1,4 +1,4 @@
-﻿using NextGenSpice.LargeSignal.NumIntegration;
+﻿using NextGenSpice.Core.NumIntegration;
 using Xunit;
 
 namespace NextGenSpiceTest

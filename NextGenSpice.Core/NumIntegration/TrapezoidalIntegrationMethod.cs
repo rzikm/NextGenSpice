@@ -1,11 +1,12 @@
-﻿namespace NextGenSpice.LargeSignal.NumIntegration
+﻿namespace NextGenSpice.Core.NumIntegration
 {
     /// <summary>
-    ///     Class implementing basic backward euler integration method.
+    ///     Class implementing implicit trapezoidal integration method.
     /// </summary>
-    public class BackwardEulerIntegrationMethod : IIntegrationMethod
+    public class TrapezoidalIntegrationMethod : IIntegrationMethod
     {
         private double derivative;
+        private double state;
 
         /// <summary>
         ///     Adds state and derivative of current timepoint to history.
@@ -15,6 +16,7 @@
         public void SetState(double state, double derivative)
         {
             this.derivative = derivative;
+            this.state = state;
         }
 
         /// <summary>
@@ -24,8 +26,8 @@
         /// <returns></returns>
         public (double state, double derivative) GetEquivalents(double dx)
         {
-            var dy = dx;
-            var y = dx * derivative;
+            var dy = 2 * dx;
+            var y = dy * derivative + state;
 
             return (y, dy);
         }

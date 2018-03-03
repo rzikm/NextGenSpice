@@ -65,13 +65,14 @@ namespace NextGenSpice.LargeSignal.Models
         }
 
         /// <summary>
-        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
+        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables. And
+        ///     perform other necessary initialization
         /// </summary>
         /// <param name="builder">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>
-        public override void RegisterAdditionalVariables(IEquationSystemBuilder builder, ISimulationContext context)
+        public override void Initialize(IEquationSystemBuilder builder, ISimulationContext context)
         {
-            base.RegisterAdditionalVariables(builder, context);
+            base.Initialize(builder, context);
 
             for (var i = 1; i < nodeMap.Length; i++)
                 nodeMap[i] = -1;
@@ -85,7 +86,7 @@ namespace NextGenSpice.LargeSignal.Models
             redirectingEquationEditor.TrueEquationEditor = builder;
 
             foreach (var model in elements)
-                model.RegisterAdditionalVariables(builder, context);
+                model.Initialize(builder, context);
         }
 
         /// <summary>

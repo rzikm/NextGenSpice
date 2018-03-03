@@ -207,7 +207,7 @@ namespace NextGenSpice.LargeSignal
                 b.AddVariable();
 
             foreach (var element in Elements)
-                element.RegisterAdditionalVariables(b, context);
+                element.Initialize(b, context);
 
             foreach (var element in constElements)
                 element.ApplyModelValues(b, context);

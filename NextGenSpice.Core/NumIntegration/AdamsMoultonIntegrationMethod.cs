@@ -3,7 +3,7 @@ using System.Linq;
 using NextGenSpice.Core.Equations;
 using Numerics;
 
-namespace NextGenSpice.LargeSignal.NumIntegration
+namespace NextGenSpice.Core.NumIntegration
 {
     /// <summary>
     ///     Class performing Adams-Moulton integration method of given order.

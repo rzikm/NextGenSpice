@@ -21,11 +21,12 @@ namespace NextGenSpice.LargeSignal.Models
         ModelUpdateMode UpdateMode { get; }
 
         /// <summary>
-        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
+        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables. And
+        ///     perform other necessary initialization
         /// </summary>
         /// <param name="builder">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>
-        void RegisterAdditionalVariables(IEquationSystemBuilder builder, ISimulationContext context);
+        void Initialize(IEquationSystemBuilder builder, ISimulationContext context);
 
         /// <summary>
         ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is called
