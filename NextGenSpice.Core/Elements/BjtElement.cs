@@ -60,12 +60,7 @@ namespace NextGenSpice.Core.Elements
             {
                 for (int j = 1; j < 4; j++)
                 {
-                    yield return new CircuitBranchMetadata
-                    {
-                        N1 = i,
-                        N2 = j,
-                        BranchType = BranchType.Mixed
-                    };
+                    yield return new CircuitBranchMetadata(i, j, BranchType.Mixed, this);
                 }
             }
         }

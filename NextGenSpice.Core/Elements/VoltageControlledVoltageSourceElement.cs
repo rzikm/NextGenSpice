@@ -45,18 +45,7 @@ namespace NextGenSpice.Core.Elements
         {
             return new[]
             {
-                new CircuitBranchMetadata
-                {
-                    N1 = Anode,
-                    N2 = Cathode,
-                    BranchType = BranchType.VoltageDefined
-                },
-//                new CircuitBranchMetadata
-//                {
-//                    N1 = ReferenceAnode,
-//                    N2 = ReferenceCathode,
-//                    BranchType = BranchType.VoltageDefined
-//                }
+                new CircuitBranchMetadata(Anode, Cathode, BranchType.VoltageDefined, this)
             };
         }
     }

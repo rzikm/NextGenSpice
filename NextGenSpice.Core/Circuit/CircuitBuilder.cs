@@ -135,8 +135,6 @@ namespace NextGenSpice.Core.Circuit
         /// <param name="terminals"></param>
         private CircuitTopologyException ValidateSubcircuit_Internal(int[] terminals)
         {
-            CircuitTopologyException res = null;
-
             // ground node must not be external terminal
             if (terminals == null) throw new ArgumentNullException(nameof(terminals));
             if (terminals.Length == 0) throw new ArgumentException("Subcircuit must have at least one terminal node.");
@@ -152,9 +150,9 @@ namespace NextGenSpice.Core.Circuit
 
             var components = GetComponents(neighbourghs);
             if (components.Count != 1) // incorrectly connected
-                res = new NotConnectedSubcircuit(components);
+                return new NotConnectedSubcircuit(components);
 
-            return res;
+            return ValidateBranchTypeTopologyConstraints(neighbourghs);
         }
 
         /// <summary>
@@ -173,7 +171,6 @@ namespace NextGenSpice.Core.Circuit
         /// </summary>
         private CircuitTopologyException ValidateCircuit_Internal()
         {
-            CircuitTopologyException res = null;
             if (validatedCircuit) return circuitException;
             // every node must be transitively connected to 0 (ground)
             var neighbourghs = GetNeighbourghs();
@@ -182,9 +179,18 @@ namespace NextGenSpice.Core.Circuit
 
             // some nodes are not reachable from ground
             if (visited.Count != NodeCount)
-                res = new NoDcPathToGroundException(Enumerable.Range(0, NodeCount).Except(visited));
+                return new NoDcPathToGroundException(Enumerable.Range(0, NodeCount).Except(visited));
 
-            return res;
+            return ValidateBranchTypeTopologyConstraints(neighbourghs);
+        }
+
+        private CircuitTopologyException ValidateBranchTypeTopologyConstraints(
+            Dictionary<int, HashSet<int>> neighbourghs)
+        {
+            // todo: no circle of voltage defined branches
+
+            // todo: no cutset of current defined branches
+            return null;
         }
 
         /// <summary>

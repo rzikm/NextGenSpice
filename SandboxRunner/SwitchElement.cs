@@ -12,12 +12,7 @@ namespace SandboxRunner
         {
             return new[]
             {
-                new CircuitBranchMetadata
-                {
-                    N1 = Anode,
-                    N2 = Cathode,
-                    BranchType = BranchType.Mixed
-                }
+                new CircuitBranchMetadata(Anode, Cathode, BranchType.Mixed, this)
             };
         }
     }
