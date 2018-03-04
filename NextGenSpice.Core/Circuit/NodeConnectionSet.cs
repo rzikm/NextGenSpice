@@ -51,5 +51,20 @@ namespace NextGenSpice.Core.Circuit
 
             return clone;
         }
+
+        /// <summary>
+        ///     Returns zero-based index of the terminal that is connected to node of given id. Returns a negative number if not
+        ///     found.
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+        public int IndexOf(int i)
+        {
+            for (var j = 0; j < set.Length; j++)
+                if (set[j] == i)
+                    return j;
+
+            return -1;
+        }
     }
 }

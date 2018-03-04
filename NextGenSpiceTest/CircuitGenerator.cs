@@ -53,10 +53,10 @@ namespace NextGenSpiceTest
             return new CircuitBuilder()
                 .AddResistor(0, 1, 1)
                 .AddCapacitor(1, 2, 5)
-                .AddCurrentSource(2, 3, 5)
+                .AddCurrentSource(0, 3, 5)
                 .AddDiode(3, 4, DiodeModelParams.Default)
-                .AddInductor(4, 5, 5)
-                .AddVoltageSource(5, 0, 5)
+                .AddInductor(4, 2, 5)
+                .AddVoltageSource(2, 0, 5)
                 .BuildCircuit();
         }
 

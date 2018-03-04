@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NextGenSpice.Core.Circuit
+namespace NextGenSpice.Core.Exceptions
 {
     [Serializable]
-    public class NotConnectedSubcircuit : CircuitTopologyException
+    public class NotConnectedSubcircuitException : CircuitTopologyException
     {
-        public NotConnectedSubcircuit(IEnumerable<int[]> components) : base(
+        public NotConnectedSubcircuitException(IEnumerable<int[]> components) : base(
             $"No path connecting node sets {string.Join(", ", components.Select(c => $"({string.Join(", ", c.Select(i => i.ToString()))})"))}.")
         {
             Components = components;

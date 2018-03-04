@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NextGenSpice.Core.Circuit;
+using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.Parser.Statements;
 using NextGenSpice.Parser.Statements.Deferring;
@@ -164,12 +165,22 @@ namespace NextGenSpice.Parser
                 {
                     case NoDcPathToGroundException ex:
                         message =
-                            $"Some nodes are not connected to the ground node ({string.Join(", ", ctx.SymbolTable.GetNodeNames(ex.Nodes))})";
+                            $"Some nodes are not connected to the ground node ({string.Join(", ", ctx.SymbolTable.GetNodeNames(ex.Nodes))}).";
                         break;
 
-                    case NotConnectedSubcircuit ex:
+                    case NotConnectedSubcircuitException ex:
                         message =
                             $"No path connecting node sets {string.Join(", ", ex.Components.Select(c => $"({string.Join(", ", ctx.SymbolTable.GetNodeNames(c))})"))}.";
+                        break;
+
+                    case VoltageBranchCycleException ex:
+                        message =
+                            $"Circuit contains a cycle of voltage defined elements ({string.Join(", ", ex.Elements.Select(el => el.Name))}).";
+                        break;
+
+                    case CurrentBranchCutsetException ex:
+                        message =
+                            $"Circuit contains a cutset of current defined elements ({string.Join(", ", ex.Elements.Select(el => el.Name))}).";
                         break;
 
                     default:

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NextGenSpice.Core.Elements;
 
 namespace NextGenSpiceTest
@@ -15,10 +16,7 @@ namespace NextGenSpiceTest
         /// <returns></returns>
         public override IEnumerable<CircuitBranchMetadata> GetBranchMetadata()
         {
-            return new[]
-            {
-                new CircuitBranchMetadata(Anode, Cathode, BranchType.Mixed, this)
-            };
+            return Enumerable.Empty<CircuitBranchMetadata>();
         }
     }
 }

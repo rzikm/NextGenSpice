@@ -14,10 +14,5 @@
         ///     Branch is defined by current flowing through the branch, e.g. current source or ideal capacitor.
         /// </summary>
         CurrentDefined,
-
-        /// <summary>
-        ///     Branch, which can be defined by both voltage and currrent.
-        /// </summary>
-        Mixed,
     }
 }

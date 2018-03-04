@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Elements.Parameters;
+using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Extensions;
 using Xunit;
 
@@ -64,7 +66,7 @@ namespace NextGenSpiceTest
             builder.AddResistor(3, 4, 3);
 
 //            builder.BuildSubcircuit(new []{1,4});
-            Assert.Throws<NotConnectedSubcircuit>(() => builder.BuildSubcircuit(new[] {1, 4}));
+            Assert.Throws<NotConnectedSubcircuitException>(() => builder.BuildSubcircuit(new[] {1, 4}));
         }
 
         [Fact]
@@ -98,6 +100,41 @@ namespace NextGenSpiceTest
             var device = new ResistorElement(5);
             builder.AddElement(new[] {1, 2}, device);
             Assert.Throws<InvalidOperationException>(() => builder.AddElement(new[] {1, 2}, device));
+        }
+
+        [Fact]
+        public void ThrowsWhenVoltageSourceCycle()
+        {
+            // a cycle
+            builder.AddVoltageSource(0, 1, 1, "V1");
+            builder.AddVoltageSource(0, 2, 1, "V2");
+            builder.AddVoltageSource(1, 2, 1, "V3");
+
+            // some other elements
+            builder.AddVoltageSource(0, 3, 1, "V4");
+            builder.AddResistor(2, 3, 1, "R");
+
+            var elements = Assert.Throws<VoltageBranchCycleException>(() => builder.BuildCircuit()).Elements;
+
+            Assert.Equal(new []{"V1", "V2", "V3"}, elements.Select(e => e.Name).OrderBy(s => s));
+        }
+
+        [Fact]
+        public void ThrowsWhenCurrentSourceCutset()
+        {
+            // a cutset
+            builder.AddCurrentSource(0, 1, 1, "I1");
+            builder.AddCurrentSource(2, 3, 1, "I2");
+
+            // some other elements
+            builder.AddVoltageSource(1, 2, 1, "V4");
+            builder.AddCurrentSource(1, 4, 1, "I3"); // cannot be in cutset
+            builder.AddResistor(4, 2, 1, "R2");
+            builder.AddResistor(0, 3, 1, "R");
+
+            var elements = Assert.Throws<CurrentBranchCutsetException>(() => builder.BuildCircuit()).Elements;
+
+            Assert.Equal(new[] { "I1", "I2" }, elements.Select(e => e.Name).OrderBy(s => s));
         }
     }
 }

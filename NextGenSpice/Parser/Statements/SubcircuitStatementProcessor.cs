@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.Utils;
 
@@ -119,7 +120,7 @@ namespace NextGenSpice.Parser.Statements
                 {
                     subcircuit = Context.CircuitBuilder.BuildSubcircuit(terminals);
                 }
-                catch (NotConnectedSubcircuit e)
+                catch (NotConnectedSubcircuitException e)
                 {
                     // translate node indexes to node names used in the input file
                     var message =

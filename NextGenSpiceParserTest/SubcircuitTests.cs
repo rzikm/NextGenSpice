@@ -71,7 +71,7 @@ d1 1 2 D
         public void SimpleNestedSubcircuit()
         {
             var result = Parse(@"
-v1 1 0 5V
+i1 1 0 5a
 r1 1 2 5OHM
 x1 0 1 subcircuit
 
@@ -143,7 +143,7 @@ v 1 22 5         *oops forgot to connect to node 2
         public void TestSameSimulationAsWithoutSubcircuit()
         {
             var v1 = Parse(@"
-v1 1 0 5V
+i1 1 0 5a
 r1 1 2 5OHM
 x1 0 1 subcircuit
 
@@ -152,7 +152,7 @@ d1 1 2 D
 x1 1 2 voltageAlias
 
 .subckt voltageAlias 1 2
-i1 1 2 5v
+v1 1 2 5v
 .ends
 
 .ends
@@ -160,10 +160,10 @@ i1 1 2 5v
             v1.EstablishInitialDcBias();
 
             var v2 = Parse(@"
-v1 1 0 5V
+i1 1 0 5a
 r1 1 2 5OHM
 d-x1.d1 0 1 D
-i-x1.x1.v1 0 1 5v
+v-x1.x1.v1 0 1 5v
 ").CircuitDefinition.GetLargeSignalModel();
             v2.EstablishInitialDcBias();
 
@@ -202,6 +202,48 @@ v1 1 0 5v
             Assert.Single(result.Errors);
             var message = result.Errors.Single().Messsage;
             Assert.Contains("must be unique", message);
+        }
+
+        [Fact]
+        public void DetectsVoltageCycleAcrossSubcircuits()
+        {
+            var result = Parse(@"
+v1 1 0 5V
+r1 1 2 5OHM
+x1 0 1 voltAlias
+
+.subckt voltAlias 1 2
+v1 1 3 5
+v2 3 2 4
+.ends
+
+
+");
+            Assert.Single(result.Errors);
+            var message = result.Errors.Single().Messsage;
+            Assert.Contains("cycle", message);
+        }
+
+        [Fact]
+        public void DetectsCurrentCutsetAcrossSubcircuits()
+        {
+            var result = Parse(@"
+i1 1 0 5a
+r1 1 2 5OHM
+x1 2 3 curAlias
+r2 3 0 5Ohm
+
+.subckt curAlias 1 2
+r1 1 21 5
+i2 21 22 5
+r2 22 2 5
+.ends
+
+
+");
+            Assert.Single(result.Errors);
+            var message = result.Errors.Single().Messsage;
+            Assert.Contains("cutset", message);
         }
     }
 }

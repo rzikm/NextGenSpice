@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Representation;
 
 namespace NextGenSpice.Core.Circuit
@@ -113,7 +114,7 @@ namespace NextGenSpice.Core.Circuit
         {
             circuitException = ValidateSubcircuit_Internal(terminals);
             if (circuitException != null) throw circuitException;
-            
+
             // subtract ground node from total node count
             return new SubcircuitElement(NodeCount - 1, terminals, elements.Select(e => e.Clone()));
         }
@@ -145,14 +146,19 @@ namespace NextGenSpice.Core.Circuit
 
             if (validatedCircuit) return circuitException;
 
-            var neighbourghs = GetNeighbourghs();
+            var neighbourghs = CircuitBuilderHelpers.GetNeighbourghs(NodeCount, Elements);
             neighbourghs[0].Clear(); // ignore connections to the ground node
 
-            var components = GetComponents(neighbourghs);
-            if (components.Count != 1) // incorrectly connected
-                return new NotConnectedSubcircuit(components);
+            var components = CircuitBuilderHelpers.GetComponents(neighbourghs);
+            components.RemoveAll(c => c[0] == 0); // remove ground component
 
-            return ValidateBranchTypeTopologyConstraints(neighbourghs);
+            if (components.Count != 1) // incorrectly connected
+                return new NotConnectedSubcircuitException(components);
+
+            var branches = elements.SelectMany(e => e.GetBranchMetadata()).ToArray();
+
+            var cycle = GetVoltageCicrle(branches);
+            return cycle != null ? new VoltageBranchCycleException(cycle) : null;
         }
 
         /// <summary>
@@ -173,94 +179,119 @@ namespace NextGenSpice.Core.Circuit
         {
             if (validatedCircuit) return circuitException;
             // every node must be transitively connected to 0 (ground)
-            var neighbourghs = GetNeighbourghs();
+            var neighbourghs = CircuitBuilderHelpers.GetNeighbourghs(NodeCount, Elements);
 
-            var visited = GetIdsInSameComponent(0, neighbourghs);
+            var visited = CircuitBuilderHelpers.GetIdsInSameComponent(0, neighbourghs);
 
             // some nodes are not reachable from ground
             if (visited.Count != NodeCount)
                 return new NoDcPathToGroundException(Enumerable.Range(0, NodeCount).Except(visited));
 
-            return ValidateBranchTypeTopologyConstraints(neighbourghs);
+            var branches = elements.SelectMany(e => e.GetBranchMetadata()).ToArray();
+
+            var cycle = GetVoltageCicrle(branches);
+            if (cycle != null) return new VoltageBranchCycleException(cycle);
+
+            var cutset = GetCurrentCutset(branches);
+            return cutset != null ? new CurrentBranchCutsetException(cutset) : null;
         }
 
-        private CircuitTopologyException ValidateBranchTypeTopologyConstraints(
-            Dictionary<int, HashSet<int>> neighbourghs)
+
+        private IEnumerable<ICircuitDefinitionElement> GetCurrentCutset(CircuitBranchMetadata[] branches)
         {
-            // todo: no circle of voltage defined branches
+            var currentBranches = branches.Where(b => b.BranchType == BranchType.CurrentDefined).ToArray();
 
-            // todo: no cutset of current defined branches
-            return null;
-        }
+            var neighbourghs = CircuitBuilderHelpers.GetNeighbourghs(NodeCount, elements);
 
-        /// <summary>
-        ///     Gets connectivity components of the circuit graph using simple graph search.
-        /// </summary>
-        /// <param name="neighbourghs">Vertex-neighbourghs representation of the graph.</param>
-        /// <returns></returns>
-        private List<int[]> GetComponents(Dictionary<int, HashSet<int>> neighbourghs)
-        {
-            var nodes = new HashSet<int>(Enumerable.Range(1, NodeCount - 1));
-            var components = new List<int[]>();
-
-            while (nodes.Count > 0) // while some node is uncertain
+            // remove current defined branches from the graph
+            var nonCurrentElems = new HashSet<ICircuitDefinitionElement>(elements);
+            foreach (var e in currentBranches.Select(b => b.Element)) nonCurrentElems.Remove(e);
+            foreach (var branch in currentBranches)
             {
-                var visited =
-                    GetIdsInSameComponent(nodes.First(),
-                        neighbourghs); // get component containing first node in the set
-                visited.Remove(0); // connections to the ground are ignored
-
-                components.Add(visited.ToArray());
-                nodes.ExceptWith(visited); // remove nodes from component found
+                if (nonCurrentElems.Any(e => e.ConnectedNodes.Contains(branch.N1) && e.ConnectedNodes.Contains(branch.N2)))
+                    continue; // some node bridges the same connection as this branch
+                neighbourghs[branch.N1].Remove(branch.N2);
+                neighbourghs[branch.N2].Remove(branch.N1);
             }
-            return components;
-        }
 
-        /// <summary>
-        ///     Creates vertex-neighbourghs representation of the circuit graph.
-        /// </summary>
-        private Dictionary<int, HashSet<int>> GetNeighbourghs()
-        {
-            var neighbourghs = Enumerable.Range(0, NodeCount).ToDictionary(n => n, n => new HashSet<int>());
+            var components = CircuitBuilderHelpers.GetComponents(neighbourghs);
 
-            foreach (var element in elements)
+            // get indexes of components for faster lookup
+            var componentIndexes = new int[NodeCount];
+            for (int i = 0; i < components.Count; i++)
             {
-                var ids = element
-                    .ConnectedNodes; // consider the element to be a hyperedge - all pairs in the hyperedge are connected
-                for (var i = 0; i < ids.Count; i++)
-                for (var j = 0; j < ids.Count; j++)
+                foreach (var n in components[i])
                 {
-                    if (i == j) continue; // do not add connection to itself
-                    neighbourghs[ids[i]].Add(ids[j]);
+                    componentIndexes[n] = i;
                 }
             }
 
-            return neighbourghs;
+            // throw away branches that do not connect nodes from different components
+            var result = currentBranches
+                .Where(b => componentIndexes[b.N1] != componentIndexes[b.N2]).Select(b => b.Element).ToArray();
+
+            return result.Length > 0 ? result : null;
         }
 
-        /// <summary>
-        ///     Finds all nodes that can be reached from the given start node using graph.
-        /// </summary>
-        /// <param name="startId">Start node id.</param>
-        /// <param name="neighbourghs">Vertex-neighbourghs representation of the graph.</param>
-        /// <returns></returns>
-        private static HashSet<int> GetIdsInSameComponent(int startId, Dictionary<int, HashSet<int>> neighbourghs)
+        private IEnumerable<ICircuitDefinitionElement> GetVoltageCicrle(CircuitBranchMetadata[] branches)
         {
-            // use breadth-first search
-            var q = new Queue<int>();
-            q.Enqueue(startId);
-            var visited = new HashSet<int>();
-            while (q.Count > 0) // while fringe is nonempty
+            // get neighbourghs for the graph
+            var neighbourghs = new Dictionary<int, HashSet<(int target, ICircuitDefinitionElement element)>>();
+            foreach (var branch in branches.Where(b => b.BranchType == BranchType.VoltageDefined))
             {
-                var current = q.Dequeue();
-                visited.Add(current); // close current node.
-                foreach (var n in neighbourghs[current])
-                {
-                    if (visited.Contains(n)) continue; // already visited node, do not open again.
-                    q.Enqueue(n); // open new node
-                }
+                if (!neighbourghs.TryGetValue(branch.N1, out var ne)) neighbourghs[branch.N1] = ne = new HashSet<(int target, ICircuitDefinitionElement element)>();
+                ne.Add((branch.N2, branch.Element));
+
+                if (!neighbourghs.TryGetValue(branch.N2, out ne)) neighbourghs[branch.N2] = ne = new HashSet<(int target, ICircuitDefinitionElement element)>();
+                ne.Add((branch.N1, branch.Element));
             }
-            return visited;
+
+            // use depth first search to get a cycle
+            var elementStack = new Stack<ICircuitDefinitionElement>();
+            var nodeStack = new Stack<int>();
+            var visited = new bool[NodeCount];
+
+            IEnumerable<ICircuitDefinitionElement> Recurse(int i)
+            {
+                if (visited[i]) return null; // already visited this path
+
+                if (nodeStack.Contains(i)) // success
+                {
+                    // skip prefix (handles situations when the cycle found is a -> b -> c -> b)
+                    // stack is enumerated from top
+                    var cycleLength = nodeStack.TakeWhile(n => n != i).Count() + 1;
+                    return elementStack.Take(cycleLength);
+                }
+
+                nodeStack.Push(i);
+                foreach ((var target, var element) in neighbourghs[i])
+                {
+                    if (elementStack.Count > 0 && element == elementStack.Peek()) continue; // prevent recursing indefinitely
+
+                    elementStack.Push(element);
+               
+
+                    var res = Recurse(target);
+                    if (res != null) return res;  // propagate success
+
+                    elementStack.Pop(); // backtrack
+                }
+
+                nodeStack.Pop();
+                return null; // fail
+            }
+
+            IEnumerable<ICircuitDefinitionElement> result = null;
+            foreach (var i in neighbourghs.Keys)
+            {
+                result = Recurse(i);
+                if (result != null) break;
+            }
+
+            return result;
         }
+        
+
+       
     }
 }

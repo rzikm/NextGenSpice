@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NextGenSpice.Core.Circuit
+namespace NextGenSpice.Core.Exceptions
 {
     [Serializable]
     public class NoDcPathToGroundException : CircuitTopologyException
