@@ -66,14 +66,14 @@ namespace NextGenSpice.Parser.Statements.Deferring
                     token.LineColumn++;
                     if (!context.SymbolTable.TryGetNodeIndex(n1, out var i1))
                     {
-                        errors.Add(token.ToErrorInfo($"'{n1}' is not a node."));
+                        errors.Add(token.ToErrorInfo(SpiceParserError.NotANode, n1));
                         success = false;
                     }
 
                     token.LineColumn += n1.Length + 1;
                     if (!context.SymbolTable.TryGetNodeIndex(n2, out var i2))
                     {
-                        errors.Add(token.ToErrorInfo($"'{n2}' is not a node."));
+                        errors.Add(token.ToErrorInfo(SpiceParserError.NotANode, n2));
                         success = false;
                     }
 
@@ -82,7 +82,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
                 }
                 else
                 {
-                    errors.Add(token.ToErrorInfo($"'{name}' is not a node or a circuit element."));
+                    errors.Add(token.ToErrorInfo(SpiceParserError.NotANodeOrElement));
                 }
             }
             else // only circuit elements with stat other than "V"
@@ -90,7 +90,8 @@ namespace NextGenSpice.Parser.Statements.Deferring
                 if (element != null) 
                     printStatement = new ElementPrintStatement(stat, name, token); 
                 else
-                    errors.Add(token.ToErrorInfo($"'{name}' is not a circuit element."));
+                    errors.Add(token.ToErrorInfo(SpiceParserError.NotAnElement));
+                
             }
 
             return printStatement != null;
@@ -156,7 +157,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
             var errorInfos = provider == null
                 ? new[]
                 {
-                    new ErrorInfo() {Messsage = $"There is no print value provider for '{stat}' for device '{name}'."}
+                    ErrorInfo.Create(SpiceParserError.NoPrintProvider, 0, 0, stat, name), 
                 }
                 : Enumerable.Empty<ErrorInfo>();
             return errorInfos;

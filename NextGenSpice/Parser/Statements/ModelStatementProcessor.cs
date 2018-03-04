@@ -46,7 +46,7 @@ namespace NextGenSpice.Parser.Statements
             if (!handlers.TryGetValue(discriminatorToken.Value, out var handler))
             {
                 Context.Errors.Add(
-                    discriminatorToken.ToErrorInfo($"No device model has discriminator '{discriminatorToken.Value}'"));
+                    discriminatorToken.ToErrorInfo(SpiceParserError.UnknownDeviceModelDiscriminator));
                 return;
             }
 

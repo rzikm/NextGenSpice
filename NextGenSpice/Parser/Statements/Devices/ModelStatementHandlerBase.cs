@@ -32,7 +32,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             if (context.SymbolTable.TryGetModel<T>(name, out _))
             {
                 context.Errors.Add(tokens[1]
-                    .ToErrorInfo($"There already exists model with name '{name} for this device type."));
+                    .ToErrorInfo(SpiceParserError.ModelAlreadyExists));
                 return; // no additional processing required
             }
 
@@ -45,7 +45,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                 if (index <= 0 || index >= token.Value.Length - 1) // no '=' 
                 {
                     context.Errors.Add(
-                        token.ToErrorInfo("Model parameters must be in form <parameter name>=<value>."));
+                        token.ToErrorInfo(SpiceParserError.InvalidModelParameter));
                     continue;
                 }
 
@@ -53,7 +53,7 @@ namespace NextGenSpice.Parser.Statements.Devices
 
                 // check validity of the parameter name
                 if (!Mapper.HasKey(paramName))
-                    context.Errors.Add(token.ToErrorInfo($"Unknown model parameter name '{paramName}'."));
+                    context.Errors.Add(token.ToErrorInfo(SpiceParserError.UnknownParameter, paramName));
 
                 // reuse token instance for parsing the value part of the pair
                 token.LineColumn += index + 1; // modify offset to get correct error location.

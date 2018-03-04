@@ -87,21 +87,17 @@ namespace NextGenSpice.Parser.Statements.Devices
         ///     Processes given set of statements.
         /// </summary>
         protected abstract void DoProcess();
-
+        
+        // TODO: inline this
         /// <summary>
         ///     Returns generic error message
         /// </summary>
         /// <param name="source"></param>
-        /// <param name="message"></param>
+        /// <param name="errorCode"></param>
         /// <returns></returns>
-        protected void Error(Token source, string message)
+        protected void Error(Token source, SpiceParserError errorCode)
         {
-            Context.Errors.Add(new ErrorInfo
-            {
-                Messsage = message,
-                LineNumber = source.LineNumber,
-                LineColumn = source.LineColumn
-            });
+            Context.Errors.Add(source.ToErrorInfo(errorCode));
         }
 
         /// <summary>
@@ -111,7 +107,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <returns></returns>
         private void ElementAlreadyDefined(Token token)
         {
-            Error(token, $"Element with name {token.Value} is already defined.");
+            Error(token, SpiceParserError.ElementAlreadyDefined);
         }
 
         /// <summary>
@@ -121,7 +117,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <returns></returns>
         private void NotANumber(Token token)
         {
-            Error(token, $"Cannot convert {token.Value} to numeric representation.");
+            Error(token, SpiceParserError.NotANumber);
         }
 
         /// <summary>
@@ -131,7 +127,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <returns></returns>
         private void NotANode(Token token)
         {
-            Error(token, $"Symbol {token.Value} is not a node");
+            Error(token, SpiceParserError.NotANode);
         }
 
         /// <summary>
@@ -141,7 +137,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <returns></returns>
         protected void InvalidNumberOfArguments(Token token)
         {
-            Error(token, "Invalid number of arguments");
+            Error(token, SpiceParserError.InvalidNumberOfArguments);
         }
 
         /// <summary>

@@ -37,13 +37,12 @@ namespace NextGenSpice.Parser.Statements.Deferring
             errors.Clear();
             if (!context.SymbolTable.TryGetSubcircuit(subcircuitName.Value, out model))
             {
-                errors.Add(subcircuitName.ToErrorInfo($"Subcircuit does not exist '{subcircuitName.Value}'"));
+                errors.Add(subcircuitName.ToErrorInfo(SpiceParserError.NoSuchSubcircuit));
                 return false;
             }
             if (model.TerminalNodes.Length != terminals.Length)
             {
-                errors.Add(subcircuitName.ToErrorInfo(
-                    $"Subcircuit has wrong number of terminals '{subcircuitName.Value}'"));
+                errors.Add(subcircuitName.ToErrorInfo(SpiceParserError.InvalidTerminalCount));
                 return false;
             }
 

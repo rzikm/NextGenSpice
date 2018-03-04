@@ -42,7 +42,7 @@ namespace NextGenSpice.Parser.Statements
             var analysisType = tokens[1].Value;
             if (!processors.TryGetValue(analysisType, out var proc))
             {
-                Context.Errors.Add(tokens[1].ToErrorInfo($"Unrecognized analysis type: '{analysisType}'."));
+                Context.Errors.Add(tokens[1].ToErrorInfo(SpiceParserError.UnknownAnalysisType));
                 return;
             }
 

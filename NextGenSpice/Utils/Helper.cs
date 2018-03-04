@@ -61,24 +61,21 @@ namespace NextGenSpice.Utils
         public static double GetNumericValue(this Token t, ICollection<ErrorInfo> errors)
         {
             var val = ConvertValue(t.Value);
-            if (double.IsNaN(val)) errors.Add(t.ToErrorInfo($"Cannot convert '{t.Value}' to a numeric value"));
+            if (double.IsNaN(val)) errors.Add(t.ToErrorInfo(SpiceParserError.NotANumber));
             return val;
         }
 
+
         /// <summary>
-        ///     Makes ErrorInfo instance with given message that has location set according to the given token.
+        ///     Makes ErrorInfo instance with given error code. LineNumber, LineColumn and message args are extracted from the token.
         /// </summary>
         /// <param name="t"></param>
-        /// <param name="message"></param>
+        /// <param name="errorCode"></param>
         /// <returns></returns>
-        public static ErrorInfo ToErrorInfo(this Token t, string message)
+        public static ErrorInfo ToErrorInfo(this Token t, SpiceParserError errorCode, params object[] args)
         {
-            return new ErrorInfo
-            {
-                LineColumn = t.LineColumn,
-                LineNumber = t.LineNumber,
-                Messsage = message
-            };
+            object[] a = args.Length == 0 ? new object[] { t.Value } : args;
+            return new ErrorInfo(errorCode, t.LineNumber, t.LineColumn, a);
         }
 
         /// <summary>
@@ -130,7 +127,7 @@ namespace NextGenSpice.Utils
             else // on the beginning of second token
             {
                 result.Add(first);
-                tokens[startPos + 1].Value = tokens[startPos +1].Value.Substring(1);
+                tokens[startPos + 1].Value = tokens[startPos + 1].Value.Substring(1);
                 ++tokens[startPos + 1].LineColumn;
             }
 

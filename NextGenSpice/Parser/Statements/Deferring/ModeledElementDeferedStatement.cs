@@ -38,7 +38,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
         /// <returns></returns>
         public override IEnumerable<ErrorInfo> GetErrors()
         {
-            return new[] {modelNameToken.ToErrorInfo($"There is no model named '{modelNameToken.Value}' for this device type.")};
+            return new[] {modelNameToken.ToErrorInfo(SpiceParserError.NoSuchModel)};
         }
 
         /// <summary>

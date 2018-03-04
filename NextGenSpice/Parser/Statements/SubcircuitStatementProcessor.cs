@@ -37,7 +37,7 @@ namespace NextGenSpice.Parser.Statements
             Context.EnterSubcircuit();
             var name = tokens[1].Value;
             if (Context.SymbolTable.TryGetSubcircuit(name, out _))
-                Context.Errors.Add(tokens[1].ToErrorInfo($"Subcircuit with name '{name}' already exists."));
+                Context.Errors.Add(tokens[1].ToErrorInfo(SpiceParserError.SubcircuitAlreadyExists));
             root.Statements.Push(tokens); // to be processed in .ENDS statement handler
         }
     }
@@ -94,7 +94,7 @@ namespace NextGenSpice.Parser.Statements
                 if (!Context.SymbolTable.TryGetOrCreateNode(token.Value, out var node))
                 {
                     node = -1;
-                    Context.Errors.Add(token.ToErrorInfo($"Symbol {token.Value} is not a node"));
+                    Context.Errors.Add(token.ToErrorInfo(SpiceParserError.NotANode));
                 }
                 return node;
             }).ToArray();
@@ -107,11 +107,11 @@ namespace NextGenSpice.Parser.Statements
 
             // validate terminal specs - no duplicates
             if (terminals.Distinct().Count() != terminals.Length)
-                Context.Errors.Add(name.ToErrorInfo("Terminal names must be unique."));
+                Context.Errors.Add(name.ToErrorInfo(SpiceParserError.TerminalNamesNotUnique));
             
             // ground node not allowed as terminal
             if (terminals.Contains(0))
-                Context.Errors.Add(name.ToErrorInfo("Cannot specify ground node as a subcircuit terminal."));
+                Context.Errors.Add(name.ToErrorInfo(SpiceParserError.TerminalToGround));
 
             Context.FlushStatements();
             if (errorCount == Context.Errors.Count) // no new errors, try to construct subcircuit
@@ -122,11 +122,9 @@ namespace NextGenSpice.Parser.Statements
                 }
                 catch (NotConnectedSubcircuitException e)
                 {
-                    // translate node indexes to node names used in the input file
-                    var message =
-                        $"'{name.Value}' - No path connecting node sets {string.Join(", ", e.Components.Select(c => $"({string.Join(", ", Context.SymbolTable.GetNodeNames(c))})"))}.";
-
-                    Context.Errors.Add(name.ToErrorInfo(message));
+                    // translate node indexes to node names used in the input file 
+                    var names = e.Components.Select(c => Context.SymbolTable.GetNodeNames(c).ToArray()).Cast<object>().ToArray();
+                    Context.Errors.Add(new ErrorInfo(SpiceParserError.SubcircuitNotConnected, name.LineNumber, name.LineColumn, names));
                 }
             }
 

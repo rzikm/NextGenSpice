@@ -133,7 +133,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                     return GetParameterTokens(dcMapper, paramTokens, 1);
 
                 default:
-                    Error(paramTokens[0], $"Unknown transient source function: '{paramTokens[0].Value}'");
+                    Error(paramTokens[0], SpiceParserError.UnknownTransientFunction);
                     return null;
             }
         }
@@ -159,7 +159,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                     {
                         rep = GetValue(paramTokens[i + 1]);
                         if (!definitionPoints.ContainsKey(rep))
-                            Error(paramTokens[i + 1], "Repetition point must be equal to a function breakpoint.");
+                            Error(paramTokens[i + 1], SpiceParserError.NoBreakpointRepetition);
                     }
 
                     par.RepeatStart = rep;
@@ -168,15 +168,15 @@ namespace NextGenSpice.Parser.Statements.Devices
 
                 if (i == paramTokens.Count - 1) // this timepoint does not have corresponding value
                 {
-                    Error(paramTokens[i], "Timpeoint without corresponding value.");
+                    Error(paramTokens[i], SpiceParserError.TimePointWithoutValue);
                     break;
                 }
 
                 var time = GetValue(paramTokens[i]);
                 var value = GetValue(paramTokens[i + 1]);
 
-                if (time < 0) Error(paramTokens[i], "Timepoints must be nonnegative.");
-                else if (time <= currentTime) Error(paramTokens[i + 1], "Timepoints must be ascending.");
+                if (time < 0) Error(paramTokens[i], SpiceParserError.NegativeTimepoint);
+                else if (time <= currentTime) Error(paramTokens[i + 1], SpiceParserError.NonascendingTimepoints);
 
                 definitionPoints[time] = value;
 
@@ -204,12 +204,8 @@ namespace NextGenSpice.Parser.Statements.Devices
                 i++) // start from 1 bc. first is method identifier
                 mapper.Set(i - 1, GetValue(paramTokens[i]));
 
-            if (paramTokens.Count < minArgc)
-                Error(paramTokens[0], $"Too few arguments for transient function '{paramTokens[0].Value}'");
-
-            if (paramTokens.Count > mapper.ByIndexCount + 1)
-                Error(paramTokens[mapper.ByIndexCount],
-                    $"Too many arguments for transient source '{paramTokens[0].Value}'");
+            if (paramTokens.Count < minArgc || paramTokens.Count > mapper.ByIndexCount + 1)
+                Error(paramTokens[0], SpiceParserError.InvalidNumberOfArguments);
 
             var t = mapper.Target;
             mapper.Target = default(T); // free memory

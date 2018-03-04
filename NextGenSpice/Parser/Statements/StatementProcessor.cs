@@ -7,7 +7,7 @@ namespace NextGenSpice.Parser.Statements
     /// </summary>
     public abstract class StatementProcessor : IStatementProcessor
     {
-        public StatementProcessor()
+        protected StatementProcessor()
         {
             MaxArgs = int.MaxValue;
         }
@@ -42,11 +42,8 @@ namespace NextGenSpice.Parser.Statements
             Context = ctx;
 
             var firstToken = tokens[0];
-            if (tokens.Length - 1 < MinArgs)
-                ctx.Errors.Add(firstToken.ToErrorInfo($"Too few arguments for {firstToken.Value} statement."));
-
-            if (tokens.Length - 1 > MaxArgs)
-                ctx.Errors.Add(firstToken.ToErrorInfo($"Too many arguments for {firstToken.Value} statement."));
+            if (tokens.Length - 1 < MinArgs || tokens.Length - 1 > MaxArgs)
+                ctx.Errors.Add(firstToken.ToErrorInfo(SpiceParserError.InvalidNumberOfArguments));
 
             DoProcess(tokens);
 

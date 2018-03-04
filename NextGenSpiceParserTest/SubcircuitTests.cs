@@ -47,8 +47,9 @@ d1 1 2 mydiode *mydiode is declared outside
 
 ");
             Assert.Single(result.Errors);
-            var message = result.Errors.Single().Messsage;
-            Assert.Contains("MYDIODE", message);
+            var error = result.Errors.Single();
+            Assert.Equal(SpiceParserError.NoSuchModel, error.ErrorCode);
+            Assert.Equal("MYDIODE", error.Args[0]);
         }
 
         [Fact]
@@ -110,8 +111,9 @@ v1 1 2 5v
 
 ");
             Assert.Single(result.Errors);
-            var message = result.Errors.Single().Messsage;
-            Assert.Contains("VOLTAGEALIAS", message);
+            var error = result.Errors.Single();
+            Assert.Equal(SpiceParserError.NoSuchSubcircuit, error.ErrorCode);
+            Assert.Equal("VOLTAGEALIAS", error.Args[0]);
         }
 
 
@@ -127,8 +129,8 @@ v 1 22 5         *oops forgot to connect to node 2
 .ends
 ");
             Assert.Single(result.Errors);
-            var message = result.Errors.Single().Messsage;
-            Assert.Contains("connecting node sets", message);
+            var error = result.Errors.Single();
+            Assert.Equal(SpiceParserError.SubcircuitNotConnected, error.ErrorCode);
         }
 
         public ParserResult Parse(string code)
@@ -183,8 +185,8 @@ v1 1 0 5v
 .ends
 ");
             Assert.Single(result.Errors);
-            var message = result.Errors.Single().Messsage;
-            Assert.Contains("ground node", message);
+            var error = result.Errors.Single();
+            Assert.Equal(SpiceParserError.TerminalToGround, error.ErrorCode);
         }
 
         [Fact]
@@ -200,8 +202,8 @@ v1 1 0 5v
 .ends
 ");
             Assert.Single(result.Errors);
-            var message = result.Errors.Single().Messsage;
-            Assert.Contains("must be unique", message);
+            var error = result.Errors.Single();
+            Assert.Equal(SpiceParserError.TerminalNamesNotUnique, error.ErrorCode);
         }
 
         [Fact]
@@ -220,8 +222,8 @@ v2 3 2 4
 
 ");
             Assert.Single(result.Errors);
-            var message = result.Errors.Single().Messsage;
-            Assert.Contains("cycle", message);
+            var error = result.Errors.Single();
+            Assert.Equal(SpiceParserError.VoltageBranchCycle, error.ErrorCode);
         }
 
         [Fact]
@@ -242,8 +244,8 @@ r2 22 2 5
 
 ");
             Assert.Single(result.Errors);
-            var message = result.Errors.Single().Messsage;
-            Assert.Contains("cutset", message);
+            var error = result.Errors.Single();
+            Assert.Equal(SpiceParserError.CurrentBranchCutset, error.ErrorCode);
         }
     }
 }

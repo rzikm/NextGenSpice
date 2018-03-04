@@ -60,6 +60,7 @@ namespace NextGenSpice.Parser
             var root = new SubcircuitStatementRoot();
             RegisterStatement(new SubcircuitStatementProcessor(root), true, true);
             RegisterStatement(new SubcircuitEndStatementProcessor(root), false, true);
+            RegisterStatement(new InitialConditionStatement(), true, false);
             
             RegisterSimulation(new TranStatementProcessor());
             RegisterSimulation(new OpStatementProcessor());
@@ -93,13 +94,11 @@ namespace NextGenSpice.Parser
             if (subcircuit)
                 insubcircuitStatementProcessors.Add(processor.Discriminator, processor);
         }
-
-
-
+        
         /// <summary>
         ///     Parses SPICE code in the input stream.
         /// </summary>
-        /// <param name="stream"></param>
+        /// <param name="filestream">Netlist input filestream</param>
         /// <returns></returns>
         public ParserResult Parse(FileStream filestream)
         {
@@ -127,7 +126,7 @@ namespace NextGenSpice.Parser
                 if (char.IsLetter(c)) // possible element statement
                     ProcessElement(tokens, ctx, elementProcessors);
                 else if (c != '.') // syntactic error
-                    ctx.Errors.Add(firstToken.ToErrorInfo($"Unexpected character: '{c}'."));
+                    ctx.Errors.Add(firstToken.ToErrorInfo(SpiceParserError.UnexpectedCharacter, c));
                 else if (tokens[0].Value == ".END" && tokens.Length == 1)
                     break; // end parsing now
                 else // other .[keyword] statement
@@ -161,38 +160,31 @@ namespace NextGenSpice.Parser
                 string message;
 
                 // translate node indexes to node names used in the input file
+                ErrorInfo error;
                 switch (e)
                 {
                     case NoDcPathToGroundException ex:
-                        message =
-                            $"Some nodes are not connected to the ground node ({string.Join(", ", ctx.SymbolTable.GetNodeNames(ex.Nodes))}).";
+                        error = new ErrorInfo(SpiceParserError.NoDcPathToGround, 0, 0, ctx.SymbolTable.GetNodeNames(ex.Nodes).Cast<object>().ToArray());
                         break;
 
                     case NotConnectedSubcircuitException ex:
-                        message =
-                            $"No path connecting node sets {string.Join(", ", ex.Components.Select(c => $"({string.Join(", ", ctx.SymbolTable.GetNodeNames(c))})"))}.";
+                        var names = ex.Components.Select(c => ctx.SymbolTable.GetNodeNames(c).ToArray()).Cast<object>().ToArray();
+                        error = new ErrorInfo(SpiceParserError.SubcircuitNotConnected, 0, 0, names);
                         break;
 
                     case VoltageBranchCycleException ex:
-                        message =
-                            $"Circuit contains a cycle of voltage defined elements ({string.Join(", ", ex.Elements.Select(el => el.Name))}).";
+                        error = new ErrorInfo(SpiceParserError.VoltageBranchCycle, 0, 0, ex.Elements.Select(el => el.Name).Cast<object>().ToArray());
                         break;
 
                     case CurrentBranchCutsetException ex:
-                        message =
-                            $"Circuit contains a cutset of current defined elements ({string.Join(", ", ex.Elements.Select(el => el.Name))}).";
+                        error = new ErrorInfo(SpiceParserError.CurrentBranchCutset, 0, 0, ex.Elements.Select(el => el.Name).Cast<object>().ToArray());
                         break;
 
                     default:
                         throw;
                 }
 
-                ctx.Errors.Add(new ErrorInfo
-                {
-                    LineColumn = 0, // no coordinates shall be displayed when printing this error
-                    LineNumber = 0,
-                    Messsage = message
-                });
+                ctx.Errors.Add(error);
             }
             return circuitDefinition;
         }
@@ -205,7 +197,7 @@ namespace NextGenSpice.Parser
             if (processors.TryGetValue(discriminator, out var proc))
                 proc.Process(tokens, ctx);
             else // unknown statement
-                ctx.Errors.Add(tokens[0].ToErrorInfo($"Statement invalid: '{string.Join(" ", tokens.Select(t => t.Value))}'."));
+                ctx.Errors.Add(tokens[0].ToErrorInfo(SpiceParserError.UnknownStatement));
         }
 
         private void ProcessElement(Token[] tokens, ParsingContext ctx, IDictionary<char, IElementStatementProcessor> elementStatementProcessors)
@@ -215,7 +207,7 @@ namespace NextGenSpice.Parser
             if (elementStatementProcessors.TryGetValue(discriminator, out var proc))
                 proc.Process(tokens, ctx);
             else // unknown element
-                ctx.Errors.Add(tokens[0].ToErrorInfo($"Element type invalid: '{string.Join(" ", tokens.Select(t => t.Value))}'."));
+                ctx.Errors.Add(tokens[0].ToErrorInfo(SpiceParserError.UnknownElement));
         }
     }
 }
