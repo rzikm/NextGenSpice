@@ -109,6 +109,16 @@ namespace NextGenSpice.Parser
         /// <summary>
         ///     Parses SPICE code in the input stream.
         /// </summary>
+        /// <param name="input">Netlist input source code.</param>
+        /// <returns></returns>
+        public ParserResult Parse(TextReader input)
+        {
+            return Parse(new TokenStream(input));
+        }
+
+        /// <summary>
+        ///     Parses SPICE code in the input stream.
+        /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
         public ParserResult Parse(ITokenStream stream)

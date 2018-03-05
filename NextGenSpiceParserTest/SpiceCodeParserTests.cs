@@ -9,79 +9,70 @@ using Xunit.Abstractions;
 
 namespace NextGenSpiceParserTest
 {
-    public class SpiceCodeParserTests
+    public class SpiceCodeParserTests : ParserTestBase
     {
-        public SpiceCodeParserTests(ITestOutputHelper output)
+        public SpiceCodeParserTests(ITestOutputHelper output) : base(output)
         {
-            this.output = output;
-            parser = new SpiceCodeParser();
-        }
-
-        private readonly ITestOutputHelper output;
-        private readonly SpiceCodeParser parser;
-
-        private void ExpectErrors(string s)
-        {
-            var res = ParseString(s);
-            foreach (var error in res.Errors)
-                output.WriteLine(error.ToString());
-        }
-
-        private ParserResult ParseString(string s)
-        {
-            var sr = new StringReader(s);
-            return parser.Parse(new TokenStream(sr));
         }
 
         [Fact]
         public void RecognisesInputSourceStatement()
         {
-            var r = ParseString("V1 0 1 6V");
-            Assert.True(!r.Errors.Any());
+            ExpectErrors(c =>
+            {
+                c.On("V1 0 1 5v");
+            });
         }
 
         [Fact]
         public void RecognisesResistorStatement()
         {
-            var r = ParseString("R1 0 1 6ohm");
-            Assert.True(!r.Errors.Any());
+            ExpectErrors(c =>
+            {
+                c.On("R1 0 1 6ohm");
+            });
         }
 
         [Fact]
         public void RecognisesTransientInputSourceStatement()
         {
-            Assert.Equal(0, ParseString("V1 0 1 Exp( 2 3 )").Errors.Count);
-            Assert.Equal(0, ParseString("V1 0 1 Exp ( 2 3 )").Errors.Count);
-            Assert.Equal(0, ParseString("V1 0 1 Exp (2 3 )").Errors.Count);
-            Assert.Equal(0, ParseString("V1 0 1 Exp(2 3)").Errors.Count);
-            Assert.Equal(0, ParseString("V1 0 1 Exp 2 3 ").Errors.Count);
+            ExpectErrors(c =>
+            {
+                c.On("V1 0 1 Exp( 2 3 )");
+                c.On("V2 0 2 Exp ( 2 3 )");
+                c.On("V3 0 3 Exp (2 3 )");
+                c.On("V4 0 4 Exp(2 3)");
+                c.On("V5 0 5 Exp 2 3 ");
+            });
         }
 
 
         [Fact]
         public void ReportsErrorOnResistor()
         {
-            ExpectErrors(@"
-R1 0 1 6.96.wef     * nan
-R1 0 1 5ohm         * duplicate
-r2 0 R1 5           * not a node
-wA R1 R2 42Meg4     * not implemented
-R2 R1 R2 42Meg4     * multiple errors");
+            ExpectErrors(c =>
+            {
+                c.On("R1 0 1 6.96.wef", SpiceParserError.NotANumber);
+                c.On("R1 0 1 5ohm", SpiceParserError.ElementAlreadyDefined);
+                c.On("r2 0 R1 5", SpiceParserError.NotANode);
+                c.On("wA R1 R2 42Meg4", SpiceParserError.UnknownElement); 
+                c.On("R2 R1 R2 42Meg4", SpiceParserError.ElementAlreadyDefined, SpiceParserError.NotANode, SpiceParserError.NotANode, SpiceParserError.NotANumber);
+            });
         }
 
         [Fact]
         public void ReportsErrorOnTransientInputSource()
         {
-            ExpectErrors(@"
-v 0 1 exp( 2 3 4 4G 9 3 2 04 39 )     * too many
-v1 0 1 exp( 2 3 4 4G 9 3 2 04 39      * unterminated
-v3 1 0                                * too few arguments
-v4 1 0    exp 3                       * too few arguments
-v5 1 0    fuc 3                       * unknown function
-v6 1 0    pwl 0 1 1 3 R 4             * repeat not on breakpoint
-v7 1 0    pwl 0 1 -1 3 R              * negative timepoint
-v7 1 0    pwl 0 1 -1 3 5              * odd number of pairs
-");
+            ExpectErrors(c =>
+            {
+                c.On("v 0 1 exp( 2 3 4 4G 9 3 2 04 39 )     * too many", SpiceParserError.InvalidNumberOfArguments);
+                c.On("v3 1 0                                * too few arguments", SpiceParserError.InvalidNumberOfArguments);
+                c.On("v4 1 0    exp 3                       * too few arguments", SpiceParserError.InvalidNumberOfArguments);
+                c.On("v5 1 0    fuc 3                       * unknown function", SpiceParserError.UnknownTransientFunction);
+                c.On("v6 1 0    pwl 0 1 1 3 R 4             * repeat not on breakpoint", SpiceParserError.NoBreakpointRepetition);
+                c.On("v7 1 0    pwl 0 1 -1 3 R              * negative timepoint", SpiceParserError.NegativeTimepoint);
+                c.On("v8 1 0    pwl 0 1 1 3 5              * odd number of pairs", SpiceParserError.TimePointWithoutValue);
+            });
         }
 
     }
