@@ -27,6 +27,7 @@ namespace NextGenSpice.LargeSignal
             SetModel<DiodeElement, LargeSignalDiodeModel>(e => new LargeSignalDiodeModel(e));
             SetModel<BjtElement, LargeSignalBjtModel>(e => new LargeSignalBjtModel(e));
             SetModel<VoltageControlledVoltageSourceElement, LargeSignalVcvsModel>(e => new LargeSignalVcvsModel(e));
+            SetModel<VoltageControlledCurrentSourceElement, LargeSignalVccsModel>(e => new LargeSignalVccsModel(e));
 
             SetModel<SubcircuitElement, LargeSignalSubcircuitModel>((e, ctx) =>
                 new LargeSignalSubcircuitModel(e, e.Elements.Select(ctx.GetModel).Cast<ILargeSignalDeviceModel>()));

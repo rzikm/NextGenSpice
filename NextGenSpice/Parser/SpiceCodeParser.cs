@@ -56,6 +56,7 @@ namespace NextGenSpice.Parser
             RegisterElement(new SubcircuitElementStatementProcessor());
 
             RegisterElement(new VoltageControlledVoltageSourceStatementProcessor());
+            RegisterElement(new VoltageControlledCurrentSourceStatementProcessor());
 
             var root = new SubcircuitStatementRoot();
             RegisterStatement(new SubcircuitStatementProcessor(root), true, true);
