@@ -3,9 +3,7 @@ using NextGenSpice.Parser.Statements.Deferring;
 
 namespace NextGenSpice.Parser.Statements.Devices
 {
-    /// <summary>
-    ///     Class that handles capacitor element statements.
-    /// </summary>
+    /// <summary>Class that handles capacitor element statements.</summary>
     public class CapacitorStatementProcessor : ElementStatementProcessor
     {
         public CapacitorStatementProcessor()
@@ -14,14 +12,10 @@ namespace NextGenSpice.Parser.Statements.Devices
             MaxArgs = 4;
         }
 
-        /// <summary>
-        ///     Discriminator of the element type this processor can parse.
-        /// </summary>
+        /// <summary>Discriminator of the element type this processor can parse.</summary>
         public override char Discriminator => 'C';
 
-        /// <summary>
-        ///     Processes given set of statements.
-        /// </summary>
+        /// <summary>Processes given set of statements.</summary>
         protected override void DoProcess()
         {
             var name = ElementName;

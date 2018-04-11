@@ -51,9 +51,9 @@ namespace NextGenSpiceTest
                         InitialLevel = 1,
                         PulseLevel = 5,
                         RiseDelay = 3e-6,
-                        TauRise = 5e-6,
+                        RiseTau = 5e-6,
                         FallDelay = 10e-6,
-                        TauFall = 10e-6
+                        FallTau = 10e-6
                     })
                 .AddResistor(1, 0, 1)
                 .BuildCircuit()

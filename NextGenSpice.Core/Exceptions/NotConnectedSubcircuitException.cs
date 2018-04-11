@@ -13,9 +13,7 @@ namespace NextGenSpice.Core.Exceptions
             Components = components;
         }
 
-        /// <summary>
-        ///     Non-connected components of the circuit graph.
-        /// </summary>
+        /// <summary>Non-connected components of the circuit graph.</summary>
         public IEnumerable<int[]> Components { get; }
     }
 }

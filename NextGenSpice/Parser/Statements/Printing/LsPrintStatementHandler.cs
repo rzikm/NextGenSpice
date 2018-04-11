@@ -3,9 +3,7 @@ using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements.Printing
 {
-    /// <summary>
-    ///     Class for handling .PRINT statement for both TRAN and OP simulations.
-    /// </summary>
+    /// <summary>Class for handling .PRINT statement for both TRAN and OP simulations.</summary>
     public class LsPrintStatementHandler : IPrintStatementHandler
     {
         protected LsPrintStatementHandler(string analysisTypeIdentifer)
@@ -13,14 +11,10 @@ namespace NextGenSpice.Parser.Statements.Printing
             AnalysisTypeIdentifer = analysisTypeIdentifer;
         }
 
-        /// <summary>
-        ///     Uppercase identifier of the analysis type of this handler.
-        /// </summary>
+        /// <summary>Uppercase identifier of the analysis type of this handler.</summary>
         public string AnalysisTypeIdentifer { get; }
 
-        /// <summary>
-        ///     Processes the .PRINT statement.
-        /// </summary>
+        /// <summary>Processes the .PRINT statement.</summary>
         /// <param name="tokens">Tokens of the statement.</param>
         /// <param name="context">Current parsing context.</param>
         public void ProcessPrintStatement(Token[] tokens, ParsingContext context)
@@ -31,9 +25,9 @@ namespace NextGenSpice.Parser.Statements.Printing
                 var s = t.Value;
                 var parStart = s.IndexOf('(');
                 var parEnd = s.LastIndexOf(')');
-                
+
                 // expected token in format <Stat>(element), V(node), V(node1,node2)
-                if (parStart < 1 || parEnd < s.Length -1 || s.Length <= 3)
+                if (parStart < 1 || parEnd < s.Length - 1 || s.Length <= 3)
                     context.Errors.Add(tokens[i].ToErrorInfo(SpiceParserError.UnknownPrintStatementParameter));
                 else
                 {
@@ -42,9 +36,7 @@ namespace NextGenSpice.Parser.Statements.Printing
             }
         }
 
-        /// <summary>
-        ///     Creates instance of LsPrintStatementHandler for handling TRAN analysis type.
-        /// </summary>
+        /// <summary>Creates instance of LsPrintStatementHandler for handling TRAN analysis type.</summary>
         /// <returns></returns>
         public static LsPrintStatementHandler CreateTran()
         {
@@ -52,9 +44,7 @@ namespace NextGenSpice.Parser.Statements.Printing
         }
 
 
-        /// <summary>
-        ///     Creates instance of LsPrintStatementHandler for handling OP analysis type.
-        /// </summary>
+        /// <summary>Creates instance of LsPrintStatementHandler for handling OP analysis type.</summary>
         /// <returns></returns>
         public static LsPrintStatementHandler CreateOp()
         {

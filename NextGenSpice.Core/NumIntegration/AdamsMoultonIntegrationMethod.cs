@@ -5,9 +5,7 @@ using Numerics;
 
 namespace NextGenSpice.Core.NumIntegration
 {
-    /// <summary>
-    ///     Class performing Adams-Moulton integration method of given order.
-    /// </summary>
+    /// <summary>Class performing Adams-Moulton integration method of given order.</summary>
     public class AdamsMoultonIntegrationMethod : IIntegrationMethod
     {
         private readonly double[] coefficients;
@@ -28,9 +26,7 @@ namespace NextGenSpice.Core.NumIntegration
             states = new double[order - 1];
         }
 
-        /// <summary>
-        ///     Adds state and derivative of current timepoint to history.
-        /// </summary>
+        /// <summary>Adds state and derivative of current timepoint to history.</summary>
         /// <param name="state">Value of current state variable</param>
         /// <param name="derivative">Derivative of current state variable</param>
         public void SetState(double state, double derivative)
@@ -42,9 +38,7 @@ namespace NextGenSpice.Core.NumIntegration
         }
 
 
-        /// <summary>
-        ///     Gets next values of state and derivative based on history and current timepoint.
-        /// </summary>
+        /// <summary>Gets next values of state and derivative based on history and current timepoint.</summary>
         /// <param name="dx">How far to predict values of state and derivative.</param>
         /// <returns></returns>
         public (double state, double derivative) GetEquivalents(double dx)
@@ -68,9 +62,7 @@ namespace NextGenSpice.Core.NumIntegration
             return (y, dy);
         }
 
-        /// <summary>
-        ///     Gets coefficients for the Adams-Moulton integration of given order.
-        /// </summary>
+        /// <summary>Gets coefficients for the Adams-Moulton integration of given order.</summary>
         /// <param name="order">Order of the integration method</param>
         /// <returns></returns>
         public static double[] GetCoefficients(int order)

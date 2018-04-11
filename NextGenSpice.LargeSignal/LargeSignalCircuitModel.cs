@@ -10,14 +10,11 @@ using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Models;
-using Numerics;
 using Numerics.Precision;
 
 namespace NextGenSpice.LargeSignal
 {
-    /// <summary>
-    ///     Main class for performing large signal analysis on electrical circuits.
-    /// </summary>
+    /// <summary>Main class for performing large signal analysis on electrical circuits.</summary>
     public class LargeSignalCircuitModel : IAnalysisCircuitModel<ILargeSignalDeviceModel>
     {
         private SimulationContext context;
@@ -43,19 +40,13 @@ namespace NextGenSpice.LargeSignal
             updaterModelValues = e => e.ApplyModelValues(equationSystem, context);
         }
 
-        /// <summary>
-        ///     Last computed node voltages.
-        /// </summary>
+        /// <summary>Last computed node voltages.</summary>
         public double[] NodeVoltages { get; }
 
-        /// <summary>
-        ///     Number of node in the circuit.
-        /// </summary>
+        /// <summary>Number of node in the circuit.</summary>
         public int NodeCount => NodeVoltages.Length;
 
-        /// <summary>
-        ///     Set of all elements that this circuit model consists of.
-        /// </summary>
+        /// <summary>Set of all elements that this circuit model consists of.</summary>
         public IReadOnlyList<ILargeSignalDeviceModel> Elements => elements;
 
         private ILargeSignalDeviceModel[] constElements;
@@ -70,9 +61,7 @@ namespace NextGenSpice.LargeSignal
         private readonly Action<ILargeSignalDeviceModel> updaterInitCondition;
         private readonly Action<ILargeSignalDeviceModel> updaterModelValues;
 
-        /// <summary>
-        ///     Gets model for the device identified by given name.
-        /// </summary>
+        /// <summary>Gets model for the device identified by given name.</summary>
         /// <param name="name">Name of the device.</param>
         /// <returns></returns>
         public ILargeSignalDeviceModel GetElement(string name)
@@ -80,9 +69,7 @@ namespace NextGenSpice.LargeSignal
             return elementLookup[name];
         }
 
-        /// <summary>
-        ///     Gets model for the device identified by given name.
-        /// </summary>
+        /// <summary>Gets model for the device identified by given name.</summary>
         /// <param name="name">Name of the device.</param>
         /// <param name="value">The device model.</param>
         /// <returns></returns>
@@ -97,37 +84,29 @@ namespace NextGenSpice.LargeSignal
         // iteration dependent variables
 
         /// <summary>
-        ///     Minimum absolute difference between two consecutive Newton-Raphson iterations before stable solution is assumed.
+        ///     Minimum absolute difference between two consecutive Newton-Raphson iterations before stable solution is
+        ///     assumed.
         /// </summary>
         public double NonlinearIterationEpsilon { get; set; } = 1e-4;
 
-        /// <summary>
-        ///     Maximumum number of Newton-Raphson iterations per timepoint.
-        /// </summary>
+        /// <summary>Maximumum number of Newton-Raphson iterations per timepoint.</summary>
         public int MaxDcPointIterations { get; set; } = 1000;
 
-        /// <summary>
-        ///     Maximal timestep between two time points during transient analysis.
-        /// </summary>
+        /// <summary>Maximal timestep between two time points during transient analysis.</summary>
         public double MaxTimeStep { get; set; } = 1e-6;
 
-        /// <summary>
-        ///     How many Newton-Raphson iterations were needed in last operating point calculation.
-        /// </summary>
+        /// <summary>How many Newton-Raphson iterations were needed in last operating point calculation.</summary>
         public int LastNonLinearIterationCount { get; private set; }
 
-        /// <summary>
-        ///     Difference between last two Newton-Raphson solutions during last operating point calculation.
-        /// </summary>
+        /// <summary>Difference between last two Newton-Raphson solutions during last operating point calculation.</summary>
         public double LastNonLinearIterationDelta { get; private set; }
 
-        /// <summary>
-        ///     Current timepoint of the transient analysis in seconds.
-        /// </summary>
+        /// <summary>Current timepoint of the transient analysis in seconds.</summary>
         public double CurrentTimePoint => context?.TimePoint ?? 0.0;
 
         /// <summary>
-        ///     Advances transient simulation of the circuit by given ammount in seconds, respecting the maximum allowed timestep.
+        ///     Advances transient simulation of the circuit by given ammount in seconds, respecting the maximum allowed
+        ///     timestep.
         /// </summary>
         /// <param name="timestep"></param>
         public void AdvanceInTime(double timestep)
@@ -153,9 +132,7 @@ namespace NextGenSpice.LargeSignal
             }
         }
 
-        /// <summary>
-        ///     Establishes initial operating point for the transient analysis.
-        /// </summary>
+        /// <summary>Establishes initial operating point for the transient analysis.</summary>
         public void EstablishInitialDcBias(bool initCond = false)
         {
             context = null;
@@ -176,12 +153,16 @@ namespace NextGenSpice.LargeSignal
             if (!EstablishDcBias_Internal(updaterInitCondition))
                 throw new NonConvergenceException();
 
+            // rerun without initial voltages
+            equationSystem.Restore(0);
+            if (!EstablishDcBias_Internal(updaterInitCondition))
+                throw new NonConvergenceException();
+
             OnDcBiasEstablished();
         }
 
         private void EnsureInitialized()
         {
-
             constElements = Elements.Where(e => e.UpdateMode == ModelUpdateMode.NoUpdate).ToArray();
             linearTimeDependentElements = Elements.Where(e => e.UpdateMode == ModelUpdateMode.TimePoint).ToArray();
             nonlinearElements = Elements.Where(e => e.UpdateMode == ModelUpdateMode.Always).ToArray();

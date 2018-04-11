@@ -2,39 +2,27 @@ using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements
 {
-    /// <summary>
-    ///     Main base class for implementing handlers for .[keyword] statements.
-    /// </summary>
-    public abstract class StatementProcessor : IStatementProcessor
+    /// <summary>Main base class for implementing handlers for .[keyword] statements.</summary>
+    public abstract class DotStatementProcessor : IDotStatementProcessor
     {
-        protected StatementProcessor()
+        protected DotStatementProcessor()
         {
             MaxArgs = int.MaxValue;
         }
 
-        /// <summary>
-        ///     Instance of ParsingContext corresponding to currently parsed input file.
-        /// </summary>
+        /// <summary>Instance of ParsingContext corresponding to currently parsed input file.</summary>
         protected ParsingContext Context { get; private set; }
 
-        /// <summary>
-        ///     Minimum number of arguments for statement handled by this class.
-        /// </summary>
+        /// <summary>Minimum number of arguments for statement handled by this class.</summary>
         protected int MinArgs { get; set; }
 
-        /// <summary>
-        ///     Maximum number of arguments for statement handled by this class.
-        /// </summary>
+        /// <summary>Maximum number of arguments for statement handled by this class.</summary>
         protected int MaxArgs { get; set; }
 
-        /// <summary>
-        ///     Statement discriminator, that this class can handle.
-        /// </summary>
+        /// <summary>Statement discriminator, that this class can handle.</summary>
         public abstract string Discriminator { get; }
 
-        /// <summary>
-        ///     Processes the statement.
-        /// </summary>
+        /// <summary>Processes the statement.</summary>
         /// <param name="tokens"></param>
         /// <param name="ctx"></param>
         public void Process(Token[] tokens, ParsingContext ctx)
@@ -50,9 +38,7 @@ namespace NextGenSpice.Parser.Statements
             Context = null;
         }
 
-        /// <summary>
-        ///     Processes given statement.
-        /// </summary>
+        /// <summary>Processes given statement.</summary>
         /// <param name="tokens">All tokens of the statement.</param>
         protected abstract void DoProcess(Token[] tokens);
     }

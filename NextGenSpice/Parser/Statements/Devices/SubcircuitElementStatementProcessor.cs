@@ -1,11 +1,8 @@
-﻿using System;
-using NextGenSpice.Parser.Statements.Deferring;
+﻿using NextGenSpice.Parser.Statements.Deferring;
 
 namespace NextGenSpice.Parser.Statements.Devices
 {
-    /// <summary>
-    ///     Class for processing SPICE statements calling a certain subcircuit.
-    /// </summary>
+    /// <summary>Class for processing SPICE statements calling a certain subcircuit.</summary>
     public class SubcircuitElementStatementProcessor : ElementStatementProcessor
     {
         public SubcircuitElementStatementProcessor()
@@ -13,14 +10,10 @@ namespace NextGenSpice.Parser.Statements.Devices
             MinArgs = 2;
         }
 
-        /// <summary>
-        ///     Discriminator of the element type this processor can parse.
-        /// </summary>
+        /// <summary>Discriminator of the element type this processor can parse.</summary>
         public override char Discriminator => 'X';
 
-        /// <summary>
-        ///     Processes given set of statements.
-        /// </summary>
+        /// <summary>Processes given set of statements.</summary>
         protected override void DoProcess()
         {
             var name = ElementName;

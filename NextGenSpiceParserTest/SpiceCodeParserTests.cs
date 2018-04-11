@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using NextGenSpice.Parser;
-using NextGenSpice.Parser.Statements.Devices;
-using NextGenSpice.Utils;
+﻿using NextGenSpice.Parser;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -18,19 +13,13 @@ namespace NextGenSpiceParserTest
         [Fact]
         public void RecognisesInputSourceStatement()
         {
-            ExpectErrors(c =>
-            {
-                c.On("V1 0 1 5v");
-            });
+            ExpectErrors(c => { c.On("V1 0 1 5v"); });
         }
 
         [Fact]
         public void RecognisesResistorStatement()
         {
-            ExpectErrors(c =>
-            {
-                c.On("R1 0 1 6ohm");
-            });
+            ExpectErrors(c => { c.On("R1 0 1 6ohm"); });
         }
 
         [Fact]
@@ -55,8 +44,9 @@ namespace NextGenSpiceParserTest
                 c.On("R1 0 1 6.96.wef", SpiceParserError.NotANumber);
                 c.On("R1 0 1 5ohm", SpiceParserError.ElementAlreadyDefined);
                 c.On("r2 0 R1 5", SpiceParserError.NotANode);
-                c.On("wA R1 R2 42Meg4", SpiceParserError.UnknownElement); 
-                c.On("R2 R1 R2 42Meg4", SpiceParserError.ElementAlreadyDefined, SpiceParserError.NotANode, SpiceParserError.NotANode, SpiceParserError.NotANumber);
+                c.On("wA R1 R2 42Meg4", SpiceParserError.UnknownElement);
+                c.On("R2 R1 R2 42Meg4", SpiceParserError.ElementAlreadyDefined, SpiceParserError.NotANode,
+                    SpiceParserError.NotANode, SpiceParserError.NotANumber);
             });
         }
 
@@ -66,14 +56,18 @@ namespace NextGenSpiceParserTest
             ExpectErrors(c =>
             {
                 c.On("v 0 1 exp( 2 3 4 4G 9 3 2 04 39 )     * too many", SpiceParserError.InvalidNumberOfArguments);
-                c.On("v3 1 0                                * too few arguments", SpiceParserError.InvalidNumberOfArguments);
-                c.On("v4 1 0    exp 3                       * too few arguments", SpiceParserError.InvalidNumberOfArguments);
-                c.On("v5 1 0    fuc 3                       * unknown function", SpiceParserError.UnknownTransientFunction);
-                c.On("v6 1 0    pwl 0 1 1 3 R 4             * repeat not on breakpoint", SpiceParserError.NoBreakpointRepetition);
+                c.On("v3 1 0                                * too few arguments",
+                    SpiceParserError.InvalidNumberOfArguments);
+                c.On("v4 1 0    exp 3                       * too few arguments",
+                    SpiceParserError.InvalidNumberOfArguments);
+                c.On("v5 1 0    fuc 3                       * unknown function",
+                    SpiceParserError.UnknownTransientFunction);
+                c.On("v6 1 0    pwl 0 1 1 3 R 4             * repeat not on breakpoint",
+                    SpiceParserError.NoBreakpointRepetition);
                 c.On("v7 1 0    pwl 0 1 -1 3 R              * negative timepoint", SpiceParserError.NegativeTimepoint);
-                c.On("v8 1 0    pwl 0 1 1 3 5              * odd number of pairs", SpiceParserError.TimePointWithoutValue);
+                c.On("v8 1 0    pwl 0 1 1 3 5              * odd number of pairs",
+                    SpiceParserError.TimePointWithoutValue);
             });
         }
-
     }
 }

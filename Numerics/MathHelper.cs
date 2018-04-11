@@ -1,13 +1,9 @@
 namespace Numerics
 {
-    /// <summary>
-    ///     Defines helper methods for mathematic operations.
-    /// </summary>
+    /// <summary>Defines helper methods for mathematic operations.</summary>
     public static class MathHelper
     {
-        /// <summary>
-        ///     Finds  value that is proportionally between given values
-        /// </summary>
+        /// <summary>Finds  value that is proportionally between given values</summary>
         /// <param name="val1">First value.</param>
         /// <param name="val2">Second value.</param>
         /// <param name="x">Interpolation parameter from range [0,1]</param>

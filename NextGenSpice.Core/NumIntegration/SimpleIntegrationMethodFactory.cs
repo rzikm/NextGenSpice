@@ -2,9 +2,7 @@
 
 namespace NextGenSpice.Core.NumIntegration
 {
-    /// <summary>
-    ///     Simple wrapper around a functor returning new instance of IIntegrationMethod implementation.
-    /// </summary>
+    /// <summary>Simple wrapper around a functor returning new instance of IIntegrationMethod implementation.</summary>
     public class SimpleIntegrationMethodFactory : IIntegrationMethodFactory
     {
         private readonly Func<IIntegrationMethod> factoryFunc;
@@ -14,10 +12,8 @@ namespace NextGenSpice.Core.NumIntegration
         {
             this.factoryFunc = factoryFunc;
         }
-        
-        /// <summary>
-        ///     Creates new instance of the integration method implementation.
-        /// </summary>
+
+        /// <summary>Creates new instance of the integration method implementation.</summary>
         /// <returns></returns>
         public IIntegrationMethod CreateInstance()
         {

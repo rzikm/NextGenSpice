@@ -8,9 +8,7 @@ using NextGenSpice.Core.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    /// <summary>
-    ///     Large signal model for <see cref="BjtElement" /> device.
-    /// </summary>
+    /// <summary>Large signal model for <see cref="BjtElement" /> device.</summary>
     internal class LargeSignalBjtModel : LargeSignalModelBase<BjtElement>
     {
         private double bF;
@@ -27,6 +25,8 @@ namespace NextGenSpice.LargeSignal.Models
         private double nF;
         private double nR;
 
+        private double polarity; // PNP vs NPN
+
         private double vAf;
         private double vAr;
 
@@ -35,6 +35,48 @@ namespace NextGenSpice.LargeSignal.Models
         public LargeSignalBjtModel(BjtElement definitionElement) : base(definitionElement)
         {
         }
+
+        /// <summary>Node connected to collector terminal of the transistor.</summary>
+        public int Collector => DefinitionElement.Collector;
+
+        /// <summary>Node connected to base terminal of the transistor.</summary>
+        public int Base => DefinitionElement.Base;
+
+        /// <summary>Node connected to emitter terminal of the transistor.</summary>
+        public int Emitter => DefinitionElement.Emitter;
+
+        /// <summary>Node connected to substrate terminal of the transistor.</summary>
+        public int Substrate => DefinitionElement.Substrate;
+
+        /// <summary>Set of parameters for this device model.</summary>
+        public BjtModelParams Parameters => DefinitionElement.Parameters;
+
+        /// <summary>Specifies how often the model should be updated.</summary>
+        public override ModelUpdateMode UpdateMode => ModelUpdateMode.Always;
+
+        /// <summary>Current flowing through the base terminal.</summary>
+        public double CurrentBase { get; private set; }
+
+        /// <summary>Current flowing through the collector terminal.</summary>
+        public double CurrentCollector { get; private set; }
+
+        /// <summary>Current flowing through the emitter terminal.</summary>
+        public double CurrentEmitter { get; private set; }
+
+        /// <summary>Current flowing from base terminal to collector terminal.</summary>
+        public double CurrentBaseCollector { get; private set; }
+
+        /// <summary>Current flowing from base terminal to emitter terminal.</summary>
+        public double CurrentBaseEmitter { get; private set; }
+
+        /// <summary>Voltage between base and collector terminal.</summary>
+        public double VoltageBaseCollector { get; private set; }
+
+        /// <summary>Voltage between base and emitter terminal.</summary>
+        public double VoltageBaseEmitter { get; private set; }
+
+        /// <summary>Voltage between collector and emitter terminal.</summary>
+        public double VoltageCollectorEmitter { get; private set; }
 
         private void CacheModelParams()
         {
@@ -59,82 +101,14 @@ namespace NextGenSpice.LargeSignal.Models
 
             iKf = Parameters.ForwardCurrentCorner;
             iKr = Parameters.ReverseCurrentCorner;
+
+            polarity = Parameters.IsPnp ? 1 : -1;
         }
 
-        /// <summary>
-        ///     Node connected to collector terminal of the transistor.
-        /// </summary>
-        public int Collector => DefinitionElement.Collector;
 
         /// <summary>
-        ///     Node connected to base terminal of the transistor.
-        /// </summary>
-        public int Base => DefinitionElement.Base;
-
-        /// <summary>
-        ///     Node connected to emitter terminal of the transistor.
-        /// </summary>
-        public int Emitter => DefinitionElement.Emitter;
-
-        /// <summary>
-        ///     Node connected to substrate terminal of the transistor.
-        /// </summary>
-        public int Substrate => DefinitionElement.Substrate;
-
-        /// <summary>
-        ///     Set of parameters for this device model.
-        /// </summary>
-        public BjtModelParams Parameters => DefinitionElement.Parameters;
-
-        /// <summary>
-        ///     Specifies how often the model should be updated.
-        /// </summary>
-        public override ModelUpdateMode UpdateMode => ModelUpdateMode.Always;
-
-        /// <summary>
-        ///     Current flowing through the base terminal.
-        /// </summary>
-        public double CurrentBase { get; private set; }
-
-        /// <summary>
-        ///     Current flowing through the collector terminal.
-        /// </summary>
-        public double CurrentCollector { get; private set; }
-
-        /// <summary>
-        ///     Current flowing through the emitter terminal.
-        /// </summary>
-        public double CurrentEmitter { get; private set; }
-
-        /// <summary>
-        ///     Current flowing from base terminal to collector terminal.
-        /// </summary>
-        public double CurrentBaseCollector { get; private set; }
-
-        /// <summary>
-        ///     Current flowing from base terminal to emitter terminal.
-        /// </summary>
-        public double CurrentBaseEmitter { get; private set; }
-
-        /// <summary>
-        ///     Voltage between base and collector terminal.
-        /// </summary>
-        public double VoltageBaseCollector { get; private set; }
-
-        /// <summary>
-        ///     Voltage between base and emitter terminal.
-        /// </summary>
-        public double VoltageBaseEmitter { get; private set; }
-
-        /// <summary>
-        ///     Voltage between collector and emitter terminal.
-        /// </summary>
-        public double VoltageCollectorEmitter { get; private set; }
-
-
-        /// <summary>
-        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables. And
-        ///     perform other necessary initialization
+        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
+        ///     And perform other necessary initialization
         /// </summary>
         /// <param name="builder">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>
@@ -145,8 +119,8 @@ namespace NextGenSpice.LargeSignal.Models
         }
 
         /// <summary>
-        ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is called
-        ///     once every Newton-Raphson iteration.
+        ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is
+        ///     called once every Newton-Raphson iteration.
         /// </summary>
         /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>
@@ -155,7 +129,7 @@ namespace NextGenSpice.LargeSignal.Models
             // calculate values according to Gummel-Poon model
             VoltageBaseEmitter = Voltage(Base, Emitter, context);
             VoltageBaseCollector = Voltage(Base, Collector, context);
-            VoltageCollectorEmitter = Voltage(Collector, Emitter, context);
+            VoltageCollectorEmitter = VoltageBaseEmitter - VoltageBaseCollector;
 
             var (gBe, gBc, gMf, gMr, iT) = CalculateModelValues();
 
@@ -177,16 +151,14 @@ namespace NextGenSpice.LargeSignal.Models
             equations.AddMatrixEntry(Emitter, Collector, +gMr);
             equations.AddMatrixEntry(Emitter, Emitter, gBe + gMf);
 
-
-            equations.AddRightHandSideEntry(Base, -iBeeq - iBceq);
-            equations.AddRightHandSideEntry(Collector, iBceq - iCeeq);
-            equations.AddRightHandSideEntry(Emitter, iBeeq + iCeeq);
+            equations.AddRightHandSideEntry(Base, (-iBeeq - iBceq) * polarity);
+            equations.AddRightHandSideEntry(Collector, (iBceq - iCeeq) * polarity);
+            equations.AddRightHandSideEntry(Emitter, (iBeeq + iCeeq) * polarity);
         }
 
         /// <summary>
-        ///     Gets provider instance for specified attribute value or null if no provider for requested parameter exists. For
-        ///     example "I" for the current flowing throught the two
-        ///     terminal element.
+        ///     Gets provider instance for specified attribute value or null if no provider for requested parameter exists.
+        ///     For example "I" for the current flowing throught the two terminal element.
         /// </summary>
         /// <returns>IPrintValueProvider for specified attribute.</returns>
         public override IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders()

@@ -6,9 +6,7 @@ using NextGenSpice.Core.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    /// <summary>
-    ///     Large signal model for <see cref="SubcircuitElement" />.
-    /// </summary>
+    /// <summary>Large signal model for <see cref="SubcircuitElement" />.</summary>
     public class LargeSignalSubcircuitModel : LargeSignalModelBase<SubcircuitElement>
     {
         private readonly ILargeSignalDeviceModel[] elements;
@@ -27,21 +25,16 @@ namespace NextGenSpice.LargeSignal.Models
             subContext = new RedirectingSimulationContext(nodeMap);
         }
 
-        /// <summary>
-        ///     Set of classes that model this subcircuit.
-        /// </summary>
+        /// <summary>Set of classes that model this subcircuit.</summary>
         public IReadOnlyList<ILargeSignalDeviceModel> Elements => elements;
 
-        /// <summary>
-        ///     Specifies how often the model should be updated.
-        /// </summary>
+        /// <summary>Specifies how often the model should be updated.</summary>
         public override ModelUpdateMode UpdateMode =>
             elements.Max(e => e.UpdateMode); // act like the most updating element.
 
         /// <summary>
         ///     Notifies model class that DC bias for given timepoint is established. This method can be used for processing
-        ///     circuit equation solution
-        ///     for current timepoint.
+        ///     circuit equation solution for current timepoint.
         /// </summary>
         /// <param name="context">Context of current simulation.</param>
         public override void OnDcBiasEstablished(ISimulationContext context)
@@ -54,9 +47,8 @@ namespace NextGenSpice.LargeSignal.Models
         }
 
         /// <summary>
-        ///     Gets provider instance for specified attribute value or null if no provider for requested parameter exists. For
-        ///     example "I" for the current flowing throught the two
-        ///     terminal element.
+        ///     Gets provider instance for specified attribute value or null if no provider for requested parameter exists.
+        ///     For example "I" for the current flowing throught the two terminal element.
         /// </summary>
         /// <returns>IPrintValueProvider for specified attribute.</returns>
         public override IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders()
@@ -65,8 +57,8 @@ namespace NextGenSpice.LargeSignal.Models
         }
 
         /// <summary>
-        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables. And
-        ///     perform other necessary initialization
+        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
+        ///     And perform other necessary initialization
         /// </summary>
         /// <param name="builder">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>
@@ -90,8 +82,8 @@ namespace NextGenSpice.LargeSignal.Models
         }
 
         /// <summary>
-        ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is called
-        ///     once every Newton-Raphson iteration.
+        ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is
+        ///     called once every Newton-Raphson iteration.
         /// </summary>
         /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>
@@ -104,9 +96,7 @@ namespace NextGenSpice.LargeSignal.Models
                 model.ApplyModelValues(redirectingEquationEditor, context);
         }
 
-        /// <summary>
-        ///     Applies model values before first DC bias has been established for the first time.
-        /// </summary>
+        /// <summary>Applies model values before first DC bias has been established for the first time.</summary>
         /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
@@ -118,28 +108,20 @@ namespace NextGenSpice.LargeSignal.Models
                 model.ApplyInitialCondition(redirectingEquationEditor, context);
         }
 
-        /// <summary>
-        ///     Equation editor with redirection layer for using inside subcircuit model.
-        /// </summary>
+        /// <summary>Equation editor with redirection layer for using inside subcircuit model.</summary>
         private class RedirectingEquationEditor : RedirectorBase, IEquationSystemBuilder
         {
             public RedirectingEquationEditor(int[] nodeMap) : base(nodeMap)
             {
             }
 
-            /// <summary>
-            ///     Decorated equation editor.
-            /// </summary>
+            /// <summary>Decorated equation editor.</summary>
             public IEquationEditor TrueEquationEditor { get; set; }
 
-            /// <summary>
-            ///     Count of the variables in the equation.
-            /// </summary>
+            /// <summary>Count of the variables in the equation.</summary>
             public int VariablesCount => TrueEquationEditor.VariablesCount;
 
-            /// <summary>
-            ///     Adds a value to coefficient on the given row and column of the equation matrix.
-            /// </summary>
+            /// <summary>Adds a value to coefficient on the given row and column of the equation matrix.</summary>
             /// <param name="row">The row.</param>
             /// <param name="column">The column.</param>
             /// <param name="value">The value to be added to the coefficients.</param>
@@ -148,9 +130,7 @@ namespace NextGenSpice.LargeSignal.Models
                 TrueEquationEditor.AddMatrixEntry(GetMappedIndex(row), GetMappedIndex(column), value);
             }
 
-            /// <summary>
-            ///     Adds a value to coefficient on the given position of the right hand side of the equation matrix.
-            /// </summary>
+            /// <summary>Adds a value to coefficient on the given position of the right hand side of the equation matrix.</summary>
             /// <param name="index">Index of the position.</param>
             /// <param name="value">The value.</param>
             public void AddRightHandSideEntry(int index, double value)
@@ -158,9 +138,7 @@ namespace NextGenSpice.LargeSignal.Models
                 TrueEquationEditor.AddRightHandSideEntry(GetMappedIndex(index), value);
             }
 
-            /// <summary>
-            ///     Adds a variable to the equation system. Returns the index of the variable.
-            /// </summary>
+            /// <summary>Adds a variable to the equation system. Returns the index of the variable.</summary>
             /// <returns></returns>
             public int AddVariable()
             {
@@ -168,9 +146,7 @@ namespace NextGenSpice.LargeSignal.Models
             }
         }
 
-        /// <summary>
-        ///     Simulation context with redirection layer to be used inside subcircuit model.
-        /// </summary>
+        /// <summary>Simulation context with redirection layer to be used inside subcircuit model.</summary>
         private class RedirectingSimulationContext : RedirectorBase, ISimulationContext
         {
             public RedirectingSimulationContext(int[] nodeMap) : base(nodeMap)
@@ -178,29 +154,19 @@ namespace NextGenSpice.LargeSignal.Models
             }
 
 
-            /// <summary>
-            ///     Decorated simulation context.
-            /// </summary>
+            /// <summary>Decorated simulation context.</summary>
             public ISimulationContext TrueContext { get; set; }
 
-            /// <summary>
-            ///     Number of inner nodes.
-            /// </summary>
+            /// <summary>Number of inner nodes.</summary>
             public double NodeCount => TrueContext.NodeCount;
 
-            /// <summary>
-            ///     Curent timepoint of the simulation.
-            /// </summary>
+            /// <summary>Curent timepoint of the simulation.</summary>
             public double TimePoint => TrueContext.TimePoint;
 
-            /// <summary>
-            ///     Last timestep that was used to advance the timepoint.
-            /// </summary>
+            /// <summary>Last timestep that was used to advance the timepoint.</summary>
             public double TimeStep => TrueContext.TimeStep;
 
-            /// <summary>
-            ///     Gets numerical solution for vairable with given index - either a node voltage or branch current.
-            /// </summary>
+            /// <summary>Gets numerical solution for vairable with given index - either a node voltage or branch current.</summary>
             /// <param name="index"></param>
             /// <returns></returns>
             public double GetSolutionForVariable(int index)
@@ -208,9 +174,7 @@ namespace NextGenSpice.LargeSignal.Models
                 return TrueContext.GetSolutionForVariable(GetMappedIndex(index));
             }
 
-            /// <summary>
-            ///     General parameters of the circuit that is simulated.
-            /// </summary>
+            /// <summary>General parameters of the circuit that is simulated.</summary>
             public CircuitParameters CircuitParameters => TrueContext.CircuitParameters;
         }
 
@@ -227,9 +191,7 @@ namespace NextGenSpice.LargeSignal.Models
                 this.nodeMap = nodeMap;
             }
 
-            /// <summary>
-            ///     Gets redirected index for using in decorated EquationEditor.
-            /// </summary>
+            /// <summary>Gets redirected index for using in decorated EquationEditor.</summary>
             /// <param name="i"></param>
             /// <returns></returns>
             protected int GetMappedIndex(int i)

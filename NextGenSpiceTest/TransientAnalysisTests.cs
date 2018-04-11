@@ -85,7 +85,6 @@ namespace NextGenSpiceTest
                     model.NodeVoltages.Concat(new[] {inductor.Current}).Select(v => v.ToString("F"))));
                 results.Add(model.NodeVoltages[2]);
             }
-
         }
 
         [Fact]

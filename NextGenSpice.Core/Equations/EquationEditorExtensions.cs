@@ -1,13 +1,9 @@
 ﻿namespace NextGenSpice.Core.Equations
 {
-    /// <summary>
-    ///     Defines extension methods for the IEquationEditor.
-    /// </summary>
+    /// <summary>Defines extension methods for the IEquationEditor.</summary>
     public static class EquationEditorExtensions
     {
-        /// <summary>
-        ///     Adds values to the linear equation system corresponding to a conductance between specified nodes.
-        /// </summary>
+        /// <summary>Adds values to the linear equation system corresponding to a conductance between specified nodes.</summary>
         /// <param name="editor">The equation editor.</param>
         /// <param name="anode">Id of the positive node of the device.</param>
         /// <param name="cathode">Id of the negative node of the device.</param>
@@ -23,9 +19,7 @@
             return editor;
         }
 
-        /// <summary>
-        ///     Adds values to the linear equation system corresponding to an ideal voltage source between specified nodes.
-        /// </summary>
+        /// <summary>Adds values to the linear equation system corresponding to an ideal voltage source between specified nodes.</summary>
         /// <param name="editor">The equation editor.</param>
         /// <param name="anode">Id of the positive node of the device.</param>
         /// <param name="cathode">Id of the negative node of the device.</param>
@@ -46,9 +40,7 @@
             return editor;
         }
 
-        /// <summary>
-        ///     Adds values to the linear equation system corresponding to an ideal current source between specified nodes.
-        /// </summary>
+        /// <summary>Adds values to the linear equation system corresponding to an ideal current source between specified nodes.</summary>
         /// <param name="editor">The equation editor.</param>
         /// <param name="anode">Id of the positive node of the device.</param>
         /// <param name="cathode">Id of the negative node of the device.</param>

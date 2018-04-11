@@ -3,14 +3,11 @@ using System.IO;
 using System.Linq;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal;
-using NextGenSpice.LargeSignal.Models;
 using NextGenSpice.Parser.Statements.Printing;
 
 namespace NextGenSpice.Parser.Statements.Simulation
 {
-    /// <summary>
-    ///     Class representing a call to .OP statement.
-    /// </summary>
+    /// <summary>Class representing a call to .OP statement.</summary>
     public class OpSimulationStatement : ISimulationStatement
     {
         private readonly IDictionary<int, string> nodeNames;
@@ -23,9 +20,7 @@ namespace NextGenSpice.Parser.Statements.Simulation
         }
 
 
-        /// <summary>
-        ///     Performs the simulation and prints results to specified TextWriter.
-        /// </summary>
+        /// <summary>Performs the simulation and prints results to specified TextWriter.</summary>
         /// <param name="circuit">Circuit on which analysis should be performed.</param>
         /// <param name="printStatements">Set of all requested print statements that were requested in SPICE input file.</param>
         /// <param name="output">TextWriter instance to which the results should be written.</param>
@@ -35,6 +30,7 @@ namespace NextGenSpice.Parser.Statements.Simulation
             var model = circuit.GetLargeSignalModel();
             var prints = printStatements.OfType<PrintStatement<LargeSignalCircuitModel>>()
                 .Where(s => s.AnalysisType == "OP").ToList();
+
             model.EstablishInitialDcBias();
 
             if (prints.Count == 0)
@@ -43,14 +39,14 @@ namespace NextGenSpice.Parser.Statements.Simulation
                 for (var i = 1; i < model.NodeCount; i++) // no need to print ground voltage
                     output.WriteLine($"V({nodeNames[i]}) = {model.NodeVoltages[i]}");
 
-               
+
                 foreach (var element in model.Elements)
                 {
                     var providers = element.GetDeviceStatsProviders();
                     if (providers.Any()) output.WriteLine(); // separate from previous data
                     foreach (var provider in providers)
                     {
-                        output.WriteLine($"{provider.StatName}({element.Name}) = {provider.GetValue()}"); 
+                        output.WriteLine($"{provider.StatName}({element.Name}) = {provider.GetValue()}");
                     }
                 }
             }

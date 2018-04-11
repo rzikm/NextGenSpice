@@ -73,6 +73,7 @@ namespace SandboxRunner
                     var info = new FileInfo(file);
                     sizeGrp += info.Length;
                 }
+
                 Console.WriteLine($"{(sizeGrp / 1000.0).ToString("F").PadLeft(10)}kb\t- {grp.Key}");
                 sizeTotal += sizeGrp;
             }
@@ -126,10 +127,7 @@ namespace SandboxRunner
                     },
                     InitialValue = 0
                 }, "V")
-                .AddDiode(1, 0, d =>
-                {
-                    d.ReverseBreakdownVoltage = 2;
-                }, "D")
+                .AddDiode(1, 0, d => { d.ReverseBreakdownVoltage = 2; }, "D")
                 .BuildCircuit();
 
             var model = circuit.GetLargeSignalModel();

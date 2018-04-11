@@ -4,29 +4,22 @@ using NextGenSpice.Core.Circuit;
 namespace NextGenSpice.Core.Elements
 {
     /// <summary>
-    ///     Defines basic properties and methods for every class that represents a definition of electrical circuit device.
+    ///     Defines basic properties and methods for every class that represents a definition of electrical circuit
+    ///     device.
     /// </summary>
     public interface ICircuitDefinitionElement
     {
-        /// <summary>
-        ///     Set of terminal connections of this device.
-        /// </summary>
+        /// <summary>Set of terminal connections of this device.</summary>
         NodeConnectionSet ConnectedNodes { get; }
 
-        /// <summary>
-        ///     Name identifier of this device.
-        /// </summary>
+        /// <summary>Name identifier of this device.</summary>
         string Name { get; }
 
-        /// <summary>
-        ///     Creates a deep copy of this device.
-        /// </summary>
+        /// <summary>Creates a deep copy of this device.</summary>
         /// <returns></returns>
         ICircuitDefinitionElement Clone();
 
-        /// <summary>
-        ///     Gets metadata about this device interconnections in the circuit.
-        /// </summary>
+        /// <summary>Gets metadata about this device interconnections in the circuit.</summary>
         /// <returns></returns>
         IEnumerable<CircuitBranchMetadata> GetBranchMetadata();
     }

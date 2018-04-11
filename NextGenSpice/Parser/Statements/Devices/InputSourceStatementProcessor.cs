@@ -7,9 +7,7 @@ using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements.Devices
 {
-    /// <summary>
-    ///     Class responsible for handling both current and voltage input source statements
-    /// </summary>
+    /// <summary>Class responsible for handling both current and voltage input source statements</summary>
     public abstract class InputSourceStatementProcessor : ElementStatementProcessor
     {
         private readonly ParameterMapper<AmBehaviorParams> amMapper;
@@ -55,9 +53,9 @@ namespace NextGenSpice.Parser.Statements.Devices
             expMapper.Map(c => c.InitialLevel, 0);
             expMapper.Map(c => c.PulseLevel, 1);
             expMapper.Map(c => c.RiseDelay, 2);
-            expMapper.Map(c => c.TauRise, 3);
+            expMapper.Map(c => c.RiseTau, 3);
             expMapper.Map(c => c.FallDelay, 4);
-            expMapper.Map(c => c.TauFall, 5);
+            expMapper.Map(c => c.FallTau, 5);
 
             sffmMapper.Map(c => c.DcOffset, 0);
             sffmMapper.Map(c => c.Amplitude, 1);
@@ -75,9 +73,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             dcMapper.Map(c => c.Value, 0);
         }
 
-        /// <summary>
-        ///     Processes given set of statements.
-        /// </summary>
+        /// <summary>Processes given set of statements.</summary>
         protected override void DoProcess()
         {
             var name = ElementName;
@@ -89,7 +85,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             if (char.IsDigit(RawStatement[3].Value[0])) // constant source
             {
                 var val = GetValue(3);
-                statement = GetStatement(name, nodes, new ConstantBehaviorParams { Value = val });
+                statement = GetStatement(name, nodes, new ConstantBehaviorParams {Value = val});
             }
             else // tran function
             {
@@ -102,9 +98,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                 Context.DeferredStatements.Add(statement);
         }
 
-        /// <summary>
-        ///     Gets behavior parameters for given list of tokens or null if no such transient function exists.
-        /// </summary>
+        /// <summary>Gets behavior parameters for given list of tokens or null if no such transient function exists.</summary>
         /// <param name="paramTokens"></param>
         /// <returns></returns>
         private SourceBehaviorParams GetBehaviorParam(List<Token> paramTokens)
@@ -138,9 +132,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             }
         }
 
-        /// <summary>
-        ///     Functino responsible for parsing Piece-wise linear behavior of the input source.
-        /// </summary>
+        /// <summary>Functino responsible for parsing Piece-wise linear behavior of the input source.</summary>
         /// <param name="paramTokens"></param>
         /// <returns></returns>
         private SourceBehaviorParams GetPwlParams(List<Token> paramTokens)
@@ -188,9 +180,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             return par;
         }
 
-        /// <summary>
-        ///     Generic function for parsing simple transient function parameters.
-        /// </summary>
+        /// <summary>Generic function for parsing simple transient function parameters.</summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="mapper"></param>
         /// <param name="paramTokens"></param>
@@ -212,9 +202,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             return t;
         }
 
-        /// <summary>
-        ///     Factory method for a deferred statement that should be processed later.
-        /// </summary>
+        /// <summary>Factory method for a deferred statement that should be processed later.</summary>
         /// <param name="name"></param>
         /// <param name="nodes"></param>
         /// <param name="par"></param>

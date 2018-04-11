@@ -14,9 +14,7 @@ namespace NextGenSpiceTest
 
         public bool IsOn { get; set; } = true;
 
-        /// <summary>
-        ///     Specifies how often the model should be updated.
-        /// </summary>
+        /// <summary>Specifies how often the model should be updated.</summary>
         public override ModelUpdateMode UpdateMode
         {
             get => ModelUpdateMode.TimePoint;

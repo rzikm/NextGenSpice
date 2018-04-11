@@ -9,6 +9,7 @@ namespace SandboxRunner
         public SwitchElement(string name = null) : base(name)
         {
         }
+
         public override IEnumerable<CircuitBranchMetadata> GetBranchMetadata()
         {
             return Enumerable.Empty<CircuitBranchMetadata>();

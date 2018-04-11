@@ -8,9 +8,7 @@ using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements.Devices
 {
-    /// <summary>
-    ///     Class that handles Homo-Junction Bipolar Transistor element statements.
-    /// </summary>
+    /// <summary>Class that handles Homo-Junction Bipolar Transistor element statements.</summary>
     public class BjtStatementProcessor : ElementStatementProcessor
     {
         public BjtStatementProcessor()
@@ -18,21 +16,18 @@ namespace NextGenSpice.Parser.Statements.Devices
             MinArgs = 4;
             MaxArgs = 5;
         }
-        /// <summary>
-        ///     Discriminator of the element type this processor can parse.
-        /// </summary>
+
+        /// <summary>Discriminator of the element type this processor can parse.</summary>
         public override char Discriminator => 'Q';
 
-        /// <summary>
-        ///     Processes given set of statements.
-        /// </summary>
+        /// <summary>Processes given set of statements.</summary>
         protected override void DoProcess()
         {
             var name = ElementName;
             var nodes = RawStatement.Length == 5
-                ? GetNodeIndices(1, 3).Concat(new[] { 0 }).ToArray() // substrate node not specified.
+                ? GetNodeIndices(1, 3).Concat(new[] {0}).ToArray() // substrate node not specified.
                 : GetNodeIndices(1, 4);
-            
+
             // cannot check for model existence yet, defer checking for model later
             if (Errors == 0)
             {
@@ -45,20 +40,16 @@ namespace NextGenSpice.Parser.Statements.Devices
             }
         }
 
-        /// <summary>
-        ///     Gets list of model statement handlers that are responsible to parsing respective models of this device.
-        /// </summary>
+        /// <summary>Gets list of model statement handlers that are responsible to parsing respective models of this device.</summary>
         /// <returns></returns>
         public override IEnumerable<IModelStatementHandler> GetModelStatementHandlers()
         {
-            return new IModelStatementHandler[] { new BjtModelStatementHandler(true), new BjtModelStatementHandler(false), };
+            return new IModelStatementHandler[]
+                {new BjtModelStatementHandler(true), new BjtModelStatementHandler(false),};
         }
 
 
-
-        /// <summary>
-        ///     Class that handles Homo-Junction Bipolar Trannsistor element model statements.
-        /// </summary>
+        /// <summary>Class that handles Homo-Junction Bipolar Trannsistor element model statements.</summary>
         private class BjtModelStatementHandler : ModelStatementHandlerBase<BjtModelParams>
         {
             private readonly bool isPnp;
@@ -115,23 +106,17 @@ namespace NextGenSpice.Parser.Statements.Devices
                 Mapper = mapper;
             }
 
-            /// <summary>
-            ///     Mapper for mapping parsed parameters onto properties.
-            /// </summary>
+            /// <summary>Mapper for mapping parsed parameters onto properties.</summary>
             protected override ParameterMapper<BjtModelParams> Mapper { get; }
 
-            /// <summary>
-            ///     Discriminator of handled model type.
-            /// </summary>
+            /// <summary>Discriminator of handled model type.</summary>
             public override string Discriminator { get; }
 
-            /// <summary>
-            ///     Creates new instance of parameter class for this device model.
-            /// </summary>
+            /// <summary>Creates new instance of parameter class for this device model.</summary>
             /// <returns></returns>
             protected override BjtModelParams CreateDefaultModel()
             {
-                return new BjtModelParams() { IsPnp = isPnp };
+                return new BjtModelParams() {IsPnp = isPnp};
             }
         }
     }

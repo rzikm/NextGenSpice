@@ -4,27 +4,21 @@ using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements
 {
-    /// <summary>
-    ///     Class for handling statements that specify initial node voltages.
-    /// </summary>
-    public class InitialConditionStatement : StatementProcessor
+    /// <summary>Class for handling statements that specify initial node voltages.</summary>
+    public class InitialConditionStatement : DotStatementProcessor
     {
         private readonly Regex argRegex;
 
         public InitialConditionStatement()
         {
-            argRegex = new Regex(@"[vV]\([^)]+\)=(.*)", RegexOptions.Compiled);
+            argRegex = new Regex(@"[vV]\(([^)]+)\)=(.*)", RegexOptions.Compiled);
             MinArgs = 1;
         }
 
-        /// <summary>
-        ///     Statement discriminator, that this class can handle.
-        /// </summary>
+        /// <summary>Statement discriminator, that this class can handle.</summary>
         public override string Discriminator => ".IC";
 
-        /// <summary>
-        ///     Processes given statement.
-        /// </summary>
+        /// <summary>Processes given statement.</summary>
         /// <param name="tokens">All tokens of the statement.</param>
         protected override void DoProcess(Token[] tokens)
         {
@@ -40,7 +34,7 @@ namespace NextGenSpice.Parser.Statements
                     continue;
                 }
 
-                var nodeName = matches.Captures[0].Value;
+                var nodeName = matches.Groups[1].Value;
                 if (!Context.SymbolTable.TryGetOrCreateNode(nodeName, out var nodeIndex))
                 {
                     Context.Errors.Add(token.ToErrorInfo(SpiceParserError.NotANode));
@@ -51,8 +45,8 @@ namespace NextGenSpice.Parser.Statements
                 var value = new Token
                 {
                     LineNumber = token.LineNumber,
-                    LineColumn = token.LineColumn + matches.Captures[1].Index,
-                    Value = matches.Captures[1].Value
+                    LineColumn = token.LineColumn + matches.Groups[1].Index,
+                    Value = matches.Groups[2].Value
                 }.GetNumericValue(Context.Errors);
 
                 if (nodeIndex >= 0) Context.CircuitBuilder.SetNodeVoltage(nodeIndex, value);

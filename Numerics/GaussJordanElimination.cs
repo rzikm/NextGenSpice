@@ -8,9 +8,7 @@ using Numerics.Precision;
 
 namespace Numerics
 {
-    /// <summary>
-    ///     Class Containing static methods for solving systems of linear equations using Gauss-Jordan Elimination.
-    /// </summary>
+    /// <summary>Class Containing static methods for solving systems of linear equations using Gauss-Jordan Elimination.</summary>
     public static unsafe class GaussJordanElimination
     {
         [DllImport(Constants.DllPath, CallingConvention = CallingConvention.StdCall)]
@@ -45,9 +43,7 @@ namespace Numerics
             Trace.WriteLine($"Solution: {string.Join(" ", b.Select(d => d.ToString("F")))}");
         }
 
-        /// <summary>
-        ///     Solves system of linear equations in the form A*x=b.
-        /// </summary>
+        /// <summary>Solves system of linear equations in the form A*x=b.</summary>
         /// <param name="a">The A matrix.</param>
         /// <param name="b">The right hand side vector b.</param>
         /// <param name="x">The output array for solution x.</param>
@@ -60,9 +56,7 @@ namespace Numerics
 #endif
         }
 
-        /// <summary>
-        ///     Solves system of linear equations in the form A*x=b.
-        /// </summary>
+        /// <summary>Solves system of linear equations in the form A*x=b.</summary>
         /// <param name="a">The A matrix.</param>
         /// <param name="b">The right hand side vector b.</param>
         /// <param name="x">The output array for solution x.</param>
@@ -75,9 +69,7 @@ namespace Numerics
 #endif
         }
 
-        /// <summary>
-        ///     Solves system of linear equations in the form A*x=b.
-        /// </summary>
+        /// <summary>Solves system of linear equations in the form A*x=b.</summary>
         /// <param name="a">The A matrix.</param>
         /// <param name="b">The right hand side vector b.</param>
         /// <param name="x">The output array for solution x.</param>
@@ -121,6 +113,7 @@ namespace Numerics
                     m[maxRow, k] = m[i, k];
                     m[i, k] = tmp;
                 }
+
                 // swap in b vector
                 {
                     var tmp = b[maxRow];
@@ -163,7 +156,7 @@ namespace Numerics
             }
 
             b.CopyTo(x, 0);
-            PrintSolution(b.Select(e => (double)e).ToArray());
+            PrintSolution(b.Select(e => (double) e).ToArray());
         }
 
         private static void Solve_Native_qd(Matrix<qd_real> m, qd_real[] b, qd_real[] x)
@@ -171,7 +164,7 @@ namespace Numerics
             fixed (qd_real* mat = m.RawData)
             fixed (qd_real* rhs = b)
             {
-                gauss_solve_qd(mat, rhs, (uint)x.Length);
+                gauss_solve_qd(mat, rhs, (uint) x.Length);
             }
 
             b.CopyTo(x, 0);
@@ -207,6 +200,7 @@ namespace Numerics
                     m[maxRow, k] = m[i, k];
                     m[i, k] = tmp;
                 }
+
                 // swap in b vector
                 {
                     var tmp = b[maxRow];
@@ -249,7 +243,7 @@ namespace Numerics
             }
 
             b.CopyTo(x, 0);
-            PrintSolution(b.Select(e => (double)e).ToArray());
+            PrintSolution(b.Select(e => (double) e).ToArray());
         }
 
         private static void Solve_Native_dd(Matrix<dd_real> m, dd_real[] b, dd_real[] x)
@@ -257,7 +251,7 @@ namespace Numerics
             fixed (dd_real* mat = m.RawData)
             fixed (dd_real* rhs = b)
             {
-                gauss_solve_dd(mat, rhs, (uint)x.Length);
+                gauss_solve_dd(mat, rhs, (uint) x.Length);
             }
 
             b.CopyTo(x, 0);
@@ -288,6 +282,7 @@ namespace Numerics
                     m[maxRow, k] = m[i, k];
                     m[i, k] = tmp;
                 }
+
                 // swap in b vector
                 {
                     var tmp = b[maxRow];
@@ -342,7 +337,7 @@ namespace Numerics
             fixed (double* mat = m.RawData)
             fixed (double* rhs = b)
             {
-                gauss_solve_double(mat, rhs, (uint)x.Length);
+                gauss_solve_double(mat, rhs, (uint) x.Length);
             }
 
             b.CopyTo(x, 0);

@@ -3,9 +3,7 @@ using System.Linq;
 
 namespace NextGenSpice.Core.Elements
 {
-    /// <summary>
-    ///     Class that represents a resistor device.
-    /// </summary>
+    /// <summary>Class that represents a resistor device.</summary>
     public class ResistorElement : TwoNodeCircuitElement
     {
         public ResistorElement(double resistance, string name = null) : base(name)
@@ -13,14 +11,10 @@ namespace NextGenSpice.Core.Elements
             Resistance = resistance;
         }
 
-        /// <summary>
-        ///     Resistance of the device in ohms.
-        /// </summary>
+        /// <summary>Resistance of the device in ohms.</summary>
         public double Resistance { get; set; }
 
-        /// <summary>
-        ///     Gets metadata about this device interconnections in the circuit.
-        /// </summary>
+        /// <summary>Gets metadata about this device interconnections in the circuit.</summary>
         /// <returns></returns>
         public override IEnumerable<CircuitBranchMetadata> GetBranchMetadata()
         {

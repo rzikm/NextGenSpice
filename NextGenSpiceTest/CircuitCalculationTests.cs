@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using NextGenSpice.Core;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Extensions;

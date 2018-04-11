@@ -8,9 +8,7 @@ using NextGenSpice.LargeSignal.Models;
 
 namespace NextGenSpice.LargeSignal
 {
-    /// <summary>
-    ///     Class for creating <see cref="LargeSignalCircuitModel" /> from circuit definition.
-    /// </summary>
+    /// <summary>Class for creating <see cref="LargeSignalCircuitModel" /> from circuit definition.</summary>
     [Export(typeof(IAnalysisModelFactory<LargeSignalCircuitModel>))]
     public class LargeSignalAnalysisModelFactory : AnalysisModelFactory<LargeSignalCircuitModel>
     {
@@ -43,9 +41,7 @@ namespace NextGenSpice.LargeSignal
         }
 
 
-        /// <summary>
-        ///     Factory method for creating the actual instance of the analysis model.
-        /// </summary>
+        /// <summary>Factory method for creating the actual instance of the analysis model.</summary>
         /// <param name="context">Current instantiation context.</param>
         /// <returns></returns>
         protected override LargeSignalCircuitModel Instantiate(

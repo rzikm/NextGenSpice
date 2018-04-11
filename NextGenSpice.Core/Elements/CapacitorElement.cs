@@ -2,9 +2,7 @@
 
 namespace NextGenSpice.Core.Elements
 {
-    /// <summary>
-    ///     Class that represents a capacitor device.
-    /// </summary>
+    /// <summary>Class that represents a capacitor device.</summary>
     public class CapacitorElement : TwoNodeCircuitElement
     {
         public CapacitorElement(double capacity, double? initialVoltage = null, string name = null) : base(name)
@@ -13,19 +11,13 @@ namespace NextGenSpice.Core.Elements
             InitialVoltage = initialVoltage;
         }
 
-        /// <summary>
-        ///     Capacity in farads.
-        /// </summary>
+        /// <summary>Capacity in farads.</summary>
         public double Capacity { get; set; }
 
-        /// <summary>
-        ///     Initial voltage across the capacitor in volts.
-        /// </summary>
+        /// <summary>Initial voltage across the capacitor in volts.</summary>
         public double? InitialVoltage { get; set; }
 
-        /// <summary>
-        ///     Gets metadata about this device interconnections in the circuit.
-        /// </summary>
+        /// <summary>Gets metadata about this device interconnections in the circuit.</summary>
         /// <returns></returns>
         public override IEnumerable<CircuitBranchMetadata> GetBranchMetadata()
         {

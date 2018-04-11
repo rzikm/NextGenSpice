@@ -4,20 +4,13 @@ using NextGenSpice.Parser.Statements.Deferring;
 
 namespace NextGenSpice.Parser.Statements.Devices
 {
-    /// <summary>
-    ///     Class for handling independent current source statement
-    ///     ///
-    /// </summary>
+    /// <summary>Class for handling independent current source statement ///</summary>
     public class VoltageSourceStatementProcessor : InputSourceStatementProcessor
     {
-        /// <summary>
-        ///     Discriminator of the element type this processor can parse.
-        /// </summary>
+        /// <summary>Discriminator of the element type this processor can parse.</summary>
         public override char Discriminator => 'V';
 
-        /// <summary>
-        ///     Factory method for a deferred statement that should be processed later.
-        /// </summary>
+        /// <summary>Factory method for a deferred statement that should be processed later.</summary>
         /// <param name="name"></param>
         /// <param name="nodes"></param>
         /// <param name="par"></param>

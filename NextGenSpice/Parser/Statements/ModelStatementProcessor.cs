@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using NextGenSpice.Parser.Statements.Models;
@@ -6,10 +5,8 @@ using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements
 {
-    /// <summary>
-    ///     Class responsible for processing .MODEL statements.
-    /// </summary>
-    internal class ModelStatementProcessor : StatementProcessor
+    /// <summary>Class responsible for processing .MODEL statements.</summary>
+    internal class ModelStatementProcessor : DotStatementProcessor
     {
         private readonly Dictionary<string, IModelStatementHandler> handlers;
 
@@ -21,23 +18,17 @@ namespace NextGenSpice.Parser.Statements
             handlers = new Dictionary<string, IModelStatementHandler>();
         }
 
-        /// <summary>
-        ///     Statement discriminator, that this class can handle.
-        /// </summary>
+        /// <summary>Statement discriminator, that this class can handle.</summary>
         public override string Discriminator => ".MODEL";
 
-        /// <summary>
-        ///     Adds handler for a specific device model type.
-        /// </summary>
+        /// <summary>Adds handler for a specific device model type.</summary>
         /// <param name="handler"></param>
         public void AddHandler(IModelStatementHandler handler)
         {
             handlers.Add(handler.Discriminator, handler);
         }
 
-        /// <summary>
-        ///     Processes given statement.
-        /// </summary>
+        /// <summary>Processes given statement.</summary>
         /// <param name="tokens">All tokens of the statement.</param>
         protected override void DoProcess(Token[] tokens)
         {

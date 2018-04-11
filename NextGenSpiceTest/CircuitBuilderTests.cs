@@ -103,23 +103,6 @@ namespace NextGenSpiceTest
         }
 
         [Fact]
-        public void ThrowsWhenVoltageSourceCycle()
-        {
-            // a cycle
-            builder.AddVoltageSource(0, 1, 1, "V1");
-            builder.AddVoltageSource(0, 2, 1, "V2");
-            builder.AddVoltageSource(1, 2, 1, "V3");
-
-            // some other elements
-            builder.AddVoltageSource(0, 3, 1, "V4");
-            builder.AddResistor(2, 3, 1, "R");
-
-            var elements = Assert.Throws<VoltageBranchCycleException>(() => builder.BuildCircuit()).Elements;
-
-            Assert.Equal(new []{"V1", "V2", "V3"}, elements.Select(e => e.Name).OrderBy(s => s));
-        }
-
-        [Fact]
         public void ThrowsWhenCurrentSourceCutset()
         {
             // a cutset
@@ -134,7 +117,24 @@ namespace NextGenSpiceTest
 
             var elements = Assert.Throws<CurrentBranchCutsetException>(() => builder.BuildCircuit()).Elements;
 
-            Assert.Equal(new[] { "I1", "I2" }, elements.Select(e => e.Name).OrderBy(s => s));
+            Assert.Equal(new[] {"I1", "I2"}, elements.Select(e => e.Name).OrderBy(s => s));
+        }
+
+        [Fact]
+        public void ThrowsWhenVoltageSourceCycle()
+        {
+            // a cycle
+            builder.AddVoltageSource(0, 1, 1, "V1");
+            builder.AddVoltageSource(0, 2, 1, "V2");
+            builder.AddVoltageSource(1, 2, 1, "V3");
+
+            // some other elements
+            builder.AddVoltageSource(0, 3, 1, "V4");
+            builder.AddResistor(2, 3, 1, "R");
+
+            var elements = Assert.Throws<VoltageBranchCycleException>(() => builder.BuildCircuit()).Elements;
+
+            Assert.Equal(new[] {"V1", "V2", "V3"}, elements.Select(e => e.Name).OrderBy(s => s));
         }
     }
 }

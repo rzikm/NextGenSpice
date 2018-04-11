@@ -6,9 +6,7 @@ using NextGenSpice.Core.Elements;
 
 namespace NextGenSpice.Parser
 {
-    /// <summary>
-    ///     Class aggregating all encountered symbols in the input file.
-    /// </summary>
+    /// <summary>Class aggregating all encountered symbols in the input file.</summary>
     public class SymbolTable : ISymbolTable
     {
         private readonly Stack<StackEntry> scopes;
@@ -29,29 +27,19 @@ namespace NextGenSpice.Parser
 
         private StackEntry StackTop => scopes.Peek();
 
-        /// <summary>
-        ///     How deep into nested subcircuit are we during parsing. 0 means that we are in the global scope.
-        /// </summary>
+        /// <summary>How deep into nested subcircuit are we during parsing. 0 means that we are in the global scope.</summary>
         public int SubcircuitDepth => scopes.Count - 1;
 
-        /// <summary>
-        ///     Set of all device element identifiers from current scope.
-        /// </summary>
+        /// <summary>Set of all device element identifiers from current scope.</summary>
         public ISet<string> DefinedElements => StackTop.DefinedElements;
 
-        /// <summary>
-        ///     Set of all node identifiers from current scope with associated ids that will be used during simulation.
-        /// </summary>
+        /// <summary>Set of all node identifiers from current scope with associated ids that will be used during simulation.</summary>
         public IDictionary<string, int> NodeIndices => StackTop.NodeIndices;
 
-        /// <summary>
-        ///     Set of all subcircuits defined in current scope.
-        /// </summary>
+        /// <summary>Set of all subcircuits defined in current scope.</summary>
         public IDictionary<string, SubcircuitElement> SubcircuitElements => StackTop.Subcircuits;
 
-        /// <summary>
-        ///     Locks all contents of symbol tables as defaultly visible in all scopes and starts global scope.
-        /// </summary>
+        /// <summary>Locks all contents of symbol tables as defaultly visible in all scopes and starts global scope.</summary>
         public void FreezeDefaults()
         {
             if (defaultsScope.Models != null) throw new InvalidOperationException("Already frozen");
@@ -59,24 +47,7 @@ namespace NextGenSpice.Parser
             scopes.Push(DuplicateStackEntry(defaultsScope));
         }
 
-        /// <summary>
-        ///     Creates new instance of StackEntry with shallow clones of the respective containers.
-        /// </summary>
-        /// <param name="stackEntry">StackEntry to copy.</param>
-        /// <returns></returns>
-        private StackEntry DuplicateStackEntry(StackEntry stackEntry)
-        {
-            return new StackEntry(
-                new HashSet<string>(stackEntry.DefinedElements),
-                new Dictionary<string, int>(stackEntry.NodeIndices),
-                stackEntry.Models.ToDictionary(kvp => kvp.Key,
-                    kvp => kvp.Value.ToDictionary(kp => kp.Key, kp => kp.Value)),
-                new Dictionary<string, SubcircuitElement>(stackEntry.Subcircuits));
-        }
-
-        /// <summary>
-        ///     Gets the model parameters of given type associated with given name.
-        /// </summary>
+        /// <summary>Gets the model parameters of given type associated with given name.</summary>
         /// <param name="modelType">Type of the model parameters.</param>
         /// <param name="name">Name of the model.</param>
         /// <param name="model">If this function returns true, contains the found model, otherwise null.</param>
@@ -88,9 +59,7 @@ namespace NextGenSpice.Parser
             return Models[modelType].TryGetValue(name, out model);
         }
 
-        /// <summary>
-        ///     Gets the model parameters of given type associated with given name.
-        /// </summary>
+        /// <summary>Gets the model parameters of given type associated with given name.</summary>
         /// <typeparam name="T">Type of the model parameters.</typeparam>
         /// <param name="name">Name of the model.</param>
         /// <param name="model">If this function returns true, contains the found model, otherwise null.</param>
@@ -102,9 +71,7 @@ namespace NextGenSpice.Parser
             return ret;
         }
 
-        /// <summary>
-        ///     Gets model of given type associated with given name.
-        /// </summary>
+        /// <summary>Gets model of given type associated with given name.</summary>
         /// <param name="modelType">Type of the model parameters.</param>
         /// <param name="name">Name of the model.</param>
         /// <returns>The model.</returns>
@@ -115,9 +82,7 @@ namespace NextGenSpice.Parser
             return model;
         }
 
-        /// <summary>
-        ///     Gets model of given type associated with given name.
-        /// </summary>
+        /// <summary>Gets model of given type associated with given name.</summary>
         /// <typeparam name="T">Type of the model parameters.</typeparam>
         /// <param name="name">Name of the model.</param>
         /// <returns>The model.</returns>
@@ -126,9 +91,7 @@ namespace NextGenSpice.Parser
             return (T) GetModel(typeof(T), name);
         }
 
-        /// <summary>
-        ///     Adds model of given type and name to the symbol tables.
-        /// </summary>
+        /// <summary>Adds model of given type and name to the symbol tables.</summary>
         /// <param name="modelType">Type of the model parameters.</param>
         /// <param name="name">Name of the model.</param>
         /// <param name="model">If this function returns true, contains the found model, otherwise null.</param>
@@ -140,9 +103,7 @@ namespace NextGenSpice.Parser
             Models[modelType].Add(name, model);
         }
 
-        /// <summary>
-        ///     Adds model of given type and name to the symbol tables.
-        /// </summary>
+        /// <summary>Adds model of given type and name to the symbol tables.</summary>
         /// <typeparam name="T">Type of the model type.</typeparam>
         /// <param name="name">Name of the model.</param>
         /// <param name="model">If this function returns true, contains the found model, otherwise null.</param>
@@ -151,9 +112,7 @@ namespace NextGenSpice.Parser
             AddModel(typeof(T), model, name);
         }
 
-        /// <summary>
-        ///     Adds subcircuit under given name to the symbol tables.
-        /// </summary>
+        /// <summary>Adds subcircuit under given name to the symbol tables.</summary>
         /// <param name="name">Name of the subcircuit.</param>
         /// <param name="subcircuit">The subcircuit deinition.</param>
         public void AddSubcircuit(string name, SubcircuitElement subcircuit)
@@ -161,9 +120,7 @@ namespace NextGenSpice.Parser
             SubcircuitElements.Add(name, subcircuit);
         }
 
-        /// <summary>
-        ///     Gets the subcircuit associated with given name.
-        /// </summary>
+        /// <summary>Gets the subcircuit associated with given name.</summary>
         /// <param name="name">Name of the subcircuit.</param>
         /// <param name="subcircuit">Out variable to store found model in.</param>
         /// <returns></returns>
@@ -172,30 +129,17 @@ namespace NextGenSpice.Parser
             return SubcircuitElements.TryGetValue(name, out subcircuit);
         }
 
-        /// <summary>
-        ///     Returns the subcircuit instance with corresponding name.
-        /// </summary>
+        /// <summary>Returns the subcircuit instance with corresponding name.</summary>
         /// <param name="name">The subcircuit name</param>
         /// <returns></returns>
         public SubcircuitElement GetSubcircuit(string name)
         {
-            if (!TryGetSubcircuit(name, out var result)) throw new ArgumentException($"Subcircuit with name '{name}' does not exist");
+            if (!TryGetSubcircuit(name, out var result))
+                throw new ArgumentException($"Subcircuit with name '{name}' does not exist");
             return result;
         }
 
-        /// <summary>
-        ///     Returns whether given symbol is already used for a device or node.
-        /// </summary>
-        /// <param name="symbol"></param>
-        /// <returns></returns>
-        private bool IsDefined(string symbol)
-        {
-            return DefinedElements.Contains(symbol) || NodeIndices.ContainsKey(symbol);
-        }
-
-        /// <summary>
-        ///     Adds given symbol to the set of element names, returns true if it not already used.
-        /// </summary>
+        /// <summary>Adds given symbol to the set of element names, returns true if it not already used.</summary>
         /// <param name="name"></param>
         /// <returns></returns>
         public bool TryDefineElement(string name)
@@ -203,9 +147,7 @@ namespace NextGenSpice.Parser
             return !IsDefined(name) && DefinedElements.Add(name);
         }
 
-        /// <summary>
-        ///     Tries to get node index corresponding to given node name. Returns true on success.
-        /// </summary>
+        /// <summary>Tries to get node index corresponding to given node name. Returns true on success.</summary>
         /// <param name="name">Name of the node.</param>
         /// <param name="index">Index of the node.</param>
         /// <returns></returns>
@@ -218,9 +160,7 @@ namespace NextGenSpice.Parser
             return NodeIndices.TryGetValue(name, out index);
         }
 
-        /// <summary>
-        ///     Defines new node with given name and assigns it a new index. Returns true on success.
-        /// </summary>
+        /// <summary>Defines new node with given name and assigns it a new index. Returns true on success.</summary>
         /// <param name="name">Name of the node.</param>
         /// <param name="index">Index of the node.</param>
         /// <returns></returns>
@@ -236,9 +176,7 @@ namespace NextGenSpice.Parser
             return true;
         }
 
-        /// <summary>
-        ///     Gives set of node names for given set of indexes
-        /// </summary>
+        /// <summary>Gives set of node names for given set of indexes</summary>
         /// <param name="indexes"></param>
         /// <returns></returns>
         public IEnumerable<string> GetNodeNames(IEnumerable<int> indexes)
@@ -246,9 +184,35 @@ namespace NextGenSpice.Parser
             return indexes.Select(id => NodeIndices.First(kvp => kvp.Value == id).Key);
         }
 
-        /// <summary>
-        ///     Enters a new scope for managing entries inside subcircuit.
-        /// </summary>
+        /// <summary>Returns dictionary with mappings from node id to their respective names.</summary>
+        /// <returns></returns>
+        public IDictionary<int, string> GetNodeIdMappings()
+        {
+            return NodeIndices.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
+        }
+
+        /// <summary>Creates new instance of StackEntry with shallow clones of the respective containers.</summary>
+        /// <param name="stackEntry">StackEntry to copy.</param>
+        /// <returns></returns>
+        private StackEntry DuplicateStackEntry(StackEntry stackEntry)
+        {
+            return new StackEntry(
+                new HashSet<string>(stackEntry.DefinedElements),
+                new Dictionary<string, int>(stackEntry.NodeIndices),
+                stackEntry.Models.ToDictionary(kvp => kvp.Key,
+                    kvp => kvp.Value.ToDictionary(kp => kp.Key, kp => kp.Value)),
+                new Dictionary<string, SubcircuitElement>(stackEntry.Subcircuits));
+        }
+
+        /// <summary>Returns whether given symbol is already used for a device or node.</summary>
+        /// <param name="symbol"></param>
+        /// <returns></returns>
+        private bool IsDefined(string symbol)
+        {
+            return DefinedElements.Contains(symbol) || NodeIndices.ContainsKey(symbol);
+        }
+
+        /// <summary>Enters a new scope for managing entries inside subcircuit.</summary>
         public void EnterSubcircuit()
         {
             if (defaultsScope.Models == null)
@@ -256,18 +220,7 @@ namespace NextGenSpice.Parser
             scopes.Push(DuplicateStackEntry(defaultsScope));
         }
 
-        /// <summary>
-        ///     Returns dictionary with mappings from node id to their respective names.
-        /// </summary>
-        /// <returns></returns>
-        public IDictionary<int, string> GetNodeIdMappings()
-        {
-            return NodeIndices.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
-        }
-
-        /// <summary>
-        ///     Exits current subcircuit scope and returns to upper scope.
-        /// </summary>
+        /// <summary>Exits current subcircuit scope and returns to upper scope.</summary>
         public void ExitSubcircuit()
         {
             scopes.Pop();

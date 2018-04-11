@@ -10,9 +10,7 @@ namespace NextGenSpiceTest
         {
         }
 
-        /// <summary>
-        ///     Gets metadata about this device interconnections in the circuit.
-        /// </summary>
+        /// <summary>Gets metadata about this device interconnections in the circuit.</summary>
         /// <returns></returns>
         public override IEnumerable<CircuitBranchMetadata> GetBranchMetadata()
         {

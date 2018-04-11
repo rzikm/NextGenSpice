@@ -1,55 +1,44 @@
-using System.Collections.Generic;
-using System.Linq;
 using NextGenSpice.Parser.Statements.Printing;
 
 namespace NextGenSpice.Parser.Statements.Simulation
 {
-    /// <summary>
-    ///     Class for handling .TRAN statements.
-    /// </summary>
-    public class TranStatementProcessor : SimpleStatementProcessor<TranSimulationParams>, ISimulationStatementProcessor
+    /// <summary>Class for handling .TRAN statements.</summary>
+    public class TranStatementProcessor : SimpleDotStatementProcessor<TranSimulationParams>, ISimulationStatementProcessor
     {
         public TranStatementProcessor()
         {
             MinArgs = 2;
             MaxArgs = 4;
 
-            Mapper.Map(c => c.TimeStep, 1);
-            Mapper.Map(c => c.StopTime, 2);
-            Mapper.Map(c => c.StartTime, 3);
+            Mapper.Map(c => c.TimeStep, 0);
+            Mapper.Map(c => c.StopTime, 1);
+            Mapper.Map(c => c.StartTime, 2);
 
             // not supported yet, the timestep is constant and equal to TimeStep parameter
-//            Mapper.Map(c => c.MaximmumTimestep, 4);
+//            Mapper.Map(c => c.MaximmumTimestep, 3);
         }
 
-        /// <summary>
-        ///     Statement discriminator, that this class can handle.
-        /// </summary>
+        /// <summary>Statement discriminator, that this class can handle.</summary>
         public override string Discriminator => ".TRAN";
 
-        /// <summary>
-        ///     Gets handler that can handle .PRINT statements that belong to analysis of this processor
-        /// </summary>
+        /// <summary>Gets handler that can handle .PRINT statements that belong to analysis of this processor</summary>
         /// <returns></returns>
         public IPrintStatementHandler GetPrintStatementHandler()
         {
             return LsPrintStatementHandler.CreateTran();
         }
 
-        /// <summary>
-        ///     Initializes mapper target (instance hodling the param values), including default parameters.
-        /// </summary>
+        /// <summary>Initializes mapper target (instance hodling the param values), including default parameters.</summary>
         protected override void InitMapper()
         {
             Mapper.Target = new TranSimulationParams();
         }
 
-        /// <summary>
-        ///     Final action for processing the statement
-        /// </summary>
+        /// <summary>Final action for processing the statement</summary>
         protected override void UseParam()
         {
-            Context.SimulationStatements.Add(new TranSimulationStatement(Mapper.Target, Context.SymbolTable.GetNodeIdMappings()));
+            Context.SimulationStatements.Add(new TranSimulationStatement(Mapper.Target,
+                Context.SymbolTable.GetNodeIdMappings()));
         }
     }
 }

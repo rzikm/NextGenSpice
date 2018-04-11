@@ -8,9 +8,7 @@ using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser
 {
-    /// <summary>
-    ///     Class that hold intermediate data during paring of an input file.
-    /// </summary>
+    /// <summary>Class that hold intermediate data during paring of an input file.</summary>
     public class ParsingContext
     {
         private readonly Stack<(CircuitBuilder builder, List<DeferredStatement> stmts)> scopes;
@@ -29,44 +27,28 @@ namespace NextGenSpice.Parser
             scopes = new Stack<(CircuitBuilder builder, List<DeferredStatement> stmts)>();
         }
 
-        /// <summary>
-        ///     Table containing known symbols from input file.
-        /// </summary>
+        /// <summary>Table containing known symbols from input file.</summary>
         public ISymbolTable SymbolTable => table;
 
-        /// <summary>
-        ///     Set of errors from the input file.
-        /// </summary>
+        /// <summary>Set of errors from the input file.</summary>
         public List<ErrorInfo> Errors { get; }
 
-        /// <summary>
-        ///     Set of all syntactically correct staements encountered to be evaluated.
-        /// </summary>
+        /// <summary>Set of all syntactically correct staements encountered to be evaluated.</summary>
         public List<DeferredStatement> DeferredStatements { get; private set; }
 
-        /// <summary>
-        ///     Set of all simulation statements encountered.
-        /// </summary>
+        /// <summary>Set of all simulation statements encountered.</summary>
         public List<ISimulationStatement> SimulationStatements { get; }
 
-        /// <summary>
-        ///     Set of all .PRINT statements encountered.
-        /// </summary>
+        /// <summary>Set of all .PRINT statements encountered.</summary>
         public List<PrintStatement> PrintStatements { get; }
 
-        /// <summary>
-        ///     Builder responsible for creating the circuit definition from the statements.
-        /// </summary>
+        /// <summary>Builder responsible for creating the circuit definition from the statements.</summary>
         public CircuitBuilder CircuitBuilder { get; private set; }
 
-        /// <summary>
-        ///     How many nested subcircuits are currently being parsed.
-        /// </summary>
+        /// <summary>How many nested subcircuits are currently being parsed.</summary>
         public int SubcircuitDepth => table.SubcircuitDepth;
 
-        /// <summary>
-        ///     Temporarily suspends parsing of current circuit and creates new frame to parse a subcircuit.
-        /// </summary>
+        /// <summary>Temporarily suspends parsing of current circuit and creates new frame to parse a subcircuit.</summary>
         public void EnterSubcircuit()
         {
             scopes.Push((CircuitBuilder, DeferredStatements));
@@ -75,18 +57,14 @@ namespace NextGenSpice.Parser
             table.EnterSubcircuit();
         }
 
-        /// <summary>
-        ///     Restores previous parsing frame.
-        /// </summary>
+        /// <summary>Restores previous parsing frame.</summary>
         public void ExitSubcircuit()
         {
             (CircuitBuilder, DeferredStatements) = scopes.Pop();
             table.ExitSubcircuit();
         }
 
-        /// <summary>
-        ///     Processes all deferred statements and if they cannot be processed, generate corresponding errors.
-        /// </summary>
+        /// <summary>Processes all deferred statements and if they cannot be processed, generate corresponding errors.</summary>
         public void FlushStatements()
         {
             // repeatedly try to process all statements until no more statements can be processed in the iteration

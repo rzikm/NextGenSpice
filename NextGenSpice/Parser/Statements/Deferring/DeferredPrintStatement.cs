@@ -8,9 +8,7 @@ using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements.Deferring
 {
-    /// <summary>
-    ///     Class representing intermediate state of a .PRINT statement to be processed once all devices are known.
-    /// </summary>
+    /// <summary>Class representing intermediate state of a .PRINT statement to be processed once all devices are known.</summary>
     public class DeferredPrintStatement : DeferredStatement
     {
         private readonly string analysisType;
@@ -33,9 +31,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
             errors = new List<ErrorInfo>();
         }
 
-        /// <summary>
-        ///     Returns true if all prerequisites for the statements have been fulfilled and statement is ready to be applied.
-        /// </summary>
+        /// <summary>Returns true if all prerequisites for the statements have been fulfilled and statement is ready to be applied.</summary>
         /// <param name="context"></param>
         /// <returns></returns>
         public override bool CanApply(ParsingContext context)
@@ -53,7 +49,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
                 }
                 else if (element != null) // an element
                 {
-                    printStatement = new ElementPrintStatement(stat, name, token); 
+                    printStatement = new ElementPrintStatement(stat, name, token);
                 }
                 else if ((i = name.IndexOf(',')) > 0 && i < name.Length - 1) // two nodes
                 {
@@ -87,28 +83,23 @@ namespace NextGenSpice.Parser.Statements.Deferring
             }
             else // only circuit elements with stat other than "V"
             {
-                if (element != null) 
-                    printStatement = new ElementPrintStatement(stat, name, token); 
+                if (element != null)
+                    printStatement = new ElementPrintStatement(stat, name, token);
                 else
                     errors.Add(token.ToErrorInfo(SpiceParserError.NotAnElement));
-                
             }
 
             return printStatement != null;
         }
 
-        /// <summary>
-        ///     Returns set of errors due to which this stetement cannot be processed.
-        /// </summary>
+        /// <summary>Returns set of errors due to which this stetement cannot be processed.</summary>
         /// <returns></returns>
         public override IEnumerable<ErrorInfo> GetErrors()
         {
             return errors;
         }
 
-        /// <summary>
-        ///     Applies the statement in the given context.
-        /// </summary>
+        /// <summary>Applies the statement in the given context.</summary>
         /// <param name="context"></param>
         public override void Apply(ParsingContext context)
         {
@@ -119,8 +110,8 @@ namespace NextGenSpice.Parser.Statements.Deferring
 
     public class ElementPrintStatement : PrintStatement<LargeSignalCircuitModel>
     {
-        private readonly string stat;
         private readonly string name;
+        private readonly string stat;
         private readonly Token t;
         private IDeviceStatsProvider provider;
 
@@ -131,23 +122,17 @@ namespace NextGenSpice.Parser.Statements.Deferring
             this.t = t;
         }
 
-        /// <summary>
-        ///     Information about what kind of data are handled by this print statement.
-        /// </summary>
+        /// <summary>Information about what kind of data are handled by this print statement.</summary>
         public override string Header => $"{stat}({name})";
 
-        /// <summary>
-        ///     Prints value of handled by this print statement into given TextWriter.
-        /// </summary>
+        /// <summary>Prints value of handled by this print statement into given TextWriter.</summary>
         /// <param name="output">Output TextWriter where to write.</param>
         public override void PrintValue(TextWriter output)
         {
             output.Write(provider.GetValue());
         }
 
-        /// <summary>
-        ///     Initializes print statement for given circuit model and returns set of errors that occured (if any).
-        /// </summary>
+        /// <summary>Initializes print statement for given circuit model and returns set of errors that occured (if any).</summary>
         /// <param name="circuitModel">Current model of the circuit.</param>
         /// <returns>Set of errors that errored (if any).</returns>
         public override IEnumerable<ErrorInfo> Initialize(LargeSignalCircuitModel circuitModel)
@@ -157,11 +142,10 @@ namespace NextGenSpice.Parser.Statements.Deferring
             var errorInfos = provider == null
                 ? new[]
                 {
-                    ErrorInfo.Create(SpiceParserError.NoPrintProvider, 0, 0, stat, name), 
+                    ErrorInfo.Create(SpiceParserError.NoPrintProvider, 0, 0, stat, name)
                 }
                 : Enumerable.Empty<ErrorInfo>();
             return errorInfos;
-            
         }
     }
 }

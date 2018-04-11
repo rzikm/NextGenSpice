@@ -16,21 +16,15 @@ namespace NextGenSpice.LargeSignal.Behaviors
             Parameters = parameters;
         }
 
-        /// <summary>
-        ///     Set of parameters for this behavior class.
-        /// </summary>
+        /// <summary>Set of parameters for this behavior class.</summary>
         protected TParams Parameters { get; }
 
-        /// <summary>
-        ///     Gets input source value for given timepoint.
-        /// </summary>
+        /// <summary>Gets input source value for given timepoint.</summary>
         /// <param name="context"></param>
         /// <returns></returns>
         public abstract double GetValue(ISimulationContext context);
 
-        /// <summary>
-        ///     Specifies how often the model should be updated.
-        /// </summary>
+        /// <summary>Specifies how often the model should be updated.</summary>
         public abstract ModelUpdateMode UpdateMode { get; }
     }
 }

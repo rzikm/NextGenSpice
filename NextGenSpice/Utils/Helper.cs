@@ -5,9 +5,7 @@ using NextGenSpice.Parser;
 
 namespace NextGenSpice.Utils
 {
-    /// <summary>
-    ///     General helper class for SPICE code parsing.
-    /// </summary>
+    /// <summary>General helper class for SPICE code parsing.</summary>
     public static class Helper
     {
         private static readonly IDictionary<string, double> modifiers = new Dictionary<string, double>
@@ -32,7 +30,7 @@ namespace NextGenSpice.Utils
         /// <returns></returns>
         public static double ConvertValue(string s)
         {
-            var i = s.LastIndexOfAny(new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' });
+            var i = s.LastIndexOfAny(new[] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'});
 
             var suff = s.Substring(i + 1);
             s = s.Substring(0, i + 1);
@@ -52,8 +50,8 @@ namespace NextGenSpice.Utils
         }
 
         /// <summary>
-        ///     Helper method for getting exact numerical value from the given token, if token does not represent numerical value,
-        ///     then corresponding ErrorInfo instance is added to the errors collection.
+        ///     Helper method for getting exact numerical value from the given token, if token does not represent numerical
+        ///     value, then corresponding ErrorInfo instance is added to the errors collection.
         /// </summary>
         /// <param name="t"></param>
         /// <param name="errors"></param>
@@ -67,25 +65,24 @@ namespace NextGenSpice.Utils
 
 
         /// <summary>
-        ///     Makes ErrorInfo instance with given error code. LineNumber, LineColumn and message args are extracted from the token.
+        ///     Makes ErrorInfo instance with given error code. LineNumber, LineColumn and message args are extracted from the
+        ///     token.
         /// </summary>
         /// <param name="t"></param>
         /// <param name="errorCode"></param>
         /// <returns></returns>
         public static ErrorInfo ToErrorInfo(this Token t, SpiceParserError errorCode, params object[] args)
         {
-            object[] a = args.Length == 0 ? new object[] { t.Value } : args;
+            object[] a = args.Length == 0 ? new object[] {t.Value} : args;
             return new ErrorInfo(errorCode, t.LineNumber, t.LineColumn, a);
         }
 
         /// <summary>
-        ///     Helper method for normalizing parameter values e.g. for .MODEL statement or EXP tran function. Starting from 4th
-        ///     token, removes parentheses and separates tokens to be processed one by one.
-        ///     Adds encountered erros to errors collection. E.g. Token set "V 0 1 SIN(0 1 100)" becomes "SIN 0 1 100".
+        ///     Helper method for normalizing parameter values e.g. for .MODEL statement or EXP tran function. Starting from
+        ///     4th token, removes parentheses and separates tokens to be processed one by one. Adds encountered erros to errors
+        ///     collection. E.g. Token set "V 0 1 SIN(0 1 100)" becomes "SIN 0 1 100".
         /// </summary>
-        /// <example>
-        ///     Token set "V 0 1 SIN(0 1 100)" becomes "SIN 0 1 100"
-        /// </example>
+        /// <example>Token set "V 0 1 SIN(0 1 100)" becomes "SIN 0 1 100"</example>
         /// <param name="tokens">Array of line tokens.</param>
         /// <param name="startPos">Starting position where to start retokenizing.</param>
         /// <returns></returns>
@@ -97,11 +94,11 @@ namespace NextGenSpice.Utils
             var parenthesized = false;
             if (last.Value.EndsWith(")"))
             {
-
                 if (tokens[startPos].Value.Contains('(') ||
                     startPos + 1 < tokens.Length && tokens[startPos + 1].Value.StartsWith('('))
                     parenthesized = true;
             }
+
             if (!parenthesized)
                 return tokens.Skip(startPos).ToList();
 

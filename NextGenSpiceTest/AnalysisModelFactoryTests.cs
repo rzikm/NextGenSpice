@@ -45,9 +45,7 @@ namespace NextGenSpiceTest
             {
             }
 
-            /// <summary>
-            ///     Gets metadata about this device interconnections in the circuit.
-            /// </summary>
+            /// <summary>Gets metadata about this device interconnections in the circuit.</summary>
             /// <returns></returns>
             public override IEnumerable<CircuitBranchMetadata> GetBranchMetadata()
             {
@@ -61,9 +59,7 @@ namespace NextGenSpiceTest
 
         private class TestDeviceModel : ITestDeviceModel
         {
-            /// <summary>
-            ///     Instance of definition element that corresponds to this device analysis model.
-            /// </summary>
+            /// <summary>Instance of definition element that corresponds to this device analysis model.</summary>
             public ICircuitDefinitionElement DefinitionElement => throw new NotImplementedException();
         }
 

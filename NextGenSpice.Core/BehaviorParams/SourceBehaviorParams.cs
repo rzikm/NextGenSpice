@@ -2,9 +2,7 @@
 
 namespace NextGenSpice.Core.BehaviorParams
 {
-    /// <summary>
-    ///     Base class for classes that are used to specify behavior of input sources
-    /// </summary>
+    /// <summary>Base class for classes that are used to specify behavior of input sources</summary>
     public abstract class SourceBehaviorParams : ICloneable
     {
         /// <summary>Creates a new object that is a copy of the current instance.</summary>

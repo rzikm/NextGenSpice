@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Numerics;
 using Numerics.Precision;
 
 namespace NextGenSpice.Core.Equations
 {
-    /// <summary>
-    ///     Class representing linear equation system with inner dd_real coeffitient precision.
-    /// </summary>
+    /// <summary>Class representing linear equation system with inner dd_real coeffitient precision.</summary>
     public class DdEquationSystem : IEquationEditor
     {
         private readonly (Matrix<dd_real> m, dd_real[] v)[] backup;
@@ -32,46 +28,33 @@ namespace NextGenSpice.Core.Equations
 
             Matrix = matrix;
             RightHandSide = rhs;
-
         }
 
-        /// <summary>
-        ///     Result of the latest call to the Solve() method.
-        /// </summary>
+        /// <summary>Result of the latest call to the Solve() method.</summary>
         public double[] Solution { get; private set; }
 
-        /// <summary>
-        ///     Matrix part of the equation system.
-        /// </summary>
+        /// <summary>Matrix part of the equation system.</summary>
         public Matrix<dd_real> Matrix { get; private set; }
 
-        /// <summary>
-        ///     Right hand side vector of the equation system.
-        /// </summary>
+        /// <summary>Right hand side vector of the equation system.</summary>
         public dd_real[] RightHandSide { get; private set; }
 
-        /// <summary>
-        ///     Count of the variables in the equation.
-        /// </summary>
+        /// <summary>Count of the variables in the equation.</summary>
         public int VariablesCount => Solution.Length;
 
-        /// <summary>
-        ///     Adds a value to coefficient on the given row and column of the equation matrix.
-        /// </summary>
+        /// <summary>Adds a value to coefficient on the given row and column of the equation matrix.</summary>
         /// <param name="row">The row.</param>
         /// <param name="column">The column.</param>
         /// <param name="value">The value to be added to the coefficients.</param>
         public void AddMatrixEntry(int row, int column, double value)
         {
 #if DEBUG
-            if (double.IsNaN(value)) throw new InvalidOperationException("Cannot insert NaN");
+            //if (double.IsNaN(value)) throw new InvalidOperationException("Cannot insert NaN");
 #endif
             Matrix[row, column] += value;
         }
 
-        /// <summary>
-        ///     Adds a value to coefficient on the given position of the right hand side of the equation matrix.
-        /// </summary>
+        /// <summary>Adds a value to coefficient on the given position of the right hand side of the equation matrix.</summary>
         /// <param name="index">Index of the position.</param>
         /// <param name="value">The value.</param>
         public void AddRightHandSideEntry(int index, double value)
@@ -82,9 +65,7 @@ namespace NextGenSpice.Core.Equations
             RightHandSide[index] += value;
         }
 
-        /// <summary>
-        ///     Creates a restore point for the equation system.
-        /// </summary>
+        /// <summary>Creates a restore point for the equation system.</summary>
         public void Backup(int index)
         {
             var tup = backup[index];
@@ -109,9 +90,7 @@ namespace NextGenSpice.Core.Equations
             rhssrc.CopyTo(rhsdest, 0);
         }
 
-        /// <summary>
-        ///     Solves the linear equation system. If the system has no solution, the result is undefined.
-        /// </summary>
+        /// <summary>Solves the linear equation system. If the system has no solution, the result is undefined.</summary>
         /// <returns></returns>
         public void Solve()
         {

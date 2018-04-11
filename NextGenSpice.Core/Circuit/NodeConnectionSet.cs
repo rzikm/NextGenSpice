@@ -3,9 +3,7 @@ using System.Collections.Generic;
 
 namespace NextGenSpice.Core.Circuit
 {
-    /// <summary>
-    ///     Class for representing terminal connection of a circuit device.
-    /// </summary>
+    /// <summary>Class for representing terminal connection of a circuit device.</summary>
     public class NodeConnectionSet : IReadOnlyList<int>
     {
         private readonly int[] set;
@@ -15,9 +13,7 @@ namespace NextGenSpice.Core.Circuit
             set = new int[count];
         }
 
-        /// <summary>
-        ///     Returns an enumerator that iterates through the connected nodes.
-        /// </summary>
+        /// <summary>Returns an enumerator that iterates through the connected nodes.</summary>
         /// <returns></returns>
         public IEnumerator<int> GetEnumerator()
         {
@@ -29,9 +25,7 @@ namespace NextGenSpice.Core.Circuit
             return GetEnumerator();
         }
 
-        /// <summary>
-        ///     Number of terminals of the device.
-        /// </summary>
+        /// <summary>Number of terminals of the device.</summary>
         public int Count => set.Length;
 
         public int this[int index]
@@ -40,9 +34,7 @@ namespace NextGenSpice.Core.Circuit
             internal set => set[index] = value;
         }
 
-        /// <summary>
-        ///     Creates a deep copy of the connection set.
-        /// </summary>
+        /// <summary>Creates a deep copy of the connection set.</summary>
         /// <returns></returns>
         public NodeConnectionSet Clone()
         {
@@ -53,8 +45,8 @@ namespace NextGenSpice.Core.Circuit
         }
 
         /// <summary>
-        ///     Returns zero-based index of the terminal that is connected to node of given id. Returns a negative number if not
-        ///     found.
+        ///     Returns zero-based index of the terminal that is connected to node of given id. Returns a negative number if
+        ///     not found.
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>

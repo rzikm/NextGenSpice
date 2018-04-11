@@ -2,14 +2,10 @@
 
 namespace NextGenSpice.Parser
 {
-    /// <summary>
-    ///     Defines interface for reading tokens.
-    /// </summary>
+    /// <summary>Defines interface for reading tokens.</summary>
     public interface ITokenStream
     {
-        /// <summary>
-        ///     Reads one token from input, returns null on EOF.
-        /// </summary>
+        /// <summary>Reads one token from input, returns null on EOF.</summary>
         /// <returns></returns>
         Token Read();
 

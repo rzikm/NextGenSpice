@@ -6,14 +6,10 @@ using NextGenSpice.Core.Elements.Parameters;
 
 namespace NextGenSpice.Core.Extensions
 {
-    /// <summary>
-    ///     Helper class for adding simple devices using the circuit builder.
-    /// </summary>
+    /// <summary>Helper class for adding simple devices using the circuit builder.</summary>
     public static class CircuitBuilderExtensions
     {
-        /// <summary>
-        ///     Adds a resistor between specified nodes.
-        /// </summary>
+        /// <summary>Adds a resistor between specified nodes.</summary>
         /// <param name="builder">The builder.</param>
         /// <param name="n1">Positive node of the device.</param>
         /// <param name="n2">Negative node of the device.</param>
@@ -27,9 +23,7 @@ namespace NextGenSpice.Core.Extensions
             return builder;
         }
 
-        /// <summary>
-        ///     Adds an inductor between specified nodes.
-        /// </summary>
+        /// <summary>Adds an inductor between specified nodes.</summary>
         /// <param name="builder">The builder.</param>
         /// <param name="n1">Positive node of the device.</param>
         /// <param name="n2">Negative node of the device.</param>
@@ -44,9 +38,7 @@ namespace NextGenSpice.Core.Extensions
             return builder;
         }
 
-        /// <summary>
-        ///     Adds a capacitor between specified nodes.
-        /// </summary>
+        /// <summary>Adds a capacitor between specified nodes.</summary>
         /// <param name="builder">The builder.</param>
         /// <param name="n1">Positive node of the device.</param>
         /// <param name="n2">Negative node of the device.</param>
@@ -61,9 +53,7 @@ namespace NextGenSpice.Core.Extensions
             return builder;
         }
 
-        /// <summary>
-        ///     Adds a constant current source between specified nodes.
-        /// </summary>
+        /// <summary>Adds a constant current source between specified nodes.</summary>
         /// <param name="builder">The builder.</param>
         /// <param name="n1">Positive node of the device.</param>
         /// <param name="n2">Negative node of the device.</param>
@@ -77,9 +67,7 @@ namespace NextGenSpice.Core.Extensions
             return builder;
         }
 
-        /// <summary>
-        ///     Adds a behaviored current source between specified nodes.
-        /// </summary>
+        /// <summary>Adds a behaviored current source between specified nodes.</summary>
         /// <param name="builder">The builder.</param>
         /// <param name="n1">Positive node of the device.</param>
         /// <param name="n2">Negative node of the device.</param>
@@ -93,9 +81,7 @@ namespace NextGenSpice.Core.Extensions
             return builder;
         }
 
-        /// <summary>
-        ///     Adds a constant voltage source between specified nodes.
-        /// </summary>
+        /// <summary>Adds a constant voltage source between specified nodes.</summary>
         /// <param name="builder">The builder.</param>
         /// <param name="n1">Positive node of the device.</param>
         /// <param name="n2">Negative node of the device.</param>
@@ -109,9 +95,7 @@ namespace NextGenSpice.Core.Extensions
             return builder;
         }
 
-        /// <summary>
-        ///     Adds a behaviored voltage source between specified nodes.
-        /// </summary>
+        /// <summary>Adds a behaviored voltage source between specified nodes.</summary>
         /// <param name="builder">The builder.</param>
         /// <param name="n1">Positive node of the device.</param>
         /// <param name="n2">Negative node of the device.</param>
@@ -125,9 +109,7 @@ namespace NextGenSpice.Core.Extensions
             return builder;
         }
 
-        /// <summary>
-        ///     Adds a diode between specified nodes.
-        /// </summary>
+        /// <summary>Adds a diode between specified nodes.</summary>
         /// <param name="builder">The builder.</param>
         /// <param name="n1">Positive node of the device.</param>
         /// <param name="n2">Negative node of the device.</param>
@@ -141,9 +123,7 @@ namespace NextGenSpice.Core.Extensions
             return builder;
         }
 
-        /// <summary>
-        ///     Adds a diode between specified nodes.
-        /// </summary>
+        /// <summary>Adds a diode between specified nodes.</summary>
         /// <param name="builder">The builder.</param>
         /// <param name="n1">Positive node of the device.</param>
         /// <param name="n2">Negative node of the device.</param>

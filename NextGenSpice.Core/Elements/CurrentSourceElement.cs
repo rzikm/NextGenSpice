@@ -3,9 +3,7 @@ using NextGenSpice.Core.BehaviorParams;
 
 namespace NextGenSpice.Core.Elements
 {
-    /// <summary>
-    ///     Class that represents a current source device.
-    /// </summary>
+    /// <summary>Class that represents a current source device.</summary>
     public class CurrentSourceElement : TwoNodeCircuitElement
     {
         public CurrentSourceElement(SourceBehaviorParams behavior, string name = null) : base(name)
@@ -18,14 +16,10 @@ namespace NextGenSpice.Core.Elements
         {
         }
 
-        /// <summary>
-        ///     Behavior parameters of the input source.
-        /// </summary>
+        /// <summary>Behavior parameters of the input source.</summary>
         public SourceBehaviorParams BehaviorParams { get; set; }
 
-        /// <summary>
-        ///     Creates a deep copy of this device.
-        /// </summary>
+        /// <summary>Creates a deep copy of this device.</summary>
         /// <returns></returns>
         public override ICircuitDefinitionElement Clone()
         {
@@ -34,9 +28,7 @@ namespace NextGenSpice.Core.Elements
             return clone;
         }
 
-        /// <summary>
-        ///     Gets metadata about this device interconnections in the circuit.
-        /// </summary>
+        /// <summary>Gets metadata about this device interconnections in the circuit.</summary>
         /// <returns></returns>
         public override IEnumerable<CircuitBranchMetadata> GetBranchMetadata()
         {

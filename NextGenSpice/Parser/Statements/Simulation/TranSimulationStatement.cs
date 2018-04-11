@@ -5,16 +5,13 @@ using System.Linq;
 using System.Runtime.Serialization;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal;
-using NextGenSpice.LargeSignal.Models;
 using NextGenSpice.Parser.Statements.Deferring;
 using NextGenSpice.Parser.Statements.Printing;
 using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements.Simulation
 {
-    /// <summary>
-    ///     Class responsible for handling .TRAN simulation statements.
-    /// </summary>
+    /// <summary>Class responsible for handling .TRAN simulation statements.</summary>
     public class TranSimulationStatement : ISimulationStatement
     {
         private readonly IDictionary<int, string> nodeNames;
@@ -26,9 +23,7 @@ namespace NextGenSpice.Parser.Statements.Simulation
             this.nodeNames = nodeNames;
         }
 
-        /// <summary>
-        ///     Performs the simulation and prints results to specified TextWriter.
-        /// </summary>
+        /// <summary>Performs the simulation and prints results to specified TextWriter.</summary>
         /// <param name="circuit">Circuit on which analysis should be performed.</param>
         /// <param name="printStatements">Set of all requested print statements that were requested in SPICE input file.</param>
         /// <param name="output">TextWriter instance to which the results should be written.</param>
@@ -71,7 +66,8 @@ namespace NextGenSpice.Parser.Statements.Simulation
 
             foreach (var element in model.Elements)
             {
-                printers.AddRange(element.GetDeviceStatsProviders().Select(pr => new ElementPrintStatement(pr.StatName, element.Name, new Token())));
+                printers.AddRange(element.GetDeviceStatsProviders()
+                    .Select(pr => new ElementPrintStatement(pr.StatName, element.Name, new Token())));
             }
         }
 
@@ -84,6 +80,7 @@ namespace NextGenSpice.Parser.Statements.Simulation
                 output.Write(" ");
                 output.Write(printer.Header);
             }
+
             output.WriteLine();
         }
 
@@ -96,6 +93,7 @@ namespace NextGenSpice.Parser.Statements.Simulation
                 output.Write(" ");
                 printer.PrintValue(output);
             }
+
             output.WriteLine();
         }
     }
@@ -110,17 +108,18 @@ namespace NextGenSpice.Parser.Statements.Simulation
         //    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dncscol/html/csharp07192001.asp
         //
 
-        public PrinterInitializationException(IEnumerable<ErrorInfo> errors) : base("There were errors during printer initializations.")
+        public PrinterInitializationException(IEnumerable<ErrorInfo> errors) : base(
+            "There were errors during printer initializations.")
         {
             Errors = errors;
         }
-
-        public IEnumerable<ErrorInfo> Errors { get; }
 
         protected PrinterInitializationException(
             SerializationInfo info,
             StreamingContext context) : base(info, context)
         {
         }
+
+        public IEnumerable<ErrorInfo> Errors { get; }
     }
 }

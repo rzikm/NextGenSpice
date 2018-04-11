@@ -8,12 +8,8 @@ namespace NextGenSpice.Core.Exceptions
     [Serializable]
     public class VoltageBranchCycleException : CircuitTopologyException
     {
-        /// <summary>
-        ///     Set of elements that participated in the voltage branch cycle.
-        /// </summary>
-        public IEnumerable<ICircuitDefinitionElement> Elements { get; }
-
-        public VoltageBranchCycleException(IEnumerable<ICircuitDefinitionElement> elements) : base("Circuit contains a cycle of voltage defined elements.")
+        public VoltageBranchCycleException(IEnumerable<ICircuitDefinitionElement> elements) : base(
+            "Circuit contains a cycle of voltage defined elements.")
         {
             Elements = elements;
         }
@@ -23,5 +19,8 @@ namespace NextGenSpice.Core.Exceptions
             StreamingContext context) : base(info, context)
         {
         }
+
+        /// <summary>Set of elements that participated in the voltage branch cycle.</summary>
+        public IEnumerable<ICircuitDefinitionElement> Elements { get; }
     }
 }

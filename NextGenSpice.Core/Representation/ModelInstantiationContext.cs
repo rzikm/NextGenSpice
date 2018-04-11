@@ -5,9 +5,7 @@ using NextGenSpice.Core.Elements;
 
 namespace NextGenSpice.Core.Representation
 {
-    /// <summary>
-    ///     Context in which a certain circuit definition is instantiated
-    /// </summary>
+    /// <summary>Context in which a certain circuit definition is instantiated</summary>
     /// <typeparam name="TAnalysisModel"></typeparam>
     public class ModelInstantiationContext<TAnalysisModel> : IModelInstantiationContext<TAnalysisModel>
     {
@@ -19,8 +17,8 @@ namespace NextGenSpice.Core.Representation
         private readonly Dictionary<Type, Func<object, IModelInstantiationContext<TAnalysisModel>, object>>
             paramCreators;
 
-        private readonly Dictionary<ICircuitDefinitionElement, IAnalysisDeviceModel<TAnalysisModel>> resolutionCache
-            ; // cached models so we can compose arbitrary object graph.
+        private readonly Dictionary<ICircuitDefinitionElement, IAnalysisDeviceModel<TAnalysisModel>>
+            resolutionCache; // cached models so we can compose arbitrary object graph.
 
         public ModelInstantiationContext(
             Dictionary<Type, Func<ICircuitDefinitionElement, IModelInstantiationContext<TAnalysisModel>,
@@ -35,14 +33,10 @@ namespace NextGenSpice.Core.Representation
             namedElements = circuitDefinition.Elements.Where(e => e.Name != null).ToDictionary(e => e.Name);
         }
 
-        /// <summary>
-        ///     Current circuit definition.
-        /// </summary>
+        /// <summary>Current circuit definition.</summary>
         public ICircuitDefinition CircuitDefinition { get; }
 
-        /// <summary>
-        ///     Gets model instance for a given device definition instance.
-        /// </summary>
+        /// <summary>Gets model instance for a given device definition instance.</summary>
         /// <param name="element">The device definition.</param>
         /// <returns></returns>
         public IAnalysisDeviceModel<TAnalysisModel> GetModel(ICircuitDefinitionElement element)
@@ -55,9 +49,7 @@ namespace NextGenSpice.Core.Representation
             return resolutionCache[element] = CreateModel(element);
         }
 
-        /// <summary>
-        ///     Creates model instance for definition element with given name.
-        /// </summary>
+        /// <summary>Creates model instance for definition element with given name.</summary>
         /// <param name="elementName">Name of the element to be instantiated.</param>
         /// <returns></returns>
         public IAnalysisDeviceModel<TAnalysisModel> GetModel(string elementName)
@@ -70,9 +62,7 @@ namespace NextGenSpice.Core.Representation
             return GetModel(element);
         }
 
-        /// <summary>
-        ///     Processes parameter using registered factory function for its type.
-        /// </summary>
+        /// <summary>Processes parameter using registered factory function for its type.</summary>
         /// <param name="arg">Argument to be processed.</param>
         /// <returns></returns>
         public object GetParam(object arg)
@@ -83,9 +73,7 @@ namespace NextGenSpice.Core.Representation
             throw new InvalidOperationException($"No param creator for type{arg.GetType()}");
         }
 
-        /// <summary>
-        ///     Creates model instance for given definition element.
-        /// </summary>
+        /// <summary>Creates model instance for given definition element.</summary>
         /// <param name="element">Element to be instantiated.</param>
         /// <returns></returns>
         private IAnalysisDeviceModel<TAnalysisModel> CreateModel(ICircuitDefinitionElement element)

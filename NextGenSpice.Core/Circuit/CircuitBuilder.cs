@@ -7,16 +7,14 @@ using NextGenSpice.Core.Representation;
 
 namespace NextGenSpice.Core.Circuit
 {
-    /// <summary>
-    ///     Main class for building electrical circuit representation.
-    /// </summary>
+    /// <summary>Main class for building electrical circuit representation.</summary>
     public class CircuitBuilder
     {
         private readonly List<ICircuitDefinitionElement> elements;
         private readonly Dictionary<string, ICircuitDefinitionElement> namedElements;
         private readonly List<double?> nodes;
-        private bool validatedCircuit;
         private CircuitTopologyException circuitException;
+        private bool validatedCircuit;
 
         public CircuitBuilder()
         {
@@ -26,19 +24,13 @@ namespace NextGenSpice.Core.Circuit
             EnsureHasNode(0);
         }
 
-        /// <summary>
-        ///     Number of nodes in the current circuit.
-        /// </summary>
+        /// <summary>Number of nodes in the current circuit.</summary>
         public int NodeCount => nodes.Count;
 
-        /// <summary>
-        ///     Set of elements curently in the circuit.
-        /// </summary>
+        /// <summary>Set of elements curently in the circuit.</summary>
         public IReadOnlyList<ICircuitDefinitionElement> Elements => elements;
 
-        /// <summary>
-        ///     Sets initial node voltage.
-        /// </summary>
+        /// <summary>Sets initial node voltage.</summary>
         /// <param name="id">Id of the node.</param>
         /// <param name="voltage">Target voltage value in volts</param>
         /// <returns></returns>
@@ -51,9 +43,7 @@ namespace NextGenSpice.Core.Circuit
             return this;
         }
 
-        /// <summary>
-        ///     Ensures that call to nodes[id] is valid and does not result in OutOfRangeExecption.
-        /// </summary>
+        /// <summary>Ensures that call to nodes[id] is valid and does not result in OutOfRangeExecption.</summary>
         /// <param name="id"></param>
         private void EnsureHasNode(int id)
         {
@@ -63,9 +53,7 @@ namespace NextGenSpice.Core.Circuit
                 nodes.Add(null);
         }
 
-        /// <summary>
-        ///     Adds element to the circuit and connects it to the specified nodes.
-        /// </summary>
+        /// <summary>Adds element to the circuit and connects it to the specified nodes.</summary>
         /// <param name="nodeConnections">Ids of the nodes to which the element terminals should connect.</param>
         /// <param name="element">The element to be added.</param>
         /// <returns></returns>
@@ -96,9 +84,7 @@ namespace NextGenSpice.Core.Circuit
             return this;
         }
 
-        /// <summary>
-        ///     Verifies correctness of the circuit topology, creates new instance of circuit representation and returns it.
-        /// </summary>
+        /// <summary>Verifies correctness of the circuit topology, creates new instance of circuit representation and returns it.</summary>
         /// <returns></returns>
         public ElectricCircuitDefinition BuildCircuit()
         {
@@ -107,7 +93,8 @@ namespace NextGenSpice.Core.Circuit
         }
 
         /// <summary>
-        ///     Verifies correctness of the circuit topology, creates new instance of subcircuit representation and returns it.
+        ///     Verifies correctness of the circuit topology, creates new instance of subcircuit representation and returns
+        ///     it.
         /// </summary>
         /// <returns></returns>
         public SubcircuitElement BuildSubcircuit(int[] terminals)
@@ -120,8 +107,8 @@ namespace NextGenSpice.Core.Circuit
         }
 
         /// <summary>
-        ///     Verifies that current subcircuit with given nodes as terminals represents valid SPICE subcircuit. That is: there
-        ///     are no floating nodes and there is a DC path between any two nodes not going through ground.
+        ///     Verifies that current subcircuit with given nodes as terminals represents valid SPICE subcircuit. That is:
+        ///     there are no floating nodes and there is a DC path between any two nodes not going through ground.
         /// </summary>
         /// <param name="terminals"></param>
         public bool ValidateSubcircuit(int[] terminals)
@@ -130,8 +117,8 @@ namespace NextGenSpice.Core.Circuit
         }
 
         /// <summary>
-        ///     Verifies that current subcircuit with given nodes as terminals represents valid SPICE subcircuit. That is: there
-        ///     are no floating nodes and there is a DC path between any two nodes not going through ground.
+        ///     Verifies that current subcircuit with given nodes as terminals represents valid SPICE subcircuit. That is:
+        ///     there are no floating nodes and there is a DC path between any two nodes not going through ground.
         /// </summary>
         /// <param name="terminals"></param>
         private CircuitTopologyException ValidateSubcircuit_Internal(int[] terminals)
@@ -162,8 +149,8 @@ namespace NextGenSpice.Core.Circuit
         }
 
         /// <summary>
-        ///     Verifies that current subcircuit with given nodes as terminals represents valid SPICE circuit. That is: there are
-        ///     no floating nodes and there is a DC path between any two nodes not going through ground.
+        ///     Verifies that current subcircuit with given nodes as terminals represents valid SPICE circuit. That is: there
+        ///     are no floating nodes and there is a DC path between any two nodes not going through ground.
         /// </summary>
         public bool ValidateCircuit()
         {
@@ -172,8 +159,8 @@ namespace NextGenSpice.Core.Circuit
         }
 
         /// <summary>
-        ///     Verifies that current subcircuit with given nodes as terminals represents valid SPICE circuit. That is: there are
-        ///     no floating nodes and there is a DC path between any two nodes not going through ground.
+        ///     Verifies that current subcircuit with given nodes as terminals represents valid SPICE circuit. That is: there
+        ///     are no floating nodes and there is a DC path between any two nodes not going through ground.
         /// </summary>
         private CircuitTopologyException ValidateCircuit_Internal()
         {
@@ -208,7 +195,8 @@ namespace NextGenSpice.Core.Circuit
             foreach (var e in currentBranches.Select(b => b.Element)) nonCurrentElems.Remove(e);
             foreach (var branch in currentBranches)
             {
-                if (nonCurrentElems.Any(e => e.ConnectedNodes.Contains(branch.N1) && e.ConnectedNodes.Contains(branch.N2)))
+                if (nonCurrentElems.Any(e =>
+                    e.ConnectedNodes.Contains(branch.N1) && e.ConnectedNodes.Contains(branch.N2)))
                     continue; // some node bridges the same connection as this branch
                 neighbourghs[branch.N1].Remove(branch.N2);
                 neighbourghs[branch.N2].Remove(branch.N1);
@@ -239,10 +227,12 @@ namespace NextGenSpice.Core.Circuit
             var neighbourghs = new Dictionary<int, HashSet<(int target, ICircuitDefinitionElement element)>>();
             foreach (var branch in branches.Where(b => b.BranchType == BranchType.VoltageDefined))
             {
-                if (!neighbourghs.TryGetValue(branch.N1, out var ne)) neighbourghs[branch.N1] = ne = new HashSet<(int target, ICircuitDefinitionElement element)>();
+                if (!neighbourghs.TryGetValue(branch.N1, out var ne))
+                    neighbourghs[branch.N1] = ne = new HashSet<(int target, ICircuitDefinitionElement element)>();
                 ne.Add((branch.N2, branch.Element));
 
-                if (!neighbourghs.TryGetValue(branch.N2, out ne)) neighbourghs[branch.N2] = ne = new HashSet<(int target, ICircuitDefinitionElement element)>();
+                if (!neighbourghs.TryGetValue(branch.N2, out ne))
+                    neighbourghs[branch.N2] = ne = new HashSet<(int target, ICircuitDefinitionElement element)>();
                 ne.Add((branch.N1, branch.Element));
             }
 
@@ -266,13 +256,14 @@ namespace NextGenSpice.Core.Circuit
                 nodeStack.Push(i);
                 foreach ((var target, var element) in neighbourghs[i])
                 {
-                    if (elementStack.Count > 0 && element == elementStack.Peek()) continue; // prevent recursing indefinitely
+                    if (elementStack.Count > 0 && element == elementStack.Peek())
+                        continue; // prevent recursing indefinitely
 
                     elementStack.Push(element);
-               
+
 
                     var res = Recurse(target);
-                    if (res != null) return res;  // propagate success
+                    if (res != null) return res; // propagate success
 
                     elementStack.Pop(); // backtrack
                 }
@@ -290,8 +281,5 @@ namespace NextGenSpice.Core.Circuit
 
             return result;
         }
-        
-
-       
     }
 }

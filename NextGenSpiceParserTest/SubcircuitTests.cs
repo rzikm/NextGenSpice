@@ -10,9 +10,16 @@ namespace NextGenSpiceParserTest
 {
     public class SubcircuitTests : TracedTestBase
     {
-
         public SubcircuitTests(ITestOutputHelper output) : base(output)
         {
+        }
+
+        public ParserResult Parse(string code)
+        {
+            SpiceCodeParser parser = new SpiceCodeParser();
+            var result = parser.Parse(new TokenStream(new StringReader(code)));
+            Output.WriteLine(string.Join("\n", result.Errors));
+            return result;
         }
 
 
@@ -53,44 +60,6 @@ d1 1 2 mydiode *mydiode is declared outside
         }
 
         [Fact]
-        public void CanUseDefaultModelInsideSubcircuit()
-        {
-            var result = Parse(@"
-v1 1 0 5V
-r1 1 2 5OHM
-x1 0 1 diodeAlias
-
-.subckt diodeAlias 1 2
-d1 1 2 D
-.ends
-
-");
-            Assert.Empty(result.Errors);
-        }
-
-        [Fact]
-        public void SimpleNestedSubcircuit()
-        {
-            var result = Parse(@"
-i1 1 0 5a
-r1 1 2 5OHM
-x1 0 1 subcircuit
-
-.subckt subcircuit 1 2
-d1 1 2 D
-x1 1 2 voltageAlias
-
-.subckt voltageAlias 1 2
-v1 1 2 5v
-.ends
-
-.ends
-
-");
-            Assert.Empty(result.Errors);
-        }
-
-        [Fact]
         public void CannotUseNestedSubcircuitOutside()
         {
             var result = Parse(@"
@@ -116,6 +85,98 @@ v1 1 2 5v
             Assert.Equal("VOLTAGEALIAS", error.Args[0]);
         }
 
+        [Fact]
+        public void CanUseDefaultModelInsideSubcircuit()
+        {
+            var result = Parse(@"
+v1 1 0 5V
+r1 1 2 5OHM
+x1 0 1 diodeAlias
+
+.subckt diodeAlias 1 2
+d1 1 2 D
+.ends
+
+");
+            Assert.Empty(result.Errors);
+        }
+
+        [Fact]
+        public void DetectsCurrentCutsetAcrossSubcircuits()
+        {
+            var result = Parse(@"
+i1 1 0 5a
+r1 1 2 5OHM
+x1 2 3 curAlias
+r2 3 0 5Ohm
+
+.subckt curAlias 1 2
+r1 1 21 5
+i2 21 22 5
+r2 22 2 5
+.ends
+
+
+");
+            Assert.Single(result.Errors);
+            var error = result.Errors.Single();
+            Assert.Equal(SpiceParserError.CurrentBranchCutset, error.ErrorCode);
+        }
+
+        [Fact]
+        public void DetectsVoltageCycleAcrossSubcircuits()
+        {
+            var result = Parse(@"
+v1 1 0 5V
+r1 1 2 5OHM
+x1 0 1 voltAlias
+
+.subckt voltAlias 1 2
+v1 1 3 5
+v2 3 2 4
+.ends
+
+
+");
+            Assert.Single(result.Errors);
+            var error = result.Errors.Single();
+            Assert.Equal(SpiceParserError.VoltageBranchCycle, error.ErrorCode);
+        }
+
+        [Fact]
+        public void DoesNotAllowDuplicatesInSubcircuitTerminals()
+        {
+            var result = Parse(@"
+v1 1 0 5V
+r1 1 2 5OHM
+x1 0 1 subcircuit
+
+.subckt subcircuit 1 1
+v1 1 0 5v
+.ends
+");
+            Assert.Single(result.Errors);
+            var error = result.Errors.Single();
+            Assert.Equal(SpiceParserError.TerminalNamesNotUnique, error.ErrorCode);
+        }
+
+        [Fact]
+        public void DoesNotAllowGroundInSubcircuitTerminals()
+        {
+            var result = Parse(@"
+v1 1 0 5V
+r1 1 2 5OHM
+x1 0 1 subcircuit
+
+.subckt subcircuit 1 0
+v1 1 0 5v
+.ends
+");
+            Assert.Single(result.Errors);
+            var error = result.Errors.Single();
+            Assert.Equal(SpiceParserError.TerminalToGround, error.ErrorCode);
+        }
+
 
         [Fact]
         public void ReportsUnconnectedSubcircuit()
@@ -133,12 +194,26 @@ v 1 22 5         *oops forgot to connect to node 2
             Assert.Equal(SpiceParserError.SubcircuitNotConnected, error.ErrorCode);
         }
 
-        public ParserResult Parse(string code)
+        [Fact]
+        public void SimpleNestedSubcircuit()
         {
-            SpiceCodeParser parser = new SpiceCodeParser();
-            var result = parser.Parse(new TokenStream(new StringReader(code)));
-            Output.WriteLine(string.Join("\n", result.Errors));
-            return result;
+            var result = Parse(@"
+i1 1 0 5a
+r1 1 2 5OHM
+x1 0 1 subcircuit
+
+.subckt subcircuit 1 2
+d1 1 2 D
+x1 1 2 voltageAlias
+
+.subckt voltageAlias 1 2
+v1 1 2 5v
+.ends
+
+.ends
+
+");
+            Assert.Empty(result.Errors);
         }
 
         [Fact]
@@ -170,82 +245,6 @@ v-x1.x1.v1 0 1 5v
             v2.EstablishInitialDcBias();
 
             Assert.Equal(v2.NodeVoltages, v1.NodeVoltages);
-        }
-
-        [Fact]
-        public void DoesNotAllowGroundInSubcircuitTerminals()
-        {
-            var result = Parse(@"
-v1 1 0 5V
-r1 1 2 5OHM
-x1 0 1 subcircuit
-
-.subckt subcircuit 1 0
-v1 1 0 5v
-.ends
-");
-            Assert.Single(result.Errors);
-            var error = result.Errors.Single();
-            Assert.Equal(SpiceParserError.TerminalToGround, error.ErrorCode);
-        }
-
-        [Fact]
-        public void DoesNotAllowDuplicatesInSubcircuitTerminals()
-        {
-            var result = Parse(@"
-v1 1 0 5V
-r1 1 2 5OHM
-x1 0 1 subcircuit
-
-.subckt subcircuit 1 1
-v1 1 0 5v
-.ends
-");
-            Assert.Single(result.Errors);
-            var error = result.Errors.Single();
-            Assert.Equal(SpiceParserError.TerminalNamesNotUnique, error.ErrorCode);
-        }
-
-        [Fact]
-        public void DetectsVoltageCycleAcrossSubcircuits()
-        {
-            var result = Parse(@"
-v1 1 0 5V
-r1 1 2 5OHM
-x1 0 1 voltAlias
-
-.subckt voltAlias 1 2
-v1 1 3 5
-v2 3 2 4
-.ends
-
-
-");
-            Assert.Single(result.Errors);
-            var error = result.Errors.Single();
-            Assert.Equal(SpiceParserError.VoltageBranchCycle, error.ErrorCode);
-        }
-
-        [Fact]
-        public void DetectsCurrentCutsetAcrossSubcircuits()
-        {
-            var result = Parse(@"
-i1 1 0 5a
-r1 1 2 5OHM
-x1 2 3 curAlias
-r2 3 0 5Ohm
-
-.subckt curAlias 1 2
-r1 1 21 5
-i2 21 22 5
-r2 22 2 5
-.ends
-
-
-");
-            Assert.Single(result.Errors);
-            var error = result.Errors.Single();
-            Assert.Equal(SpiceParserError.CurrentBranchCutset, error.ErrorCode);
         }
     }
 }

@@ -23,14 +23,10 @@ namespace NextGenSpice.LargeSignal.Behaviors
             values = timepoints.Select(i => parameters.DefinitionPoints[i]).ToList();
         }
 
-        /// <summary>
-        ///     Specifies how often the model should be updated.
-        /// </summary>
+        /// <summary>Specifies how often the model should be updated.</summary>
         public override ModelUpdateMode UpdateMode => ModelUpdateMode.TimePoint;
 
-        /// <summary>
-        ///     Gets input source value for given timepoint.
-        /// </summary>
+        /// <summary>Gets input source value for given timepoint.</summary>
         /// <param name="context"></param>
         /// <returns></returns>
         public override double GetValue(ISimulationContext context)
@@ -54,6 +50,7 @@ namespace NextGenSpice.LargeSignal.Behaviors
                 if (Math.Abs(timepoints[0]) < double.Epsilon) return Parameters.InitialValue;
                 return MathHelper.LinearInterpolation(Parameters.InitialValue, values[i], time / timepoints[i]);
             }
+
             return MathHelper.LinearInterpolation(values[i - 1], values[i],
                 (time - timepoints[i - 1]) / (timepoints[i] - timepoints[i - 1]));
         }

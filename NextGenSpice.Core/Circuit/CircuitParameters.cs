@@ -2,19 +2,14 @@
 
 namespace NextGenSpice.Core.Circuit
 {
-    /// <summary>
-    ///     Class for aggregating device independent parameters for the simulation.
-    /// </summary>
+    /// <summary>Class for aggregating device independent parameters for the simulation.</summary>
     public class CircuitParameters
     {
-        /// <summary>
-        ///     Convergence aid for some devices.
-        /// </summary>
+        /// <summary>Convergence aid for some devices.</summary>
         public double MinimalResistance { get; set; } = 1e-12;
 
-        /// <summary>
-        ///     Factory for preffered integration method for circuit devices.
-        /// </summary>
-        public IIntegrationMethodFactory IntegrationMethodFactory { get; set; } = new SimpleIntegrationMethodFactory(() => new GearIntegrationMethod(2));
+        /// <summary>Factory for preffered integration method for circuit devices.</summary>
+        public IIntegrationMethodFactory IntegrationMethodFactory { get; set; } =
+            new SimpleIntegrationMethodFactory(() => new GearIntegrationMethod(2));
     }
 }

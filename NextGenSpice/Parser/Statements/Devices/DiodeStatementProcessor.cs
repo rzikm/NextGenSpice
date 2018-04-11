@@ -7,23 +7,18 @@ using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements.Devices
 {
-    /// <summary>
-    ///     Class that handles diode element statements.
-    /// </summary>
+    /// <summary>Class that handles diode element statements.</summary>
     public class DiodeStatementProcessor : ElementStatementProcessor
     {
         public DiodeStatementProcessor()
         {
             MinArgs = MaxArgs = 3;
         }
-        /// <summary>
-        ///     Discriminator of the element type this processor can parse.
-        /// </summary>
+
+        /// <summary>Discriminator of the element type this processor can parse.</summary>
         public override char Discriminator => 'D';
 
-        /// <summary>
-        ///     Processes given set of statements.
-        /// </summary>
+        /// <summary>Processes given set of statements.</summary>
         protected override void DoProcess()
         {
             var name = ElementName;
@@ -39,18 +34,14 @@ namespace NextGenSpice.Parser.Statements.Devices
             }
         }
 
-        /// <summary>
-        ///     Gets list of model statement handlers that are responsible to parsing respective models of this device.
-        /// </summary>
+        /// <summary>Gets list of model statement handlers that are responsible to parsing respective models of this device.</summary>
         /// <returns></returns>
         public override IEnumerable<IModelStatementHandler> GetModelStatementHandlers()
         {
             return new IModelStatementHandler[] {new DiodeModelStatementHandler()};
         }
 
-        /// <summary>
-        ///     Class that handles diode element model statements.
-        /// </summary>
+        /// <summary>Class that handles diode element model statements.</summary>
         private class DiodeModelStatementHandler : ModelStatementHandlerBase<DiodeModelParams>,
             IModelStatementHandler
         {
@@ -75,19 +66,13 @@ namespace NextGenSpice.Parser.Statements.Devices
                 mapper.Map(p => p.ReverseBreakdownCurrent, "IBV");
             }
 
-            /// <summary>
-            ///     Mapper for mapping parsed parameters onto properties.
-            /// </summary>
+            /// <summary>Mapper for mapping parsed parameters onto properties.</summary>
             protected override ParameterMapper<DiodeModelParams> Mapper => mapper;
 
-            /// <summary>
-            ///     Discriminator of handled model type.
-            /// </summary>
+            /// <summary>Discriminator of handled model type.</summary>
             public override string Discriminator => "D";
 
-            /// <summary>
-            ///     Creates new instance of parameter class for this device model.
-            /// </summary>
+            /// <summary>Creates new instance of parameter class for this device model.</summary>
             /// <returns></returns>
             protected override DiodeModelParams CreateDefaultModel()
             {

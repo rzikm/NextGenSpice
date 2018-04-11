@@ -73,7 +73,8 @@ namespace NextGenSpice.Parser
                     return "Cannot specify ground node as a subcircuit terminal.";
 
                 case SpiceParserError.SubcircuitNotConnected:
-                    return $"No path connecting node sets {string.Join(", ", arg.Select(c => $"({string.Join(", ", c as IEnumerable<object>)})"))}.";
+                    return
+                        $"No path connecting node sets {string.Join(", ", arg.Select(c => $"({string.Join(", ", c as IEnumerable<object>)})"))}.";
 
                 case SpiceParserError.UnknownStatement:
                     return $"Unknown statement '{arg[0]}'";

@@ -1,6 +1,5 @@
 ﻿using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Elements.Parameters;
 using NextGenSpice.Core.Extensions;
 using NextGenSpice.Core.Representation;
@@ -30,10 +29,7 @@ namespace NextGenSpiceTest
                 .AddResistor(1, 0, 100)
                 .AddResistor(1, 2, 10000)
                 .AddCurrentSource(0, 1, 0.1)
-                .AddDiode(2, 0, p =>
-                {
-                    p.SaturationCurrent = 1e-15;
-                })
+                .AddDiode(2, 0, p => { p.SaturationCurrent = 1e-15; })
                 .BuildCircuit();
         }
 

@@ -3,9 +3,7 @@ using Numerics;
 
 namespace NextGenSpice.Core.Equations
 {
-    /// <summary>
-    ///     Class that is used to build equation system with double coefficients.
-    /// </summary>
+    /// <summary>Class that is used to build equation system with double coefficients.</summary>
     public class EquationSystemBuilder : IEquationSystemBuilder
     {
         private readonly List<List<double>> matrix;
@@ -17,9 +15,7 @@ namespace NextGenSpice.Core.Equations
             rhs = new List<double>();
         }
 
-        /// <summary>
-        ///     Adds a variable to the equation system. Returns the index of the variable.
-        /// </summary>
+        /// <summary>Adds a variable to the equation system. Returns the index of the variable.</summary>
         /// <returns></returns>
         public int AddVariable()
         {
@@ -29,6 +25,7 @@ namespace NextGenSpice.Core.Equations
                 matrix[i].Add(0);
                 newRow.Add(0);
             }
+
             matrix.Add(newRow);
             newRow.Add(0); // element on diagonal
 
@@ -36,14 +33,10 @@ namespace NextGenSpice.Core.Equations
             return rhs.Count - 1;
         }
 
-        /// <summary>
-        ///     Count of the variables in the equation.
-        /// </summary>
+        /// <summary>Count of the variables in the equation.</summary>
         public int VariablesCount => rhs.Count;
 
-        /// <summary>
-        ///     Adds a value to coefficient on the given row and column of the equation matrix.
-        /// </summary>
+        /// <summary>Adds a value to coefficient on the given row and column of the equation matrix.</summary>
         /// <param name="row">The row.</param>
         /// <param name="column">The column.</param>
         /// <param name="value">The value to be added to the coefficients.</param>
@@ -52,9 +45,7 @@ namespace NextGenSpice.Core.Equations
             matrix[row][column] += value;
         }
 
-        /// <summary>
-        ///     Adds a value to coefficient on the given position of the right hand side of the equation matrix.
-        /// </summary>
+        /// <summary>Adds a value to coefficient on the given position of the right hand side of the equation matrix.</summary>
         /// <param name="index">Index of the position.</param>
         /// <param name="value">The value.</param>
         public void AddRightHandSideEntry(int index, double value)
@@ -62,9 +53,7 @@ namespace NextGenSpice.Core.Equations
             rhs[index] += value;
         }
 
-        /// <summary>
-        ///     Creates equation system with fixed number of variables.
-        /// </summary>
+        /// <summary>Creates equation system with fixed number of variables.</summary>
         /// <returns></returns>
         public EquationSystem Build()
         {

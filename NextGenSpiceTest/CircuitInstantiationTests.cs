@@ -19,9 +19,9 @@ namespace NextGenSpiceTest
                     , IAnalysisDeviceModel<LargeSignalCircuitModel>>>
                 {
                     [typeof(ResistorElement)] =
-                    (e, ctx) => new LargeSignalResistorModel((ResistorElement) e),
+                        (e, ctx) => new LargeSignalResistorModel((ResistorElement) e),
                     [typeof(VoltageSourceElement)] =
-                    (e, ctx) => new LargeSignalVoltageSourceModel((VoltageSourceElement) e, null)
+                        (e, ctx) => new LargeSignalVoltageSourceModel((VoltageSourceElement) e, null)
                 };
 
 

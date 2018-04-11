@@ -6,8 +6,6 @@ namespace NextGenSpiceParserTest
 {
     public class SymbolTableTests
     {
-        private readonly SymbolTable table;
-
         public SymbolTableTests()
         {
             table = new SymbolTable();
@@ -15,17 +13,7 @@ namespace NextGenSpiceParserTest
             table.FreezeDefaults();
         }
 
-        [Fact]
-        public void IncrementsScope()
-        {
-            table.EnterSubcircuit();
-
-            Assert.Equal(1, table.SubcircuitDepth);
-
-            table.ExitSubcircuit();
-
-            Assert.Equal(0, table.SubcircuitDepth);
-        }
+        private readonly SymbolTable table;
 
         [Fact]
         public void DoesNotShowUpperScopeModels()
@@ -39,17 +27,8 @@ namespace NextGenSpiceParserTest
             Assert.False(table.TryGetModel<DiodeModelParams>("D", out m));
             Assert.Null(m);
             table.ExitSubcircuit();
- 
+
             Assert.True(table.TryGetModel<DiodeModelParams>("D", out m));
-            Assert.NotNull(m);
-       }
-
-        [Fact]
-        public void ShowsDefaultModels()
-        {
-            table.EnterSubcircuit();
-
-            Assert.True(table.TryGetModel<DiodeModelParams>("default", out var m));
             Assert.NotNull(m);
         }
 
@@ -65,6 +44,27 @@ namespace NextGenSpiceParserTest
             table.ExitSubcircuit();
             Assert.False(table.TryGetModel<DiodeModelParams>("D", out m));
             Assert.Null(m);
+        }
+
+        [Fact]
+        public void IncrementsScope()
+        {
+            table.EnterSubcircuit();
+
+            Assert.Equal(1, table.SubcircuitDepth);
+
+            table.ExitSubcircuit();
+
+            Assert.Equal(0, table.SubcircuitDepth);
+        }
+
+        [Fact]
+        public void ShowsDefaultModels()
+        {
+            table.EnterSubcircuit();
+
+            Assert.True(table.TryGetModel<DiodeModelParams>("default", out var m));
+            Assert.NotNull(m);
         }
     }
 }

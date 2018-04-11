@@ -8,12 +8,8 @@ namespace NextGenSpice.Core.Exceptions
     [Serializable]
     public class CurrentBranchCutsetException : CircuitTopologyException
     {
-        /// <summary>
-        ///     Set of elements that participated in the current branch cutset.
-        /// </summary>
-        public IEnumerable<ICircuitDefinitionElement> Elements { get; }
-
-        public CurrentBranchCutsetException(IEnumerable<ICircuitDefinitionElement> elements) : base("Circuit contains cutset of current defined elements.")
+        public CurrentBranchCutsetException(IEnumerable<ICircuitDefinitionElement> elements) : base(
+            "Circuit contains cutset of current defined elements.")
         {
             Elements = elements;
         }
@@ -23,5 +19,8 @@ namespace NextGenSpice.Core.Exceptions
             StreamingContext context) : base(info, context)
         {
         }
+
+        /// <summary>Set of elements that participated in the current branch cutset.</summary>
+        public IEnumerable<ICircuitDefinitionElement> Elements { get; }
     }
 }

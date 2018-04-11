@@ -9,15 +9,11 @@ using NextGenSpice.LargeSignal.Stamping;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    /// <summary>
-    ///     Large signal model for <see cref="DiodeElement" /> device.
-    /// </summary>
+    /// <summary>Large signal model for <see cref="DiodeElement" /> device.</summary>
     public class LargeSignalDiodeModel : TwoNodeLargeSignalModel<DiodeElement>
     {
         private double capacitanceTreshold; // cached treshold values based by model.
-        private double smallBiasTreshold; // cached treshold for diode model characteristic
-        private double vt; // thermal voltage based on diode model values.
-        
+
         private int capacitorBranch; // variable for capacitor branch current
 
         private LargeSignalCapacitorStamper capacitorStamper;
@@ -28,31 +24,27 @@ namespace NextGenSpice.LargeSignal.Models
         // flags if initial condition for given subdevice should be applied
         private bool initialConditionCapacitor;
         private bool initialConditionDiode;
+        private double smallBiasTreshold; // cached treshold for diode model characteristic
 
         private double vc; // voltage across the capacitor that models junction capacitance
+        private double vt; // thermal voltage based on diode model values.
 
         public LargeSignalDiodeModel(DiodeElement definitionElement) : base(definitionElement)
         {
         }
 
-        /// <summary>
-        ///     Diode model parameters.
-        /// </summary>
+        /// <summary>Diode model parameters.</summary>
         private DiodeModelParams Parameters => DefinitionElement.Parameters;
 
-        /// <summary>
-        ///     Integration method used for modifying inner state of the device.
-        /// </summary>
+        /// <summary>Integration method used for modifying inner state of the device.</summary>
         private IIntegrationMethod IntegrationMethod { get; set; }
 
-        /// <summary>
-        ///     Specifies how often the model should be updated.
-        /// </summary>
+        /// <summary>Specifies how often the model should be updated.</summary>
         public override ModelUpdateMode UpdateMode => ModelUpdateMode.Always;
 
         /// <summary>
-        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables. And
-        ///     perform other necessary initialization
+        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
+        ///     And perform other necessary initialization
         /// </summary>
         /// <param name="builder">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>
@@ -78,8 +70,8 @@ namespace NextGenSpice.LargeSignal.Models
         }
 
         /// <summary>
-        ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is called
-        ///     once every Newton-Raphson iteration.
+        ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is
+        ///     called once every Newton-Raphson iteration.
         /// </summary>
         /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>
@@ -90,9 +82,7 @@ namespace NextGenSpice.LargeSignal.Models
             ApplyLinearizedModel(equations, context, vd);
         }
 
-        /// <summary>
-        ///     Applies model values before first DC bias has been established for the first time.
-        /// </summary>
+        /// <summary>Applies model values before first DC bias has been established for the first time.</summary>
         /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
@@ -112,9 +102,7 @@ namespace NextGenSpice.LargeSignal.Models
             ApplyLinearizedModel(equations, context, vd);
         }
 
-        /// <summary>
-        ///     Applies linarized diode model to the equation system.
-        /// </summary>
+        /// <summary>Applies linarized diode model to the equation system.</summary>
         /// <param name="equations"></param>
         /// <param name="context"></param>
         /// <param name="vd"></param>
@@ -141,8 +129,7 @@ namespace NextGenSpice.LargeSignal.Models
 
         /// <summary>
         ///     Notifies model class that DC bias for given timepoint is established. This method can be used for processing
-        ///     circuit equation solution
-        ///     for current timepoint.
+        ///     circuit equation solution for current timepoint.
         /// </summary>
         /// <param name="context">Context of current simulation.</param>
         public override void OnDcBiasEstablished(ISimulationContext context)
@@ -157,9 +144,7 @@ namespace NextGenSpice.LargeSignal.Models
             initialConditionCapacitor = false; // capacitor no longer needs initial condition
         }
 
-        /// <summary>
-        ///     Gets values for the device model based on voltage across the diode.
-        /// </summary>
+        /// <summary>Gets values for the device model based on voltage across the diode.</summary>
         /// <param name="vd">Voltage across the diode.</param>
         /// <returns></returns>
         private (double id, double geq, double cd) GetModelValues(double vd)

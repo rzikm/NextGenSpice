@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Elements;
 using NextGenSpice.Core.Exceptions;
-using NextGenSpice.Core.Representation;
 using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements
 {
-    /// <summary>
-    ///     Class for handling SPICE .SUBCKT statements.
-    /// </summary>
-    public class SubcircuitStatementProcessor : StatementProcessor
+    /// <summary>Class for handling SPICE .SUBCKT statements.</summary>
+    public class SubcircuitStatementProcessor : DotStatementProcessor
     {
         private readonly SubcircuitStatementRoot root;
 
@@ -23,14 +18,10 @@ namespace NextGenSpice.Parser.Statements
             MinArgs = 2;
         }
 
-        /// <summary>
-        ///     Statement discriminator, that this class can handle.
-        /// </summary>
+        /// <summary>Statement discriminator, that this class can handle.</summary>
         public override string Discriminator => ".SUBCKT";
 
-        /// <summary>
-        ///     Processes given statement.
-        /// </summary>
+        /// <summary>Processes given statement.</summary>
         /// <param name="tokens">All tokens of the statement.</param>
         protected override void DoProcess(Token[] tokens)
         {
@@ -42,10 +33,8 @@ namespace NextGenSpice.Parser.Statements
         }
     }
 
-    /// <summary>
-    ///     Class for handling SPICE .ENDS statements.
-    /// </summary>
-    public class SubcircuitEndStatementProcessor : StatementProcessor
+    /// <summary>Class for handling SPICE .ENDS statements.</summary>
+    public class SubcircuitEndStatementProcessor : DotStatementProcessor
     {
         private readonly SubcircuitStatementRoot root;
 
@@ -56,14 +45,10 @@ namespace NextGenSpice.Parser.Statements
         }
 
 
-        /// <summary>
-        ///     Statement discriminator, that this class can handle.
-        /// </summary>
+        /// <summary>Statement discriminator, that this class can handle.</summary>
         public override string Discriminator => ".ENDS";
 
-        /// <summary>
-        ///     Processes given statement.
-        /// </summary>
+        /// <summary>Processes given statement.</summary>
         /// <param name="tokens">All tokens of the statement.</param>
         protected override void DoProcess(Token[] tokens)
         {
@@ -81,10 +66,7 @@ namespace NextGenSpice.Parser.Statements
             Context.SymbolTable.AddSubcircuit(name, subcircuitElement);
         }
 
-        /// <summary>
-        ///     Gets indices of the nodes represented by given set of tokens. Adds relevant errors into the errors
-        ///     collection.
-        /// </summary>
+        /// <summary>Gets indices of the nodes represented by given set of tokens. Adds relevant errors into the errors collection.</summary>
         /// <param name="tokens"></param>
         /// <returns></returns>
         private int[] GetNodeIndices(IEnumerable<Token> tokens)
@@ -96,6 +78,7 @@ namespace NextGenSpice.Parser.Statements
                     node = -1;
                     Context.Errors.Add(token.ToErrorInfo(SpiceParserError.NotANode));
                 }
+
                 return node;
             }).ToArray();
         }
@@ -108,7 +91,7 @@ namespace NextGenSpice.Parser.Statements
             // validate terminal specs - no duplicates
             if (terminals.Distinct().Count() != terminals.Length)
                 Context.Errors.Add(name.ToErrorInfo(SpiceParserError.TerminalNamesNotUnique));
-            
+
             // ground node not allowed as terminal
             if (terminals.Contains(0))
                 Context.Errors.Add(name.ToErrorInfo(SpiceParserError.TerminalToGround));
@@ -123,14 +106,17 @@ namespace NextGenSpice.Parser.Statements
                 catch (NotConnectedSubcircuitException e)
                 {
                     // translate node indexes to node names used in the input file 
-                    var names = e.Components.Select(c => Context.SymbolTable.GetNodeNames(c).ToArray()).Cast<object>().ToArray();
-                    Context.Errors.Add(new ErrorInfo(SpiceParserError.SubcircuitNotConnected, name.LineNumber, name.LineColumn, names));
+                    var names = e.Components.Select(c => Context.SymbolTable.GetNodeNames(c).ToArray()).Cast<object>()
+                        .ToArray();
+                    Context.Errors.Add(new ErrorInfo(SpiceParserError.SubcircuitNotConnected, name.LineNumber,
+                        name.LineColumn, names));
                 }
             }
 
             if (subcircuit == null) // create a "null object" to avoid explicit null checking
             {
-                subcircuit = new SubcircuitElement(terminals.Length + 1, terminals, Enumerable.Empty<ICircuitDefinitionElement>());
+                subcircuit = new SubcircuitElement(terminals.Length + 1, terminals,
+                    Enumerable.Empty<ICircuitDefinitionElement>());
             }
 
             return subcircuit;

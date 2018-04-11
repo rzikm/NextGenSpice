@@ -6,9 +6,7 @@ namespace NextGenSpice.Core.Circuit
 {
     public class CircuitBuilderHelpers
     {
-        /// <summary>
-        ///     Gets connectivity components of the circuit graph using simple graph search.
-        /// </summary>
+        /// <summary>Gets connectivity components of the circuit graph using simple graph search.</summary>
         /// <param name="neighbourghs">Vertex-neighbourghs representation of the graph.</param>
         /// <returns></returns>
         public static List<int[]> GetComponents(Dictionary<int, HashSet<int>> neighbourghs)
@@ -26,13 +24,13 @@ namespace NextGenSpice.Core.Circuit
                 components.Add(Enumerable.ToArray<int>(visited));
                 nodes.ExceptWith(visited); // remove nodes from component found
             }
+
             return components;
         }
 
-        /// <summary>
-        ///     Creates vertex-neighbourghs representation of the circuit graph.
-        /// </summary>
-        public static Dictionary<int, HashSet<int>> GetNeighbourghs(int nodeCount, IEnumerable<ICircuitDefinitionElement> elements)
+        /// <summary>Creates vertex-neighbourghs representation of the circuit graph.</summary>
+        public static Dictionary<int, HashSet<int>> GetNeighbourghs(int nodeCount,
+            IEnumerable<ICircuitDefinitionElement> elements)
         {
             var neighbourghs = Enumerable.Range(0, nodeCount).ToDictionary(n => n, n => new HashSet<int>());
 
@@ -51,9 +49,7 @@ namespace NextGenSpice.Core.Circuit
             return neighbourghs;
         }
 
-        /// <summary>
-        ///     Finds all nodes that can be reached from the given start node using graph.
-        /// </summary>
+        /// <summary>Finds all nodes that can be reached from the given start node using graph.</summary>
         /// <param name="startId">Start node id.</param>
         /// <param name="neighbourghs">Vertex-neighbourghs representation of the graph.</param>
         /// <returns></returns>
@@ -73,6 +69,7 @@ namespace NextGenSpice.Core.Circuit
                     q.Enqueue(n); // open new node
                 }
             }
+
             return visited;
         }
     }

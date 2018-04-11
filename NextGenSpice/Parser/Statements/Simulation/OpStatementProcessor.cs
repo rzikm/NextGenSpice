@@ -1,13 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
 using NextGenSpice.Parser.Statements.Printing;
 
 namespace NextGenSpice.Parser.Statements.Simulation
 {
-    /// <summary>
-    ///     Class for processing .OP simulation statements.
-    /// </summary>
-    public class OpStatementProcessor : SimpleStatementProcessor<OpSimulationParams>, ISimulationStatementProcessor
+    /// <summary>Class for processing .OP simulation statements.</summary>
+    public class OpStatementProcessor : SimpleDotStatementProcessor<OpSimulationParams>, ISimulationStatementProcessor
     {
         public OpStatementProcessor()
         {
@@ -15,34 +11,27 @@ namespace NextGenSpice.Parser.Statements.Simulation
             MaxArgs = 0;
         }
 
-        /// <summary>
-        ///     Statement discriminator, that this class can handle.
-        /// </summary>
+        /// <summary>Statement discriminator, that this class can handle.</summary>
         public override string Discriminator => ".OP";
 
-        /// <summary>
-        ///     Gets handler that can handle .PRINT statements that belong to analysis of this processor
-        /// </summary>
+        /// <summary>Gets handler that can handle .PRINT statements that belong to analysis of this processor</summary>
         /// <returns></returns>
         public IPrintStatementHandler GetPrintStatementHandler()
         {
             return LsPrintStatementHandler.CreateOp();
         }
 
-        /// <summary>
-        ///     Initializes mapper target (instance hodling the param values), including default parameters.
-        /// </summary>
+        /// <summary>Initializes mapper target (instance hodling the param values), including default parameters.</summary>
         protected override void InitMapper()
         {
             Mapper.Target = new OpSimulationParams();
         }
 
-        /// <summary>
-        ///     Final action for processing the statement
-        /// </summary>
+        /// <summary>Final action for processing the statement</summary>
         protected override void UseParam()
         {
-            Context.SimulationStatements.Add(new OpSimulationStatement(Mapper.Target, Context.SymbolTable.GetNodeIdMappings()));
+            Context.SimulationStatements.Add(new OpSimulationStatement(Mapper.Target,
+                Context.SymbolTable.GetNodeIdMappings()));
         }
     }
 }

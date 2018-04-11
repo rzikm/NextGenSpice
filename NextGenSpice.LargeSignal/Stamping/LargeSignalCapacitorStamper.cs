@@ -2,9 +2,7 @@
 
 namespace NextGenSpice.LargeSignal.Stamping
 {
-    /// <summary>
-    ///     Class for stamping capacitor elements for large signal circuit model.
-    /// </summary>
+    /// <summary>Class for stamping capacitor elements for large signal circuit model.</summary>
     public class LargeSignalCapacitorStamper
     {
         private readonly int anode;
@@ -20,7 +18,8 @@ namespace NextGenSpice.LargeSignal.Stamping
         }
 
         /// <summary>
-        ///     Adds entries to the equation system that correspond to capacitor with given equivalent current and conductance.
+        ///     Adds entries to the equation system that correspond to capacitor with given equivalent current and
+        ///     conductance.
         /// </summary>
         /// <param name="equations">The equation system.</param>
         /// <param name="ieq">Equivalent current of the capacitor in ampers.</param>
@@ -43,9 +42,7 @@ namespace NextGenSpice.LargeSignal.Stamping
             equations.AddRightHandSideEntry(branch, ieq);
         }
 
-        /// <summary>
-        ///     Adds entries to the equation system that correspond to capacitor with given initial condition.
-        /// </summary>
+        /// <summary>Adds entries to the equation system that correspond to capacitor with given initial condition.</summary>
         /// <param name="equations">The equation system.</param>
         /// <param name="voltage">The initial voltage in volts for the capacitor or null for equilibrium voltage.</param>
         public void StampInitialCondition(IEquationEditor equations, double? voltage)

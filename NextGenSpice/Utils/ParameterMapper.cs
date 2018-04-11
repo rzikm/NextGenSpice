@@ -5,9 +5,7 @@ using System.Reflection;
 
 namespace NextGenSpice.Utils
 {
-    /// <summary>
-    ///     Helper class for mapping statement parameters onto properties of an object.
-    /// </summary>
+    /// <summary>Helper class for mapping statement parameters onto properties of an object.</summary>
     /// <typeparam name="TParam"></typeparam>
     public class ParameterMapper<TParam>
     {
@@ -21,19 +19,13 @@ namespace NextGenSpice.Utils
             settersByIndex = new Dictionary<int, Action<TParam, double>>();
         }
 
-        /// <summary>
-        ///     Count of parameters mapped by Key.
-        /// </summary>
+        /// <summary>Count of parameters mapped by Key.</summary>
         public int ByKeyCount => settersByKey.Count;
 
-        /// <summary>
-        ///     Count of parameters mapped by index.
-        /// </summary>
+        /// <summary>Count of parameters mapped by index.</summary>
         public int ByIndexCount => settersByIndex.Count;
 
-        /// <summary>
-        ///     Instance of an object to which parameters are mapped.
-        /// </summary>
+        /// <summary>Instance of an object to which parameters are mapped.</summary>
         public TParam Target { get; set; }
 
         private static PropertyInfo GetMappedProperty(Expression<Func<TParam, double>> mapping)
@@ -43,9 +35,7 @@ namespace NextGenSpice.Utils
             return prop;
         }
 
-        /// <summary>
-        ///     Returns true if there is a mapping from given index onto a property.
-        /// </summary>
+        /// <summary>Returns true if there is a mapping from given index onto a property.</summary>
         /// <param name="i"></param>
         /// <returns></returns>
         public bool HasIndex(int i)
@@ -53,9 +43,7 @@ namespace NextGenSpice.Utils
             return settersByIndex.ContainsKey(i);
         }
 
-        /// <summary>
-        ///     Returns true if there is a mapping from given key onto a property.
-        /// </summary>
+        /// <summary>Returns true if there is a mapping from given key onto a property.</summary>
         /// <param name="key"></param>
         /// <returns></returns>
         public bool HasKey(string key)
@@ -63,9 +51,7 @@ namespace NextGenSpice.Utils
             return settersByKey.ContainsKey(key);
         }
 
-        /// <summary>
-        ///     Maps given key onto given property.
-        /// </summary>
+        /// <summary>Maps given key onto given property.</summary>
         /// <param name="mapping"></param>
         /// <param name="paramKey"></param>
         public void Map(Expression<Func<TParam, double>> mapping, string paramKey)
@@ -74,9 +60,7 @@ namespace NextGenSpice.Utils
             settersByKey.Add(paramKey, (target, value) => prop.SetValue(target, value));
         }
 
-        /// <summary>
-        ///     Maps given key onto given property with specified conversion function.
-        /// </summary>
+        /// <summary>Maps given key onto given property with specified conversion function.</summary>
         /// <param name="mapping"></param>
         /// <param name="paramKey"></param>
         /// <param name="transform"></param>
@@ -86,9 +70,7 @@ namespace NextGenSpice.Utils
             settersByKey.Add(paramKey, (target, value) => prop.SetValue(target, transform(value)));
         }
 
-        /// <summary>
-        ///     Maps given key onto given index.
-        /// </summary>
+        /// <summary>Maps given key onto given index.</summary>
         /// <param name="mapping"></param>
         /// <param name="index"></param>
         public void Map(Expression<Func<TParam, double>> mapping, int index)
@@ -97,9 +79,7 @@ namespace NextGenSpice.Utils
             settersByIndex.Add(index, (target, value) => prop.SetValue(target, value));
         }
 
-        /// <summary>
-        ///     Maps given key onto given index with specified conversion function.
-        /// </summary>
+        /// <summary>Maps given key onto given index with specified conversion function.</summary>
         /// <param name="mapping"></param>
         /// <param name="index"></param>
         /// <param name="transform"></param>
@@ -109,9 +89,7 @@ namespace NextGenSpice.Utils
             settersByIndex.Add(index, (target, value) => prop.SetValue(target, transform(value)));
         }
 
-        /// <summary>
-        ///     Sets value of parameter that maps to given key to specified value
-        /// </summary>
+        /// <summary>Sets value of parameter that maps to given key to specified value</summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
         public void Set(string key, double value)
@@ -121,9 +99,7 @@ namespace NextGenSpice.Utils
             setter(Target, value);
         }
 
-        /// <summary>
-        ///     Sets value of parameter that maps to given index to specified value
-        /// </summary>
+        /// <summary>Sets value of parameter that maps to given index to specified value</summary>
         /// <param name="index"></param>
         /// <param name="value"></param>
         public void Set(int index, double value)

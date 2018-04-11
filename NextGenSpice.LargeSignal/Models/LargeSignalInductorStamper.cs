@@ -3,9 +3,7 @@ using NextGenSpice.LargeSignal.Stamping;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    /// <summary>
-    ///     Class for stamping inductor elements for large signal circuit model.
-    /// </summary>
+    /// <summary>Class for stamping inductor elements for large signal circuit model.</summary>
     public class LargeSignalInductorStamper
     {
         private readonly int anode;
@@ -20,9 +18,7 @@ namespace NextGenSpice.LargeSignal.Models
             this.branch = branch;
         }
 
-        /// <summary>
-        ///     Adds entries to the equation system that correspond to inductor with given equivalent current and conductance.
-        /// </summary>
+        /// <summary>Adds entries to the equation system that correspond to inductor with given equivalent current and conductance.</summary>
         /// <param name="equations">The equation system.</param>
         /// <param name="ieq">Equivalent current of the inductor in ampers.</param>
         /// <param name="req">Equivalent resistance of the inductor in ohms.</param>
@@ -32,9 +28,7 @@ namespace NextGenSpice.LargeSignal.Models
             equations.AddMatrixEntry(branch, branch, -req);
         }
 
-        /// <summary>
-        ///     Adds entries to the equation system that correspond to inductor with given initial condition.
-        /// </summary>
+        /// <summary>Adds entries to the equation system that correspond to inductor with given initial condition.</summary>
         /// <param name="equations">The equation system.</param>
         /// <param name="current">The initial current in ampers for the inductor or null for equilibrium current.</param>
         public void StampInitialCondition(IEquationEditor equations, double? current)

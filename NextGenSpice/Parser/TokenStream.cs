@@ -4,9 +4,7 @@ using System.Text;
 
 namespace NextGenSpice.Parser
 {
-    /// <summary>
-    ///     Class for reading tokens with their location from given TextReader
-    /// </summary>
+    /// <summary>Class for reading tokens with their location from given TextReader</summary>
     public class TokenStream : ITokenStream
     {
         private readonly TextReader inputReader;
@@ -20,9 +18,7 @@ namespace NextGenSpice.Parser
             inputReader = input;
         }
 
-        /// <summary>
-        ///     Reads a token from the stream, returns null on EOF.
-        /// </summary>
+        /// <summary>Reads a token from the stream, returns null on EOF.</summary>
         /// <returns>First not already read token or null</returns>
         public Token Read()
         {
@@ -32,8 +28,8 @@ namespace NextGenSpice.Parser
         }
 
         /// <summary>
-        ///     Skips empty lines and then reads all tokens until line break. Tokens on subsequent lines beginning with '+' are
-        ///     also returned. returns empty collection on EOF.
+        ///     Skips empty lines and then reads all tokens until line break. Tokens on subsequent lines beginning with '+'
+        ///     are also returned. returns empty collection on EOF.
         /// </summary>
         /// <returns></returns>
         public IEnumerable<Token> ReadLogicalLine()
@@ -47,12 +43,9 @@ namespace NextGenSpice.Parser
                 if (currentLine == null && !ShouldContinue()) break;
                 yield return MakeToken();
             }
-//            return tokens;
         }
 
-        /// <summary>
-        ///     Ensures that there is some token to be read in currentLine. Return true if succeeded.
-        /// </summary>
+        /// <summary>Ensures that there is some token to be read in currentLine. Return true if succeeded.</summary>
         /// <returns></returns>
         private bool TryEnsureHasLine()
         {
@@ -74,9 +67,7 @@ namespace NextGenSpice.Parser
             return true;
         }
 
-        /// <summary>
-        ///     Reads available token from currentLine, return null if currentLine contains only whitespace
-        /// </summary>
+        /// <summary>Reads available token from currentLine, return null if currentLine contains only whitespace</summary>
         /// <returns></returns>
         private Token MakeToken()
         {
@@ -106,12 +97,11 @@ namespace NextGenSpice.Parser
                     SkipWhiteSpaceAndComments();
                     if (currentLine != null) return true;
                 }
+
             return false;
         }
 
-        /// <summary>
-        ///     Reads token from
-        /// </summary>
+        /// <summary>Reads token from</summary>
         /// <returns></returns>
         private string ReadStringToken()
         {
@@ -123,12 +113,11 @@ namespace NextGenSpice.Parser
                 sb.Append((char) currentLine.Read());
                 ++offset;
             }
+
             return sb.ToString();
         }
 
-        /// <summary>
-        ///     Skips all leading whitespaces and comments, sets currentLine to null if EOL reached.
-        /// </summary>
+        /// <summary>Skips all leading whitespaces and comments, sets currentLine to null if EOL reached.</summary>
         private void SkipWhiteSpaceAndComments()
         {
             int c;
@@ -137,6 +126,7 @@ namespace NextGenSpice.Parser
                 currentLine.Read();
                 ++offset;
             }
+
             if (c == -1 || c == '*') currentLine = null;
         }
     }

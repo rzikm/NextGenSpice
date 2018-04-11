@@ -4,9 +4,7 @@ using NextGenSpice.Core.Circuit;
 
 namespace NextGenSpice.Core.Elements
 {
-    /// <summary>
-    ///     Class that represents a composite element from a set of simple ones.
-    /// </summary>
+    /// <summary>Class that represents a composite element from a set of simple ones.</summary>
     public class SubcircuitElement : CircuitDefinitionElement
     {
         public SubcircuitElement(int innerNodeCount, int[] terminalNodes,
@@ -17,35 +15,25 @@ namespace NextGenSpice.Core.Elements
             Elements = elements;
         }
 
-        /// <summary>
-        ///     Ids from the subcircuit definition that are considered connected to the device terminals.
-        /// </summary>
+        /// <summary>Ids from the subcircuit definition that are considered connected to the device terminals.</summary>
         public int[] TerminalNodes { get; }
 
-        /// <summary>
-        ///     Number of inner nodes of this subcircuit.
-        /// </summary>
+        /// <summary>Number of inner nodes of this subcircuit.</summary>
         public int InnerNodeCount { get; }
 
-        /// <summary>
-        ///     Inner elements that define behavior of this subcircuit.
-        /// </summary>
+        /// <summary>Inner elements that define behavior of this subcircuit.</summary>
         public IEnumerable<ICircuitDefinitionElement> Elements { get; }
 
-        /// <summary>
-        ///     Creates a copy of this device.
-        /// </summary>
+        /// <summary>Creates a copy of this device.</summary>
         /// <returns></returns>
         public override ICircuitDefinitionElement Clone()
         {
-            var clone = (SubcircuitElement)base.Clone();
+            var clone = (SubcircuitElement) base.Clone();
             clone.Elements.Select(e => e.Clone()).ToArray();
             return clone;
         }
 
-        /// <summary>
-        ///     Gets metadata about this device interconnections in the circuit.
-        /// </summary>
+        /// <summary>Gets metadata about this device interconnections in the circuit.</summary>
         /// <returns></returns>
         public override IEnumerable<CircuitBranchMetadata> GetBranchMetadata()
         {
@@ -88,10 +76,10 @@ namespace NextGenSpice.Core.Elements
                     {
                         foreach (var n2 in c2)
                         {
-                            yield return new CircuitBranchMetadata(connections[n1], connections[n2], BranchType.CurrentDefined, this);
-                        } 
+                            yield return new CircuitBranchMetadata(connections[n1], connections[n2],
+                                BranchType.CurrentDefined, this);
+                        }
                     }
-
                 }
             }
         }
@@ -128,16 +116,16 @@ namespace NextGenSpice.Core.Elements
                 {
                     var n2 = TerminalNodes[j];
                     if (representatives[n1] == representatives[n2])
-                    {   // same component, therefore a path of voltage defined branches
-                        yield return new CircuitBranchMetadata(connections[n1], connections[n2], BranchType.VoltageDefined, this);
+                    {
+                        // same component, therefore a path of voltage defined branches
+                        yield return new CircuitBranchMetadata(connections[n1], connections[n2],
+                            BranchType.VoltageDefined, this);
                     }
                 }
             }
         }
 
-        /// <summary>
-        ///     Gets representative from union-find structure while contracting paths to make next query faster.
-        /// </summary>
+        /// <summary>Gets representative from union-find structure while contracting paths to make next query faster.</summary>
         /// <param name="representatives"></param>
         /// <param name="index"></param>
         /// <returns></returns>

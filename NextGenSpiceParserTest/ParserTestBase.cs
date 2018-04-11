@@ -33,15 +33,15 @@ namespace NextGenSpiceParserTest
 
         class ParserCaseBuilder : IParserCaseBuilder
         {
-            private readonly List<(string line, SpiceParserError[] errors)> specs;
-
             private readonly StringBuilder sb;
+            private readonly List<(string line, SpiceParserError[] errors)> specs;
 
             public ParserCaseBuilder()
             {
-                specs = new List<(string line, SpiceParserError[] errors)> { ("", new SpiceParserError[0]) };
+                specs = new List<(string line, SpiceParserError[] errors)> {("", new SpiceParserError[0])};
                 sb = new StringBuilder();
             }
+
             public void On(string line, params SpiceParserError[] expectedErrors)
             {
                 Array.Sort(expectedErrors);
@@ -52,7 +52,8 @@ namespace NextGenSpiceParserTest
             public void Assert(ITestOutputHelper output)
             {
                 var parser = new SpiceCodeParser();
-                var result = parser.Parse(new StringReader(sb.ToString())).Errors.ToLookup(i => i.LineNumber, i => i.ErrorCode);
+                var result = parser.Parse(new StringReader(sb.ToString())).Errors
+                    .ToLookup(i => i.LineNumber, i => i.ErrorCode);
 
                 for (int i = 0; i < specs.Count; i++)
                 {
@@ -68,6 +69,4 @@ Actual: [{string.Join(", ", actual)}]
             }
         }
     }
-
-
 }

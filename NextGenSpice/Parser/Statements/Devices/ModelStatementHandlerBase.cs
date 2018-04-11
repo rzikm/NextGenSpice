@@ -4,25 +4,17 @@ using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements.Devices
 {
-    /// <summary>
-    ///     Base class implementing basic functionality of parsing SPICE .MODEL parameters.
-    /// </summary>
+    /// <summary>Base class implementing basic functionality of parsing SPICE .MODEL parameters.</summary>
     /// <typeparam name="T"></typeparam>
     public abstract class ModelStatementHandlerBase<T> : IModelStatementHandler
     {
-        /// <summary>
-        ///     Mapper for mapping parsed parameters onto properties.
-        /// </summary>
+        /// <summary>Mapper for mapping parsed parameters onto properties.</summary>
         protected abstract ParameterMapper<T> Mapper { get; }
 
-        /// <summary>
-        ///     Discriminator of handled model type.
-        /// </summary>
+        /// <summary>Discriminator of handled model type.</summary>
         public abstract string Discriminator { get; }
 
-        /// <summary>
-        ///     Processes the .MODEL statement in given context.
-        /// </summary>
+        /// <summary>Processes the .MODEL statement in given context.</summary>
         /// <param name="tokens"></param>
         /// <param name="context"></param>
         public void Process(Token[] tokens, ParsingContext context)
@@ -66,18 +58,14 @@ namespace NextGenSpice.Parser.Statements.Devices
             Mapper.Target = default(T); // free memory
         }
 
-        /// <summary>
-        ///     Creates new instance of model parameter class with default values.
-        /// </summary>
+        /// <summary>Creates new instance of model parameter class with default values.</summary>
         /// <returns></returns>
         object IModelStatementHandler.CreateDefaultModel()
         {
             return CreateDefaultModel();
         }
 
-        /// <summary>
-        ///     Creates new instance of parameter class for this device model.
-        /// </summary>
+        /// <summary>Creates new instance of parameter class for this device model.</summary>
         /// <returns></returns>
         protected abstract T CreateDefaultModel();
     }

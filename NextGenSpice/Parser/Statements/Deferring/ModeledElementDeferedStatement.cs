@@ -5,9 +5,7 @@ using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements.Deferring
 {
-    /// <summary>
-    ///     Statement responsible for adding models into the circuit definition.
-    /// </summary>
+    /// <summary>Statement responsible for adding models into the circuit definition.</summary>
     /// <typeparam name="TModel"></typeparam>
     public class ModeledElementDeferedStatement<TModel> : DeferredStatement
     {
@@ -22,9 +20,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
             this.modelNameToken = modelNameToken;
         }
 
-        /// <summary>
-        ///     Returns true if all prerequisites for the statements have been fulfilled and statement is ready to be applied.
-        /// </summary>
+        /// <summary>Returns true if all prerequisites for the statements have been fulfilled and statement is ready to be applied.</summary>
         /// <param name="context"></param>
         /// <returns></returns>
         public override bool CanApply(ParsingContext context)
@@ -32,18 +28,14 @@ namespace NextGenSpice.Parser.Statements.Deferring
             return context.SymbolTable.TryGetModel(modelNameToken.Value, out model);
         }
 
-        /// <summary>
-        ///     Returns set of errors due to which this stetement cannot be processed.
-        /// </summary>
+        /// <summary>Returns set of errors due to which this stetement cannot be processed.</summary>
         /// <returns></returns>
         public override IEnumerable<ErrorInfo> GetErrors()
         {
             return new[] {modelNameToken.ToErrorInfo(SpiceParserError.NoSuchModel)};
         }
 
-        /// <summary>
-        ///     Applies the statement in the given context.
-        /// </summary>
+        /// <summary>Applies the statement in the given context.</summary>
         /// <param name="context"></param>
         public override void Apply(ParsingContext context)
         {

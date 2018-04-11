@@ -16,14 +16,10 @@ namespace NextGenSpice.LargeSignal.Behaviors
         {
         }
 
-        /// <summary>
-        ///     Specifies how often the model should be updated.
-        /// </summary>
+        /// <summary>Specifies how often the model should be updated.</summary>
         public override ModelUpdateMode UpdateMode => ModelUpdateMode.TimePoint;
 
-        /// <summary>
-        ///     Gets input source value for given timepoint.
-        /// </summary>
+        /// <summary>Gets input source value for given timepoint.</summary>
         /// <param name="context"></param>
         /// <returns></returns>
         public override double GetValue(ISimulationContext context)
@@ -36,12 +32,12 @@ namespace NextGenSpice.LargeSignal.Behaviors
                 return MathHelper.LinearInterpolation(
                     Parameters.InitialLevel,
                     Parameters.PulseLevel,
-                    1 - Math.Exp(-(time - Parameters.RiseDelay) / Parameters.TauRise));
+                    1 - Math.Exp(-(time - Parameters.RiseDelay) / Parameters.RiseTau));
             return MathHelper.LinearInterpolation(
                 Parameters.InitialLevel,
                 Parameters.PulseLevel,
-                (1 - Math.Exp(-(Parameters.FallDelay - Parameters.RiseDelay) / Parameters.TauRise)) *
-                Math.Exp(-(time - Parameters.FallDelay) / Parameters.TauFall));
+                (1 - Math.Exp(-(Parameters.FallDelay - Parameters.RiseDelay) / Parameters.RiseTau)) *
+                Math.Exp(-(time - Parameters.FallDelay) / Parameters.FallTau));
         }
     }
 }

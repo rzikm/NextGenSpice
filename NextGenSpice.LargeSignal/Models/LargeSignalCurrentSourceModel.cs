@@ -5,9 +5,7 @@ using NextGenSpice.LargeSignal.Behaviors;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    /// <summary>
-    ///     Large signal model for <see cref="CurrentSourceElement" /> device.
-    /// </summary>
+    /// <summary>Large signal model for <see cref="CurrentSourceElement" /> device.</summary>
     public class LargeSignalCurrentSourceModel : TwoNodeLargeSignalModel<CurrentSourceElement>
     {
         public LargeSignalCurrentSourceModel(CurrentSourceElement definitionElement, IInputSourceBehavior behavior) :
@@ -16,20 +14,15 @@ namespace NextGenSpice.LargeSignal.Models
             Behavior = behavior;
         }
 
-        /// <summary>
-        ///     Strategy class specifying behavior of this source.
-        /// </summary>
+        /// <summary>Strategy class specifying behavior of this source.</summary>
         public IInputSourceBehavior Behavior { get; }
 
-        /// <summary>
-        ///     Specifies how often the model should be updated.
-        /// </summary>
+        /// <summary>Specifies how often the model should be updated.</summary>
         public override ModelUpdateMode UpdateMode => Behavior.UpdateMode;
 
         /// <summary>
         ///     Notifies model class that DC bias for given timepoint is established. This method can be used for processing
-        ///     circuit equation solution
-        ///     for current timepoint.
+        ///     circuit equation solution for current timepoint.
         /// </summary>
         /// <param name="context">Context of current simulation.</param>
         public override void OnDcBiasEstablished(ISimulationContext context)
@@ -39,8 +32,8 @@ namespace NextGenSpice.LargeSignal.Models
         }
 
         /// <summary>
-        ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is called
-        ///     once every Newton-Raphson iteration.
+        ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is
+        ///     called once every Newton-Raphson iteration.
         /// </summary>
         /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>

@@ -12,9 +12,7 @@ namespace NextGenSpice.Core.Exceptions
             Nodes = nodes;
         }
 
-        /// <summary>
-        ///     Nodes having no DC path to the ground.
-        /// </summary>
+        /// <summary>Nodes having no DC path to the ground.</summary>
         public IEnumerable<int> Nodes { get; }
     }
 }

@@ -5,9 +5,7 @@ using Numerics;
 
 namespace NextGenSpice.Core.NumIntegration
 {
-    /// <summary>
-    ///     Class implementing the Gear integration method of given order.
-    /// </summary>
+    /// <summary>Class implementing the Gear integration method of given order.</summary>
     public class GearIntegrationMethod : IIntegrationMethod
     {
         private readonly double[] coefficients;
@@ -26,9 +24,7 @@ namespace NextGenSpice.Core.NumIntegration
             derivatives = new double[order];
         }
 
-        /// <summary>
-        ///     Adds state and derivative of current timepoint to history.
-        /// </summary>
+        /// <summary>Adds state and derivative of current timepoint to history.</summary>
         /// <param name="state">Value of current state variable</param>
         /// <param name="derivative">Derivative of current state variable</param>
         public void SetState(double state, double derivative)
@@ -38,9 +34,7 @@ namespace NextGenSpice.Core.NumIntegration
             stateCount++;
         }
 
-        /// <summary>
-        ///     Gets next values of state and derivative based on history and current timepoint.
-        /// </summary>
+        /// <summary>Gets next values of state and derivative based on history and current timepoint.</summary>
         /// <param name="dx">How far to predict values of state and derivative.</param>
         /// <returns></returns>
         public (double state, double derivative) GetEquivalents(double dx)
@@ -62,9 +56,7 @@ namespace NextGenSpice.Core.NumIntegration
             return (y, dy);
         }
 
-        /// <summary>
-        ///     Gets coeffitients for Gear integration method of given order.
-        /// </summary>
+        /// <summary>Gets coeffitients for Gear integration method of given order.</summary>
         /// <param name="order"></param>
         /// <returns></returns>
         public static double[] GetCoefficients(int order)
