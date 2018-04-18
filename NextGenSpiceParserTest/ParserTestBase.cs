@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using NextGenSpice.Core.Parser;
+using NextGenSpice.Parser;
 using NextGenSpiceTest;
 using Xunit.Abstractions;
 

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
-using NextGenSpice.Core.Parser;
-using NextGenSpice.Core.Parser.Utils;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal;
+using NextGenSpice.Parser;
+using NextGenSpice.Parser.Utils;
 using NextGenSpice.Printing;
 
 namespace NextGenSpice.Simulation

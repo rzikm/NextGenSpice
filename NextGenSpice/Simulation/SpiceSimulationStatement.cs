@@ -1,5 +1,5 @@
 ﻿
-using NextGenSpice.Core.Parser.Statements;
+using NextGenSpice.Parser.Statements;
 
 namespace NextGenSpice.Simulation
 {

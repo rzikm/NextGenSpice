@@ -1,6 +1,6 @@
-using NextGenSpice.Core.Parser.Statements;
+using NextGenSpice.Parser.Statements;
 using NextGenSpice.Printing;
-using IPrintStatementHandler = NextGenSpice.Core.Parser.Statements.Printing.IPrintStatementHandler;
+using IPrintStatementHandler = NextGenSpice.Parser.Statements.Printing.IPrintStatementHandler;
 
 namespace NextGenSpice.Simulation
 {

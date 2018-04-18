@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NextGenSpice.Core.Parser;
-using NextGenSpice.Core.Parser.Utils;
+using NextGenSpice.Parser;
+using NextGenSpice.Parser.Utils;
 using Xunit;
 
 namespace NextGenSpiceParserTest

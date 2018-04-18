@@ -2,8 +2,8 @@
 using System.IO;
 using System.Linq;
 using NextGenSpice.Core.Exceptions;
-using NextGenSpice.Core.Parser;
-using NextGenSpice.Core.Parser.Statements.Printing;
+using NextGenSpice.Parser;
+using NextGenSpice.Parser.Statements.Printing;
 using NextGenSpice.Printing;
 using NextGenSpice.Simulation;
 

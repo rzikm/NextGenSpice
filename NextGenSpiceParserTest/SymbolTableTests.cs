@@ -1,5 +1,5 @@
 ﻿using NextGenSpice.Core.Devices.Parameters;
-using NextGenSpice.Core.Parser;
+using NextGenSpice.Parser;
 using Xunit;
 
 namespace NextGenSpiceParserTest

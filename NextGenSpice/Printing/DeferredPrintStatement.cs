@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NextGenSpice.Core.Parser;
-using NextGenSpice.Core.Parser.Statements.Deferring;
-using NextGenSpice.Core.Parser.Utils;
 using NextGenSpice.LargeSignal;
 using NextGenSpice.LargeSignal.Models;
+using NextGenSpice.Parser;
+using NextGenSpice.Parser.Statements.Deferring;
+using NextGenSpice.Parser.Utils;
 
 namespace NextGenSpice.Printing
 {

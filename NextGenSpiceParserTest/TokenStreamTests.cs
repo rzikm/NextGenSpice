@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NextGenSpice.Core.Parser;
+using NextGenSpice.Parser;
 using Xunit;
 
 namespace NextGenSpiceParserTest

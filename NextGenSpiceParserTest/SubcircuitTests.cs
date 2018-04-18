@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
-using NextGenSpice.Core.Parser;
 using NextGenSpice.LargeSignal;
+using NextGenSpice.Parser;
 using NextGenSpiceTest;
 using Xunit;
 using Xunit.Abstractions;

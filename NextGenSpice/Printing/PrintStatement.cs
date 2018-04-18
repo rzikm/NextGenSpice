@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using NextGenSpice.Core.Parser.Statements;
-using NextGenSpice.Core.Parser.Utils;
+using NextGenSpice.Parser.Statements;
+using NextGenSpice.Parser.Utils;
 
 namespace NextGenSpice.Printing
 {
