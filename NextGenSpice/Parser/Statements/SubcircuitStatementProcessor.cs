@@ -59,11 +59,11 @@ namespace NextGenSpice.Parser.Statements
             var terminals = GetNodeIndices(stack.Skip(2));
             // enforce node existence, initial condition for nodes inside subcircuit is not supported and not used
             Context.CircuitBuilder.SetNodeVoltage(terminals.Max(), null);
-
-            var subcircuitDevice = CreateSubcircuit(stack[1], terminals);
+            
+            var subcircuit = CreateSubcircuit(stack[1], terminals);
             Context.ExitSubcircuit();
 
-            Context.SymbolTable.AddSubcircuit(name, subcircuitDevice);
+            Context.SymbolTable.AddSubcircuit(name, subcircuit);
         }
 
         /// <summary>Gets indices of the nodes represented by given set of tokens. Adds relevant errors into the errors collection.</summary>
@@ -83,9 +83,9 @@ namespace NextGenSpice.Parser.Statements
             }).ToArray();
         }
 
-        private SubcircuitDevice CreateSubcircuit(Token name, int[] terminals)
+        private ISubcircuitDefinition CreateSubcircuit(Token name, int[] terminals)
         {
-            SubcircuitDevice subcircuit = null;
+            ISubcircuitDefinition subcircuit = null;
             var errorCount = Context.Errors.Count;
 
             // validate terminal specs - no duplicates
@@ -101,7 +101,7 @@ namespace NextGenSpice.Parser.Statements
             {
                 try
                 {
-                    subcircuit = Context.CircuitBuilder.BuildSubcircuit(terminals);
+                    subcircuit = Context.CircuitBuilder.BuildSubcircuit(terminals, name.Value);
                 }
                 catch (NotConnectedSubcircuitException e)
                 {
@@ -115,11 +115,33 @@ namespace NextGenSpice.Parser.Statements
 
             if (subcircuit == null) // create a "null object" to avoid explicit null checking
             {
-                subcircuit = new SubcircuitDevice(terminals.Length + 1, terminals,
-                    Enumerable.Empty<ICircuitDefinitionDevice>());
+                subcircuit = new NullSubcircuitDefinition(terminals);
             }
 
             return subcircuit;
+        }
+
+        class NullSubcircuitDefinition : ISubcircuitDefinition
+        {
+            public NullSubcircuitDefinition(int[] terminals)
+            {
+                TerminalNodes = terminals;
+                InnerNodeCount = terminals.Length + 1;
+                Devices = Enumerable.Empty<ICircuitDefinitionDevice>();
+                SubcircuitName = null;
+            }
+
+            /// <summary>Name of this subcircuit type</summary>
+            public string SubcircuitName { get; }
+
+            /// <summary>Ids from the subcircuit definition that are considered connected to the device terminals.</summary>
+            public int[] TerminalNodes { get; }
+
+            /// <summary>Number of inner nodes of this subcircuit.</summary>
+            public int InnerNodeCount { get; }
+
+            /// <summary>Inner devices that define behavior of this subcircuit.</summary>
+            public IEnumerable<ICircuitDefinitionDevice> Devices { get; }
         }
     }
 

@@ -4,6 +4,9 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Security;
 using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Extensions;
@@ -19,9 +22,9 @@ namespace SandboxRunner
 
         private static void Main(string[] args)
         {
-            PrintFileSizes();
-            return;
+//            PrintFileSizes(); return;
 
+            TestSimulationSpeed(); return;
             //            IntegrationTest.Run();
 
             //            SetListeners();
@@ -32,6 +35,118 @@ namespace SandboxRunner
             sw.Stop();
 //            Console.WriteLine(sw.Elapsed);
         }
+
+        private static void TestSimulationSpeed()
+        {
+            // dry run
+            TestSpeedManaged(1,2,3);
+            TestSpeedNative(new d_native(1), new d_native(2), new d_native(3));
+            TestSpeedManaged_wrapped(new d_managed(1), new d_managed(2), new d_managed(3));
+
+
+            Console.WriteLine($"Managed - double:\t{TestSpeedManaged(1,2,3)}");
+            Console.WriteLine($"Managed - wrapper:\t{TestSpeedManaged_wrapped(new d_managed(1), new d_managed(2), new d_managed(3))}");
+            Console.WriteLine($"Native - PInvoke:\t{TestSpeedNative(new d_native(1), new d_native(2), new d_native(3))}");
+//            Console.WriteLine($"Native:\t{TestSpeedNative(new d_native(1), new d_native(2), new d_native(3))}");
+        }
+
+        private const int reps = 10000000;
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static double TestSpeedNative(d_native a, d_native b, d_native c)
+        {
+            d_native sum = new d_native(0);
+            var sw = Stopwatch.StartNew();
+            for (int i = 0; i < reps; i++)
+            {
+                sum += a * b + c;
+                a = b + c;
+                b = c + a;
+            }
+            sw.Stop();
+            return sw.Elapsed.TotalMilliseconds;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static double TestSpeedManaged_wrapped(d_managed a, d_managed b, d_managed c)
+        {
+            d_managed sum = new d_managed(0);
+            var sw = Stopwatch.StartNew();
+            for (int i = 0; i < reps; i++)
+            {
+                sum += a * b + c;
+                a = b + c;
+                b = c + a;
+            }
+            sw.Stop();
+            return sw.Elapsed.TotalMilliseconds;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static double TestSpeedManaged(double a, double b, double c)
+        {
+            double sum = 0;
+            var sw = Stopwatch.StartNew();
+            for (int i = 0; i < reps; i++)
+            {
+                sum += a * b + c;
+                a = b + c;
+                b = c + a;
+            }
+            sw.Stop();
+            return sw.Elapsed.TotalMilliseconds;
+        }
+
+        struct d_managed
+        {
+            private double val;
+
+            public d_managed(double d)
+            {
+                val = d;
+            }
+
+            public static d_managed operator +(d_managed self, d_managed other)
+            {
+                return new d_managed(self.val + other.val);
+            }
+
+            public static d_managed operator *(d_managed self, d_managed other)
+            {
+                return new d_managed(self.val * other.val);
+            }
+        }
+
+        struct d_native
+        {
+            private double val;
+
+            public d_native(double d)
+            {
+                val = d;
+            }
+
+            [DllImport("NumericCore.dll", CallingConvention = CallingConvention.StdCall)]
+            [SuppressUnmanagedCodeSecurity]
+            private static extern void d_add(ref d_native self, ref d_native val);
+
+            public static d_native operator +(d_native self, d_native other)
+            {
+                d_add(ref self, ref other);
+                return self;
+            }
+
+            [DllImport("NumericCore.dll", CallingConvention = CallingConvention.StdCall)]
+            [SuppressUnmanagedCodeSecurity]
+            private static extern void d_mul(ref d_native self, ref d_native val);
+
+            public static d_native operator *(d_native self, d_native other)
+            {
+                d_mul(ref self, ref other);
+                return self;
+            }
+        }
+
 
         private static void RunTruncationModel()
         {

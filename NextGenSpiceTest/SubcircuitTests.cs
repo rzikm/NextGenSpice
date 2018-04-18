@@ -1,4 +1,5 @@
 ﻿using NextGenSpice.Core.Circuit;
+using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Extensions;
 using NextGenSpice.LargeSignal;
 using Xunit;
@@ -24,7 +25,7 @@ namespace NextGenSpiceTest
                 .BuildSubcircuit(new[] {1, 2});
 
             var circuitWithSubcircuit = new CircuitBuilder()
-                .AddDevice(new[] {0, 1}, subcircuit)
+                .AddSubcircuit(new[] {0, 1}, subcircuit)
                 .AddResistor(1, 0, 5, "R1")
                 .BuildCircuit();
         }
@@ -50,7 +51,7 @@ namespace NextGenSpiceTest
 
             Output.WriteLine("With subcircuit:");
             var circuitWithSubcircuit = new CircuitBuilder()
-                .AddDevice(new[] {0, 1}, subcircuit)
+                .AddSubcircuit(new[] {0, 1}, subcircuit)
                 .AddResistor(1, 0, 5)
                 .BuildCircuit().GetLargeSignalModel();
             circuitWithSubcircuit.EstablishInitialDcBias();

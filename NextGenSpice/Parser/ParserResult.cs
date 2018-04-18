@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.Parser.Statements.Printing;
 using NextGenSpice.Parser.Statements.Simulation;
@@ -10,16 +11,19 @@ namespace NextGenSpice.Parser
     public class ParserResult
     {
         public ParserResult(ICircuitDefinition circuit, IReadOnlyList<PrintStatement> printStatements,
-            IReadOnlyList<ISimulationStatement> simulationStatements, IReadOnlyList<ErrorInfo> errors)
+            IReadOnlyList<ISimulationStatement> simulationStatements, IReadOnlyList<ErrorInfo> errors, IEnumerable<ISubcircuitDefinition> subcircuits)
         {
             CircuitDefinition = circuit;
             PrintStatements = printStatements;
             SimulationStatements = simulationStatements;
             Errors = errors;
+            Subcircuits = subcircuits;
         }
 
         /// <summary>Circuit defined in the input file. Is null if there was an error in input file.</summary>
         public ICircuitDefinition CircuitDefinition { get; }
+
+        public IEnumerable<ISubcircuitDefinition> Subcircuits { get; }
 
         /// <summary>All print statements from the input file.</summary>
         public IReadOnlyList<PrintStatement> PrintStatements { get; }

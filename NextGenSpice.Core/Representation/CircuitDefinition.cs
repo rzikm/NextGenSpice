@@ -12,7 +12,7 @@ namespace NextGenSpice.Core.Representation
     public class CircuitDefinition : ICircuitDefinition
     {
        
-        public CircuitDefinition(IReadOnlyList<double?> initialVoltages,
+        internal CircuitDefinition(IReadOnlyList<double?> initialVoltages,
             IReadOnlyList<ICircuitDefinitionDevice> devices)
         {
             InitialVoltages = initialVoltages;

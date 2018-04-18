@@ -97,13 +97,13 @@ namespace NextGenSpice.Core.Circuit
         ///     it.
         /// </summary>
         /// <returns></returns>
-        public SubcircuitDevice BuildSubcircuit(int[] terminals)
+        public SubcircuitDefinition BuildSubcircuit(int[] terminals, string name = null)
         {
             circuitException = ValidateSubcircuit_Internal(terminals);
             if (circuitException != null) throw circuitException;
 
             // subtract ground node from total node count
-            return new SubcircuitDevice(NodeCount - 1, terminals, devices.Select(e => e.Clone()));
+            return new SubcircuitDefinition(NodeCount - 1, terminals, devices.Select(e => e.Clone()), name);
         }
 
         /// <summary>

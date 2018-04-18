@@ -7,22 +7,24 @@ namespace NextGenSpice.Core.Devices
     /// <summary>Class that represents a composite device from a set of simple ones.</summary>
     public class SubcircuitDevice : CircuitDefinitionDevice
     {
-        public SubcircuitDevice(int innerNodeCount, int[] terminalNodes,
-            IEnumerable<ICircuitDefinitionDevice> devices, string name = null) : base(terminalNodes.Length, name)
+        /// <summary>
+        /// Description of the devices of this subcircuit.
+        /// </summary>
+        public ISubcircuitDefinition Definition { get; }
+
+        public SubcircuitDevice(ISubcircuitDefinition definition, string name = null) : base(definition.TerminalNodes.Length, name)
         {
-            TerminalNodes = terminalNodes;
-            InnerNodeCount = innerNodeCount;
-            Devices = devices;
+            Definition = definition;
         }
 
         /// <summary>Ids from the subcircuit definition that are considered connected to the device terminals.</summary>
-        public int[] TerminalNodes { get; }
+        public int[] TerminalNodes => Definition.TerminalNodes;
 
         /// <summary>Number of inner nodes of this subcircuit.</summary>
-        public int InnerNodeCount { get; }
+        public int InnerNodeCount => Definition.InnerNodeCount;
 
         /// <summary>Inner devices that define behavior of this subcircuit.</summary>
-        public IEnumerable<ICircuitDefinitionDevice> Devices { get; }
+        public IEnumerable<ICircuitDefinitionDevice> Devices => Definition.Devices;
 
         /// <summary>Creates a copy of this device.</summary>
         /// <returns></returns>
@@ -56,10 +58,7 @@ namespace NextGenSpice.Core.Devices
 
             var terminals = new HashSet<int>(TerminalNodes);
             var connections = new Dictionary<int, int>();
-            for (int i = 0; i < ConnectedNodes.Count; i++)
-            {
-                connections[TerminalNodes[i]] = ConnectedNodes[i];
-            }
+            for (var i = 0; i < ConnectedNodes.Count; i++) connections[TerminalNodes[i]] = ConnectedNodes[i];
 
             var components = CircuitBuilderHelpers.GetComponents(neighbourghs);
 
@@ -73,13 +72,9 @@ namespace NextGenSpice.Core.Devices
                 {
                     var c2 = components[j].Where(n => terminals.Contains(n)).ToArray();
                     foreach (var n1 in c1)
-                    {
-                        foreach (var n2 in c2)
-                        {
-                            yield return new CircuitBranchMetadata(connections[n1], connections[n2],
-                                BranchType.CurrentDefined, this);
-                        }
-                    }
+                    foreach (var n2 in c2)
+                        yield return new CircuitBranchMetadata(connections[n1], connections[n2],
+                            BranchType.CurrentDefined, this);
                 }
             }
         }
@@ -97,30 +92,21 @@ namespace NextGenSpice.Core.Devices
             }
 
             // contract all
-            for (int i = 0; i < representatives.Length; i++)
-            {
-                representatives[i] = GetRepresentant(representatives, i);
-            }
+            for (var i = 0; i < representatives.Length; i++) representatives[i] = GetRepresentant(representatives, i);
 
             // get mapping of local nodes to outer nodes
             var connections = new Dictionary<int, int>();
-            for (int i = 0; i < ConnectedNodes.Count; i++)
-            {
-                connections[TerminalNodes[i]] = ConnectedNodes[i];
-            }
+            for (var i = 0; i < ConnectedNodes.Count; i++) connections[TerminalNodes[i]] = ConnectedNodes[i];
 
-            for (int i = 0; i < TerminalNodes.Length - 1; i++)
+            for (var i = 0; i < TerminalNodes.Length - 1; i++)
             {
                 var n1 = TerminalNodes[i];
-                for (int j = i + 1; j < TerminalNodes.Length; j++)
+                for (var j = i + 1; j < TerminalNodes.Length; j++)
                 {
                     var n2 = TerminalNodes[j];
                     if (representatives[n1] == representatives[n2])
-                    {
-                        // same component, therefore a path of voltage defined branches
                         yield return new CircuitBranchMetadata(connections[n1], connections[n2],
                             BranchType.VoltageDefined, this);
-                    }
                 }
             }
         }

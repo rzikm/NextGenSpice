@@ -14,7 +14,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
         private readonly Token subcircuitName;
         private readonly int[] terminals;
 
-        private SubcircuitDevice model;
+        private ISubcircuitDefinition model;
 
         public SubcircuitDeviceDeferredStatement(string deviceName, int[] terminals, Token subcircuitName)
         {
@@ -60,10 +60,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
         {
             context.CircuitBuilder.AddDevice(
                 terminals,
-                new SubcircuitDevice(
-                    model.InnerNodeCount,
-                    model.TerminalNodes,
-                    model.Devices.Select(e => e.Clone()),
+                new SubcircuitDevice(model,
                     deviceName
                 )
             );

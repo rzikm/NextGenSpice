@@ -109,6 +109,20 @@ namespace NextGenSpice.Core.Extensions
             return builder;
         }
 
+
+        /// <summary>Adds a resistor between specified nodes.</summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="nodes">Array of connections of the subcircuit.</param>
+        /// <param name="subcircuit">Resistance of the resistor in ohms.</param>
+        /// <param name="name">Name of the device.</param>
+        /// <returns></returns>
+        public static CircuitBuilder AddSubcircuit(this CircuitBuilder builder, int[] nodes, ISubcircuitDefinition subcircuit,
+            string name = null)
+        {
+            builder.AddDevice(nodes, new SubcircuitDevice(subcircuit, name));
+            return builder;
+        }
+
         /// <summary>Adds a diode between specified nodes.</summary>
         /// <param name="builder">The builder.</param>
         /// <param name="n1">Positive node of the device.</param>

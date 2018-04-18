@@ -11,8 +11,8 @@ using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser
 {
-    /// <summary>Main class for parsing SPICE code input files</summary>
-    public class SpiceCodeParser
+    /// <summary>Main class for parsing SPICE netlist files</summary>
+    public class SpiceNetlistParser
     {
         private readonly IDictionary<char, IDeviceStatementProcessor> deviceProcessors;
 
@@ -22,7 +22,7 @@ namespace NextGenSpice.Parser
         private readonly PrintStatementProcessor printProcessor;
         private readonly IDictionary<string, IDotStatementProcessor> statementProcessors;
 
-        public SpiceCodeParser()
+        public SpiceNetlistParser()
         {
             modelProcessor = new ModelStatementProcessor();
             printProcessor = new PrintStatementProcessor();
@@ -33,35 +33,37 @@ namespace NextGenSpice.Parser
 
             RegisterStatement(modelProcessor, true, true);
             RegisterStatement(printProcessor, true, false);
-
-            RegisterDefaults();
         }
 
-        private void RegisterDefaults()
+        public static SpiceNetlistParser WithDefaults()
         {
-            RegisterDevice(new ResistorStatementProcessor());
-            RegisterDevice(new CurrentSourceStatementProcessor());
-            RegisterDevice(new VoltageSourceStatementProcessor());
+            var p = new SpiceNetlistParser();
+            p.RegisterDevice(new ResistorStatementProcessor());
+            p.RegisterDevice(new CurrentSourceStatementProcessor());
+            p.RegisterDevice(new VoltageSourceStatementProcessor());
 
-            RegisterDevice(new CapacitorStatementProcessor());
-            RegisterDevice(new InductorStatementProcessor());
+            p.RegisterDevice(new CapacitorStatementProcessor());
+            p.RegisterDevice(new InductorStatementProcessor());
 
-            RegisterDevice(new DiodeStatementProcessor());
-            RegisterDevice(new BjtStatementProcessor());
+            p.RegisterDevice(new DiodeStatementProcessor());
+            p.RegisterDevice(new BjtStatementProcessor());
 
-            RegisterDevice(new SubcircuitDeviceStatementProcessor());
+            p.RegisterDevice(new SubcircuitDeviceStatementProcessor());
 
-            RegisterDevice(new VoltageControlledVoltageSourceStatementProcessor());
-            RegisterDevice(new VoltageControlledCurrentSourceStatementProcessor());
+            p.RegisterDevice(new VoltageControlledVoltageSourceStatementProcessor());
+            p.RegisterDevice(new VoltageControlledCurrentSourceStatementProcessor());
 
             var root = new SubcircuitStatementRoot();
-            RegisterStatement(new SubcircuitStatementProcessor(root), true, true);
-            RegisterStatement(new SubcircuitEndStatementProcessor(root), false, true);
-            RegisterStatement(new InitialConditionStatement(), true, false);
+            p.RegisterStatement(new SubcircuitStatementProcessor(root), true, true);
+            p.RegisterStatement(new SubcircuitEndStatementProcessor(root), false, true);
+            p.RegisterStatement(new InitialConditionStatement(), true, false);
 
-            RegisterSimulation(new TranStatementProcessor());
-            RegisterSimulation(new OpStatementProcessor());
+            p.RegisterSimulation(new TranStatementProcessor());
+            p.RegisterSimulation(new OpStatementProcessor());
+
+            return p;
         }
+
 
         /// <summary>Adds handler class for device statement processing, including their .MODEL statements</summary>
         /// <param name="processor"></param>
@@ -142,7 +144,7 @@ namespace NextGenSpice.Parser
             var circuitDefinition = ctx.Errors.Count == 0 ? TryCreateCircuitDefinition(ctx) : null;
 
             return new ParserResult(circuitDefinition, ctx.PrintStatements, ctx.SimulationStatements,
-                ctx.Errors.OrderBy(e => e.LineNumber).ThenBy(e => e.LineColumn).ToList());
+                ctx.Errors.OrderBy(e => e.LineNumber).ThenBy(e => e.LineColumn).ToList(), ctx.SymbolTable.GetSubcircuits());
         }
 
         private static CircuitDefinition TryCreateCircuitDefinition(ParsingContext ctx)

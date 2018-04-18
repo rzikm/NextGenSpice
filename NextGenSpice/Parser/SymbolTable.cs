@@ -17,7 +17,7 @@ namespace NextGenSpice.Parser
             var definedDevices = new HashSet<string>();
             var models = new Dictionary<Type, Dictionary<string, object>>();
             var nodeIndices = new Dictionary<string, int> {["0"] = 0}; // enforce ground node on index 0
-            var subcircuits = new Dictionary<string, SubcircuitDevice>();
+            var subcircuits = new Dictionary<string, ISubcircuitDefinition>();
 
             scopes = new Stack<StackEntry>();
             scopes.Push(new StackEntry(definedDevices, nodeIndices, models, subcircuits));
@@ -37,7 +37,7 @@ namespace NextGenSpice.Parser
         public IDictionary<string, int> NodeIndices => StackTop.NodeIndices;
 
         /// <summary>Set of all subcircuits defined in current scope.</summary>
-        public IDictionary<string, SubcircuitDevice> SubcircuitDevices => StackTop.Subcircuits;
+        public IDictionary<string, ISubcircuitDefinition> SubcircuitDevices => StackTop.Subcircuits;
 
         /// <summary>Locks all contents of symbol tables as defaultly visible in all scopes and starts global scope.</summary>
         public void FreezeDefaults()
@@ -115,7 +115,7 @@ namespace NextGenSpice.Parser
         /// <summary>Adds subcircuit under given name to the symbol tables.</summary>
         /// <param name="name">Name of the subcircuit.</param>
         /// <param name="subcircuit">The subcircuit deinition.</param>
-        public void AddSubcircuit(string name, SubcircuitDevice subcircuit)
+        public void AddSubcircuit(string name, ISubcircuitDefinition subcircuit)
         {
             SubcircuitDevices.Add(name, subcircuit);
         }
@@ -124,7 +124,7 @@ namespace NextGenSpice.Parser
         /// <param name="name">Name of the subcircuit.</param>
         /// <param name="subcircuit">Out variable to store found model in.</param>
         /// <returns></returns>
-        public bool TryGetSubcircuit(string name, out SubcircuitDevice subcircuit)
+        public bool TryGetSubcircuit(string name, out ISubcircuitDefinition subcircuit)
         {
             return SubcircuitDevices.TryGetValue(name, out subcircuit);
         }
@@ -132,11 +132,18 @@ namespace NextGenSpice.Parser
         /// <summary>Returns the subcircuit instance with corresponding name.</summary>
         /// <param name="name">The subcircuit name</param>
         /// <returns></returns>
-        public SubcircuitDevice GetSubcircuit(string name)
+        public ISubcircuitDefinition GetSubcircuit(string name)
         {
             if (!TryGetSubcircuit(name, out var result))
                 throw new ArgumentException($"Subcircuit with name '{name}' does not exist");
             return result;
+        }
+
+        /// <summary>Returns all subcircuits from the symbol table.</summary>
+        /// <returns></returns>
+        public IEnumerable<ISubcircuitDefinition> GetSubcircuits()
+        {
+            return SubcircuitDevices.Values;
         }
 
         /// <summary>Adds given symbol to the set of device names, returns true if it not already used.</summary>
@@ -201,7 +208,7 @@ namespace NextGenSpice.Parser
                 new Dictionary<string, int>(stackEntry.NodeIndices),
                 stackEntry.Models.ToDictionary(kvp => kvp.Key,
                     kvp => kvp.Value.ToDictionary(kp => kp.Key, kp => kp.Value)),
-                new Dictionary<string, SubcircuitDevice>(stackEntry.Subcircuits));
+                new Dictionary<string, ISubcircuitDefinition>(stackEntry.Subcircuits));
         }
 
         /// <summary>Returns whether given symbol is already used for a device or node.</summary>
@@ -229,7 +236,7 @@ namespace NextGenSpice.Parser
         private struct StackEntry
         {
             public StackEntry(ISet<string> definedDevices, IDictionary<string, int> nodeIndices,
-                Dictionary<Type, Dictionary<string, object>> models, IDictionary<string, SubcircuitDevice> subcircuits)
+                Dictionary<Type, Dictionary<string, object>> models, IDictionary<string, ISubcircuitDefinition> subcircuits)
             {
                 DefinedDevices = definedDevices;
                 NodeIndices = nodeIndices;
@@ -240,7 +247,7 @@ namespace NextGenSpice.Parser
             public ISet<string> DefinedDevices { get; }
             public IDictionary<string, int> NodeIndices { get; }
             public Dictionary<Type, Dictionary<string, object>> Models { get; }
-            public IDictionary<string, SubcircuitDevice> Subcircuits { get; }
+            public IDictionary<string, ISubcircuitDefinition> Subcircuits { get; }
         }
     }
 }

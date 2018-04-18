@@ -40,3 +40,14 @@ NUMERICCORE_API BSTR dd_to_string(dd_real& self)
 
 	return SysAllocString(ws.c_str());
 }
+
+
+NUMERICCORE_API void d_add(double& self, double val)
+{
+	self += val;
+}
+
+NUMERICCORE_API void d_mul(double& self, double val)
+{
+	self *= val;
+}

@@ -28,7 +28,7 @@ namespace NextGenSpice
                 return;
             }
 
-            var parser = new SpiceCodeParser();
+            var parser = SpiceNetlistParser.WithDefaults();
             var result = parser.Parse(new TokenStream(input));
 
             if (result.HasError)

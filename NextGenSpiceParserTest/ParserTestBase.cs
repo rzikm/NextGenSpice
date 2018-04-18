@@ -14,10 +14,10 @@ namespace NextGenSpiceParserTest
         protected ParserTestBase(ITestOutputHelper output) : base(output)
         {
             DoTrace = false;
-            Parser = new SpiceCodeParser();
+            Parser = SpiceNetlistParser.WithDefaults();
         }
 
-        protected SpiceCodeParser Parser { get; }
+        protected SpiceNetlistParser Parser { get; }
 
         protected void ExpectErrors(Action<IParserCaseBuilder> caseBuilder)
         {
@@ -51,7 +51,7 @@ namespace NextGenSpiceParserTest
 
             public void Assert(ITestOutputHelper output)
             {
-                var parser = new SpiceCodeParser();
+                var parser = SpiceNetlistParser.WithDefaults();
                 var result = parser.Parse(new StringReader(sb.ToString())).Errors
                     .ToLookup(i => i.LineNumber, i => i.ErrorCode);
 

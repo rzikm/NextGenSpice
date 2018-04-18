@@ -16,7 +16,7 @@ namespace NextGenSpiceParserTest
 
         public ParserResult Parse(string code)
         {
-            SpiceCodeParser parser = new SpiceCodeParser();
+            SpiceNetlistParser parser = SpiceNetlistParser.WithDefaults();
             var result = parser.Parse(new TokenStream(new StringReader(code)));
             Output.WriteLine(string.Join("\n", result.Errors));
             return result;

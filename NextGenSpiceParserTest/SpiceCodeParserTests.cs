@@ -1,4 +1,6 @@
-﻿using NextGenSpice.Parser;
+﻿using System.IO;
+using System.Linq;
+using NextGenSpice.Parser;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -68,6 +70,24 @@ namespace NextGenSpiceParserTest
                 c.On("v8 1 0    pwl 0 1 1 3 5              * odd number of pairs",
                     SpiceParserError.TimePointWithoutValue);
             });
+        }
+
+        [Fact]
+        public void ReturnsSubcircuits()
+        {
+            var res = SpiceNetlistParser.WithDefaults()
+                .Parse(new StringReader(@"
+.subckt mysub 1 2
+v1 1 0 10v
+r1 0 2 10ohm
+d1 1 2 dmod
+.model dmod D
+.ends
+"));
+            Assert.Empty(res.Errors);
+            var subckt = res.Subcircuits.Single();
+            Assert.NotNull(subckt);
+            Assert.Equal("MYSUB", subckt.SubcircuitName);
         }
     }
 }

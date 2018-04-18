@@ -52,12 +52,16 @@ namespace NextGenSpice.Parser
         /// <param name="name">Name of the subcircuit.</param>
         /// <param name="subcircuit">Out variable to store found model in.</param>
         /// <returns></returns>
-        bool TryGetSubcircuit(string name, out SubcircuitDevice subcircuit);
+        bool TryGetSubcircuit(string name, out ISubcircuitDefinition subcircuit);
 
         /// <summary>Returns the subcircuit instance with corresponding name.</summary>
         /// <param name="name">The subcircuit name</param>
         /// <returns></returns>
-        SubcircuitDevice GetSubcircuit(string name);
+        ISubcircuitDefinition GetSubcircuit(string name);
+
+        /// <summary>Returns all subcircuits from the symbol table.</summary>
+        /// <returns></returns>
+        IEnumerable<ISubcircuitDefinition> GetSubcircuits();
 
         /// <summary>Adds given symbol to the set of device names, returns true if it not already used.</summary>
         /// <param name="name"></param>
@@ -84,10 +88,12 @@ namespace NextGenSpice.Parser
         /// <summary>Adds subcircuit under given name to the symbol tables.</summary>
         /// <param name="name">Name of the subcircuit.</param>
         /// <param name="subcircuit">The subcircuit deinition.</param>
-        void AddSubcircuit(string name, SubcircuitDevice subcircuit);
+        void AddSubcircuit(string name, ISubcircuitDefinition subcircuit);
 
         /// <summary>Returns dictionary with mappings from node id to their respective names.</summary>
         /// <returns></returns>
         IDictionary<int, string> GetNodeIdMappings();
+
+
     }
 }
