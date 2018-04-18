@@ -9,11 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextGenSpice.Core", "NextGe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextGenSpice.LargeSignal", "NextGenSpice.LargeSignal\NextGenSpice.LargeSignal.csproj", "{F2CA4E90-E99B-4E8D-81F6-EEDC121CBC26}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextGenSpiceTest", "NextGenSpiceTest\NextGenSpiceTest.csproj", "{6496C20F-B890-4045-907E-DC8D15334FE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextGenSpice.Test", "NextGenSpiceTest\NextGenSpice.Test.csproj", "{6496C20F-B890-4045-907E-DC8D15334FE2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SandboxRunner", "SandboxRunner\SandboxRunner.csproj", "{8383357E-8228-41BC-BADD-CA6382961F7B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextGenSpiceParserTest", "NextGenSpiceParserTest\NextGenSpiceParserTest.csproj", "{4FF6D196-B1A1-4DBD-9EF1-814A1C30EFAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextGenSpiceParser.Test", "NextGenSpiceParserTest\NextGenSpiceParser.Test.csproj", "{4FF6D196-B1A1-4DBD-9EF1-814A1C30EFAD}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NextGenSpice.Numerics.Native", "NextGenSpice.Numerics.Native\NextGenSpice.Numerics.Native.vcxproj", "{B5F06554-21B8-4026-950C-C50D2493D89B}"
 EndProject

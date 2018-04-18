@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
-using NextGenSpice.Parser;
+using NextGenSpice.Core.Devices;
+using NextGenSpice.Core.Parser;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -73,7 +74,7 @@ namespace NextGenSpiceParserTest
         }
 
         [Fact]
-        public void ReturnsSubcircuits()
+        public void ReturnsSubcircuitWhenCorrect()
         {
             var res = SpiceNetlistParser.WithDefaults()
                 .Parse(new StringReader(@"
@@ -88,6 +89,38 @@ d1 1 2 dmod
             var subckt = res.Subcircuits.Single();
             Assert.NotNull(subckt);
             Assert.Equal("MYSUB", subckt.SubcircuitName);
+        }
+
+
+        [Fact]
+        public void DoesNotReturnSubcircuitOnError()
+        {
+            var res = SpiceNetlistParser.WithDefaults()
+                .Parse(new StringReader(@"
+.subckt mysub 1 2
+v1 1 0 10v
+r1 0 2 10ohm
+d1 1 1 dmod         * intentionally wrong, nodes 1 and 2 not connected
+.model dmod D
+.ends
+"));
+            Assert.Single(res.Errors);
+            Assert.Empty(res.Subcircuits);
+        }
+
+        [Fact]
+        public void ReturnsNamesOfNodes()
+        {
+            var res = SpiceNetlistParser.WithDefaults()
+                .Parse(new StringReader(@"
+v1 0 stop 5
+r1 start stop 5
+r2 0 start 10
+"));
+            Assert.Empty(res.Errors);
+            var r1 = res.CircuitDefinition.Devices.Single(d => d.Name == "R1") as ResistorDevice;
+            Assert.Equal("START", res.NodeNames[r1.Anode]);
+            Assert.Equal("STOP", res.NodeNames[r1.Cathode]);
         }
     }
 }

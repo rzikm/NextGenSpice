@@ -1,8 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using NextGenSpice.Core.Exceptions;
-using NextGenSpice.Parser;
-using NextGenSpice.Parser.Statements.Simulation;
+using NextGenSpice.Core.Parser;
+using NextGenSpice.Core.Parser.Statements.Printing;
+using NextGenSpice.Printing;
+using NextGenSpice.Simulation;
 
 namespace NextGenSpice
 {
@@ -28,7 +31,8 @@ namespace NextGenSpice
                 return;
             }
 
-            var parser = SpiceNetlistParser.WithDefaults();
+            var parser = CreateParser();
+
             var result = parser.Parse(new TokenStream(input));
 
             if (result.HasError)
@@ -41,7 +45,8 @@ namespace NextGenSpice
             }
 
             bool first = true;
-            foreach (var statement in result.SimulationStatements)
+            var simStatements = result.OtherStatements.OfType<ISimulationStatement>();
+            foreach (var statement in simStatements)
             {
                 if (!first) Console.WriteLine();
                 first = false;
@@ -49,11 +54,28 @@ namespace NextGenSpice
             }
         }
 
-        private static void RunStatement(ISimulationStatement statement, ParserResult result)
+        private static SpiceNetlistParser CreateParser()
+        {
+            var parser = SpiceNetlistParser.WithDefaults();
+
+            // add additional processors
+            var tran = new TranStatementProcessor();
+            var op = new OpStatementProcessor();
+            var print = new PrintStatementProcessor();
+            print.AddHandler(tran.GetPrintStatementHandler());
+            print.AddHandler(op.GetPrintStatementHandler());
+            
+            parser.RegisterStatement(tran, true, false);
+            parser.RegisterStatement(print, true, false);
+            parser.RegisterStatement(op, true, false);
+            return parser;
+        }
+
+        private static void RunStatement(ISimulationStatement statement, SpiceNetlistParserResult result)
         {
             try
             {
-                statement.Simulate(result.CircuitDefinition, result.PrintStatements, Console.Out);
+                statement.Simulate(result.CircuitDefinition, result.OtherStatements.OfType<PrintStatement>(), Console.Out);
             }
             catch (PrinterInitializationException e)
             {

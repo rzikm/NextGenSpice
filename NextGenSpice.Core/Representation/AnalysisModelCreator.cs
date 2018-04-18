@@ -65,10 +65,11 @@ namespace NextGenSpice.Core.Representation
             //TODO: allow other dlls?
             var assemblies = Directory
                 .GetFiles(Path.GetDirectoryName(typeof(CircuitDefinition).Assembly.Location),
-                    "NextGenSpice*.dll",
+                    "NextGenSpice.*.dll",
                     SearchOption.AllDirectories);
 
             var asms = assemblies
+                .Where(i => !i.Contains("Native"))
                 .Select(AssemblyLoadContext.Default.LoadFromAssemblyPath)
                 .ToList();
 

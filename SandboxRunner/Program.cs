@@ -22,9 +22,9 @@ namespace SandboxRunner
 
         private static void Main(string[] args)
         {
-//            PrintFileSizes(); return;
+            PrintFileSizes(); return;
 
-            TestSimulationSpeed(); return;
+//            TestSimulationSpeed(); return;
             //            IntegrationTest.Run();
 
             //            SetListeners();
@@ -179,7 +179,7 @@ namespace SandboxRunner
                 long sizeGrp = 0;
                 var group = (IEnumerable<string>) grp;
 
-                if (grp.Key == "NumericCore")
+                if (grp.Key.Contains("Native"))
                     group = grp.Where(name => !name.Contains("src")); // ignore qd library
 
 
