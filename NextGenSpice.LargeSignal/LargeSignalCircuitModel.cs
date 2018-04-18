@@ -12,7 +12,7 @@ using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Models;
 
 #if qd_precision || dd_precision
-using Numerics.Precision;
+using NextGenSpice.Numerics.Precision;
 #endif
 
 namespace NextGenSpice.LargeSignal

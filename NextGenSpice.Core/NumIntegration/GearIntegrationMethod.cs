@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using NextGenSpice.Core.Equations;
-using Numerics;
+using NextGenSpice.Numerics;
 
 namespace NextGenSpice.Core.NumIntegration
 {

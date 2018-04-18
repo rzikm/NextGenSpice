@@ -1,7 +1,7 @@
 ﻿#if dd_precision
 using System;
-using Numerics;
-using Numerics.Precision;
+using NextGenSpice.Numerics;
+using NextGenSpice.Numerics.Precision;
 
 namespace NextGenSpice.Core.Equations
 {

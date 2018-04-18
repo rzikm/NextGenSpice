@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Numerics;
+using NextGenSpice.Numerics;
 
 namespace NextGenSpice.Core.Equations
 {

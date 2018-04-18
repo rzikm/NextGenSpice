@@ -20,9 +20,9 @@
   <ItemGroup>
     <ProjectReference Include="..\NextGenSpice.Core\NextGenSpice.Core.csproj" />
     <ProjectReference Include="..\NextGenSpice.LargeSignal\NextGenSpice.LargeSignal.csproj" />
+    <ProjectReference Include="..\NextGenSpice.Numerics\NextGenSpice.Numerics.csproj" />
     <ProjectReference Include="..\NextGenSpiceTest\NextGenSpiceTest.csproj" />
     <ProjectReference Include="..\NextGenSpice\NextGenSpice.csproj" />
-    <ProjectReference Include="..\Numerics\Numerics.csproj" />
   </ItemGroup>
 
 </Project>
