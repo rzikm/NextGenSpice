@@ -10,7 +10,7 @@ using NextGenSpice.LargeSignal.Stamping;
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="DiodeDevice" /> device.</summary>
-    public class LargeSignalDiodeModel : TwoNodeLargeSignalModel<DiodeDevice>
+    public class LargeSignalDiodeModel : TwoTerminalLargeSignalDeviceModel<DiodeDevice>
     {
         private double capacitanceTreshold; // cached treshold values based by model.
 

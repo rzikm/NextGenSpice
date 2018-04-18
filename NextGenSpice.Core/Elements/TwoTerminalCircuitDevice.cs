@@ -1,9 +1,9 @@
 ﻿namespace NextGenSpice.Core.Devices
 {
     /// <summary>Base class for devices that have exactly two terminals.</summary>
-    public abstract class TwoNodeCircuitDevice : CircuitDefinitionDevice
+    public abstract class TwoTerminalCircuitDevice : CircuitDefinitionDevice
     {
-        protected TwoNodeCircuitDevice(string name) : base(2, name)
+        protected TwoTerminalCircuitDevice(string name) : base(2, name)
         {
         }
 

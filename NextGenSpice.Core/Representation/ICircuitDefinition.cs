@@ -14,20 +14,5 @@ namespace NextGenSpice.Core.Representation
 
         /// <summary>Set of devices that define this circuit.</summary>
         IReadOnlyList<ICircuitDefinitionDevice> Devices { get; }
-
-        /// <summary>Sets factory for creating a model for specific analysis.</summary>
-        /// <typeparam name="TAnalysisModel"></typeparam>
-        /// <param name="factory">Instance of factory that creates the analysis-specific model instance.</param>
-        void SetFactory<TAnalysisModel>(IAnalysisModelFactory<TAnalysisModel> factory);
-
-        /// <summary>Creates analysis-specific model of given type using registered factory instance.</summary>
-        /// <typeparam name="TAnalysisModel">Analysis-specific model type.</typeparam>
-        /// <returns></returns>
-        TAnalysisModel GetModel<TAnalysisModel>();
-
-        /// <summary>Gets the instance of factory class responsible for creating analysis-specific model of givent type.</summary>
-        /// <typeparam name="TAnalysisModel">Analysis-specific model type.</typeparam>
-        /// <returns></returns>
-        IAnalysisModelFactory<TAnalysisModel> GetFactory<TAnalysisModel>();
     }
 }

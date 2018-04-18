@@ -6,7 +6,7 @@ using NextGenSpice.LargeSignal.Behaviors;
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="VoltageSourceDevice" /> device.</summary>
-    public class LargeSignalVoltageSourceModel : TwoNodeLargeSignalModel<VoltageSourceDevice>
+    public class LargeSignalVoltageSourceModel : TwoTerminalLargeSignalDeviceModel<VoltageSourceDevice>
     {
         private int branchVariable = -1;
 

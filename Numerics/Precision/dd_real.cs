@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Security;
 
 namespace Numerics.Precision
 {
@@ -73,6 +74,7 @@ namespace Numerics.Precision
 
 
         [DllImport(Constants.DllPath, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
         private static extern void dd_add(ref dd_real self, ref dd_real b);
 
         public static dd_real operator +(dd_real lhs, dd_real rhs)
@@ -94,6 +96,7 @@ namespace Numerics.Precision
         }
 
         [DllImport(Constants.DllPath, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
         private static extern void dd_sub(ref dd_real self, ref dd_real b);
 
         public static dd_real operator -(dd_real lhs, dd_real rhs)
@@ -120,6 +123,7 @@ namespace Numerics.Precision
         }
 
         [DllImport(Constants.DllPath, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
         private static extern void dd_mul(ref dd_real self, ref dd_real b);
 
         public static dd_real operator *(dd_real lhs, dd_real rhs)
@@ -141,6 +145,7 @@ namespace Numerics.Precision
         }
 
         [DllImport(Constants.DllPath, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
         private static extern void dd_div(ref dd_real self, ref dd_real b);
 
         public static dd_real operator /(dd_real lhs, dd_real rhs)
@@ -165,6 +170,7 @@ namespace Numerics.Precision
 
 
         [DllImport(Constants.DllPath, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
         private static extern void dd_sqrt(ref dd_real self);
 
         public dd_real Sqrt()
@@ -176,6 +182,7 @@ namespace Numerics.Precision
 
         [DllImport(Constants.DllPath, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.BStr)]
+        [SuppressUnmanagedCodeSecurity]
         private static extern string dd_to_string(ref dd_real self);
 
         public dd_real Abs()

@@ -4,7 +4,7 @@ using System.Linq;
 namespace NextGenSpice.Core.Devices
 {
     /// <summary>Class that represents a resistor device.</summary>
-    public class ResistorDevice : TwoNodeCircuitDevice
+    public class ResistorDevice : TwoTerminalCircuitDevice
     {
         public ResistorDevice(double resistance, string name = null) : base(name)
         {

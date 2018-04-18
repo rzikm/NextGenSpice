@@ -16,6 +16,7 @@ namespace NextGenSpiceTest
         public AnalysisModelFactoryTests()
         {
             definition = CircuitGenerator.GetCircuitWithBasicDevices();
+            creator = new AnalysisModelCreator();
         }
 
         [Export(typeof(IAnalysisModelFactory<TestAnalysisCircuitModel>))]
@@ -39,7 +40,7 @@ namespace NextGenSpiceTest
             public IReadOnlyList<ITestDeviceModel> Devices { get; }
         }
 
-        private class TestDeviceDefinition : TwoNodeCircuitDevice
+        private class TestDeviceDefinition : TwoTerminalCircuitDevice
         {
             public TestDeviceDefinition(string name = null) : base(name)
             {
@@ -65,6 +66,7 @@ namespace NextGenSpiceTest
 
 
         private readonly ICircuitDefinition definition;
+        private readonly IAnalysisModelCreator creator;
 
         private class MyPrivateFactory : AnalysisModelFactory<LargeSignalCircuitModel>
         {
@@ -81,46 +83,46 @@ namespace NextGenSpiceTest
             var circuitDef = new CircuitBuilder().AddDevice(new[] {0, 1}, new TestDeviceDefinition())
                 .AddDevice(new[] {1, 0}, new TestDeviceDefinition()).BuildCircuit();
 
-            circuitDef.SetFactory(new MyPrivateFactory());
-            circuitDef.GetFactory<TestAnalysisCircuitModel>()
+            creator.SetFactory(new MyPrivateFactory());
+            creator.GetFactory<TestAnalysisCircuitModel>()
                 .SetModel<TestDeviceDefinition, TestDeviceModel>(def => new TestDeviceModel());
 
-            Assert.NotNull(circuitDef.GetModel<TestAnalysisCircuitModel>());
+            Assert.NotNull(creator.GetModel<TestAnalysisCircuitModel>(circuitDef));
         }
 
         [Fact]
         public void FindsMefExportedFactory()
         {
-            Assert.NotNull(definition.GetFactory<LargeSignalCircuitModel>());
+            Assert.NotNull(creator.GetFactory<LargeSignalCircuitModel>());
         }
 
         [Fact]
         public void FindsMefExportedFactoryFromThisAssembly()
         {
-            Assert.NotNull(definition.GetFactory<TestAnalysisCircuitModel>());
+            Assert.NotNull(creator.GetFactory<TestAnalysisCircuitModel>());
         }
 
         [Fact]
         public void HasModelsForDefaultDevices()
         {
-            definition.GetModel<LargeSignalCircuitModel>();
+            creator.GetModel<LargeSignalCircuitModel>(definition);
         }
 
         [Fact]
         public void ManuallyRegisteredFactoryHasPrecedence()
         {
-            definition.SetFactory(new MyPrivateFactory());
+            creator.SetFactory(new MyPrivateFactory());
 
-            var factory = definition.GetFactory<LargeSignalCircuitModel>();
+            var factory = creator.GetFactory<LargeSignalCircuitModel>();
 
             Assert.Equal(typeof(MyPrivateFactory), factory.GetType());
-            definition.GetModel<LargeSignalCircuitModel>();
+            creator.GetModel<LargeSignalCircuitModel>(definition);
         }
 
         [Fact]
         public void ThrowsWhenNoFactoryExists()
         {
-            Assert.Throws<InvalidOperationException>(() => definition.GetFactory<object>());
+            Assert.Throws<InvalidOperationException>(() => creator.GetFactory<object>());
         }
 
         [Fact]
@@ -128,7 +130,7 @@ namespace NextGenSpiceTest
         {
             var circuitDef = new CircuitBuilder().AddDevice(new[] {0, 1}, new TestDeviceDefinition())
                 .AddDevice(new[] {1, 0}, new TestDeviceDefinition()).BuildCircuit();
-            Assert.Throws<InvalidOperationException>(() => circuitDef.GetModel<LargeSignalCircuitModel>());
+            Assert.Throws<InvalidOperationException>(() => creator.GetModel<LargeSignalCircuitModel>(circuitDef));
         }
     }
 }

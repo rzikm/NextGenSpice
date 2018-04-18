@@ -3,7 +3,7 @@
 namespace NextGenSpice.Core.Devices
 {
     /// <summary>Class that represents a capacitor device.</summary>
-    public class CapacitorDevice : TwoNodeCircuitDevice
+    public class CapacitorDevice : TwoTerminalCircuitDevice
     {
         public CapacitorDevice(double capacity, double? initialVoltage = null, string name = null) : base(name)
         {

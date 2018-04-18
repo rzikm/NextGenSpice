@@ -145,9 +145,9 @@ namespace NextGenSpice.Parser
                 ctx.Errors.OrderBy(e => e.LineNumber).ThenBy(e => e.LineColumn).ToList());
         }
 
-        private static ElectricCircuitDefinition TryCreateCircuitDefinition(ParsingContext ctx)
+        private static CircuitDefinition TryCreateCircuitDefinition(ParsingContext ctx)
         {
-            ElectricCircuitDefinition circuitDefinition = null;
+            CircuitDefinition circuitDefinition = null;
             try
             {
                 circuitDefinition = ctx.CircuitBuilder.BuildCircuit();

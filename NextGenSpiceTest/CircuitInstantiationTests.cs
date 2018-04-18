@@ -31,7 +31,7 @@ namespace NextGenSpiceTest
         }
 
         private readonly ModelInstantiationContext<LargeSignalCircuitModel> context;
-        private readonly ElectricCircuitDefinition circuitDefinition;
+        private readonly CircuitDefinition circuitDefinition;
 
         [Fact]
         public void GetsCachedModel()

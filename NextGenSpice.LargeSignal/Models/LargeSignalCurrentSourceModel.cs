@@ -6,7 +6,7 @@ using NextGenSpice.LargeSignal.Behaviors;
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="CurrentSourceDevice" /> device.</summary>
-    public class LargeSignalCurrentSourceModel : TwoNodeLargeSignalModel<CurrentSourceDevice>
+    public class LargeSignalCurrentSourceModel : TwoTerminalLargeSignalDeviceModel<CurrentSourceDevice>
     {
         public LargeSignalCurrentSourceModel(CurrentSourceDevice definitionDevice, IInputSourceBehavior behavior) :
             base(definitionDevice)

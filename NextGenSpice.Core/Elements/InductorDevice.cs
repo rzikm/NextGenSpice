@@ -3,7 +3,7 @@
 namespace NextGenSpice.Core.Devices
 {
     /// <summary>Class that represents an inductor device.</summary>
-    public class InductorDevice : TwoNodeCircuitDevice
+    public class InductorDevice : TwoTerminalCircuitDevice
     {
         public InductorDevice(double inductance, double? initialCurrent = null, string name = null) : base(name)
         {

@@ -4,7 +4,7 @@ using NextGenSpice.LargeSignal.Models;
 
 namespace NextGenSpiceTest
 {
-    public class SwitchModel : TwoNodeLargeSignalModel<SwitchDevice>
+    public class SwitchModel : TwoTerminalLargeSignalDeviceModel<SwitchDevice>
     {
         private int branchVariable;
 

@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security;
 using Numerics.Precision;
 
 namespace Numerics
@@ -12,12 +13,15 @@ namespace Numerics
     public static unsafe class GaussJordanElimination
     {
         [DllImport(Constants.DllPath, CallingConvention = CallingConvention.StdCall)]
+        [SuppressUnmanagedCodeSecurity]
         private static extern void gauss_solve_double(double* mat, double* b, uint size);
 
         [DllImport(Constants.DllPath, CallingConvention = CallingConvention.StdCall)]
+        [SuppressUnmanagedCodeSecurity]
         private static extern void gauss_solve_qd(qd_real* mat, qd_real* b, uint size);
 
         [DllImport(Constants.DllPath, CallingConvention = CallingConvention.StdCall)]
+        [SuppressUnmanagedCodeSecurity]
         private static extern void gauss_solve_dd(dd_real* mat, dd_real* b, uint size);
 
         [Conditional("DEBUG")]

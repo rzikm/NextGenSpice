@@ -4,36 +4,24 @@ using System.Composition.Hosting;
 using System.IO;
 using System.Linq;
 using System.Runtime.Loader;
-using NextGenSpice.Core.Devices;
 
 namespace NextGenSpice.Core.Representation
 {
-    /// <summary>Class that represents definition of an electric circuit.</summary>
-    public class ElectricCircuitDefinition : ICircuitDefinition
+    public class AnalysisModelCreator : IAnalysisModelCreator
     {
-        private static CompositionHost compositionHost;
+        private static AnalysisModelCreator instance;
+        public static AnalysisModelCreator Instance => instance ?? (instance = new AnalysisModelCreator());
 
+        private static CompositionHost compositionHost;
         private readonly Dictionary<Type, object> factories;
 
-        public ElectricCircuitDefinition(IReadOnlyList<double?> initialVoltages,
-            IReadOnlyList<ICircuitDefinitionDevice> devices)
+        public AnalysisModelCreator()
         {
             factories = new Dictionary<Type, object>();
-            InitialVoltages = initialVoltages;
-            Devices = devices;
         }
 
         private static CompositionHost CompositionContainer =>
             compositionHost ?? (compositionHost = GetCompositionContainer());
-
-        /// <summary>Number of the nodes in the circuit.</summary>
-        public int NodeCount => InitialVoltages.Count;
-
-        /// <summary>Initial voltages of nodes by their id.</summary>
-        public IReadOnlyList<double?> InitialVoltages { get; }
-
-        /// <summary>Set of devices that define this circuit.</summary>
-        public IReadOnlyList<ICircuitDefinitionDevice> Devices { get; }
 
         /// <summary>Sets factory for creating a model for specific analysis.</summary>
         /// <typeparam name="TAnalysisModel"></typeparam>
@@ -45,11 +33,12 @@ namespace NextGenSpice.Core.Representation
 
         /// <summary>Creates analysis-specific model of given type using registered factory instance.</summary>
         /// <typeparam name="TAnalysisModel">Analysis-specific model type.</typeparam>
+        /// <param name="circuitDefinition">Definition of the circuit, whose analysis model should be created</param>
         /// <returns></returns>
-        public TAnalysisModel GetModel<TAnalysisModel>()
+        public TAnalysisModel GetModel<TAnalysisModel>(ICircuitDefinition circuitDefinition)
         {
             var factory = GetFactory<TAnalysisModel>();
-            return factory.Create(this);
+            return factory.Create(circuitDefinition);
         }
 
         /// <summary>Gets the instance of factory class responsible for creating analysis-specific model of givent type.</summary>
@@ -58,7 +47,7 @@ namespace NextGenSpice.Core.Representation
         public IAnalysisModelFactory<TAnalysisModel> GetFactory<TAnalysisModel>()
         {
             if (factories.TryGetValue(typeof(TAnalysisModel), out var factory))
-                return (IAnalysisModelFactory<TAnalysisModel>) factory;
+                return (IAnalysisModelFactory<TAnalysisModel>)factory;
 
             if (CompositionContainer.TryGetExport<IAnalysisModelFactory<TAnalysisModel>>(out var export))
             {
@@ -75,7 +64,7 @@ namespace NextGenSpice.Core.Representation
         {
             //TODO: allow other dlls?
             var assemblies = Directory
-                .GetFiles(Path.GetDirectoryName(typeof(ElectricCircuitDefinition).Assembly.Location),
+                .GetFiles(Path.GetDirectoryName(typeof(CircuitDefinition).Assembly.Location),
                     "NextGenSpice*.dll",
                     SearchOption.AllDirectories);
 

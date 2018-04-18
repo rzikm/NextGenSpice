@@ -5,7 +5,7 @@ using NextGenSpice.Core.Equations;
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="ResistorDevice" /> device.</summary>
-    public class LargeSignalResistorModel : TwoNodeLargeSignalModel<ResistorDevice>
+    public class LargeSignalResistorModel : TwoTerminalLargeSignalDeviceModel<ResistorDevice>
     {
         public LargeSignalResistorModel(ResistorDevice definitionDevice) : base(definitionDevice)
         {

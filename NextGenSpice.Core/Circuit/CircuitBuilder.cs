@@ -86,10 +86,10 @@ namespace NextGenSpice.Core.Circuit
 
         /// <summary>Verifies correctness of the circuit topology, creates new instance of circuit representation and returns it.</summary>
         /// <returns></returns>
-        public ElectricCircuitDefinition BuildCircuit()
+        public CircuitDefinition BuildCircuit()
         {
             if (!ValidateCircuit()) throw circuitException;
-            return new ElectricCircuitDefinition(nodes.ToArray(), devices.Select(e => e.Clone()).ToArray());
+            return new CircuitDefinition(nodes.ToArray(), devices.Select(e => e.Clone()).ToArray());
         }
 
         /// <summary>

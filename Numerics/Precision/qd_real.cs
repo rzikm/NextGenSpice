@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Security;
 
 namespace Numerics.Precision
 {
@@ -79,6 +80,7 @@ namespace Numerics.Precision
 
 
         [DllImport(Constants.DllPath, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
         private static extern void qd_add(ref qd_real self, ref qd_real b);
 
         public static qd_real operator +(qd_real lhs, qd_real rhs)
@@ -100,6 +102,7 @@ namespace Numerics.Precision
         }
 
         [DllImport(Constants.DllPath, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
         private static extern void qd_sub(ref qd_real self, ref qd_real b);
 
         public static qd_real operator -(qd_real lhs, qd_real rhs)
@@ -126,6 +129,7 @@ namespace Numerics.Precision
         }
 
         [DllImport(Constants.DllPath, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
         private static extern void qd_mul(ref qd_real self, ref qd_real b);
 
         public static qd_real operator *(qd_real lhs, qd_real rhs)
@@ -147,6 +151,7 @@ namespace Numerics.Precision
         }
 
         [DllImport(Constants.DllPath, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
         private static extern void qd_div(ref qd_real self, ref qd_real b);
 
         public static qd_real operator /(qd_real lhs, qd_real rhs)
@@ -171,6 +176,7 @@ namespace Numerics.Precision
 
 
         [DllImport(Constants.DllPath, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
         private static extern void qd_sqrt(ref qd_real self);
 
         public qd_real Sqrt()
@@ -182,6 +188,7 @@ namespace Numerics.Precision
 
         [DllImport(Constants.DllPath, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.BStr)]
+        [SuppressUnmanagedCodeSecurity]
         private static extern string qd_to_string(ref qd_real self);
 
         public qd_real Abs()

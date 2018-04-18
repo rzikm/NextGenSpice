@@ -6,7 +6,7 @@ using NextGenSpice.Core.NumIntegration;
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="InductorDevice" /> device.</summary>
-    public class LargeSignalInductorModel : TwoNodeLargeSignalModel<InductorDevice>
+    public class LargeSignalInductorModel : TwoTerminalLargeSignalDeviceModel<InductorDevice>
     {
         private int branchVariable;
         private LargeSignalInductorStamper stamper;

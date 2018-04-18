@@ -7,7 +7,7 @@ using NextGenSpice.LargeSignal.Stamping;
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="CapacitorDevice" /> device.</summary>
-    public class LargeSignalCapacitorModel : TwoNodeLargeSignalModel<CapacitorDevice>
+    public class LargeSignalCapacitorModel : TwoTerminalLargeSignalDeviceModel<CapacitorDevice>
     {
         private int branchVariable;
         private LargeSignalCapacitorStamper stamper;

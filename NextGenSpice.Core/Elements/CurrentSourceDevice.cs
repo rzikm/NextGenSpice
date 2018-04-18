@@ -4,7 +4,7 @@ using NextGenSpice.Core.BehaviorParams;
 namespace NextGenSpice.Core.Devices
 {
     /// <summary>Class that represents a current source device.</summary>
-    public class CurrentSourceDevice : TwoNodeCircuitDevice
+    public class CurrentSourceDevice : TwoTerminalCircuitDevice
     {
         public CurrentSourceDevice(SourceBehaviorParams behavior, string name = null) : base(name)
         {

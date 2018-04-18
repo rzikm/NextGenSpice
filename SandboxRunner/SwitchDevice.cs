@@ -4,7 +4,7 @@ using NextGenSpice.Core.Devices;
 
 namespace SandboxRunner
 {
-    public class SwitchDevice : TwoNodeCircuitDevice
+    public class SwitchDevice : TwoTerminalCircuitDevice
     {
         public SwitchDevice(string name = null) : base(name)
         {

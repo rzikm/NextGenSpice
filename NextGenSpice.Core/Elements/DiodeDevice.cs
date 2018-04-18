@@ -5,7 +5,7 @@ using NextGenSpice.Core.Devices.Parameters;
 namespace NextGenSpice.Core.Devices
 {
     /// <summary>Class that represents the diode device.</summary>
-    public class DiodeDevice : TwoNodeCircuitDevice
+    public class DiodeDevice : TwoTerminalCircuitDevice
     {
         public DiodeDevice(DiodeModelParams parameters, string name = null, double voltageHint = 0) : base(name)
         {

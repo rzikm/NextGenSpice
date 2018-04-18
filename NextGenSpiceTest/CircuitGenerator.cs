@@ -9,7 +9,7 @@ namespace NextGenSpiceTest
 {
     public class CircuitGenerator
     {
-        public static ElectricCircuitDefinition GetLinearCircuit()
+        public static CircuitDefinition GetLinearCircuit()
         {
             //taken from Inside SPICE, pg. 16
 
@@ -22,7 +22,7 @@ namespace NextGenSpiceTest
                 .BuildCircuit();
         }
 
-        public static ElectricCircuitDefinition GetNonlinearCircuit()
+        public static CircuitDefinition GetNonlinearCircuit()
         {
             //taken from http://www.ecircuitcenter.com/SpiceTopics/Non-Linear%20Analysis/Non-Linear%20Analysis.htm
             return new CircuitBuilder()
@@ -33,7 +33,7 @@ namespace NextGenSpiceTest
                 .BuildCircuit();
         }
 
-        public static ElectricCircuitDefinition GetCircuitWithVoltageSource()
+        public static CircuitDefinition GetCircuitWithVoltageSource()
         {
             // taken from https://www.swarthmore.edu/NatSci/echeeve1/Ref/mna/MNA2.html, example 3
 
@@ -44,7 +44,7 @@ namespace NextGenSpiceTest
                 .AddVoltageSource(1, 0, 5).BuildCircuit();
         }
 
-        public static ElectricCircuitDefinition GetCircuitWithBasicDevices()
+        public static CircuitDefinition GetCircuitWithBasicDevices()
         {
             return new CircuitBuilder()
                 .AddResistor(0, 1, 1)
@@ -56,7 +56,7 @@ namespace NextGenSpiceTest
                 .BuildCircuit();
         }
 
-        public static ElectricCircuitDefinition GetSimpleCircuitWithCapacitor()
+        public static CircuitDefinition GetSimpleCircuitWithCapacitor()
         {
             return new CircuitBuilder()
                 .AddVoltageSource(1, 0, 1)
@@ -66,7 +66,7 @@ namespace NextGenSpiceTest
                 .BuildCircuit();
         }
 
-        public static ElectricCircuitDefinition GetSimpleCircuitWithInductor()
+        public static CircuitDefinition GetSimpleCircuitWithInductor()
         {
             return new CircuitBuilder()
                 .AddCurrentSource(1, 0, 1)
@@ -87,12 +87,11 @@ namespace NextGenSpiceTest
                 .AddCapacitor(3, 0, 1e-6)
                 .BuildCircuit();
 
-            circuit.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchDevice, SwitchModel>(m =>
+            AnalysisModelCreator.Instance.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchDevice, SwitchModel>(m =>
             {
                 sw = new SwitchModel(m);
                 return sw;
             });
-            circuit.GetFactory<LargeSignalCircuitModel>();
 
             var model = circuit.GetLargeSignalModel();
             switchModel = sw;
@@ -110,7 +109,7 @@ namespace NextGenSpiceTest
                 .BuildCircuit();
 
 
-            circuit.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchDevice, SwitchModel>(m =>
+            AnalysisModelCreator.Instance.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchDevice, SwitchModel>(m =>
             {
                 sw = new SwitchModel(m);
                 return sw;
@@ -121,7 +120,7 @@ namespace NextGenSpiceTest
             return model;
         }
 
-        public static ElectricCircuitDefinition GetTruncationErrorModel()
+        public static CircuitDefinition GetTruncationErrorModel()
         {
             return new CircuitBuilder()
                 .AddVoltageSource(1, 0, new SinusoidalBehaviorParams
@@ -138,7 +137,7 @@ namespace NextGenSpiceTest
                 .BuildCircuit();
         }
 
-        public static ElectricCircuitDefinition GetCapacitorCircuit()
+        public static CircuitDefinition GetCapacitorCircuit()
         {
             return new CircuitBuilder()
                 //                .AddVoltageSource(1, 0, new PulseBehaviorParams()
