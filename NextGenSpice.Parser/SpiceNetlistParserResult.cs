@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.Parser.Statements;
@@ -12,12 +13,13 @@ namespace NextGenSpice.Parser
         public SpiceNetlistParserResult(string title, ICircuitDefinition circuit,
             IReadOnlyList<SpiceStatement> otherStatements,
             IReadOnlyList<ErrorInfo> errors,
-            IEnumerable<ISubcircuitDefinition> subcircuits, IReadOnlyList<string> nodeNames)
+            IEnumerable<ISubcircuitDefinition> subcircuits, IReadOnlyList<string> nodeNames, IReadOnlyDictionary<Type, IReadOnlyDictionary<string, object>> models)
         {
             CircuitDefinition = circuit;
             Errors = errors;
             Subcircuits = subcircuits;
             NodeNames = nodeNames;
+            Models = models;
             Title = title;
             OtherStatements = otherStatements;
         }
@@ -27,6 +29,9 @@ namespace NextGenSpice.Parser
 
         /// <summary>The set of subcircuits that were defined</summary>
         public IEnumerable<ISubcircuitDefinition> Subcircuits { get; }
+
+        /// <summary>Collection of all models from the netlist file.</summary>
+        public IReadOnlyDictionary<Type, IReadOnlyDictionary<string, object>> Models { get; }
 
         /// <summary>Names used in the netlist to refer to circuit nodes, indexed by node id.</summary>
         public IReadOnlyList<string> NodeNames { get; }

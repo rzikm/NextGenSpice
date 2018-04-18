@@ -141,7 +141,8 @@ namespace NextGenSpice.Parser
                 ctx.OtherStatements,
                 ctx.Errors.OrderBy(e => e.LineNumber).ThenBy(e => e.LineColumn).ToList(), // order errors
                 ctx.SymbolTable.GetSubcircuits().OfType<SubcircuitDefinition>().ToList(), // only valid subcircuit definitions, no NullCircuitDefinitions
-                ctx.SymbolTable.GetNodeNames(Enumerable.Range(0, ctx.CircuitBuilder.NodeCount)).ToList());
+                ctx.SymbolTable.GetNodeNames(Enumerable.Range(0, ctx.CircuitBuilder.NodeCount)).ToList(),
+                ctx.SymbolTable.GetAllModels());
         }
 
         private static CircuitDefinition TryCreateCircuitDefinition(ParsingContext ctx)

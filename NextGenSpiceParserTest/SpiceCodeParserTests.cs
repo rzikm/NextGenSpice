@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using NextGenSpice.Core.Devices;
+using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.Parser;
 using Xunit;
 using Xunit.Abstractions;
@@ -132,6 +133,22 @@ d1 1 2 dmod
             var subckt = res.Subcircuits.Single();
             Assert.NotNull(subckt);
             Assert.Equal("MYSUB", subckt.SubcircuitName);
+        }
+
+        [Fact]
+        public void ReturnsModels()
+        {
+            var res = SpiceNetlistParser.WithDefaults()
+                .Parse(new StringReader($@"
+v1 1 0 10v
+r1 0 2 10ohm
+d1 1 2 dmod
+.model dmod D(IS=1)
+"));
+            Assert.Empty(res.Errors);
+            var model = res.Models[typeof(DiodeModelParams)]["DMOD"] as DiodeModelParams;
+            Assert.NotNull(model);
+            Assert.Equal(1, model.SaturationCurrent);
         }
 
         [Fact]

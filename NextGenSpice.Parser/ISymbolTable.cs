@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NextGenSpice.Core.Devices;
 
 namespace NextGenSpice.Parser
@@ -95,5 +96,10 @@ namespace NextGenSpice.Parser
         IDictionary<int, string> GetNodeIdMappings();
 
 
+        /// <summary>
+        /// Returns collection of all models from the symbol table.
+        /// </summary>
+        /// <returns></returns>
+        IReadOnlyDictionary<Type, IReadOnlyDictionary<string, object>> GetAllModels();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using NextGenSpice.Core.Devices;
@@ -15,7 +16,7 @@ namespace NextGenSpice.Parser
         public SymbolTable()
         {
             var definedDevices = new HashSet<string>();
-            var models = new Dictionary<Type, Dictionary<string, object>>();
+            var models = new Dictionary<Type, IDictionary<string, object>>();
             var nodeIndices = new Dictionary<string, int> {["0"] = 0}; // enforce ground node on index 0
             var subcircuits = new Dictionary<string, ISubcircuitDefinition>();
 
@@ -23,7 +24,7 @@ namespace NextGenSpice.Parser
             scopes.Push(new StackEntry(definedDevices, nodeIndices, models, subcircuits));
         }
 
-        private Dictionary<Type, Dictionary<string, object>> Models => StackTop.Models;
+        private IDictionary<Type, IDictionary<string, object>> Models => StackTop.Models;
 
         private StackEntry StackTop => scopes.Peek();
 
@@ -110,6 +111,15 @@ namespace NextGenSpice.Parser
         public void AddModel<T>(T model, string name)
         {
             AddModel(typeof(T), model, name);
+        }
+
+        /// <summary>
+        /// Returns collection of all models from the symbol table.
+        /// </summary>
+        /// <returns></returns>
+        public IReadOnlyDictionary<Type, IReadOnlyDictionary<string, object>> GetAllModels()
+        {
+            return Models.ToDictionary(i => i.Key, i => i.Value as IReadOnlyDictionary<string, object>);
         }
 
         /// <summary>Adds subcircuit under given name to the symbol tables.</summary>
@@ -207,7 +217,7 @@ namespace NextGenSpice.Parser
                 new HashSet<string>(stackEntry.DefinedDevices),
                 new Dictionary<string, int>(stackEntry.NodeIndices),
                 stackEntry.Models.ToDictionary(kvp => kvp.Key,
-                    kvp => kvp.Value.ToDictionary(kp => kp.Key, kp => kp.Value)),
+                    kvp => kvp.Value.ToDictionary(kp => kp.Key, kp => kp.Value) as IDictionary<string, object>),
                 new Dictionary<string, ISubcircuitDefinition>(stackEntry.Subcircuits));
         }
 
@@ -236,7 +246,7 @@ namespace NextGenSpice.Parser
         private struct StackEntry
         {
             public StackEntry(ISet<string> definedDevices, IDictionary<string, int> nodeIndices,
-                Dictionary<Type, Dictionary<string, object>> models, IDictionary<string, ISubcircuitDefinition> subcircuits)
+                IDictionary<Type, IDictionary<string, object>> models, IDictionary<string, ISubcircuitDefinition> subcircuits)
             {
                 DefinedDevices = definedDevices;
                 NodeIndices = nodeIndices;
@@ -246,7 +256,7 @@ namespace NextGenSpice.Parser
 
             public ISet<string> DefinedDevices { get; }
             public IDictionary<string, int> NodeIndices { get; }
-            public Dictionary<Type, Dictionary<string, object>> Models { get; }
+            public IDictionary<Type, IDictionary<string, object>> Models { get; }
             public IDictionary<string, ISubcircuitDefinition> Subcircuits { get; }
         }
     }
