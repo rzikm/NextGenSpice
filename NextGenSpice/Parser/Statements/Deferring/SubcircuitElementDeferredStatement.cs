@@ -1,24 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements.Deferring
 {
     /// <summary>Class representing spice subcircuit call statement.</summary>
-    public class SubcircuitElementDeferredStatement : DeferredStatement
+    public class SubcircuitDeviceDeferredStatement : DeferredStatement
     {
-        private readonly string elementName;
+        private readonly string deviceName;
 
         private readonly List<ErrorInfo> errors;
         private readonly Token subcircuitName;
         private readonly int[] terminals;
 
-        private SubcircuitElement model;
+        private SubcircuitDevice model;
 
-        public SubcircuitElementDeferredStatement(string elementName, int[] terminals, Token subcircuitName)
+        public SubcircuitDeviceDeferredStatement(string deviceName, int[] terminals, Token subcircuitName)
         {
-            this.elementName = elementName;
+            this.deviceName = deviceName;
             this.terminals = terminals;
             this.subcircuitName = subcircuitName;
 
@@ -58,13 +58,13 @@ namespace NextGenSpice.Parser.Statements.Deferring
         /// <param name="context"></param>
         public override void Apply(ParsingContext context)
         {
-            context.CircuitBuilder.AddElement(
+            context.CircuitBuilder.AddDevice(
                 terminals,
-                new SubcircuitElement(
+                new SubcircuitDevice(
                     model.InnerNodeCount,
                     model.TerminalNodes,
-                    model.Elements.Select(e => e.Clone()),
-                    elementName
+                    model.Devices.Select(e => e.Clone()),
+                    deviceName
                 )
             );
         }

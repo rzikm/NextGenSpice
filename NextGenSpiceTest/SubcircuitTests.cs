@@ -16,7 +16,7 @@ namespace NextGenSpiceTest
         private readonly CircuitBuilder builder;
 
         [Fact]
-        public void SubcircuitCannotReferenceOuterElements()
+        public void SubcircuitCannotReferenceOuterDevices()
         {
             var subcircuit = builder
                 .AddVoltageSource(2, 1, 4)
@@ -24,13 +24,13 @@ namespace NextGenSpiceTest
                 .BuildSubcircuit(new[] {1, 2});
 
             var circuitWithSubcircuit = new CircuitBuilder()
-                .AddElement(new[] {0, 1}, subcircuit)
+                .AddDevice(new[] {0, 1}, subcircuit)
                 .AddResistor(1, 0, 5, "R1")
                 .BuildCircuit();
         }
 
         [Fact]
-        public void SubcircuitCanReferenceInnerElements()
+        public void SubcircuitCanReferenceInnerDevices()
         {
             var subcircuit = builder
                 .AddVoltageSource(2, 1, 4)
@@ -50,7 +50,7 @@ namespace NextGenSpiceTest
 
             Output.WriteLine("With subcircuit:");
             var circuitWithSubcircuit = new CircuitBuilder()
-                .AddElement(new[] {0, 1}, subcircuit)
+                .AddDevice(new[] {0, 1}, subcircuit)
                 .AddResistor(1, 0, 5)
                 .BuildCircuit().GetLargeSignalModel();
             circuitWithSubcircuit.EstablishInitialDcBias();

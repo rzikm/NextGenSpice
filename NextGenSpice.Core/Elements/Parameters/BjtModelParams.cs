@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NextGenSpice.Core.Elements.Parameters
+namespace NextGenSpice.Core.Devices.Parameters
 {
     /// <summary>Represents set of parameters for Homo-Junction Bipolar Transistor.</summary>
     public class BjtModelParams : ICloneable

@@ -27,7 +27,7 @@ namespace NextGenSpice.Core.Equations
             }
 
             matrix.Add(newRow);
-            newRow.Add(0); // element on diagonal
+            newRow.Add(0); // device on diagonal
 
             rhs.Add(0);
             return rhs.Count - 1;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal;
 using NextGenSpice.LargeSignal.Models;
@@ -15,13 +15,13 @@ namespace NextGenSpiceTest
         {
             circuitDefinition = CircuitGenerator.GetLinearCircuit();
             var modelCreators =
-                new Dictionary<Type, Func<ICircuitDefinitionElement, IModelInstantiationContext<LargeSignalCircuitModel>
+                new Dictionary<Type, Func<ICircuitDefinitionDevice, IModelInstantiationContext<LargeSignalCircuitModel>
                     , IAnalysisDeviceModel<LargeSignalCircuitModel>>>
                 {
-                    [typeof(ResistorElement)] =
-                        (e, ctx) => new LargeSignalResistorModel((ResistorElement) e),
-                    [typeof(VoltageSourceElement)] =
-                        (e, ctx) => new LargeSignalVoltageSourceModel((VoltageSourceElement) e, null)
+                    [typeof(ResistorDevice)] =
+                        (e, ctx) => new LargeSignalResistorModel((ResistorDevice) e),
+                    [typeof(VoltageSourceDevice)] =
+                        (e, ctx) => new LargeSignalVoltageSourceModel((VoltageSourceDevice) e, null)
                 };
 
 
@@ -36,11 +36,11 @@ namespace NextGenSpiceTest
         [Fact]
         public void GetsCachedModel()
         {
-            var element = circuitDefinition.Elements.First();
+            var device = circuitDefinition.Devices.First();
 
-            var model = context.GetModel(element);
+            var model = context.GetModel(device);
 
-            Assert.Equal(model, context.GetModel(element));
+            Assert.Equal(model, context.GetModel(device));
         }
 
         [Fact]
@@ -48,10 +48,10 @@ namespace NextGenSpiceTest
         {
             var modelName = "R1";
 
-            var element = circuitDefinition.Elements.Single(e => e.Name == modelName);
+            var device = circuitDefinition.Devices.Single(e => e.Name == modelName);
             var model = context.GetModel(modelName);
 
-            Assert.Equal(context.GetModel(element), model);
+            Assert.Equal(context.GetModel(device), model);
         }
 
         [Fact]
@@ -60,7 +60,7 @@ namespace NextGenSpiceTest
             Assert.Throws<ArgumentNullException>(() => context.GetModel((string) null));
             Assert.Throws<ArgumentException>(() => context.GetModel("nonexistant model"));
 
-            Assert.Throws<ArgumentNullException>(() => context.GetModel((ICircuitDefinitionElement) null));
+            Assert.Throws<ArgumentNullException>(() => context.GetModel((ICircuitDefinitionDevice) null));
         }
     }
 }

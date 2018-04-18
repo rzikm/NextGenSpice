@@ -2,7 +2,7 @@
 
 namespace NextGenSpice.LargeSignal.Stamping
 {
-    /// <summary>Class for stamping capacitor elements for large signal circuit model.</summary>
+    /// <summary>Class for stamping capacitor devices for large signal circuit model.</summary>
     public class LargeSignalCapacitorStamper
     {
         private readonly int anode;

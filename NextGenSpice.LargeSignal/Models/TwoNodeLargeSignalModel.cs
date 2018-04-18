@@ -1,23 +1,23 @@
 ﻿using System.Collections.Generic;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Base class for large signal device models that have exactly two terminals.</summary>
-    /// <typeparam name="TDefinitionElement">Class used for the element in the circuit definition that this class is model for.</typeparam>
-    public abstract class TwoNodeLargeSignalModel<TDefinitionElement> : LargeSignalModelBase<TDefinitionElement>,
+    /// <typeparam name="TDefinitionDevice">Class used for the device in the circuit definition that this class is model for.</typeparam>
+    public abstract class TwoNodeLargeSignalModel<TDefinitionDevice> : LargeSignalModelBase<TDefinitionDevice>,
         ITwoTerminalLargeSignalDeviceModel
-        where TDefinitionElement : TwoNodeCircuitElement
+        where TDefinitionDevice : TwoNodeCircuitDevice
     {
-        protected TwoNodeLargeSignalModel(TDefinitionElement definitionElement) : base(definitionElement)
+        protected TwoNodeLargeSignalModel(TDefinitionDevice definitionDevice) : base(definitionDevice)
         {
         }
 
         /// <summary>Id of node connected to positive terminal of this device.</summary>
-        public int Anode => DefinitionElement.ConnectedNodes[0];
+        public int Anode => DefinitionDevice.ConnectedNodes[0];
 
         /// <summary>Id of node connected to negative terminal of this device.</summary>
-        public int Cathode => DefinitionElement.ConnectedNodes[1];
+        public int Cathode => DefinitionDevice.ConnectedNodes[1];
 
         /// <summary>Current flowing from positive terminal to negative terminal through the device.</summary>
         public double Current { get; protected set; }
@@ -28,7 +28,7 @@ namespace NextGenSpice.LargeSignal.Models
 
         /// <summary>
         ///     Gets provider instance for specified attribute value or null if no provider for requested parameter exists.
-        ///     For example "I" for the current flowing throught the two terminal element.
+        ///     For example "I" for the current flowing throught the two terminal device.
         /// </summary>
         /// <returns>IPrintValueProvider for specified attribute.</returns>
         public override IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders()

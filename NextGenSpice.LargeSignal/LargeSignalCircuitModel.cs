@@ -29,13 +29,13 @@ namespace NextGenSpice.LargeSignal
         private EquationSystem equationSystem;
 #endif
 
-        public LargeSignalCircuitModel(IEnumerable<double?> initialVoltages, List<ILargeSignalDeviceModel> elements)
+        public LargeSignalCircuitModel(IEnumerable<double?> initialVoltages, List<ILargeSignalDeviceModel> devices)
         {
             this.initialVoltages = initialVoltages.ToArray();
             NodeVoltages = new double[this.initialVoltages.Length];
-            this.elements = elements.ToArray();
+            this.devices = devices.ToArray();
 
-            elementLookup = elements.Where(e => !string.IsNullOrEmpty(e.Name)).ToDictionary(e => e.Name);
+            deviceLookup = devices.Where(e => !string.IsNullOrEmpty(e.Name)).ToDictionary(e => e.Name);
             updaterInitCondition = e => e.ApplyInitialCondition(equationSystem, context);
             updaterModelValues = e => e.ApplyModelValues(equationSystem, context);
         }
@@ -46,16 +46,16 @@ namespace NextGenSpice.LargeSignal
         /// <summary>Number of node in the circuit.</summary>
         public int NodeCount => NodeVoltages.Length;
 
-        /// <summary>Set of all elements that this circuit model consists of.</summary>
-        public IReadOnlyList<ILargeSignalDeviceModel> Elements => elements;
+        /// <summary>Set of all devices that this circuit model consists of.</summary>
+        public IReadOnlyList<ILargeSignalDeviceModel> Devices => devices;
 
-        private ILargeSignalDeviceModel[] constElements;
-        private ILargeSignalDeviceModel[] nonlinearElements;
-        private ILargeSignalDeviceModel[] linearTimeDependentElements;
+        private ILargeSignalDeviceModel[] constDevices;
+        private ILargeSignalDeviceModel[] nonlinearDevices;
+        private ILargeSignalDeviceModel[] linearTimeDependentDevices;
 
-        private readonly Dictionary<string, ILargeSignalDeviceModel> elementLookup;
+        private readonly Dictionary<string, ILargeSignalDeviceModel> deviceLookup;
         private readonly double?[] initialVoltages;
-        private readonly ILargeSignalDeviceModel[] elements;
+        private readonly ILargeSignalDeviceModel[] devices;
 
         // cached functors to prevent excessive allocations
         private readonly Action<ILargeSignalDeviceModel> updaterInitCondition;
@@ -64,21 +64,21 @@ namespace NextGenSpice.LargeSignal
         /// <summary>Gets model for the device identified by given name.</summary>
         /// <param name="name">Name of the device.</param>
         /// <returns></returns>
-        public ILargeSignalDeviceModel GetElement(string name)
+        public ILargeSignalDeviceModel GetDevice(string name)
         {
-            return elementLookup[name];
+            return deviceLookup[name];
         }
 
         /// <summary>Gets model for the device identified by given name.</summary>
         /// <param name="name">Name of the device.</param>
         /// <param name="value">The device model.</param>
         /// <returns></returns>
-        public bool TryGetElement(string name, out ILargeSignalDeviceModel value)
+        public bool TryGetDevice(string name, out ILargeSignalDeviceModel value)
         {
-            return elementLookup.TryGetValue(name, out value);
+            return deviceLookup.TryGetValue(name, out value);
         }
 
-        private bool IsLinear => nonlinearElements.Length == 0;
+        private bool IsLinear => nonlinearDevices.Length == 0;
 
 
         // iteration dependent variables
@@ -163,9 +163,9 @@ namespace NextGenSpice.LargeSignal
 
         private void EnsureInitialized()
         {
-            constElements = Elements.Where(e => e.UpdateMode == ModelUpdateMode.NoUpdate).ToArray();
-            linearTimeDependentElements = Elements.Where(e => e.UpdateMode == ModelUpdateMode.TimePoint).ToArray();
-            nonlinearElements = Elements.Where(e => e.UpdateMode == ModelUpdateMode.Always).ToArray();
+            constDevices = Devices.Where(e => e.UpdateMode == ModelUpdateMode.NoUpdate).ToArray();
+            linearTimeDependentDevices = Devices.Where(e => e.UpdateMode == ModelUpdateMode.TimePoint).ToArray();
+            nonlinearDevices = Devices.Where(e => e.UpdateMode == ModelUpdateMode.Always).ToArray();
 
             if (context != null) return;
 
@@ -187,11 +187,11 @@ namespace NextGenSpice.LargeSignal
             for (var i = 0; i < NodeCount; i++)
                 b.AddVariable();
 
-            foreach (var element in Elements)
-                element.Initialize(b, context);
+            foreach (var device in Devices)
+                device.Initialize(b, context);
 
-            foreach (var element in constElements)
-                element.ApplyModelValues(b, context);
+            foreach (var device in constDevices)
+                device.ApplyModelValues(b, context);
 
             equationSystem = b.Build();
         }
@@ -202,9 +202,9 @@ namespace NextGenSpice.LargeSignal
             LastNonLinearIterationDelta = 0;
 
 
-            UpdateEquationSystem(updater, linearTimeDependentElements);
+            UpdateEquationSystem(updater, linearTimeDependentDevices);
             equationSystem.Backup(1);
-            UpdateEquationSystem(updater, nonlinearElements);
+            UpdateEquationSystem(updater, nonlinearDevices);
 
             SolveAndUpdateVoltages();
             //            DebugPrint();
@@ -223,7 +223,7 @@ namespace NextGenSpice.LargeSignal
 
                 equationSystem.Restore(1);
 
-                UpdateEquationSystem(updater, nonlinearElements);
+                UpdateEquationSystem(updater, nonlinearDevices);
                 SolveAndUpdateVoltages();
                 //            DebugPrint();
 
@@ -243,8 +243,8 @@ namespace NextGenSpice.LargeSignal
 
         private void OnDcBiasEstablished()
         {
-            for (var i = 0; i < elements.Length; i++)
-                elements[i].OnDcBiasEstablished(context);
+            for (var i = 0; i < devices.Length; i++)
+                devices[i].OnDcBiasEstablished(context);
             equationSystem.Restore(0);
         }
 

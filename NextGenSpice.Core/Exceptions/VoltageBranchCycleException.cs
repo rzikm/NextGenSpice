@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 
 namespace NextGenSpice.Core.Exceptions
 {
     [Serializable]
     public class VoltageBranchCycleException : CircuitTopologyException
     {
-        public VoltageBranchCycleException(IEnumerable<ICircuitDefinitionElement> elements) : base(
-            "Circuit contains a cycle of voltage defined elements.")
+        public VoltageBranchCycleException(IEnumerable<ICircuitDefinitionDevice> devices) : base(
+            "Circuit contains a cycle of voltage defined devices.")
         {
-            Elements = elements;
+            Devices = devices;
         }
 
         protected VoltageBranchCycleException(
@@ -20,7 +20,7 @@ namespace NextGenSpice.Core.Exceptions
         {
         }
 
-        /// <summary>Set of elements that participated in the voltage branch cycle.</summary>
-        public IEnumerable<ICircuitDefinitionElement> Elements { get; }
+        /// <summary>Set of devices that participated in the voltage branch cycle.</summary>
+        public IEnumerable<ICircuitDefinitionDevice> Devices { get; }
     }
 }

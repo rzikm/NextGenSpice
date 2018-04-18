@@ -3,10 +3,10 @@ using NextGenSpice.Parser.Statements.Models;
 
 namespace NextGenSpice.Parser.Statements.Devices
 {
-    /// <summary>Defines methods for parsing SPICE element statements.</summary>
-    public interface IElementStatementProcessor
+    /// <summary>Defines methods for parsing SPICE device statements.</summary>
+    public interface IDeviceStatementProcessor
     {
-        /// <summary>Discriminator of the element type this processor can parse.</summary>
+        /// <summary>Discriminator of the device type this processor can parse.</summary>
         char Discriminator { get; }
 
         /// <summary>Gets list of model statement handlers that are responsible to parsing respective models of this device.</summary>

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 
 namespace NextGenSpice.Core.Circuit
 {
@@ -30,14 +30,14 @@ namespace NextGenSpice.Core.Circuit
 
         /// <summary>Creates vertex-neighbourghs representation of the circuit graph.</summary>
         public static Dictionary<int, HashSet<int>> GetNeighbourghs(int nodeCount,
-            IEnumerable<ICircuitDefinitionElement> elements)
+            IEnumerable<ICircuitDefinitionDevice> devices)
         {
             var neighbourghs = Enumerable.Range(0, nodeCount).ToDictionary(n => n, n => new HashSet<int>());
 
-            foreach (var element in elements)
+            foreach (var device in devices)
             {
-                var ids = element
-                    .ConnectedNodes; // consider the element to be a hyperedge - all pairs in the hyperedge are connected
+                var ids = device
+                    .ConnectedNodes; // consider the device to be a hyperedge - all pairs in the hyperedge are connected
                 for (var i = 0; i < ids.Count; i++)
                 for (var j = 0; j < ids.Count; j++)
                 {

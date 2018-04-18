@@ -6,8 +6,8 @@ using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements.Devices
 {
-    /// <summary>Class representing processor for a given element type.</summary>
-    public abstract class ElementStatementProcessor : IElementStatementProcessor
+    /// <summary>Class representing processor for a given device type.</summary>
+    public abstract class DeviceStatementProcessor : IDeviceStatementProcessor
     {
         private int oldErrors;
         private ISymbolTable SymbolTable => Context.SymbolTable;
@@ -25,12 +25,12 @@ namespace NextGenSpice.Parser.Statements.Devices
         protected int MaxArgs { get; set; } = int.MaxValue;
 
         /// <summary>Parsed name from the first token.</summary>
-        protected string ElementName => RawStatement[0]?.Value;
+        protected string DeviceName => RawStatement[0]?.Value;
 
-        /// <summary>Unprocessed tokens that make up the element statement.</summary>
+        /// <summary>Unprocessed tokens that make up the device statement.</summary>
         protected Token[] RawStatement { get; private set; }
 
-        /// <summary>Discriminator of the element type this processor can parse.</summary>
+        /// <summary>Discriminator of the device type this processor can parse.</summary>
         public abstract char Discriminator { get; }
 
         /// <summary>Parses given line of tokens, adds statement to be processed later or adds errors to Errors collection.</summary>
@@ -48,7 +48,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             if (tokens.Length - 1 < MinArgs || tokens.Length - 1 > MaxArgs)
                 InvalidNumberOfArguments(tokens[0]); // there is always at least one token.
 
-            DeclareElement(tokens[0]);
+            DeclareDevice(tokens[0]);
 
             DoProcess();
 
@@ -76,12 +76,12 @@ namespace NextGenSpice.Parser.Statements.Devices
             Context.Errors.Add(source.ToErrorInfo(errorCode));
         }
 
-        /// <summary>Returns message, that some element with given name has been already defined.</summary>
+        /// <summary>Returns message, that some device with given name has been already defined.</summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        private void ElementAlreadyDefined(Token token)
+        private void DeviceAlreadyDefined(Token token)
         {
-            Error(token, SpiceParserError.ElementAlreadyDefined);
+            Error(token, SpiceParserError.DeviceAlreadyDefined);
         }
 
         /// <summary>Return message, that given token cannot be converted to a numeric representation.</summary>
@@ -100,7 +100,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             Error(token, SpiceParserError.NotANode);
         }
 
-        /// <summary>Return message indicatiing that there was wrong number of arguments for given element type.</summary>
+        /// <summary>Return message indicatiing that there was wrong number of arguments for given device type.</summary>
         /// <param name="token"></param>
         /// <returns></returns>
         protected void InvalidNumberOfArguments(Token token)
@@ -108,13 +108,13 @@ namespace NextGenSpice.Parser.Statements.Devices
             Error(token, SpiceParserError.InvalidNumberOfArguments);
         }
 
-        /// <summary>Gets element name and sets it in symbol table, adds relevant errors into the errors collection</summary>
+        /// <summary>Gets device name and sets it in symbol table, adds relevant errors into the errors collection</summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        private void DeclareElement(Token token)
+        private void DeclareDevice(Token token)
         {
             var name = token.Value;
-            if (!SymbolTable.TryDefineElement(name)) ElementAlreadyDefined(token);
+            if (!SymbolTable.TryDefineDevice(name)) DeviceAlreadyDefined(token);
         }
 
         /// <summary>

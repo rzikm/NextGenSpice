@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace NextGenSpice.Core.Elements
+namespace NextGenSpice.Core.Devices
 {
     /// <summary>Class that represents a capacitor device.</summary>
-    public class CapacitorElement : TwoNodeCircuitElement
+    public class CapacitorDevice : TwoNodeCircuitDevice
     {
-        public CapacitorElement(double capacity, double? initialVoltage = null, string name = null) : base(name)
+        public CapacitorDevice(double capacity, double? initialVoltage = null, string name = null) : base(name)
         {
             Capacity = capacity;
             InitialVoltage = initialVoltage;

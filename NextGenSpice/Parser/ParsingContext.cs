@@ -95,9 +95,9 @@ namespace NextGenSpice.Parser
         {
             switch (statement)
             {
-                case SimpleElementDeferredStatement _: return 1;
+                case SimpleDeviceDeferredStatement _: return 1;
                 case DeferredPrintStatement _: return 50; // process these last
-                default: return 20; // includes generic ModeledElementStatement<>
+                default: return 20; // includes generic ModeledDeviceStatement<>
             }
         }
     }

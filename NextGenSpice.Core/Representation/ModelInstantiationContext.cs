@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 
 namespace NextGenSpice.Core.Representation
 {
@@ -9,19 +9,19 @@ namespace NextGenSpice.Core.Representation
     /// <typeparam name="TAnalysisModel"></typeparam>
     public class ModelInstantiationContext<TAnalysisModel> : IModelInstantiationContext<TAnalysisModel>
     {
-        private readonly Dictionary<Type, Func<ICircuitDefinitionElement, IModelInstantiationContext<TAnalysisModel>,
+        private readonly Dictionary<Type, Func<ICircuitDefinitionDevice, IModelInstantiationContext<TAnalysisModel>,
             IAnalysisDeviceModel<TAnalysisModel>>> modelCreators;
 
-        private readonly Dictionary<string, ICircuitDefinitionElement> namedElements;
+        private readonly Dictionary<string, ICircuitDefinitionDevice> namedDevices;
 
         private readonly Dictionary<Type, Func<object, IModelInstantiationContext<TAnalysisModel>, object>>
             paramCreators;
 
-        private readonly Dictionary<ICircuitDefinitionElement, IAnalysisDeviceModel<TAnalysisModel>>
+        private readonly Dictionary<ICircuitDefinitionDevice, IAnalysisDeviceModel<TAnalysisModel>>
             resolutionCache; // cached models so we can compose arbitrary object graph.
 
         public ModelInstantiationContext(
-            Dictionary<Type, Func<ICircuitDefinitionElement, IModelInstantiationContext<TAnalysisModel>,
+            Dictionary<Type, Func<ICircuitDefinitionDevice, IModelInstantiationContext<TAnalysisModel>,
                 IAnalysisDeviceModel<TAnalysisModel>>> modelCreators,
             Dictionary<Type, Func<object, IModelInstantiationContext<TAnalysisModel>, object>> paramCreators,
             ICircuitDefinition circuitDefinition)
@@ -29,37 +29,37 @@ namespace NextGenSpice.Core.Representation
             this.paramCreators = paramCreators;
             this.modelCreators = modelCreators;
             CircuitDefinition = circuitDefinition;
-            resolutionCache = new Dictionary<ICircuitDefinitionElement, IAnalysisDeviceModel<TAnalysisModel>>();
-            namedElements = circuitDefinition.Elements.Where(e => e.Name != null).ToDictionary(e => e.Name);
+            resolutionCache = new Dictionary<ICircuitDefinitionDevice, IAnalysisDeviceModel<TAnalysisModel>>();
+            namedDevices = circuitDefinition.Devices.Where(e => e.Name != null).ToDictionary(e => e.Name);
         }
 
         /// <summary>Current circuit definition.</summary>
         public ICircuitDefinition CircuitDefinition { get; }
 
         /// <summary>Gets model instance for a given device definition instance.</summary>
-        /// <param name="element">The device definition.</param>
+        /// <param name="device">The device definition.</param>
         /// <returns></returns>
-        public IAnalysisDeviceModel<TAnalysisModel> GetModel(ICircuitDefinitionElement element)
+        public IAnalysisDeviceModel<TAnalysisModel> GetModel(ICircuitDefinitionDevice device)
         {
-            if (element == null) throw new ArgumentNullException(nameof(element));
+            if (device == null) throw new ArgumentNullException(nameof(device));
 
-            if (resolutionCache.TryGetValue(element, out var model))
+            if (resolutionCache.TryGetValue(device, out var model))
                 return model;
 
-            return resolutionCache[element] = CreateModel(element);
+            return resolutionCache[device] = CreateModel(device);
         }
 
-        /// <summary>Creates model instance for definition element with given name.</summary>
-        /// <param name="elementName">Name of the element to be instantiated.</param>
+        /// <summary>Creates model instance for definition device with given name.</summary>
+        /// <param name="deviceName">Name of the device to be instantiated.</param>
         /// <returns></returns>
-        public IAnalysisDeviceModel<TAnalysisModel> GetModel(string elementName)
+        public IAnalysisDeviceModel<TAnalysisModel> GetModel(string deviceName)
         {
-            if (elementName == null) throw new ArgumentNullException(nameof(elementName));
+            if (deviceName == null) throw new ArgumentNullException(nameof(deviceName));
 
-            if (!namedElements.TryGetValue(elementName, out var element))
-                throw new ArgumentException($"Element with name {elementName} does not exist in given context.");
+            if (!namedDevices.TryGetValue(deviceName, out var device))
+                throw new ArgumentException($"Device with name {deviceName} does not exist in given context.");
 
-            return GetModel(element);
+            return GetModel(device);
         }
 
         /// <summary>Processes parameter using registered factory function for its type.</summary>
@@ -73,15 +73,15 @@ namespace NextGenSpice.Core.Representation
             throw new InvalidOperationException($"No param creator for type{arg.GetType()}");
         }
 
-        /// <summary>Creates model instance for given definition element.</summary>
-        /// <param name="element">Element to be instantiated.</param>
+        /// <summary>Creates model instance for given definition device.</summary>
+        /// <param name="device">Device to be instantiated.</param>
         /// <returns></returns>
-        private IAnalysisDeviceModel<TAnalysisModel> CreateModel(ICircuitDefinitionElement element)
+        private IAnalysisDeviceModel<TAnalysisModel> CreateModel(ICircuitDefinitionDevice device)
         {
-            if (modelCreators.TryGetValue(element.GetType(), out var factory))
-                return factory(element, this);
+            if (modelCreators.TryGetValue(device.GetType(), out var factory))
+                return factory(device, this);
 
-            throw new InvalidOperationException($"No model creator for type {element.GetType()}");
+            throw new InvalidOperationException($"No model creator for type {device.GetType()}");
         }
     }
 }

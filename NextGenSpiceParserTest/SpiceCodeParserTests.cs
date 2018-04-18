@@ -42,10 +42,10 @@ namespace NextGenSpiceParserTest
             ExpectErrors(c =>
             {
                 c.On("R1 0 1 6.96.wef", SpiceParserError.NotANumber);
-                c.On("R1 0 1 5ohm", SpiceParserError.ElementAlreadyDefined);
+                c.On("R1 0 1 5ohm", SpiceParserError.DeviceAlreadyDefined);
                 c.On("r2 0 R1 5", SpiceParserError.NotANode);
-                c.On("wA R1 R2 42Meg4", SpiceParserError.UnknownElement);
-                c.On("R2 R1 R2 42Meg4", SpiceParserError.ElementAlreadyDefined, SpiceParserError.NotANode,
+                c.On("wA R1 R2 42Meg4", SpiceParserError.UnknownDevice);
+                c.On("R2 R1 R2 42Meg4", SpiceParserError.DeviceAlreadyDefined, SpiceParserError.NotANode,
                     SpiceParserError.NotANode, SpiceParserError.NotANumber);
             });
         }

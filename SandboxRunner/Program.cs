@@ -101,10 +101,10 @@ namespace SandboxRunner
             //            Console.WriteLine("Voltages:");
             //            Console.WriteLine($"Time                |{string.Join("|", Enumerable.Range(0, model.NodeCount).Select(i => $"{i,20}"))}|Il");
             //            Console.WriteLine("-------------------------------------------------------------------------------------------------");
-            var voltageSource = model.Elements.OfType<LargeSignalVoltageSourceModel>().Single(d => d.Name == "VS");
-            var device = model.Elements.OfType<LargeSignalDiodeModel>().Single(d => d.Name == "D1");
-//            var device2 = model.Elements.OfType<LargeSignalDiodeModel>().Single(d => d.Name == "D2");
-//            var device = model.Elements.OfType<LargeSignalCapacitorModel>().Single();
+            var voltageSource = model.Devices.OfType<LargeSignalVoltageSourceModel>().Single(d => d.Name == "VS");
+            var device = model.Devices.OfType<LargeSignalDiodeModel>().Single(d => d.Name == "D1");
+//            var device2 = model.Devices.OfType<LargeSignalDiodeModel>().Single(d => d.Name == "D2");
+//            var device = model.Devices.OfType<LargeSignalCapacitorModel>().Single();
 
             //            PrintStats(model, elapsed, device.Current);
             while (elapsed < time)

@@ -3,7 +3,7 @@ using NextGenSpice.LargeSignal.Stamping;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    /// <summary>Class for stamping inductor elements for large signal circuit model.</summary>
+    /// <summary>Class for stamping inductor devices for large signal circuit model.</summary>
     public class LargeSignalInductorStamper
     {
         private readonly int anode;

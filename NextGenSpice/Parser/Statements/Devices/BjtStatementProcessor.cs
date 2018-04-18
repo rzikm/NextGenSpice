@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NextGenSpice.Core.Elements;
-using NextGenSpice.Core.Elements.Parameters;
+using NextGenSpice.Core.Devices;
+using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.Parser.Statements.Deferring;
 using NextGenSpice.Parser.Statements.Models;
 using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements.Devices
 {
-    /// <summary>Class that handles Homo-Junction Bipolar Transistor element statements.</summary>
-    public class BjtStatementProcessor : ElementStatementProcessor
+    /// <summary>Class that handles Homo-Junction Bipolar Transistor device statements.</summary>
+    public class BjtStatementProcessor : DeviceStatementProcessor
     {
         public BjtStatementProcessor()
         {
@@ -17,13 +17,13 @@ namespace NextGenSpice.Parser.Statements.Devices
             MaxArgs = 5;
         }
 
-        /// <summary>Discriminator of the element type this processor can parse.</summary>
+        /// <summary>Discriminator of the device type this processor can parse.</summary>
         public override char Discriminator => 'Q';
 
         /// <summary>Processes given set of statements.</summary>
         protected override void DoProcess()
         {
-            var name = ElementName;
+            var name = DeviceName;
             var nodes = RawStatement.Length == 5
                 ? GetNodeIndices(1, 3).Concat(new[] {0}).ToArray() // substrate node not specified.
                 : GetNodeIndices(1, 4);
@@ -34,8 +34,8 @@ namespace NextGenSpice.Parser.Statements.Devices
                 var modelToken = RawStatement.Last(); // capture
 
                 Context.DeferredStatements.Add(
-                    new ModeledElementDeferedStatement<BjtModelParams>(
-                        (par, cb) => cb.AddElement(nodes, new BjtElement(par, name)), // deferred evaluation.
+                    new ModeledDeviceDeferedStatement<BjtModelParams>(
+                        (par, cb) => cb.AddDevice(nodes, new BjtDevice(par, name)), // deferred evaluation.
                         modelToken));
             }
         }
@@ -49,7 +49,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         }
 
 
-        /// <summary>Class that handles Homo-Junction Bipolar Trannsistor element model statements.</summary>
+        /// <summary>Class that handles Homo-Junction Bipolar Trannsistor device model statements.</summary>
         private class BjtModelStatementHandler : ModelStatementHandlerBase<BjtModelParams>
         {
             private readonly bool isPnp;

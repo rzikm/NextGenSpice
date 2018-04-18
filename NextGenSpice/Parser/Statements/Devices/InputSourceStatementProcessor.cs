@@ -8,7 +8,7 @@ using NextGenSpice.Utils;
 namespace NextGenSpice.Parser.Statements.Devices
 {
     /// <summary>Class responsible for handling both current and voltage input source statements</summary>
-    public abstract class InputSourceStatementProcessor : ElementStatementProcessor
+    public abstract class InputSourceStatementProcessor : DeviceStatementProcessor
     {
         private readonly ParameterMapper<AmBehaviorParams> amMapper;
         private readonly ParameterMapper<ConstantBehaviorParams> dcMapper;
@@ -76,7 +76,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <summary>Processes given set of statements.</summary>
         protected override void DoProcess()
         {
-            var name = ElementName;
+            var name = DeviceName;
             var nodes = GetNodeIndices(1, 2);
 
             if (RawStatement.Length < 4) return; // nothing more to do here

@@ -42,7 +42,7 @@ namespace NextGenSpice.LargeSignal.Behaviors
 
             var i = timepoints.BinarySearch(time);
             if (i < 0)
-                i = ~i; // if not found, returned value of BinarySearch is bitwise negation of index where to insert the value (minimal greater element or one-after-last index)
+                i = ~i; // if not found, returned value of BinarySearch is bitwise negation of index where to insert the value (minimal greater device or one-after-last index)
 
             if (i >= timepoints.Count) return values[timepoints.Count - 1];
             if (i == 0)

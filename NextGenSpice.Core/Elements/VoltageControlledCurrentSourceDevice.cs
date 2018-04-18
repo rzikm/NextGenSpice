@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace NextGenSpice.Core.Elements
+namespace NextGenSpice.Core.Devices
 {
-    /// <summary>Class representing voltage controlled current source element.</summary>
-    public class VoltageControlledCurrentSourceElement : CircuitDefinitionElement
+    /// <summary>Class representing voltage controlled current source device.</summary>
+    public class VoltageControlledCurrentSourceDevice : CircuitDefinitionDevice
     {
-        public VoltageControlledCurrentSourceElement(double transConductance, string name = null) : base(4, name)
+        public VoltageControlledCurrentSourceDevice(double transConductance, string name = null) : base(4, name)
         {
             TransConductance = transConductance;
         }

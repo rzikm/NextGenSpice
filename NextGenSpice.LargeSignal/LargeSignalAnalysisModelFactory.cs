@@ -1,7 +1,7 @@
 ﻿using System.Composition;
 using System.Linq;
 using NextGenSpice.Core.BehaviorParams;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Behaviors;
 using NextGenSpice.LargeSignal.Models;
@@ -15,20 +15,20 @@ namespace NextGenSpice.LargeSignal
         public LargeSignalAnalysisModelFactory()
         {
             // register default models
-            SetModel<ResistorElement, LargeSignalResistorModel>(e => new LargeSignalResistorModel(e));
-            SetModel<CurrentSourceElement, LargeSignalCurrentSourceModel>((e, ctx) =>
+            SetModel<ResistorDevice, LargeSignalResistorModel>(e => new LargeSignalResistorModel(e));
+            SetModel<CurrentSourceDevice, LargeSignalCurrentSourceModel>((e, ctx) =>
                 new LargeSignalCurrentSourceModel(e, (IInputSourceBehavior) ctx.GetParam(e.BehaviorParams)));
-            SetModel<VoltageSourceElement, LargeSignalVoltageSourceModel>((e, ctx) =>
+            SetModel<VoltageSourceDevice, LargeSignalVoltageSourceModel>((e, ctx) =>
                 new LargeSignalVoltageSourceModel(e, (IInputSourceBehavior) ctx.GetParam(e.BehaviorParams)));
-            SetModel<CapacitorElement, LargeSignalCapacitorModel>(e => new LargeSignalCapacitorModel(e));
-            SetModel<InductorElement, LargeSignalInductorModel>(e => new LargeSignalInductorModel(e));
-            SetModel<DiodeElement, LargeSignalDiodeModel>(e => new LargeSignalDiodeModel(e));
-            SetModel<BjtElement, LargeSignalBjtModel>(e => new LargeSignalBjtModel(e));
-            SetModel<VoltageControlledVoltageSourceElement, LargeSignalVcvsModel>(e => new LargeSignalVcvsModel(e));
-            SetModel<VoltageControlledCurrentSourceElement, LargeSignalVccsModel>(e => new LargeSignalVccsModel(e));
+            SetModel<CapacitorDevice, LargeSignalCapacitorModel>(e => new LargeSignalCapacitorModel(e));
+            SetModel<InductorDevice, LargeSignalInductorModel>(e => new LargeSignalInductorModel(e));
+            SetModel<DiodeDevice, LargeSignalDiodeModel>(e => new LargeSignalDiodeModel(e));
+            SetModel<BjtDevice, LargeSignalBjtModel>(e => new LargeSignalBjtModel(e));
+            SetModel<VoltageControlledVoltageSourceDevice, LargeSignalVcvsModel>(e => new LargeSignalVcvsModel(e));
+            SetModel<VoltageControlledCurrentSourceDevice, LargeSignalVccsModel>(e => new LargeSignalVccsModel(e));
 
-            SetModel<SubcircuitElement, LargeSignalSubcircuitModel>((e, ctx) =>
-                new LargeSignalSubcircuitModel(e, e.Elements.Select(ctx.GetModel).Cast<ILargeSignalDeviceModel>()));
+            SetModel<SubcircuitDevice, LargeSignalSubcircuitModel>((e, ctx) =>
+                new LargeSignalSubcircuitModel(e, e.Devices.Select(ctx.GetModel).Cast<ILargeSignalDeviceModel>()));
 
             // Input source behaviors
             SetParam<ConstantBehaviorParams>(def => new ConstantSourceBehavior(def));
@@ -47,10 +47,10 @@ namespace NextGenSpice.LargeSignal
         protected override LargeSignalCircuitModel Instantiate(
             IModelInstantiationContext<LargeSignalCircuitModel> context)
         {
-            var elements = context.CircuitDefinition.Elements
+            var devices = context.CircuitDefinition.Devices
                 .Select(context.GetModel).Cast<ILargeSignalDeviceModel>().ToList();
 
-            return new LargeSignalCircuitModel(context.CircuitDefinition.InitialVoltages, elements);
+            return new LargeSignalCircuitModel(context.CircuitDefinition.InitialVoltages, devices);
         }
     }
 }

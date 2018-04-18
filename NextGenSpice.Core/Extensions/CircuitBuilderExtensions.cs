@@ -1,8 +1,8 @@
 ﻿using System;
 using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
-using NextGenSpice.Core.Elements.Parameters;
+using NextGenSpice.Core.Devices;
+using NextGenSpice.Core.Devices.Parameters;
 
 namespace NextGenSpice.Core.Extensions
 {
@@ -19,7 +19,7 @@ namespace NextGenSpice.Core.Extensions
         public static CircuitBuilder AddResistor(this CircuitBuilder builder, int n1, int n2, double resistance,
             string name = null)
         {
-            builder.AddElement(new[] {n1, n2}, new ResistorElement(resistance, name));
+            builder.AddDevice(new[] {n1, n2}, new ResistorDevice(resistance, name));
             return builder;
         }
 
@@ -34,7 +34,7 @@ namespace NextGenSpice.Core.Extensions
         public static CircuitBuilder AddInductor(this CircuitBuilder builder, int n1, int n2, double inductance,
             double? initialCurrent = null, string name = null)
         {
-            builder.AddElement(new[] {n1, n2}, new InductorElement(inductance, initialCurrent, name));
+            builder.AddDevice(new[] {n1, n2}, new InductorDevice(inductance, initialCurrent, name));
             return builder;
         }
 
@@ -49,7 +49,7 @@ namespace NextGenSpice.Core.Extensions
         public static CircuitBuilder AddCapacitor(this CircuitBuilder builder, int n1, int n2, double capacitance,
             double? initialVoltage = null, string name = null)
         {
-            builder.AddElement(new[] {n1, n2}, new CapacitorElement(capacitance, initialVoltage, name));
+            builder.AddDevice(new[] {n1, n2}, new CapacitorDevice(capacitance, initialVoltage, name));
             return builder;
         }
 
@@ -63,7 +63,7 @@ namespace NextGenSpice.Core.Extensions
         public static CircuitBuilder AddCurrentSource(this CircuitBuilder builder, int n1, int n2, double current,
             string name = null)
         {
-            builder.AddElement(new[] {n1, n2}, new CurrentSourceElement(current, name));
+            builder.AddDevice(new[] {n1, n2}, new CurrentSourceDevice(current, name));
             return builder;
         }
 
@@ -77,7 +77,7 @@ namespace NextGenSpice.Core.Extensions
         public static CircuitBuilder AddCurrentSource(this CircuitBuilder builder, int n1, int n2,
             SourceBehaviorParams param, string name = null)
         {
-            builder.AddElement(new[] {n1, n2}, new CurrentSourceElement(param, name));
+            builder.AddDevice(new[] {n1, n2}, new CurrentSourceDevice(param, name));
             return builder;
         }
 
@@ -91,7 +91,7 @@ namespace NextGenSpice.Core.Extensions
         public static CircuitBuilder AddVoltageSource(this CircuitBuilder builder, int n1, int n2, double voltage,
             string name = null)
         {
-            builder.AddElement(new[] {n1, n2}, new VoltageSourceElement(voltage, name));
+            builder.AddDevice(new[] {n1, n2}, new VoltageSourceDevice(voltage, name));
             return builder;
         }
 
@@ -105,7 +105,7 @@ namespace NextGenSpice.Core.Extensions
         public static CircuitBuilder AddVoltageSource(this CircuitBuilder builder, int n1, int n2,
             SourceBehaviorParams param, string name = null)
         {
-            builder.AddElement(new[] {n1, n2}, new VoltageSourceElement(param, name));
+            builder.AddDevice(new[] {n1, n2}, new VoltageSourceDevice(param, name));
             return builder;
         }
 
@@ -119,7 +119,7 @@ namespace NextGenSpice.Core.Extensions
         public static CircuitBuilder AddDiode(this CircuitBuilder builder, int n1, int n2, DiodeModelParams param,
             string name = null)
         {
-            builder.AddElement(new[] {n1, n2}, new DiodeElement(param, name));
+            builder.AddDevice(new[] {n1, n2}, new DiodeDevice(param, name));
             return builder;
         }
 
@@ -135,7 +135,7 @@ namespace NextGenSpice.Core.Extensions
         {
             var param = DiodeModelParams.Default;
             config(param);
-            builder.AddElement(new[] {n1, n2}, new DiodeElement(param, name));
+            builder.AddDevice(new[] {n1, n2}, new DiodeDevice(param, name));
             return builder;
         }
     }

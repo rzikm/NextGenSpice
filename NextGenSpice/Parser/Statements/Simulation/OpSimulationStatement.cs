@@ -40,13 +40,13 @@ namespace NextGenSpice.Parser.Statements.Simulation
                     output.WriteLine($"V({nodeNames[i]}) = {model.NodeVoltages[i]}");
 
 
-                foreach (var element in model.Elements)
+                foreach (var device in model.Devices)
                 {
-                    var providers = element.GetDeviceStatsProviders();
+                    var providers = device.GetDeviceStatsProviders();
                     if (providers.Any()) output.WriteLine(); // separate from previous data
                     foreach (var provider in providers)
                     {
-                        output.WriteLine($"{provider.StatName}({element.Name}) = {provider.GetValue()}");
+                        output.WriteLine($"{provider.StatName}({device.Name}) = {provider.GetValue()}");
                     }
                 }
             }

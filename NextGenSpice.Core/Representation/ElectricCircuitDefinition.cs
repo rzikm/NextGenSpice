@@ -4,7 +4,7 @@ using System.Composition.Hosting;
 using System.IO;
 using System.Linq;
 using System.Runtime.Loader;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 
 namespace NextGenSpice.Core.Representation
 {
@@ -16,11 +16,11 @@ namespace NextGenSpice.Core.Representation
         private readonly Dictionary<Type, object> factories;
 
         public ElectricCircuitDefinition(IReadOnlyList<double?> initialVoltages,
-            IReadOnlyList<ICircuitDefinitionElement> elements)
+            IReadOnlyList<ICircuitDefinitionDevice> devices)
         {
             factories = new Dictionary<Type, object>();
             InitialVoltages = initialVoltages;
-            Elements = elements;
+            Devices = devices;
         }
 
         private static CompositionHost CompositionContainer =>
@@ -32,8 +32,8 @@ namespace NextGenSpice.Core.Representation
         /// <summary>Initial voltages of nodes by their id.</summary>
         public IReadOnlyList<double?> InitialVoltages { get; }
 
-        /// <summary>Set of elements that define this circuit.</summary>
-        public IReadOnlyList<ICircuitDefinitionElement> Elements { get; }
+        /// <summary>Set of devices that define this circuit.</summary>
+        public IReadOnlyList<ICircuitDefinitionDevice> Devices { get; }
 
         /// <summary>Sets factory for creating a model for specific analysis.</summary>
         /// <typeparam name="TAnalysisModel"></typeparam>

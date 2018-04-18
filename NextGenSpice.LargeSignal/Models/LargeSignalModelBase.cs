@@ -1,31 +1,31 @@
 ﻿using System.Collections.Generic;
 using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.Representation;
 
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Base class for large signal device models.</summary>
-    /// <typeparam name="TDefinitionElement">Class used for the element in the circuit definition that this class is model for.</typeparam>
-    public abstract class LargeSignalModelBase<TDefinitionElement> : ILargeSignalDeviceModel
-        where TDefinitionElement : ICircuitDefinitionElement
+    /// <typeparam name="TDefinitionDevice">Class used for the device in the circuit definition that this class is model for.</typeparam>
+    public abstract class LargeSignalModelBase<TDefinitionDevice> : ILargeSignalDeviceModel
+        where TDefinitionDevice : ICircuitDefinitionDevice
     {
-        protected LargeSignalModelBase(TDefinitionElement definitionElement)
+        protected LargeSignalModelBase(TDefinitionDevice definitionDevice)
         {
-            DefinitionElement = definitionElement;
+            DefinitionDevice = definitionDevice;
         }
 
-        /// <summary>Parent definition element that this model instance corresponds to.</summary>
-        public TDefinitionElement DefinitionElement { get; }
+        /// <summary>Parent definition device that this model instance corresponds to.</summary>
+        public TDefinitionDevice DefinitionDevice { get; }
 
         /// <summary>Specifies how often the model should be updated.</summary>
         public abstract ModelUpdateMode UpdateMode { get; }
 
-        /// <summary>Name identifier of the corresponding element.</summary>
-        public string Name => DefinitionElement.Name;
+        /// <summary>Name identifier of the corresponding device.</summary>
+        public string Name => DefinitionDevice.Name;
 
-        ICircuitDefinitionElement IAnalysisDeviceModel<LargeSignalCircuitModel>.DefinitionElement => DefinitionElement;
+        ICircuitDefinitionDevice IAnalysisDeviceModel<LargeSignalCircuitModel>.DefinitionDevice => DefinitionDevice;
 
         /// <summary>
         ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
@@ -64,7 +64,7 @@ namespace NextGenSpice.LargeSignal.Models
 
         /// <summary>
         ///     Gets provider instance for specified attribute value or null if no provider for requested parameter exists.
-        ///     For example "I" for the current flowing throught the two terminal element.
+        ///     For example "I" for the current flowing throught the two terminal device.
         /// </summary>
         /// <returns>IPrintValueProvider for specified attribute.</returns>
         public abstract IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders();

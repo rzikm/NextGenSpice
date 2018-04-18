@@ -1,16 +1,16 @@
 using System;
 using NextGenSpice.Core;
 using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
-using NextGenSpice.Core.Elements.Parameters;
+using NextGenSpice.Core.Devices;
+using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.NumIntegration;
 using NextGenSpice.LargeSignal.Stamping;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    /// <summary>Large signal model for <see cref="DiodeElement" /> device.</summary>
-    public class LargeSignalDiodeModel : TwoNodeLargeSignalModel<DiodeElement>
+    /// <summary>Large signal model for <see cref="DiodeDevice" /> device.</summary>
+    public class LargeSignalDiodeModel : TwoNodeLargeSignalModel<DiodeDevice>
     {
         private double capacitanceTreshold; // cached treshold values based by model.
 
@@ -29,12 +29,12 @@ namespace NextGenSpice.LargeSignal.Models
         private double vc; // voltage across the capacitor that models junction capacitance
         private double vt; // thermal voltage based on diode model values.
 
-        public LargeSignalDiodeModel(DiodeElement definitionElement) : base(definitionElement)
+        public LargeSignalDiodeModel(DiodeDevice definitionDevice) : base(definitionDevice)
         {
         }
 
         /// <summary>Diode model parameters.</summary>
-        private DiodeModelParams Parameters => DefinitionElement.Parameters;
+        private DiodeModelParams Parameters => DefinitionDevice.Parameters;
 
         /// <summary>Integration method used for modifying inner state of the device.</summary>
         private IIntegrationMethod IntegrationMethod { get; set; }
@@ -59,11 +59,11 @@ namespace NextGenSpice.LargeSignal.Models
             initialConditionDiode = true;
             IntegrationMethod = context.CircuitParameters.IntegrationMethodFactory.CreateInstance();
 
-            Voltage = DefinitionElement.VoltageHint;
+            Voltage = DefinitionDevice.VoltageHint;
 
             vt = Parameters.EmissionCoefficient * PhysicalConstants.Boltzmann *
                  PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
-                 PhysicalConstants.ElementaryCharge;
+                 PhysicalConstants.DevicearyCharge;
 
             smallBiasTreshold = -5 * vt;
             capacitanceTreshold = Parameters.ForwardBiasDepletionCapacitanceCoefficient * Parameters.JunctionPotential;
@@ -77,8 +77,8 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            var vd = context.GetSolutionForVariable(DefinitionElement.Anode) -
-                     context.GetSolutionForVariable(DefinitionElement.Cathode) - Parameters.SeriesResistance * Current;
+            var vd = context.GetSolutionForVariable(DefinitionDevice.Anode) -
+                     context.GetSolutionForVariable(DefinitionDevice.Cathode) - Parameters.SeriesResistance * Current;
             ApplyLinearizedModel(equations, context, vd);
         }
 
@@ -87,11 +87,11 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
         {
-            var vd = context.GetSolutionForVariable(DefinitionElement.Anode) -
-                     context.GetSolutionForVariable(DefinitionElement.Cathode);
+            var vd = context.GetSolutionForVariable(DefinitionDevice.Anode) -
+                     context.GetSolutionForVariable(DefinitionDevice.Cathode);
             if (initialConditionDiode)
             {
-                vd = DefinitionElement.VoltageHint;
+                vd = DefinitionDevice.VoltageHint;
                 initialConditionDiode = false; // use hint only for the very first iteration
             }
             else

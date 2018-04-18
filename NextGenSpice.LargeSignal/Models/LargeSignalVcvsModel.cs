@@ -1,31 +1,31 @@
 ﻿using System.Collections.Generic;
 using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    /// <summary>Large signal model for <see cref="VoltageControlledVoltageSourceElement" /> element.</summary>
-    public class LargeSignalVcvsModel : LargeSignalModelBase<VoltageControlledVoltageSourceElement>,
+    /// <summary>Large signal model for <see cref="VoltageControlledVoltageSourceDevice" /> device.</summary>
+    public class LargeSignalVcvsModel : LargeSignalModelBase<VoltageControlledVoltageSourceDevice>,
         ITwoTerminalLargeSignalDeviceModel
     {
         private int branchVariable;
 
-        public LargeSignalVcvsModel(VoltageControlledVoltageSourceElement definitionElement) : base(definitionElement)
+        public LargeSignalVcvsModel(VoltageControlledVoltageSourceDevice definitionDevice) : base(definitionDevice)
         {
         }
 
         /// <summary>Id of node connected to positive terminal of this device.</summary>
-        public int Anode => DefinitionElement.ConnectedNodes[0];
+        public int Anode => DefinitionDevice.ConnectedNodes[0];
 
         /// <summary>Id of node connected to negative terminal of this device.</summary>
-        public int Cathode => DefinitionElement.ConnectedNodes[1];
+        public int Cathode => DefinitionDevice.ConnectedNodes[1];
 
         /// <summary>Positive terminal of the reference voltage.</summary>
-        public int ReferenceAnode => DefinitionElement.ConnectedNodes[2];
+        public int ReferenceAnode => DefinitionDevice.ConnectedNodes[2];
 
         /// <summary>Negative terminal of the reference voltage.</summary>
-        public int ReferenceCathode => DefinitionElement.ConnectedNodes[3];
+        public int ReferenceCathode => DefinitionDevice.ConnectedNodes[3];
 
         /// <summary>
         ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
@@ -41,7 +41,7 @@ namespace NextGenSpice.LargeSignal.Models
 
         /// <summary>Specifies how often the model should be updated.</summary>
         public override ModelUpdateMode UpdateMode =>
-            ModelUpdateMode.Always; // due to possible dependencies on nonlinear elements.
+            ModelUpdateMode.Always; // due to possible dependencies on nonlinear devices.
 
         public double Voltage { get; private set; }
 
@@ -60,13 +60,13 @@ namespace NextGenSpice.LargeSignal.Models
 
             equations.AddMatrixEntry(branchVariable, Anode, 1);
             equations.AddMatrixEntry(branchVariable, Cathode, -1);
-            equations.AddMatrixEntry(branchVariable, ReferenceAnode, -DefinitionElement.Gain);
-            equations.AddMatrixEntry(branchVariable, ReferenceCathode, DefinitionElement.Gain);
+            equations.AddMatrixEntry(branchVariable, ReferenceAnode, -DefinitionDevice.Gain);
+            equations.AddMatrixEntry(branchVariable, ReferenceCathode, DefinitionDevice.Gain);
         }
 
         /// <summary>
         ///     Gets provider instance for specified attribute value or null if no provider for requested parameter exists.
-        ///     For example "I" for the current flowing throught the two terminal element.
+        ///     For example "I" for the current flowing throught the two terminal device.
         /// </summary>
         /// <returns>IPrintValueProvider for specified attribute.</returns>
         public override IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders()

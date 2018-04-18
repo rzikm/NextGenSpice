@@ -1,4 +1,4 @@
-﻿using NextGenSpice.Core.Elements.Parameters;
+﻿using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.Utils;
 using Xunit;
 

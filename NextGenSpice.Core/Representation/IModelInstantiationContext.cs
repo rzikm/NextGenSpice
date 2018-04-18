@@ -1,4 +1,4 @@
-﻿using NextGenSpice.Core.Elements;
+﻿using NextGenSpice.Core.Devices;
 
 namespace NextGenSpice.Core.Representation
 {
@@ -10,12 +10,12 @@ namespace NextGenSpice.Core.Representation
         ICircuitDefinition CircuitDefinition { get; }
 
         /// <summary>Gets model instance for a given device definition instance.</summary>
-        /// <param name="element">The device definition.</param>
+        /// <param name="device">The device definition.</param>
         /// <returns></returns>
-        IAnalysisDeviceModel<TAnalysisModel> GetModel(ICircuitDefinitionElement element);
+        IAnalysisDeviceModel<TAnalysisModel> GetModel(ICircuitDefinitionDevice device);
 
         /// <summary>Gets model instance for device definition instance identified by given name.</summary>
-        /// <param name="element">The name of the device.</param>
+        /// <param name="device">The name of the device.</param>
         /// <returns></returns>
         IAnalysisDeviceModel<TAnalysisModel> GetModel(string name);
 

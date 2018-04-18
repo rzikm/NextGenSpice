@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 
 namespace NextGenSpice.Core.Exceptions
 {
     [Serializable]
     public class CurrentBranchCutsetException : CircuitTopologyException
     {
-        public CurrentBranchCutsetException(IEnumerable<ICircuitDefinitionElement> elements) : base(
-            "Circuit contains cutset of current defined elements.")
+        public CurrentBranchCutsetException(IEnumerable<ICircuitDefinitionDevice> devices) : base(
+            "Circuit contains cutset of current defined devices.")
         {
-            Elements = elements;
+            Devices = devices;
         }
 
         protected CurrentBranchCutsetException(
@@ -20,7 +20,7 @@ namespace NextGenSpice.Core.Exceptions
         {
         }
 
-        /// <summary>Set of elements that participated in the current branch cutset.</summary>
-        public IEnumerable<ICircuitDefinitionElement> Elements { get; }
+        /// <summary>Set of devices that participated in the current branch cutset.</summary>
+        public IEnumerable<ICircuitDefinitionDevice> Devices { get; }
     }
 }

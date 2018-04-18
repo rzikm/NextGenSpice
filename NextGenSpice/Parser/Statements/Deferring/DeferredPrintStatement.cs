@@ -37,8 +37,8 @@ namespace NextGenSpice.Parser.Statements.Deferring
         public override bool CanApply(ParsingContext context)
         {
             errors.Clear();
-            var element =
-                context.CircuitBuilder.Elements.FirstOrDefault(el => el.Name == name); // a two terminal device
+            var device =
+                context.CircuitBuilder.Devices.FirstOrDefault(el => el.Name == name); // a two terminal device
 
             if (stat == "V") // output voltage
             {
@@ -47,9 +47,9 @@ namespace NextGenSpice.Parser.Statements.Deferring
                 {
                     printStatement = new NodeVoltagePrintStatement(name, id);
                 }
-                else if (element != null) // an element
+                else if (device != null) // an device
                 {
-                    printStatement = new ElementPrintStatement(stat, name, token);
+                    printStatement = new DevicePrintStatement(stat, name, token);
                 }
                 else if ((i = name.IndexOf(',')) > 0 && i < name.Length - 1) // two nodes
                 {
@@ -78,15 +78,15 @@ namespace NextGenSpice.Parser.Statements.Deferring
                 }
                 else
                 {
-                    errors.Add(token.ToErrorInfo(SpiceParserError.NotANodeOrElement));
+                    errors.Add(token.ToErrorInfo(SpiceParserError.NotANodeOrDevice));
                 }
             }
-            else // only circuit elements with stat other than "V"
+            else // only circuit devices with stat other than "V"
             {
-                if (element != null)
-                    printStatement = new ElementPrintStatement(stat, name, token);
+                if (device != null)
+                    printStatement = new DevicePrintStatement(stat, name, token);
                 else
-                    errors.Add(token.ToErrorInfo(SpiceParserError.NotAnElement));
+                    errors.Add(token.ToErrorInfo(SpiceParserError.NotAnDevice));
             }
 
             return printStatement != null;
@@ -108,14 +108,14 @@ namespace NextGenSpice.Parser.Statements.Deferring
         }
     }
 
-    public class ElementPrintStatement : PrintStatement<LargeSignalCircuitModel>
+    public class DevicePrintStatement : PrintStatement<LargeSignalCircuitModel>
     {
         private readonly string name;
         private readonly string stat;
         private readonly Token t;
         private IDeviceStatsProvider provider;
 
-        public ElementPrintStatement(string stat, string name, Token t)
+        public DevicePrintStatement(string stat, string name, Token t)
         {
             this.stat = stat;
             this.name = name;
@@ -137,7 +137,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
         /// <returns>Set of errors that errored (if any).</returns>
         public override IEnumerable<ErrorInfo> Initialize(LargeSignalCircuitModel circuitModel)
         {
-            var model = circuitModel.GetElement(name);
+            var model = circuitModel.GetDevice(name);
             provider = model.GetDeviceStatsProviders().SingleOrDefault(pr => pr.StatName == stat);
             var errorInfos = provider == null
                 ? new[]

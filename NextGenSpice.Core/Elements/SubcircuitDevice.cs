@@ -2,17 +2,17 @@
 using System.Linq;
 using NextGenSpice.Core.Circuit;
 
-namespace NextGenSpice.Core.Elements
+namespace NextGenSpice.Core.Devices
 {
-    /// <summary>Class that represents a composite element from a set of simple ones.</summary>
-    public class SubcircuitElement : CircuitDefinitionElement
+    /// <summary>Class that represents a composite device from a set of simple ones.</summary>
+    public class SubcircuitDevice : CircuitDefinitionDevice
     {
-        public SubcircuitElement(int innerNodeCount, int[] terminalNodes,
-            IEnumerable<ICircuitDefinitionElement> elements, string name = null) : base(terminalNodes.Length, name)
+        public SubcircuitDevice(int innerNodeCount, int[] terminalNodes,
+            IEnumerable<ICircuitDefinitionDevice> devices, string name = null) : base(terminalNodes.Length, name)
         {
             TerminalNodes = terminalNodes;
             InnerNodeCount = innerNodeCount;
-            Elements = elements;
+            Devices = devices;
         }
 
         /// <summary>Ids from the subcircuit definition that are considered connected to the device terminals.</summary>
@@ -21,15 +21,15 @@ namespace NextGenSpice.Core.Elements
         /// <summary>Number of inner nodes of this subcircuit.</summary>
         public int InnerNodeCount { get; }
 
-        /// <summary>Inner elements that define behavior of this subcircuit.</summary>
-        public IEnumerable<ICircuitDefinitionElement> Elements { get; }
+        /// <summary>Inner devices that define behavior of this subcircuit.</summary>
+        public IEnumerable<ICircuitDefinitionDevice> Devices { get; }
 
         /// <summary>Creates a copy of this device.</summary>
         /// <returns></returns>
-        public override ICircuitDefinitionElement Clone()
+        public override ICircuitDefinitionDevice Clone()
         {
-            var clone = (SubcircuitElement) base.Clone();
-            clone.Elements.Select(e => e.Clone()).ToArray();
+            var clone = (SubcircuitDevice) base.Clone();
+            clone.Devices.Select(e => e.Clone()).ToArray();
             return clone;
         }
 
@@ -38,14 +38,14 @@ namespace NextGenSpice.Core.Elements
         public override IEnumerable<CircuitBranchMetadata> GetBranchMetadata()
         {
             // return only meaningful branches to be used on level above
-            var branches = Elements.SelectMany(e => e.GetBranchMetadata()).ToArray();
+            var branches = Devices.SelectMany(e => e.GetBranchMetadata()).ToArray();
 
             return GetVoltageBranches(branches).Concat(GetCurrentBranches(branches));
         }
 
         private IEnumerable<CircuitBranchMetadata> GetCurrentBranches(CircuitBranchMetadata[] branches)
         {
-            var neighbourghs = CircuitBuilderHelpers.GetNeighbourghs(InnerNodeCount + 1, Elements);
+            var neighbourghs = CircuitBuilderHelpers.GetNeighbourghs(InnerNodeCount + 1, Devices);
 
             // remove current defined branches
             foreach (var branch in branches.Where(b => b.BranchType == BranchType.CurrentDefined))

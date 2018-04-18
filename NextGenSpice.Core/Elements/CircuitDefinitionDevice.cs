@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using NextGenSpice.Core.Circuit;
 
-namespace NextGenSpice.Core.Elements
+namespace NextGenSpice.Core.Devices
 {
     /// <summary>Base class for representing a circuit device used in circuit definition.</summary>
-    public abstract class CircuitDefinitionElement : ICircuitDefinitionElement
+    public abstract class CircuitDefinitionDevice : ICircuitDefinitionDevice
     {
-        protected CircuitDefinitionElement(int terminalCount, string name)
+        protected CircuitDefinitionDevice(int terminalCount, string name)
         {
             ConnectedNodes = new NodeConnectionSet(terminalCount);
             Name = name;
@@ -20,11 +20,11 @@ namespace NextGenSpice.Core.Elements
 
         /// <summary>Creates a deep copy of this device.</summary>
         /// <returns></returns>
-        public virtual ICircuitDefinitionElement Clone()
+        public virtual ICircuitDefinitionDevice Clone()
         {
-            var circuitDefinitionElement = (CircuitDefinitionElement) MemberwiseClone();
-            circuitDefinitionElement.ConnectedNodes = ConnectedNodes.Clone();
-            return circuitDefinitionElement;
+            var circuitDefinitionDevice = (CircuitDefinitionDevice) MemberwiseClone();
+            circuitDefinitionDevice.ConnectedNodes = ConnectedNodes.Clone();
+            return circuitDefinitionDevice;
         }
 
         /// <summary>Gets metadata about this device interconnections in the circuit.</summary>

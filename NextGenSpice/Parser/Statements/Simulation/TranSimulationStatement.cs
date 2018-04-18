@@ -64,10 +64,10 @@ namespace NextGenSpice.Parser.Statements.Simulation
             for (var i = 1; i < model.NodeCount; i++) // no need to print ground voltage
                 printers.Add(new NodeVoltagePrintStatement(nodeNames[i], i));
 
-            foreach (var element in model.Elements)
+            foreach (var device in model.Devices)
             {
-                printers.AddRange(element.GetDeviceStatsProviders()
-                    .Select(pr => new ElementPrintStatement(pr.StatName, element.Name, new Token())));
+                printers.AddRange(device.GetDeviceStatsProviders()
+                    .Select(pr => new DevicePrintStatement(pr.StatName, device.Name, new Token())));
             }
         }
 

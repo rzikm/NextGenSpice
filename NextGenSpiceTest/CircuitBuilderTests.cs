@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
-using NextGenSpice.Core.Elements.Parameters;
+using NextGenSpice.Core.Devices;
+using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Extensions;
 using Xunit;
@@ -19,11 +19,11 @@ namespace NextGenSpiceTest
         private readonly CircuitBuilder builder;
 
         [Fact]
-        public void CanAddClonedElement()
+        public void CanAddClonedDevice()
         {
-            var device = new ResistorElement(5);
-            builder.AddElement(new[] {1, 2}, device);
-            builder.AddElement(new[] {1, 2}, device.Clone());
+            var device = new ResistorDevice(5);
+            builder.AddDevice(new[] {1, 2}, device);
+            builder.AddDevice(new[] {1, 2}, device.Clone());
         }
 
         [Fact]
@@ -42,8 +42,8 @@ namespace NextGenSpiceTest
         [Fact]
         public void TestThrowOnInvalidNumberOfConnections()
         {
-            Assert.Throws<ArgumentException>(() => builder.AddElement(new[] {1}, new ResistorElement(3)));
-            Assert.Throws<ArgumentException>(() => builder.AddElement(new[] {1, 2, 3}, new ResistorElement(3)));
+            Assert.Throws<ArgumentException>(() => builder.AddDevice(new[] {1}, new ResistorDevice(3)));
+            Assert.Throws<ArgumentException>(() => builder.AddDevice(new[] {1, 2, 3}, new ResistorDevice(3)));
         }
 
 
@@ -62,7 +62,7 @@ namespace NextGenSpiceTest
             builder.AddResistor(0, 2, 3);
             builder.AddCurrentSource(1, 0, 5);
 
-            // add element 'far away'
+            // add device 'far away'
             builder.AddResistor(3, 4, 3);
 
 //            builder.BuildSubcircuit(new []{1,4});
@@ -77,7 +77,7 @@ namespace NextGenSpiceTest
             builder.AddResistor(0, 2, 3);
             builder.AddCurrentSource(1, 0, 5);
 
-            // add element 'far away'
+            // add device 'far away'
             builder.AddResistor(3, 4, 3);
 
             //            builder.BuildCircuit();
@@ -85,21 +85,21 @@ namespace NextGenSpiceTest
         }
 
         [Fact]
-        public void ThrowsWhenAddingElementWithDuplicateName()
+        public void ThrowsWhenAddingDeviceWithDuplicateName()
         {
-            var elem1 = new ResistorElement(5, "R1");
-            var elem2 = new ResistorElement(5, "R1");
+            var elem1 = new ResistorDevice(5, "R1");
+            var elem2 = new ResistorDevice(5, "R1");
 
-            builder.AddElement(new[] {1, 2}, elem1);
-            Assert.Throws<InvalidOperationException>(() => builder.AddElement(new[] {1, 2}, elem2));
+            builder.AddDevice(new[] {1, 2}, elem1);
+            Assert.Throws<InvalidOperationException>(() => builder.AddDevice(new[] {1, 2}, elem2));
         }
 
         [Fact]
         public void ThrowsWhenAddingSameDeviceTwice()
         {
-            var device = new ResistorElement(5);
-            builder.AddElement(new[] {1, 2}, device);
-            Assert.Throws<InvalidOperationException>(() => builder.AddElement(new[] {1, 2}, device));
+            var device = new ResistorDevice(5);
+            builder.AddDevice(new[] {1, 2}, device);
+            Assert.Throws<InvalidOperationException>(() => builder.AddDevice(new[] {1, 2}, device));
         }
 
         [Fact]
@@ -109,15 +109,15 @@ namespace NextGenSpiceTest
             builder.AddCurrentSource(0, 1, 1, "I1");
             builder.AddCurrentSource(2, 3, 1, "I2");
 
-            // some other elements
+            // some other devices
             builder.AddVoltageSource(1, 2, 1, "V4");
             builder.AddCurrentSource(1, 4, 1, "I3"); // cannot be in cutset
             builder.AddResistor(4, 2, 1, "R2");
             builder.AddResistor(0, 3, 1, "R");
 
-            var elements = Assert.Throws<CurrentBranchCutsetException>(() => builder.BuildCircuit()).Elements;
+            var devices = Assert.Throws<CurrentBranchCutsetException>(() => builder.BuildCircuit()).Devices;
 
-            Assert.Equal(new[] {"I1", "I2"}, elements.Select(e => e.Name).OrderBy(s => s));
+            Assert.Equal(new[] {"I1", "I2"}, devices.Select(e => e.Name).OrderBy(s => s));
         }
 
         [Fact]
@@ -128,13 +128,13 @@ namespace NextGenSpiceTest
             builder.AddVoltageSource(0, 2, 1, "V2");
             builder.AddVoltageSource(1, 2, 1, "V3");
 
-            // some other elements
+            // some other devices
             builder.AddVoltageSource(0, 3, 1, "V4");
             builder.AddResistor(2, 3, 1, "R");
 
-            var elements = Assert.Throws<VoltageBranchCycleException>(() => builder.BuildCircuit()).Elements;
+            var devices = Assert.Throws<VoltageBranchCycleException>(() => builder.BuildCircuit()).Devices;
 
-            Assert.Equal(new[] {"V1", "V2", "V3"}, elements.Select(e => e.Name).OrderBy(s => s));
+            Assert.Equal(new[] {"V1", "V2", "V3"}, devices.Select(e => e.Name).OrderBy(s => s));
         }
     }
 }

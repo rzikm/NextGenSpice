@@ -1,15 +1,15 @@
 ﻿using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.LargeSignal.Behaviors;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    /// <summary>Large signal model for <see cref="CurrentSourceElement" /> device.</summary>
-    public class LargeSignalCurrentSourceModel : TwoNodeLargeSignalModel<CurrentSourceElement>
+    /// <summary>Large signal model for <see cref="CurrentSourceDevice" /> device.</summary>
+    public class LargeSignalCurrentSourceModel : TwoNodeLargeSignalModel<CurrentSourceDevice>
     {
-        public LargeSignalCurrentSourceModel(CurrentSourceElement definitionElement, IInputSourceBehavior behavior) :
-            base(definitionElement)
+        public LargeSignalCurrentSourceModel(CurrentSourceDevice definitionDevice, IInputSourceBehavior behavior) :
+            base(definitionDevice)
         {
             Behavior = behavior;
         }

@@ -12,8 +12,8 @@ namespace NextGenSpice.Parser
 
             switch (errorCode)
             {
-                case SpiceParserError.ElementAlreadyDefined:
-                    return $"Element with name {arg[0]} is already defined.";
+                case SpiceParserError.DeviceAlreadyDefined:
+                    return $"Device with name {arg[0]} is already defined.";
 
                 case SpiceParserError.NotANumber:
                     return $"Cannot convert {arg[0]} to numeric representation.";
@@ -79,26 +79,26 @@ namespace NextGenSpice.Parser
                 case SpiceParserError.UnknownStatement:
                     return $"Unknown statement '{arg[0]}'";
 
-                case SpiceParserError.UnknownElement:
-                    return $"Unknown element type '{arg[0]}'";
+                case SpiceParserError.UnknownDevice:
+                    return $"Unknown device type '{arg[0]}'";
 
                 case SpiceParserError.NoDcPathToGround:
                     return $"Some nodes are not connected to the ground node ({string.Join(", ", arg)}).";
 
                 case SpiceParserError.VoltageBranchCycle:
-                    return $"Circuit contains a cycle of voltage defined elements ({string.Join(", ", arg)}).";
+                    return $"Circuit contains a cycle of voltage defined devices ({string.Join(", ", arg)}).";
 
                 case SpiceParserError.CurrentBranchCutset:
-                    return $"Circuit contains a cutset of current defined elements ({string.Join(", ", arg)}).";
+                    return $"Circuit contains a cutset of current defined devices ({string.Join(", ", arg)}).";
 
                 case SpiceParserError.NoPrintProvider:
                     return $"There is no print value provider for '{arg[0]}' for device '{arg[1]}'.";
 
-                case SpiceParserError.NotAnElement:
-                    return $"'{arg[0]}' is not a circuit element.";
+                case SpiceParserError.NotAnDevice:
+                    return $"'{arg[0]}' is not a circuit device.";
 
-                case SpiceParserError.NotANodeOrElement:
-                    return $"'{arg[0]}' is not a node or a circuit element.";
+                case SpiceParserError.NotANodeOrDevice:
+                    return $"'{arg[0]}' is not a node or a circuit device.";
 
                 case SpiceParserError.NoSuchModel:
                     return $"There is no model named '{arg[0]}' for this device type.";

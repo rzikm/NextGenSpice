@@ -8,12 +8,12 @@ using NextGenSpice.Utils;
 namespace NextGenSpice.Parser.Statements.Printing
 {
     /// <summary>Print statement corresponding to printing voltage across a two terminal device.</summary>
-    internal class ElementVoltagePrintStatement : PrintStatement<LargeSignalCircuitModel>
+    internal class DeviceVoltagePrintStatement : PrintStatement<LargeSignalCircuitModel>
     {
         private readonly string elemName;
         private ITwoTerminalLargeSignalDeviceModel model;
 
-        public ElementVoltagePrintStatement(string elemName)
+        public DeviceVoltagePrintStatement(string elemName)
         {
             this.elemName = elemName;
         }
@@ -33,7 +33,7 @@ namespace NextGenSpice.Parser.Statements.Printing
         /// <returns>Set of errors that errored (if any).</returns>
         public override IEnumerable<ErrorInfo> Initialize(LargeSignalCircuitModel circuitModel)
         {
-            this.model = (ITwoTerminalLargeSignalDeviceModel) circuitModel.GetElement(elemName);
+            this.model = (ITwoTerminalLargeSignalDeviceModel) circuitModel.GetDevice(elemName);
             return Enumerable.Empty<ErrorInfo>();
         }
     }

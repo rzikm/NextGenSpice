@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using NextGenSpice.Core;
 using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
-using NextGenSpice.Core.Elements.Parameters;
+using NextGenSpice.Core.Devices;
+using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.Core.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    /// <summary>Large signal model for <see cref="BjtElement" /> device.</summary>
-    internal class LargeSignalBjtModel : LargeSignalModelBase<BjtElement>
+    /// <summary>Large signal model for <see cref="BjtDevice" /> device.</summary>
+    internal class LargeSignalBjtModel : LargeSignalModelBase<BjtDevice>
     {
         private double bF;
         private double bR;
@@ -32,24 +32,24 @@ namespace NextGenSpice.LargeSignal.Models
 
         private double vT; // thermal voltage
 
-        public LargeSignalBjtModel(BjtElement definitionElement) : base(definitionElement)
+        public LargeSignalBjtModel(BjtDevice definitionDevice) : base(definitionDevice)
         {
         }
 
         /// <summary>Node connected to collector terminal of the transistor.</summary>
-        public int Collector => DefinitionElement.Collector;
+        public int Collector => DefinitionDevice.Collector;
 
         /// <summary>Node connected to base terminal of the transistor.</summary>
-        public int Base => DefinitionElement.Base;
+        public int Base => DefinitionDevice.Base;
 
         /// <summary>Node connected to emitter terminal of the transistor.</summary>
-        public int Emitter => DefinitionElement.Emitter;
+        public int Emitter => DefinitionDevice.Emitter;
 
         /// <summary>Node connected to substrate terminal of the transistor.</summary>
-        public int Substrate => DefinitionElement.Substrate;
+        public int Substrate => DefinitionDevice.Substrate;
 
         /// <summary>Set of parameters for this device model.</summary>
-        public BjtModelParams Parameters => DefinitionElement.Parameters;
+        public BjtModelParams Parameters => DefinitionDevice.Parameters;
 
         /// <summary>Specifies how often the model should be updated.</summary>
         public override ModelUpdateMode UpdateMode => ModelUpdateMode.Always;
@@ -82,7 +82,7 @@ namespace NextGenSpice.LargeSignal.Models
         {
             vT = PhysicalConstants.Boltzmann *
                  PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
-                 PhysicalConstants.ElementaryCharge;
+                 PhysicalConstants.DevicearyCharge;
 
             iS = Parameters.SaturationCurrent;
             iSe = Parameters.EmitterSaturationCurrent;
@@ -158,7 +158,7 @@ namespace NextGenSpice.LargeSignal.Models
 
         /// <summary>
         ///     Gets provider instance for specified attribute value or null if no provider for requested parameter exists.
-        ///     For example "I" for the current flowing throught the two terminal element.
+        ///     For example "I" for the current flowing throught the two terminal device.
         /// </summary>
         /// <returns>IPrintValueProvider for specified attribute.</returns>
         public override IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders()

@@ -1,36 +1,36 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    /// <summary>Large signal model for <see cref="SubcircuitElement" />.</summary>
-    public class LargeSignalSubcircuitModel : LargeSignalModelBase<SubcircuitElement>
+    /// <summary>Large signal model for <see cref="SubcircuitDevice" />.</summary>
+    public class LargeSignalSubcircuitModel : LargeSignalModelBase<SubcircuitDevice>
     {
-        private readonly ILargeSignalDeviceModel[] elements;
+        private readonly ILargeSignalDeviceModel[] devices;
         private readonly int[] nodeMap;
         private readonly RedirectingEquationEditor redirectingEquationEditor;
         private readonly RedirectingSimulationContext subContext;
 
-        public LargeSignalSubcircuitModel(SubcircuitElement definitionElement,
-            IEnumerable<ILargeSignalDeviceModel> elements) :
-            base(definitionElement)
+        public LargeSignalSubcircuitModel(SubcircuitDevice definitionDevice,
+            IEnumerable<ILargeSignalDeviceModel> devices) :
+            base(definitionDevice)
         {
-            this.elements = elements.ToArray();
+            this.devices = devices.ToArray();
 
-            nodeMap = new int[definitionElement.InnerNodeCount + 1];
+            nodeMap = new int[definitionDevice.InnerNodeCount + 1];
             redirectingEquationEditor = new RedirectingEquationEditor(nodeMap);
             subContext = new RedirectingSimulationContext(nodeMap);
         }
 
         /// <summary>Set of classes that model this subcircuit.</summary>
-        public IReadOnlyList<ILargeSignalDeviceModel> Elements => elements;
+        public IReadOnlyList<ILargeSignalDeviceModel> Devices => devices;
 
         /// <summary>Specifies how often the model should be updated.</summary>
         public override ModelUpdateMode UpdateMode =>
-            elements.Max(e => e.UpdateMode); // act like the most updating element.
+            devices.Max(e => e.UpdateMode); // act like the most updating device.
 
         /// <summary>
         ///     Notifies model class that DC bias for given timepoint is established. This method can be used for processing
@@ -42,13 +42,13 @@ namespace NextGenSpice.LargeSignal.Models
             base.OnDcBiasEstablished(context);
             subContext.TrueContext = context;
 
-            foreach (var model in elements)
+            foreach (var model in devices)
                 model.OnDcBiasEstablished(context);
         }
 
         /// <summary>
         ///     Gets provider instance for specified attribute value or null if no provider for requested parameter exists.
-        ///     For example "I" for the current flowing throught the two terminal element.
+        ///     For example "I" for the current flowing throught the two terminal device.
         /// </summary>
         /// <returns>IPrintValueProvider for specified attribute.</returns>
         public override IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders()
@@ -69,15 +69,15 @@ namespace NextGenSpice.LargeSignal.Models
             for (var i = 1; i < nodeMap.Length; i++)
                 nodeMap[i] = -1;
 
-            for (var i = 0; i < DefinitionElement.TerminalNodes.Length; i++)
-                nodeMap[DefinitionElement.TerminalNodes[i]] = DefinitionElement.ConnectedNodes[i];
+            for (var i = 0; i < DefinitionDevice.TerminalNodes.Length; i++)
+                nodeMap[DefinitionDevice.TerminalNodes[i]] = DefinitionDevice.ConnectedNodes[i];
 
             for (var i = 1; i < nodeMap.Length; i++)
                 nodeMap[i] = nodeMap[i] < 0 ? builder.AddVariable() : nodeMap[i];
 
             redirectingEquationEditor.TrueEquationEditor = builder;
 
-            foreach (var model in elements)
+            foreach (var model in devices)
                 model.Initialize(builder, context);
         }
 
@@ -92,7 +92,7 @@ namespace NextGenSpice.LargeSignal.Models
             redirectingEquationEditor.TrueEquationEditor = equations;
             subContext.TrueContext = context;
 
-            foreach (var model in elements)
+            foreach (var model in devices)
                 model.ApplyModelValues(redirectingEquationEditor, context);
         }
 
@@ -104,7 +104,7 @@ namespace NextGenSpice.LargeSignal.Models
             redirectingEquationEditor.TrueEquationEditor = equations;
             subContext.TrueContext = context;
 
-            foreach (var model in elements)
+            foreach (var model in devices)
                 model.ApplyInitialCondition(redirectingEquationEditor, context);
         }
 

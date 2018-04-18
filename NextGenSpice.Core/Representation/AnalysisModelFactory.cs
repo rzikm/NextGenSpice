@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 
 namespace NextGenSpice.Core.Representation
 {
@@ -8,7 +8,7 @@ namespace NextGenSpice.Core.Representation
     /// <typeparam name="TAnalysisModel"></typeparam>
     public abstract class AnalysisModelFactory<TAnalysisModel> : IAnalysisModelFactory<TAnalysisModel>
     {
-        private readonly Dictionary<Type, Func<ICircuitDefinitionElement, IModelInstantiationContext<TAnalysisModel>,
+        private readonly Dictionary<Type, Func<ICircuitDefinitionDevice, IModelInstantiationContext<TAnalysisModel>,
                 IAnalysisDeviceModel<TAnalysisModel>>>
             modelCreators;
 
@@ -19,7 +19,7 @@ namespace NextGenSpice.Core.Representation
         {
             paramCreators = new Dictionary<Type, Func<object, IModelInstantiationContext<TAnalysisModel>, object>>();
             modelCreators =
-                new Dictionary<Type, Func<ICircuitDefinitionElement, IModelInstantiationContext<TAnalysisModel>,
+                new Dictionary<Type, Func<ICircuitDefinitionDevice, IModelInstantiationContext<TAnalysisModel>,
                     IAnalysisDeviceModel<TAnalysisModel>>>();
         }
 
@@ -41,7 +41,7 @@ namespace NextGenSpice.Core.Representation
         /// <typeparam name="TModel">Analysis-specific class for the device</typeparam>
         /// <param name="factoryFunc">The factory function</param>
         public void SetModel<TRepresentation, TModel>(Func<TRepresentation, TModel> factoryFunc)
-            where TRepresentation : ICircuitDefinitionElement
+            where TRepresentation : ICircuitDefinitionDevice
             where TModel : IAnalysisDeviceModel<TAnalysisModel>
         {
             modelCreators[typeof(TRepresentation)] = (model, context) => factoryFunc((TRepresentation) model);
@@ -53,7 +53,7 @@ namespace NextGenSpice.Core.Representation
         /// <param name="factoryFunc">The factory function</param>
         public void SetModel<TRepresentation, TModel>(
             Func<TRepresentation, IModelInstantiationContext<TAnalysisModel>, TModel> factoryFunc)
-            where TRepresentation : ICircuitDefinitionElement
+            where TRepresentation : ICircuitDefinitionDevice
             where TModel : IAnalysisDeviceModel<TAnalysisModel>
         {
             modelCreators[typeof(TRepresentation)] = (model, context) => factoryFunc((TRepresentation) model, context);

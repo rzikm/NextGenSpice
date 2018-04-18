@@ -3,7 +3,7 @@ using System;
 namespace Numerics
 {
     /// <summary>Class that represents square matrix of given size and represents it internally as one-dimensional array.</summary>
-    /// <typeparam name="T">Element type</typeparam>
+    /// <typeparam name="T">Device type</typeparam>
     public class Matrix<T> : ICloneable
     {
         public Matrix(int size)

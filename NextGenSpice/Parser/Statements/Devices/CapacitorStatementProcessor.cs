@@ -1,10 +1,10 @@
-﻿using NextGenSpice.Core.Elements;
+﻿using NextGenSpice.Core.Devices;
 using NextGenSpice.Parser.Statements.Deferring;
 
 namespace NextGenSpice.Parser.Statements.Devices
 {
-    /// <summary>Class that handles capacitor element statements.</summary>
-    public class CapacitorStatementProcessor : ElementStatementProcessor
+    /// <summary>Class that handles capacitor device statements.</summary>
+    public class CapacitorStatementProcessor : DeviceStatementProcessor
     {
         public CapacitorStatementProcessor()
         {
@@ -12,20 +12,20 @@ namespace NextGenSpice.Parser.Statements.Devices
             MaxArgs = 4;
         }
 
-        /// <summary>Discriminator of the element type this processor can parse.</summary>
+        /// <summary>Discriminator of the device type this processor can parse.</summary>
         public override char Discriminator => 'C';
 
         /// <summary>Processes given set of statements.</summary>
         protected override void DoProcess()
         {
-            var name = ElementName;
+            var name = DeviceName;
             var nodes = GetNodeIndices(1, 2);
             var cvalue = GetValue(3);
             var ic = RawStatement.Length == 5 ? GetValue(4) : (double?) null;
 
             if (Errors == 0)
-                Context.DeferredStatements.Add(new SimpleElementDeferredStatement(cb =>
-                    cb.AddElement(nodes, new CapacitorElement(cvalue, ic, name))));
+                Context.DeferredStatements.Add(new SimpleDeviceDeferredStatement(cb =>
+                    cb.AddDevice(nodes, new CapacitorDevice(cvalue, ic, name))));
         }
     }
 }

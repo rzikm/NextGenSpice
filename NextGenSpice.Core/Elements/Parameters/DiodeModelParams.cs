@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NextGenSpice.Core.Elements.Parameters
+namespace NextGenSpice.Core.Devices.Parameters
 {
     /// <summary>Represents set of model parameters for the diode device.</summary>
     public class DiodeModelParams : ICloneable

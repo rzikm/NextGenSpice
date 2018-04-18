@@ -2,12 +2,12 @@
 {
     public enum SpiceParserError
     {
-        ElementAlreadyDefined,
+        DeviceAlreadyDefined,
 
         NotANumber,
         NotANode,
-        NotAnElement,
-        NotANodeOrElement,
+        NotAnDevice,
+        NotANodeOrDevice,
 
         InvalidNumberOfArguments,
         UnexpectedCharacter,
@@ -38,7 +38,7 @@
         SubcircuitNotConnected,
 
         UnknownStatement,
-        UnknownElement,
+        UnknownDevice,
 
         NoDcPathToGround,
         VoltageBranchCycle,

@@ -22,15 +22,15 @@ namespace NextGenSpiceTest
                 .AddVoltageSource(1, 0, 1)
                 .AddResistor(1, 2, 1)
                 .AddResistor(1, 3, 1)
-                .AddElement(new[] {2, 3}, new SwitchElement())
+                .AddDevice(new[] {2, 3}, new SwitchDevice())
                 .AddResistor(3, 0, 0.5)
                 .BuildCircuit();
 
-            circuit.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchElement, SwitchModel>(e => new SwitchModel(e));
+            circuit.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchDevice, SwitchModel>(e => new SwitchModel(e));
 
             var model = circuit.GetModel<LargeSignalCircuitModel>();
 
-            var sw = model.Elements.OfType<SwitchModel>().Single();
+            var sw = model.Devices.OfType<SwitchModel>().Single();
 
             Output.WriteLine("Switch is on");
             sw.IsOn = true;

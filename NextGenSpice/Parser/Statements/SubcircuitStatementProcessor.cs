@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Utils;
 
@@ -60,10 +60,10 @@ namespace NextGenSpice.Parser.Statements
             // enforce node existence, initial condition for nodes inside subcircuit is not supported and not used
             Context.CircuitBuilder.SetNodeVoltage(terminals.Max(), null);
 
-            var subcircuitElement = CreateSubcircuit(stack[1], terminals);
+            var subcircuitDevice = CreateSubcircuit(stack[1], terminals);
             Context.ExitSubcircuit();
 
-            Context.SymbolTable.AddSubcircuit(name, subcircuitElement);
+            Context.SymbolTable.AddSubcircuit(name, subcircuitDevice);
         }
 
         /// <summary>Gets indices of the nodes represented by given set of tokens. Adds relevant errors into the errors collection.</summary>
@@ -83,9 +83,9 @@ namespace NextGenSpice.Parser.Statements
             }).ToArray();
         }
 
-        private SubcircuitElement CreateSubcircuit(Token name, int[] terminals)
+        private SubcircuitDevice CreateSubcircuit(Token name, int[] terminals)
         {
-            SubcircuitElement subcircuit = null;
+            SubcircuitDevice subcircuit = null;
             var errorCount = Context.Errors.Count;
 
             // validate terminal specs - no duplicates
@@ -115,8 +115,8 @@ namespace NextGenSpice.Parser.Statements
 
             if (subcircuit == null) // create a "null object" to avoid explicit null checking
             {
-                subcircuit = new SubcircuitElement(terminals.Length + 1, terminals,
-                    Enumerable.Empty<ICircuitDefinitionElement>());
+                subcircuit = new SubcircuitDevice(terminals.Length + 1, terminals,
+                    Enumerable.Empty<ICircuitDefinitionDevice>());
             }
 
             return subcircuit;

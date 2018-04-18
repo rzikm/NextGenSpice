@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace NextGenSpice.Core.Elements
+namespace NextGenSpice.Core.Devices
 {
-    /// <summary>Class representing voltage controlled voltage source element.</summary>
-    public class VoltageControlledVoltageSourceElement : CircuitDefinitionElement
+    /// <summary>Class representing voltage controlled voltage source device.</summary>
+    public class VoltageControlledVoltageSourceDevice : CircuitDefinitionDevice
     {
-        public VoltageControlledVoltageSourceElement(double gain, string name = null) : base(4, name)
+        public VoltageControlledVoltageSourceDevice(double gain, string name = null) : base(4, name)
         {
             Gain = gain;
         }

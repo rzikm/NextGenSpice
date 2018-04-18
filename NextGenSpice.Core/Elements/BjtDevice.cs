@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NextGenSpice.Core.Elements.Parameters;
+using NextGenSpice.Core.Devices.Parameters;
 
-namespace NextGenSpice.Core.Elements
+namespace NextGenSpice.Core.Devices
 {
     /// <summary>Class that represents Homo-Junction Bipolar Transistor device.</summary>
-    public class BjtElement : CircuitDefinitionElement
+    public class BjtDevice : CircuitDefinitionDevice
     {
-        public BjtElement(BjtModelParams parameters, string name = null) : base(4, name)
+        public BjtDevice(BjtModelParams parameters, string name = null) : base(4, name)
         {
             Parameters = parameters;
         }
@@ -29,9 +29,9 @@ namespace NextGenSpice.Core.Elements
 
         /// <summary>Creates a deep copy of this device.</summary>
         /// <returns></returns>
-        public override ICircuitDefinitionElement Clone()
+        public override ICircuitDefinitionDevice Clone()
         {
-            var clone = (BjtElement) base.Clone();
+            var clone = (BjtDevice) base.Clone();
             clone.Parameters = (BjtModelParams) clone.Parameters.Clone();
             return clone;
         }

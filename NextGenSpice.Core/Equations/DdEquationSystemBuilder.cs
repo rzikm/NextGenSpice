@@ -29,7 +29,7 @@ namespace NextGenSpice.Core.Equations
             }
 
             matrix.Add(newRow);
-            newRow.Add(dd_real.Zero); // element on diagonal
+            newRow.Add(dd_real.Zero); // device on diagonal
 
             rhs.Add(dd_real.Zero);
             return rhs.Count - 1;

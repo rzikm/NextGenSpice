@@ -5,12 +5,12 @@ using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements.Deferring
 {
-    /// <summary>Class representing element statement for simple elements (without a model)</summary>
-    public class SimpleElementDeferredStatement : DeferredStatement
+    /// <summary>Class representing device statement for simple devices (without a model)</summary>
+    public class SimpleDeviceDeferredStatement : DeferredStatement
     {
         private readonly Action<CircuitBuilder> builderFunc;
 
-        public SimpleElementDeferredStatement(Action<CircuitBuilder> builderFunc)
+        public SimpleDeviceDeferredStatement(Action<CircuitBuilder> builderFunc)
         {
             this.builderFunc = builderFunc;
         }

@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
 using NextGenSpice.Core.BehaviorParams;
 
-namespace NextGenSpice.Core.Elements
+namespace NextGenSpice.Core.Devices
 {
     /// <summary>Class that represents a current source device.</summary>
-    public class VoltageSourceElement : TwoNodeCircuitElement
+    public class CurrentSourceDevice : TwoNodeCircuitDevice
     {
-        public VoltageSourceElement(SourceBehaviorParams behavior, string name = null) : base(name)
+        public CurrentSourceDevice(SourceBehaviorParams behavior, string name = null) : base(name)
         {
             BehaviorParams = behavior;
         }
 
-        public VoltageSourceElement(double voltage, string name = null) : this(
-            new ConstantBehaviorParams {Value = voltage}, name)
+        public CurrentSourceDevice(double current, string name = null) : this(
+            new ConstantBehaviorParams {Value = current}, name)
         {
         }
 
@@ -21,9 +21,9 @@ namespace NextGenSpice.Core.Elements
 
         /// <summary>Creates a deep copy of this device.</summary>
         /// <returns></returns>
-        public override ICircuitDefinitionElement Clone()
+        public override ICircuitDefinitionDevice Clone()
         {
-            var clone = (VoltageSourceElement) base.Clone();
+            var clone = (CurrentSourceDevice) base.Clone();
             clone.BehaviorParams = (SourceBehaviorParams) clone.BehaviorParams.Clone();
             return clone;
         }
@@ -34,7 +34,7 @@ namespace NextGenSpice.Core.Elements
         {
             return new[]
             {
-                new CircuitBranchMetadata(Anode, Cathode, BranchType.VoltageDefined, this)
+                new CircuitBranchMetadata(Anode, Cathode, BranchType.CurrentDefined, this)
             };
         }
     }

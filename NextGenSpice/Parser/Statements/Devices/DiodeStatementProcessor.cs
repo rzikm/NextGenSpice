@@ -1,27 +1,27 @@
 using System.Collections.Generic;
-using NextGenSpice.Core.Elements;
-using NextGenSpice.Core.Elements.Parameters;
+using NextGenSpice.Core.Devices;
+using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.Parser.Statements.Deferring;
 using NextGenSpice.Parser.Statements.Models;
 using NextGenSpice.Utils;
 
 namespace NextGenSpice.Parser.Statements.Devices
 {
-    /// <summary>Class that handles diode element statements.</summary>
-    public class DiodeStatementProcessor : ElementStatementProcessor
+    /// <summary>Class that handles diode device statements.</summary>
+    public class DiodeStatementProcessor : DeviceStatementProcessor
     {
         public DiodeStatementProcessor()
         {
             MinArgs = MaxArgs = 3;
         }
 
-        /// <summary>Discriminator of the element type this processor can parse.</summary>
+        /// <summary>Discriminator of the device type this processor can parse.</summary>
         public override char Discriminator => 'D';
 
         /// <summary>Processes given set of statements.</summary>
         protected override void DoProcess()
         {
-            var name = ElementName;
+            var name = DeviceName;
             var nodes = GetNodeIndices(1, 2);
             // cannot check for model existence yet, defer checking for model later
 
@@ -29,8 +29,8 @@ namespace NextGenSpice.Parser.Statements.Devices
             {
                 var modelToken = RawStatement[3]; // capture
                 Context.DeferredStatements.Add(
-                    new ModeledElementDeferedStatement<DiodeModelParams>(
-                        (par, cb) => cb.AddElement(nodes, new DiodeElement(par, name)), modelToken));
+                    new ModeledDeviceDeferedStatement<DiodeModelParams>(
+                        (par, cb) => cb.AddDevice(nodes, new DiodeDevice(par, name)), modelToken));
             }
         }
 
@@ -41,7 +41,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             return new IModelStatementHandler[] {new DiodeModelStatementHandler()};
         }
 
-        /// <summary>Class that handles diode element model statements.</summary>
+        /// <summary>Class that handles diode device model statements.</summary>
         private class DiodeModelStatementHandler : ModelStatementHandlerBase<DiodeModelParams>,
             IModelStatementHandler
         {

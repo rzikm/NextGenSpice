@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace NextGenSpice.Core.Elements
+namespace NextGenSpice.Core.Devices
 {
     /// <summary>Class that represents an inductor device.</summary>
-    public class InductorElement : TwoNodeCircuitElement
+    public class InductorDevice : TwoNodeCircuitDevice
     {
-        public InductorElement(double inductance, double? initialCurrent = null, string name = null) : base(name)
+        public InductorDevice(double inductance, double? initialCurrent = null, string name = null) : base(name)
         {
             Inductance = inductance;
             InitialCurrent = initialCurrent;

@@ -1,17 +1,17 @@
 ﻿using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.NumIntegration;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    /// <summary>Large signal model for <see cref="InductorElement" /> device.</summary>
-    public class LargeSignalInductorModel : TwoNodeLargeSignalModel<InductorElement>
+    /// <summary>Large signal model for <see cref="InductorDevice" /> device.</summary>
+    public class LargeSignalInductorModel : TwoNodeLargeSignalModel<InductorDevice>
     {
         private int branchVariable;
         private LargeSignalInductorStamper stamper;
 
-        public LargeSignalInductorModel(InductorElement definitionElement) : base(definitionElement)
+        public LargeSignalInductorModel(InductorDevice definitionDevice) : base(definitionDevice)
         {
         }
 
@@ -43,7 +43,7 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            var (veq, req) = IntegrationMethod.GetEquivalents(DefinitionElement.Inductance / context.TimeStep);
+            var (veq, req) = IntegrationMethod.GetEquivalents(DefinitionDevice.Inductance / context.TimeStep);
             stamper.Stamp(equations, veq, req);
         }
 
@@ -52,7 +52,7 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
         {
-            stamper.StampInitialCondition(equations, DefinitionElement.InitialCurrent);
+            stamper.StampInitialCondition(equations, DefinitionDevice.InitialCurrent);
         }
 
         /// <summary>

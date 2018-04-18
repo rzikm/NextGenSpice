@@ -1,18 +1,18 @@
 ﻿using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.NumIntegration;
 using NextGenSpice.LargeSignal.Stamping;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    /// <summary>Large signal model for <see cref="CapacitorElement" /> device.</summary>
-    public class LargeSignalCapacitorModel : TwoNodeLargeSignalModel<CapacitorElement>
+    /// <summary>Large signal model for <see cref="CapacitorDevice" /> device.</summary>
+    public class LargeSignalCapacitorModel : TwoNodeLargeSignalModel<CapacitorDevice>
     {
         private int branchVariable;
         private LargeSignalCapacitorStamper stamper;
 
-        public LargeSignalCapacitorModel(CapacitorElement definitionElement) : base(definitionElement)
+        public LargeSignalCapacitorModel(CapacitorDevice definitionDevice) : base(definitionDevice)
         {
         }
 
@@ -44,7 +44,7 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            var (ieq, geq) = IntegrationMethod.GetEquivalents(DefinitionElement.Capacity / context.TimeStep);
+            var (ieq, geq) = IntegrationMethod.GetEquivalents(DefinitionDevice.Capacity / context.TimeStep);
             stamper.Stamp(equations, ieq, geq);
         }
 
@@ -53,7 +53,7 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
         {
-            stamper.StampInitialCondition(equations, DefinitionElement.InitialVoltage);
+            stamper.StampInitialCondition(equations, DefinitionDevice.InitialVoltage);
         }
 
         /// <summary>
@@ -66,8 +66,8 @@ namespace NextGenSpice.LargeSignal.Models
             base.OnDcBiasEstablished(context);
             Current = context.GetSolutionForVariable(branchVariable);
 
-            var vc = context.GetSolutionForVariable(DefinitionElement.Anode) -
-                     context.GetSolutionForVariable(DefinitionElement.Cathode);
+            var vc = context.GetSolutionForVariable(DefinitionDevice.Anode) -
+                     context.GetSolutionForVariable(DefinitionDevice.Cathode);
             Voltage = vc;
 
             IntegrationMethod.SetState(Current, Voltage);

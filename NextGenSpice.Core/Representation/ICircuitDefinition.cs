@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 
 namespace NextGenSpice.Core.Representation
 {
@@ -12,8 +12,8 @@ namespace NextGenSpice.Core.Representation
         /// <summary>Initial voltages of nodes by their id.</summary>
         IReadOnlyList<double?> InitialVoltages { get; }
 
-        /// <summary>Set of elements that define this circuit.</summary>
-        IReadOnlyList<ICircuitDefinitionElement> Elements { get; }
+        /// <summary>Set of devices that define this circuit.</summary>
+        IReadOnlyList<ICircuitDefinitionDevice> Devices { get; }
 
         /// <summary>Sets factory for creating a model for specific analysis.</summary>
         /// <typeparam name="TAnalysisModel"></typeparam>

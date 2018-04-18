@@ -1,33 +1,33 @@
 ﻿using System.Collections.Generic;
 using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    /// <summary>Large signal model for <see cref="VoltageControlledVoltageSourceElement" /> element.</summary>
-    public class LargeSignalVccsModel : LargeSignalModelBase<VoltageControlledCurrentSourceElement>,
+    /// <summary>Large signal model for <see cref="VoltageControlledVoltageSourceDevice" /> device.</summary>
+    public class LargeSignalVccsModel : LargeSignalModelBase<VoltageControlledCurrentSourceDevice>,
         ITwoTerminalLargeSignalDeviceModel
     {
-        public LargeSignalVccsModel(VoltageControlledCurrentSourceElement definitionElement) : base(definitionElement)
+        public LargeSignalVccsModel(VoltageControlledCurrentSourceDevice definitionDevice) : base(definitionDevice)
         {
         }
 
         /// <summary>Id of node connected to positive terminal of this device.</summary>
-        public int Anode => DefinitionElement.ConnectedNodes[0];
+        public int Anode => DefinitionDevice.ConnectedNodes[0];
 
         /// <summary>Id of node connected to negative terminal of this device.</summary>
-        public int Cathode => DefinitionElement.ConnectedNodes[1];
+        public int Cathode => DefinitionDevice.ConnectedNodes[1];
 
         /// <summary>Positive terminal of the reference voltage.</summary>
-        public int ReferenceAnode => DefinitionElement.ConnectedNodes[2];
+        public int ReferenceAnode => DefinitionDevice.ConnectedNodes[2];
 
         /// <summary>Negative terminal of the reference voltage.</summary>
-        public int ReferenceCathode => DefinitionElement.ConnectedNodes[3];
+        public int ReferenceCathode => DefinitionDevice.ConnectedNodes[3];
 
         /// <summary>Specifies how often the model should be updated.</summary>
         public override ModelUpdateMode UpdateMode =>
-            ModelUpdateMode.Always; // due to possible dependencies on nonlinear elements.
+            ModelUpdateMode.Always; // due to possible dependencies on nonlinear devices.
 
         public double Voltage { get; private set; }
 
@@ -41,16 +41,16 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            equations.AddMatrixEntry(Anode, ReferenceAnode, DefinitionElement.TransConductance);
-            equations.AddMatrixEntry(Cathode, ReferenceAnode, -DefinitionElement.TransConductance);
+            equations.AddMatrixEntry(Anode, ReferenceAnode, DefinitionDevice.TransConductance);
+            equations.AddMatrixEntry(Cathode, ReferenceAnode, -DefinitionDevice.TransConductance);
 
-            equations.AddMatrixEntry(Anode, ReferenceCathode, -DefinitionElement.TransConductance);
-            equations.AddMatrixEntry(Cathode, ReferenceCathode, DefinitionElement.TransConductance);
+            equations.AddMatrixEntry(Anode, ReferenceCathode, -DefinitionDevice.TransConductance);
+            equations.AddMatrixEntry(Cathode, ReferenceCathode, DefinitionDevice.TransConductance);
         }
 
         /// <summary>
         ///     Gets provider instance for specified attribute value or null if no provider for requested parameter exists.
-        ///     For example "I" for the current flowing throught the two terminal element.
+        ///     For example "I" for the current flowing throught the two terminal device.
         /// </summary>
         /// <returns>IPrintValueProvider for specified attribute.</returns>
         public override IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders()
@@ -73,7 +73,7 @@ namespace NextGenSpice.LargeSignal.Models
             Voltage = context.GetSolutionForVariable(Anode) - context.GetSolutionForVariable(Cathode);
             Current =
                 (context.GetSolutionForVariable(ReferenceAnode) - context.GetSolutionForVariable(ReferenceCathode)) *
-                DefinitionElement.TransConductance;
+                DefinitionDevice.TransConductance;
         }
     }
 }

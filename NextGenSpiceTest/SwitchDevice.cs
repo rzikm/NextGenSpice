@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 
 namespace NextGenSpiceTest
 {
-    public class SwitchElement : TwoNodeCircuitElement
+    public class SwitchDevice : TwoNodeCircuitDevice
     {
-        public SwitchElement(string name = null) : base(name)
+        public SwitchDevice(string name = null) : base(name)
         {
         }
 

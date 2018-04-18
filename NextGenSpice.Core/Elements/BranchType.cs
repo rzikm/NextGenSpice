@@ -1,4 +1,4 @@
-﻿namespace NextGenSpice.Core.Elements
+﻿namespace NextGenSpice.Core.Devices
 {
     /// <summary>Specifies branch type for circuit validation purposes.</summary>
     public enum BranchType

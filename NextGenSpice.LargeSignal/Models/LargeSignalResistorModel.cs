@@ -1,13 +1,13 @@
 ﻿using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    /// <summary>Large signal model for <see cref="ResistorElement" /> device.</summary>
-    public class LargeSignalResistorModel : TwoNodeLargeSignalModel<ResistorElement>
+    /// <summary>Large signal model for <see cref="ResistorDevice" /> device.</summary>
+    public class LargeSignalResistorModel : TwoNodeLargeSignalModel<ResistorDevice>
     {
-        public LargeSignalResistorModel(ResistorElement definitionElement) : base(definitionElement)
+        public LargeSignalResistorModel(ResistorDevice definitionDevice) : base(definitionDevice)
         {
         }
 
@@ -15,7 +15,7 @@ namespace NextGenSpice.LargeSignal.Models
         public override ModelUpdateMode UpdateMode => ModelUpdateMode.NoUpdate;
 
         /// <summary>Resistance of the device in ohms.</summary>
-        public double Resistance => DefinitionElement.Resistance;
+        public double Resistance => DefinitionDevice.Resistance;
 
         /// <summary>
         ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is

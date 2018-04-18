@@ -26,7 +26,7 @@ namespace NextGenSpice.Parser.Statements.Printing
                 var parStart = s.IndexOf('(');
                 var parEnd = s.LastIndexOf(')');
 
-                // expected token in format <Stat>(element), V(node), V(node1,node2)
+                // expected token in format <Stat>(device), V(node), V(node1,node2)
                 if (parStart < 1 || parEnd < s.Length - 1 || s.Length <= 3)
                     context.Errors.Add(tokens[i].ToErrorInfo(SpiceParserError.UnknownPrintStatementParameter));
                 else

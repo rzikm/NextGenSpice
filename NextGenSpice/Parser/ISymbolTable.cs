@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 
 namespace NextGenSpice.Parser
 {
@@ -52,17 +52,17 @@ namespace NextGenSpice.Parser
         /// <param name="name">Name of the subcircuit.</param>
         /// <param name="subcircuit">Out variable to store found model in.</param>
         /// <returns></returns>
-        bool TryGetSubcircuit(string name, out SubcircuitElement subcircuit);
+        bool TryGetSubcircuit(string name, out SubcircuitDevice subcircuit);
 
         /// <summary>Returns the subcircuit instance with corresponding name.</summary>
         /// <param name="name">The subcircuit name</param>
         /// <returns></returns>
-        SubcircuitElement GetSubcircuit(string name);
+        SubcircuitDevice GetSubcircuit(string name);
 
-        /// <summary>Adds given symbol to the set of element names, returns true if it not already used.</summary>
+        /// <summary>Adds given symbol to the set of device names, returns true if it not already used.</summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        bool TryDefineElement(string name);
+        bool TryDefineDevice(string name);
 
         /// <summary>Tries to get node index corresponding to given node name. Returns true on success.</summary>
         /// <param name="name"></param>
@@ -84,7 +84,7 @@ namespace NextGenSpice.Parser
         /// <summary>Adds subcircuit under given name to the symbol tables.</summary>
         /// <param name="name">Name of the subcircuit.</param>
         /// <param name="subcircuit">The subcircuit deinition.</param>
-        void AddSubcircuit(string name, SubcircuitElement subcircuit);
+        void AddSubcircuit(string name, SubcircuitDevice subcircuit);
 
         /// <summary>Returns dictionary with mappings from node id to their respective names.</summary>
         /// <returns></returns>

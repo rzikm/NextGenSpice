@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
-using NextGenSpice.Core.Elements.Parameters;
+using NextGenSpice.Core.Devices.Parameters;
 
-namespace NextGenSpice.Core.Elements
+namespace NextGenSpice.Core.Devices
 {
     /// <summary>Class that represents the diode device.</summary>
-    public class DiodeElement : TwoNodeCircuitElement
+    public class DiodeDevice : TwoNodeCircuitDevice
     {
-        public DiodeElement(DiodeModelParams parameters, string name = null, double voltageHint = 0) : base(name)
+        public DiodeDevice(DiodeModelParams parameters, string name = null, double voltageHint = 0) : base(name)
         {
             Parameters = parameters;
             VoltageHint = voltageHint;
@@ -22,9 +22,9 @@ namespace NextGenSpice.Core.Elements
 
         /// <summary>Creates a deep copy of this device.</summary>
         /// <returns></returns>
-        public override ICircuitDefinitionElement Clone()
+        public override ICircuitDefinitionDevice Clone()
         {
-            var clone = (DiodeElement) base.Clone();
+            var clone = (DiodeDevice) base.Clone();
             clone.Parameters = (DiodeModelParams) clone.Parameters.Clone();
             return clone;
         }

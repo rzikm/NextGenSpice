@@ -1,4 +1,4 @@
-﻿using NextGenSpice.Core.Elements;
+﻿using NextGenSpice.Core.Devices;
 
 namespace NextGenSpice.Core.Representation
 {
@@ -9,7 +9,7 @@ namespace NextGenSpice.Core.Representation
     /// <typeparam name="TAnalysisModel"></typeparam>
     public interface IAnalysisDeviceModel<TAnalysisModel>
     {
-        /// <summary>Instance of definition element that corresponds to this device analysis model.</summary>
-        ICircuitDefinitionElement DefinitionElement { get; }
+        /// <summary>Instance of definition device that corresponds to this device analysis model.</summary>
+        ICircuitDefinitionDevice DefinitionDevice { get; }
     }
 }

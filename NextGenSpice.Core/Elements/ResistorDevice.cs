@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace NextGenSpice.Core.Elements
+namespace NextGenSpice.Core.Devices
 {
     /// <summary>Class that represents a resistor device.</summary>
-    public class ResistorElement : TwoNodeCircuitElement
+    public class ResistorDevice : TwoNodeCircuitDevice
     {
-        public ResistorElement(double resistance, string name = null) : base(name)
+        public ResistorDevice(double resistance, string name = null) : base(name)
         {
             Resistance = resistance;
         }

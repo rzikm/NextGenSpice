@@ -14,7 +14,7 @@ namespace NextGenSpice.Parser
     /// <summary>Main class for parsing SPICE code input files</summary>
     public class SpiceCodeParser
     {
-        private readonly IDictionary<char, IElementStatementProcessor> elementProcessors;
+        private readonly IDictionary<char, IDeviceStatementProcessor> deviceProcessors;
 
         private readonly IDictionary<string, IDotStatementProcessor> insubcircuitStatementProcessors;
 
@@ -27,7 +27,7 @@ namespace NextGenSpice.Parser
             modelProcessor = new ModelStatementProcessor();
             printProcessor = new PrintStatementProcessor();
 
-            elementProcessors = new Dictionary<char, IElementStatementProcessor>();
+            deviceProcessors = new Dictionary<char, IDeviceStatementProcessor>();
             statementProcessors = new Dictionary<string, IDotStatementProcessor>();
             insubcircuitStatementProcessors = new Dictionary<string, IDotStatementProcessor>();
 
@@ -39,20 +39,20 @@ namespace NextGenSpice.Parser
 
         private void RegisterDefaults()
         {
-            RegisterElement(new ResistorStatementProcessor());
-            RegisterElement(new CurrentSourceStatementProcessor());
-            RegisterElement(new VoltageSourceStatementProcessor());
+            RegisterDevice(new ResistorStatementProcessor());
+            RegisterDevice(new CurrentSourceStatementProcessor());
+            RegisterDevice(new VoltageSourceStatementProcessor());
 
-            RegisterElement(new CapacitorStatementProcessor());
-            RegisterElement(new InductorStatementProcessor());
+            RegisterDevice(new CapacitorStatementProcessor());
+            RegisterDevice(new InductorStatementProcessor());
 
-            RegisterElement(new DiodeStatementProcessor());
-            RegisterElement(new BjtStatementProcessor());
+            RegisterDevice(new DiodeStatementProcessor());
+            RegisterDevice(new BjtStatementProcessor());
 
-            RegisterElement(new SubcircuitElementStatementProcessor());
+            RegisterDevice(new SubcircuitDeviceStatementProcessor());
 
-            RegisterElement(new VoltageControlledVoltageSourceStatementProcessor());
-            RegisterElement(new VoltageControlledCurrentSourceStatementProcessor());
+            RegisterDevice(new VoltageControlledVoltageSourceStatementProcessor());
+            RegisterDevice(new VoltageControlledCurrentSourceStatementProcessor());
 
             var root = new SubcircuitStatementRoot();
             RegisterStatement(new SubcircuitStatementProcessor(root), true, true);
@@ -63,11 +63,11 @@ namespace NextGenSpice.Parser
             RegisterSimulation(new OpStatementProcessor());
         }
 
-        /// <summary>Adds handler class for element statement processing, including their .MODEL statements</summary>
+        /// <summary>Adds handler class for device statement processing, including their .MODEL statements</summary>
         /// <param name="processor"></param>
-        public void RegisterElement(IElementStatementProcessor processor)
+        public void RegisterDevice(IDeviceStatementProcessor processor)
         {
-            elementProcessors.Add(processor.Discriminator, processor);
+            deviceProcessors.Add(processor.Discriminator, processor);
             foreach (var handler in processor.GetModelStatementHandlers())
                 modelProcessor.AddHandler(handler);
         }
@@ -120,8 +120,8 @@ namespace NextGenSpice.Parser
                 var firstToken = tokens[0]; // statement discriminator
                 var c = firstToken.Value[0];
 
-                if (char.IsLetter(c)) // possible element statement
-                    ProcessElement(tokens, ctx, elementProcessors);
+                if (char.IsLetter(c)) // possible device statement
+                    ProcessDevice(tokens, ctx, deviceProcessors);
                 else if (c != '.') // syntactic error
                     ctx.Errors.Add(firstToken.ToErrorInfo(SpiceParserError.UnexpectedCharacter, c));
                 else if (tokens[0].Value == ".END" && tokens.Length == 1)
@@ -173,12 +173,12 @@ namespace NextGenSpice.Parser
 
                     case VoltageBranchCycleException ex:
                         error = new ErrorInfo(SpiceParserError.VoltageBranchCycle, 0, 0,
-                            ex.Elements.Select(el => el.Name).Cast<object>().ToArray());
+                            ex.Devices.Select(el => el.Name).Cast<object>().ToArray());
                         break;
 
                     case CurrentBranchCutsetException ex:
                         error = new ErrorInfo(SpiceParserError.CurrentBranchCutset, 0, 0,
-                            ex.Elements.Select(el => el.Name).Cast<object>().ToArray());
+                            ex.Devices.Select(el => el.Name).Cast<object>().ToArray());
                         break;
 
                     default:
@@ -202,15 +202,15 @@ namespace NextGenSpice.Parser
                 ctx.Errors.Add(tokens[0].ToErrorInfo(SpiceParserError.UnknownStatement));
         }
 
-        private void ProcessElement(Token[] tokens, ParsingContext ctx,
-            IDictionary<char, IElementStatementProcessor> elementStatementProcessors)
+        private void ProcessDevice(Token[] tokens, ParsingContext ctx,
+            IDictionary<char, IDeviceStatementProcessor> deviceStatementProcessors)
         {
             var discriminator = tokens[0].Value[0];
-            // find processor that can handle this element
-            if (elementStatementProcessors.TryGetValue(discriminator, out var proc))
+            // find processor that can handle this device
+            if (deviceStatementProcessors.TryGetValue(discriminator, out var proc))
                 proc.Process(tokens, ctx);
-            else // unknown element
-                ctx.Errors.Add(tokens[0].ToErrorInfo(SpiceParserError.UnknownElement));
+            else // unknown device
+                ctx.Errors.Add(tokens[0].ToErrorInfo(SpiceParserError.UnknownDevice));
         }
     }
 }

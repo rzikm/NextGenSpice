@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Composition;
 using System.Linq;
 using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal;
 using NextGenSpice.LargeSignal.Models;
@@ -24,22 +24,22 @@ namespace NextGenSpiceTest
             protected override TestAnalysisCircuitModel Instantiate(
                 IModelInstantiationContext<TestAnalysisCircuitModel> context)
             {
-                return new TestAnalysisCircuitModel(context.CircuitDefinition.Elements.Select(context.GetModel)
+                return new TestAnalysisCircuitModel(context.CircuitDefinition.Devices.Select(context.GetModel)
                     .Cast<ITestDeviceModel>().ToList());
             }
         }
 
         private class TestAnalysisCircuitModel : IAnalysisCircuitModel<ITestDeviceModel>
         {
-            public TestAnalysisCircuitModel(IReadOnlyList<ITestDeviceModel> elements)
+            public TestAnalysisCircuitModel(IReadOnlyList<ITestDeviceModel> devices)
             {
-                Elements = elements;
+                Devices = devices;
             }
 
-            public IReadOnlyList<ITestDeviceModel> Elements { get; }
+            public IReadOnlyList<ITestDeviceModel> Devices { get; }
         }
 
-        private class TestDeviceDefinition : TwoNodeCircuitElement
+        private class TestDeviceDefinition : TwoNodeCircuitDevice
         {
             public TestDeviceDefinition(string name = null) : base(name)
             {
@@ -59,8 +59,8 @@ namespace NextGenSpiceTest
 
         private class TestDeviceModel : ITestDeviceModel
         {
-            /// <summary>Instance of definition element that corresponds to this device analysis model.</summary>
-            public ICircuitDefinitionElement DefinitionElement => throw new NotImplementedException();
+            /// <summary>Instance of definition device that corresponds to this device analysis model.</summary>
+            public ICircuitDefinitionDevice DefinitionDevice => throw new NotImplementedException();
         }
 
 
@@ -78,8 +78,8 @@ namespace NextGenSpiceTest
         [Fact]
         public void CanRegisterNewDeviceModel()
         {
-            var circuitDef = new CircuitBuilder().AddElement(new[] {0, 1}, new TestDeviceDefinition())
-                .AddElement(new[] {1, 0}, new TestDeviceDefinition()).BuildCircuit();
+            var circuitDef = new CircuitBuilder().AddDevice(new[] {0, 1}, new TestDeviceDefinition())
+                .AddDevice(new[] {1, 0}, new TestDeviceDefinition()).BuildCircuit();
 
             circuitDef.SetFactory(new MyPrivateFactory());
             circuitDef.GetFactory<TestAnalysisCircuitModel>()
@@ -126,8 +126,8 @@ namespace NextGenSpiceTest
         [Fact]
         public void ThrowsWhenNoModelCreatorExists()
         {
-            var circuitDef = new CircuitBuilder().AddElement(new[] {0, 1}, new TestDeviceDefinition())
-                .AddElement(new[] {1, 0}, new TestDeviceDefinition()).BuildCircuit();
+            var circuitDef = new CircuitBuilder().AddDevice(new[] {0, 1}, new TestDeviceDefinition())
+                .AddDevice(new[] {1, 0}, new TestDeviceDefinition()).BuildCircuit();
             Assert.Throws<InvalidOperationException>(() => circuitDef.GetModel<LargeSignalCircuitModel>());
         }
     }

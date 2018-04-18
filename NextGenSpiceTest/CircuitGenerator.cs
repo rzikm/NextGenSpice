@@ -1,6 +1,6 @@
 ﻿using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Elements.Parameters;
+using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.Core.Extensions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal;
@@ -82,12 +82,12 @@ namespace NextGenSpiceTest
 
             var circuit = new CircuitBuilder()
                 .AddVoltageSource(1, 0, new PulseBehaviorParams())
-                .AddElement(new[] {1, 2}, new SwitchElement())
+                .AddDevice(new[] {1, 2}, new SwitchDevice())
                 .AddResistor(2, 3, 1)
                 .AddCapacitor(3, 0, 1e-6)
                 .BuildCircuit();
 
-            circuit.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchElement, SwitchModel>(m =>
+            circuit.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchDevice, SwitchModel>(m =>
             {
                 sw = new SwitchModel(m);
                 return sw;
@@ -104,13 +104,13 @@ namespace NextGenSpiceTest
             SwitchModel sw = null;
             var circuit = new CircuitBuilder()
                 .AddVoltageSource(1, 0, 15)
-                .AddElement(new[] {1, 2}, new SwitchElement())
+                .AddDevice(new[] {1, 2}, new SwitchDevice())
                 .AddResistor(2, 3, 1)
                 .AddInductor(3, 0, 1e-6)
                 .BuildCircuit();
 
 
-            circuit.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchElement, SwitchModel>(m =>
+            circuit.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchDevice, SwitchModel>(m =>
             {
                 sw = new SwitchModel(m);
                 return sw;

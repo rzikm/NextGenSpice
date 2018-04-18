@@ -1,5 +1,5 @@
 ﻿using System;
-using NextGenSpice.Core.Elements;
+using NextGenSpice.Core.Devices;
 
 namespace NextGenSpice.Core.Representation
 {
@@ -20,7 +20,7 @@ namespace NextGenSpice.Core.Representation
         /// <typeparam name="TModel">Analysis-specific class for the device</typeparam>
         /// <param name="factoryFunc">The factory function</param>
         void SetModel<TRepresentation, TModel>(Func<TRepresentation, TModel> factoryFunc)
-            where TRepresentation : ICircuitDefinitionElement
+            where TRepresentation : ICircuitDefinitionDevice
             where TModel : IAnalysisDeviceModel<TAnalysisModel>;
 
         /// <summary>Registers a factory method for creating analysis-specific device model from the representation.</summary>
@@ -29,7 +29,7 @@ namespace NextGenSpice.Core.Representation
         /// <param name="factoryFunc">The factory function</param>
         void SetModel<TRepresentation, TModel>(
             Func<TRepresentation, IModelInstantiationContext<TAnalysisModel>, TModel> factoryFunc)
-            where TRepresentation : ICircuitDefinitionElement
+            where TRepresentation : ICircuitDefinitionDevice
             where TModel : IAnalysisDeviceModel<TAnalysisModel>;
 
         /// <summary>Registers a function for custom parameter processing (e.g. input source behaviors).</summary>
