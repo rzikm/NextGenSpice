@@ -90,7 +90,8 @@ namespace NextGenSpice.Core.NumIntegration
                 }
             }
 
-            return es.Solve();
+            es.Solve();
+            return es.Solution;
         }
     }
 }

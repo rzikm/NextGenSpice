@@ -1,27 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿#if qd_precision
+using System;
 using Numerics;
 using Numerics.Precision;
 
 namespace NextGenSpice.Core.Equations
 {
-    /// <summary>Class representing linear equation system with inner qd_real coeffitient precision.</summary>
-    public class QdEquationSystem : IEquationEditor
-    {
-        private readonly Stack<Tuple<Matrix<qd_real>, qd_real[]>> backups;
 
-        public QdEquationSystem(Matrix<qd_real> matrix, qd_real[] rhs)
+    /// <summary>Class representing linear equation system with inner qd_real coeffitient precision.</summary>
+    public class DdEquationSystem : IEquationEditor
+    {
+        private readonly (Matrix<qd_real> m, qd_real[] v)[] backup;
+
+        private readonly qd_real[] solution;
+
+        public DdEquationSystem(Matrix<qd_real> matrix, qd_real[] rhs, int backupDepth = 2)
         {
+            // init backup space
+            backup = new (Matrix<qd_real> m, qd_real[] v)[backupDepth];
+            for (int i = 0; i < backupDepth; i++)
+            {
+                backup[i] = (matrix.Clone(), (qd_real[]) rhs.Clone());
+            }
+
             if (matrix.Size != rhs.Length)
                 throw new ArgumentException(
                     $"Matrix side length ({matrix.Size}) is different from right hand side vector length ({rhs.Length})");
             Solution = new double[rhs.Length];
+            solution = new qd_real[rhs.Length];
 
-            backups = new Stack<Tuple<Matrix<qd_real>, qd_real[]>>();
-
-            backups.Push(Tuple.Create(matrix, rhs));
-            Clear();
+            Matrix = matrix;
+            RightHandSide = rhs;
         }
 
         /// <summary>Result of the latest call to the Solve() method.</summary>
@@ -42,6 +50,9 @@ namespace NextGenSpice.Core.Equations
         /// <param name="value">The value to be added to the coefficients.</param>
         public void AddMatrixEntry(int row, int column, double value)
         {
+#if DEBUG
+            //if (double.IsNaN(value)) throw new InvalidOperationException("Cannot insert NaN");
+#endif
             Matrix[row, column] += value;
         }
 
@@ -50,51 +61,52 @@ namespace NextGenSpice.Core.Equations
         /// <param name="value">The value.</param>
         public void AddRightHandSideEntry(int index, double value)
         {
+#if DEBUG
+            if (double.IsNaN(value)) throw new InvalidOperationException("Cannot insert NaN");
+#endif
             RightHandSide[index] += value;
         }
 
-        /// <summary>Restores the equation system to the state that it was when it was build by the equation system builder.</summary>
-        public void Clear()
-        {
-            while (backups.Count > 1) backups.Pop();
-
-            var tup = backups.Peek();
-
-            Matrix = tup.Item1.Clone();
-            RightHandSide = (qd_real[]) tup.Item2.Clone();
-        }
-
         /// <summary>Creates a restore point for the equation system.</summary>
-        public void Backup()
+        public void Backup(int index)
         {
-            backups.Push(Tuple.Create(Matrix.Clone(), (qd_real[]) RightHandSide.Clone()));
+            var tup = backup[index];
+
+            CopyData(Matrix, tup.Item1, RightHandSide, tup.Item2);
         }
 
         /// <summary>
         ///     Restores the equation system to the previous bacup or the state that it was when it was build by the equation
         ///     system builder.
         /// </summary>
-        public void Restore()
+        public void Restore(int index)
         {
-            var tup = backups.Peek();
+            var tup = backup[index];
 
-            Matrix = tup.Item1.Clone();
-            RightHandSide = (qd_real[]) tup.Item2.Clone();
+            CopyData(tup.Item1, Matrix, tup.Item2, RightHandSide);
         }
 
+        private void CopyData(Matrix<qd_real> msrc, Matrix<qd_real> mdest, qd_real[] rhssrc, qd_real[] rhsdest)
+        {
+            msrc.RawData.CopyTo(mdest.RawData, 0);
+            rhssrc.CopyTo(rhsdest, 0);
+        }
 
         /// <summary>Solves the linear equation system. If the system has no solution, the result is undefined.</summary>
         /// <returns></returns>
-        public double[] Solve()
+        public void Solve()
         {
-            var m = Matrix.Clone();
-            var b = (qd_real[]) RightHandSide.Clone();
-            var x = new qd_real[b.Length];
+            var m = Matrix;
+            var b = RightHandSide;
+            var x = solution;
 
             GaussJordanElimination.Solve(m, b, x);
 
-            //DistributeEquivalentVoltages(m);
-            return Solution = x.Select(qd => (double) qd).ToArray();
+            for (int i = 0; i < solution.Length; i++)
+            {
+                Solution[i] = solution[i].x0;
+            }
         }
     }
 }
+#endif

@@ -1,9 +1,11 @@
-﻿using System;
+﻿#if dd_precision
+using System;
 using Numerics;
 using Numerics.Precision;
 
 namespace NextGenSpice.Core.Equations
 {
+
     /// <summary>Class representing linear equation system with inner dd_real coeffitient precision.</summary>
     public class DdEquationSystem : IEquationEditor
     {
@@ -107,3 +109,4 @@ namespace NextGenSpice.Core.Equations
         }
     }
 }
+#endif

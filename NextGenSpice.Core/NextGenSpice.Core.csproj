@@ -6,6 +6,11 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>bin\Debug\netstandard2.0\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;dd_precision</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;dd_precision</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

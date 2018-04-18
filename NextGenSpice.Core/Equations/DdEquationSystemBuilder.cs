@@ -1,3 +1,4 @@
+#if dd_precision
 using System;
 using System.Collections.Generic;
 using Numerics;
@@ -72,3 +73,4 @@ namespace NextGenSpice.Core.Equations
         }
     }
 }
+#endif

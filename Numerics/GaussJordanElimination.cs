@@ -16,13 +16,7 @@ namespace Numerics
         [SuppressUnmanagedCodeSecurity]
         private static extern void gauss_solve_double(double* mat, double* b, uint size);
 
-        [DllImport(Constants.DllPath, CallingConvention = CallingConvention.StdCall)]
-        [SuppressUnmanagedCodeSecurity]
-        private static extern void gauss_solve_qd(qd_real* mat, qd_real* b, uint size);
 
-        [DllImport(Constants.DllPath, CallingConvention = CallingConvention.StdCall)]
-        [SuppressUnmanagedCodeSecurity]
-        private static extern void gauss_solve_dd(dd_real* mat, dd_real* b, uint size);
 
         [Conditional("DEBUG")]
         public static void PrintSystem<T>(Matrix<T> m, T[] b) where T : struct
@@ -60,6 +54,10 @@ namespace Numerics
 #endif
         }
 
+
+
+
+#if qd_precision
         /// <summary>Solves system of linear equations in the form A*x=b.</summary>
         /// <param name="a">The A matrix.</param>
         /// <param name="b">The right hand side vector b.</param>
@@ -72,20 +70,6 @@ namespace Numerics
             Solve_Managed_qd(a, b, x);
 #endif
         }
-
-        /// <summary>Solves system of linear equations in the form A*x=b.</summary>
-        /// <param name="a">The A matrix.</param>
-        /// <param name="b">The right hand side vector b.</param>
-        /// <param name="x">The output array for solution x.</param>
-        public static void Solve(Matrix<dd_real> a, dd_real[] b, dd_real[] x)
-        {
-#if NativeGaussElim
-            Solve_Native_dd(a, b, x);
-#else
-            Solve_Managed_dd(a, b, x);
-#endif
-        }
-
 
         private static void Solve_Managed_qd(Matrix<qd_real> m, qd_real[] b, qd_real[] x)
         {
@@ -163,6 +147,11 @@ namespace Numerics
             PrintSolution(b.Select(e => (double) e).ToArray());
         }
 
+
+
+        [DllImport(Constants.DllPath, CallingConvention = CallingConvention.StdCall)]
+        [SuppressUnmanagedCodeSecurity]
+        private static extern void gauss_solve_qd(qd_real* mat, qd_real* b, uint size);
         private static void Solve_Native_qd(Matrix<qd_real> m, qd_real[] b, qd_real[] x)
         {
             fixed (qd_real* mat = m.RawData)
@@ -172,6 +161,22 @@ namespace Numerics
             }
 
             b.CopyTo(x, 0);
+        }
+#endif
+
+
+#if dd_precision
+        /// <summary>Solves system of linear equations in the form A*x=b.</summary>
+        /// <param name="a">The A matrix.</param>
+        /// <param name="b">The right hand side vector b.</param>
+        /// <param name="x">The output array for solution x.</param>
+        public static void Solve(Matrix<dd_real> a, dd_real[] b, dd_real[] x)
+        {
+#if NativeGaussElim
+            Solve_Native_dd(a, b, x);
+#else
+            Solve_Managed_dd(a, b, x);
+#endif
         }
 
         private static void Solve_Managed_dd(Matrix<dd_real> m, dd_real[] b, dd_real[] x)
@@ -250,6 +255,11 @@ namespace Numerics
             PrintSolution(b.Select(e => (double) e).ToArray());
         }
 
+
+
+        [DllImport(Constants.DllPath, CallingConvention = CallingConvention.StdCall)]
+        [SuppressUnmanagedCodeSecurity]
+        private static extern void gauss_solve_dd(dd_real* mat, dd_real* b, uint size);
         private static void Solve_Native_dd(Matrix<dd_real> m, dd_real[] b, dd_real[] x)
         {
             fixed (dd_real* mat = m.RawData)
@@ -260,6 +270,7 @@ namespace Numerics
 
             b.CopyTo(x, 0);
         }
+#endif
 
         private static void Solve_Managed_double(Matrix<double> m, double[] b, double[] x)
         {

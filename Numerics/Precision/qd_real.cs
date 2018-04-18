@@ -4,6 +4,7 @@ using System.Security;
 
 namespace Numerics.Precision
 {
+#if qd_precision
     [StructLayout(LayoutKind.Sequential)]
     public struct qd_real : IConvertible, IComparable<qd_real>, IEquatable<qd_real>
     {
@@ -462,4 +463,5 @@ namespace Numerics.Precision
             return ((IConvertible) x0).ToUInt64(provider);
         }
     }
+#endif
 }

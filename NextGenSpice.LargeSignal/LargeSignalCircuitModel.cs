@@ -1,4 +1,4 @@
-﻿#define dd_precision
+﻿//#define dd_precision
 //#define qd_precision
 
 
@@ -10,7 +10,10 @@ using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Models;
+
+#if qd_precision || dd_precision
 using Numerics.Precision;
+#endif
 
 namespace NextGenSpice.LargeSignal
 {
