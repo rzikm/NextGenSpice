@@ -13,16 +13,41 @@ namespace NextGenSpiceParserTest
         {
         }
 
+
+        [Fact]
+        public void DoesNotReturnSubcircuitOnError()
+        {
+            var res = SpiceNetlistParser.WithDefaults()
+                .Parse(new StringReader(@"
+.subckt mysub 1 2
+v1 1 0 10v
+r1 0 2 10ohm
+d1 1 1 dmod         * intentionally wrong, nodes 1 and 2 not connected
+.model dmod D
+.ends
+"));
+            Assert.Single(res.Errors);
+            Assert.Empty(res.Subcircuits);
+        }
+
         [Fact]
         public void RecognisesInputSourceStatement()
         {
-            ExpectErrors(c => { c.On("V1 0 1 5v"); });
+            ExpectErrors(c =>
+            {
+                c.On("TITLE");
+                c.On("V1 0 1 5v");
+            });
         }
 
         [Fact]
         public void RecognisesResistorStatement()
         {
-            ExpectErrors(c => { c.On("R1 0 1 6ohm"); });
+            ExpectErrors(c =>
+            {
+                c.On("TITLE");
+                c.On("R1 0 1 6ohm");
+            });
         }
 
         [Fact]
@@ -30,6 +55,7 @@ namespace NextGenSpiceParserTest
         {
             ExpectErrors(c =>
             {
+                c.On("TITLE");
                 c.On("V1 0 1 Exp( 2 3 )");
                 c.On("V2 0 2 Exp ( 2 3 )");
                 c.On("V3 0 3 Exp (2 3 )");
@@ -44,6 +70,7 @@ namespace NextGenSpiceParserTest
         {
             ExpectErrors(c =>
             {
+                c.On("TITLE");
                 c.On("R1 0 1 6.96.wef", SpiceParserError.NotANumber);
                 c.On("R1 0 1 5ohm", SpiceParserError.DeviceAlreadyDefined);
                 c.On("r2 0 R1 5", SpiceParserError.NotANode);
@@ -58,6 +85,7 @@ namespace NextGenSpiceParserTest
         {
             ExpectErrors(c =>
             {
+                c.On("TITLE");
                 c.On("v 0 1 exp( 2 3 4 4G 9 3 2 04 39 )     * too many", SpiceParserError.InvalidNumberOfArguments);
                 c.On("v3 1 0                                * too few arguments",
                     SpiceParserError.InvalidNumberOfArguments);
@@ -71,6 +99,21 @@ namespace NextGenSpiceParserTest
                 c.On("v8 1 0    pwl 0 1 1 3 5              * odd number of pairs",
                     SpiceParserError.TimePointWithoutValue);
             });
+        }
+
+        [Fact]
+        public void ReturnsNamesOfNodes()
+        {
+            var res = SpiceNetlistParser.WithDefaults()
+                .Parse(new StringReader(@"
+v1 0 stop 5
+r1 start stop 5
+r2 0 start 10
+"));
+            Assert.Empty(res.Errors);
+            var r1 = res.CircuitDefinition.Devices.Single(d => d.Name == "R1") as ResistorDevice;
+            Assert.Equal("START", res.NodeNames[r1.Anode]);
+            Assert.Equal("STOP", res.NodeNames[r1.Cathode]);
         }
 
         [Fact]
@@ -91,36 +134,18 @@ d1 1 2 dmod
             Assert.Equal("MYSUB", subckt.SubcircuitName);
         }
 
-
         [Fact]
-        public void DoesNotReturnSubcircuitOnError()
+        public void ReturnsTitle()
         {
+            var title = "my title string";
             var res = SpiceNetlistParser.WithDefaults()
-                .Parse(new StringReader(@"
-.subckt mysub 1 2
+                .Parse(new StringReader($@"{title}
 v1 1 0 10v
 r1 0 2 10ohm
-d1 1 1 dmod         * intentionally wrong, nodes 1 and 2 not connected
+d1 1 2 dmod
 .model dmod D
-.ends
 "));
-            Assert.Single(res.Errors);
-            Assert.Empty(res.Subcircuits);
-        }
-
-        [Fact]
-        public void ReturnsNamesOfNodes()
-        {
-            var res = SpiceNetlistParser.WithDefaults()
-                .Parse(new StringReader(@"
-v1 0 stop 5
-r1 start stop 5
-r2 0 start 10
-"));
-            Assert.Empty(res.Errors);
-            var r1 = res.CircuitDefinition.Devices.Single(d => d.Name == "R1") as ResistorDevice;
-            Assert.Equal("START", res.NodeNames[r1.Anode]);
-            Assert.Equal("STOP", res.NodeNames[r1.Cathode]);
+            Assert.Equal(title, res.Title);
         }
     }
 }

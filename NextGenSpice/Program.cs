@@ -33,7 +33,7 @@ namespace NextGenSpice
 
             var parser = CreateParser();
 
-            var result = parser.Parse(new TokenStream(input));
+            var result = parser.Parse(input);
 
             if (result.HasError)
             {

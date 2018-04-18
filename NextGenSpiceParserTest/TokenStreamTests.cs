@@ -13,7 +13,7 @@ namespace NextGenSpiceParserTest
 
         private void InitInput(string input)
         {
-            TokenStream = new TokenStream(new StringReader(input));
+            TokenStream = new TokenStream(new StringReader(input), 0);
         }
 
         private class TokenComparer : IEqualityComparer<Token>

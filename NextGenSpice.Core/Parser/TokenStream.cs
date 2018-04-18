@@ -13,9 +13,10 @@ namespace NextGenSpice.Core.Parser
         private int line;
         private int offset;
 
-        public TokenStream(TextReader input)
+        public TokenStream(TextReader input, int line)
         {
             inputReader = input;
+            this.line = line;
         }
 
         /// <summary>Reads a token from the stream, returns null on EOF.</summary>

@@ -9,7 +9,8 @@ namespace NextGenSpice.Core.Parser
     /// <summary>Class holding result of input file parsing</summary>
     public class SpiceNetlistParserResult
     {
-        public SpiceNetlistParserResult(ICircuitDefinition circuit, IReadOnlyList<SpiceStatement> otherStatements,
+        public SpiceNetlistParserResult(string title, ICircuitDefinition circuit,
+            IReadOnlyList<SpiceStatement> otherStatements,
             IReadOnlyList<ErrorInfo> errors,
             IEnumerable<ISubcircuitDefinition> subcircuits, IReadOnlyList<string> nodeNames)
         {
@@ -17,6 +18,7 @@ namespace NextGenSpice.Core.Parser
             Errors = errors;
             Subcircuits = subcircuits;
             NodeNames = nodeNames;
+            Title = title;
             OtherStatements = otherStatements;
         }
 
@@ -34,6 +36,9 @@ namespace NextGenSpice.Core.Parser
 
         /// <summary>Set of errors encountered in input file.</summary>
         public IReadOnlyList<ErrorInfo> Errors { get; }
+
+        /// <summary>Title of the netlist file</summary>
+        public string Title { get; }
 
         /// <summary>Indicates that parsing was not successful and there were some errors in the input file.</summary>
         public bool HasError => Errors.Count > 0;

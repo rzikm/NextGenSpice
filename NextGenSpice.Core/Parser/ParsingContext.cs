@@ -25,6 +25,8 @@ namespace NextGenSpice.Core.Parser
             scopes = new Stack<(CircuitBuilder builder, List<DeferredStatement> stmts)>();
         }
 
+        public string Title { get; set; }
+
         /// <summary>Table containing known symbols from input file.</summary>
         public ISymbolTable SymbolTable => table;
 

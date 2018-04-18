@@ -91,7 +91,7 @@ namespace NextGenSpice.Core.Parser
         /// <returns></returns>
         public SpiceNetlistParserResult Parse(FileStream filestream)
         {
-            return Parse(new TokenStream(new StreamReader(filestream)));
+            return Parse(new StreamReader(filestream));
         }
 
         /// <summary>Parses SPICE code in the input stream.</summary>
@@ -99,16 +99,13 @@ namespace NextGenSpice.Core.Parser
         /// <returns></returns>
         public SpiceNetlistParserResult Parse(TextReader input)
         {
-            return Parse(new TokenStream(input));
-        }
+            var ctx = new ParsingContext()
+            {
+                Title = input.ReadLine() // First line of the file always contains title
+            };
 
-        /// <summary>Parses SPICE code in the input stream.</summary>
-        /// <param name="stream"></param>
-        /// <returns></returns>
-        public SpiceNetlistParserResult Parse(ITokenStream stream)
-        {
+            ITokenStream stream = new TokenStream(input, 1);
             Token[] tokens;
-            var ctx = new ParsingContext();
             modelProcessor.RegisterDefaultModels(ctx);
             ctx.SymbolTable.FreezeDefaults();
 
@@ -140,6 +137,7 @@ namespace NextGenSpice.Core.Parser
             var circuitDefinition = ctx.Errors.Count == 0 ? TryCreateCircuitDefinition(ctx) : null;
 
             return new SpiceNetlistParserResult(
+                ctx.Title,
                 circuitDefinition,
                 ctx.OtherStatements,
                 ctx.Errors.OrderBy(e => e.LineNumber).ThenBy(e => e.LineColumn).ToList(), // order errors
