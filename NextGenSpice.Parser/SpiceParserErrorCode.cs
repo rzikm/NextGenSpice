@@ -1,6 +1,6 @@
 ﻿namespace NextGenSpice.Parser
 {
-    public enum SpiceParserError
+    public enum SpiceParserErrorCode
     {
         DeviceAlreadyDefined,
 

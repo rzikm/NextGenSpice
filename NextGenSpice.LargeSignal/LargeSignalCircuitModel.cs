@@ -1,16 +1,11 @@
-﻿//#define dd_precision
-//#define qd_precision
-
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Equations;
 using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Models;
-
+using NextGenSpice.Numerics.Equations;
 #if qd_precision || dd_precision
 using NextGenSpice.Numerics.Precision;
 #endif

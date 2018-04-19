@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NextGenSpice.Core.NumIntegration
+namespace NextGenSpice.LargeSignal.NumIntegration
 {
     /// <summary>Simple wrapper around a functor returning new instance of IIntegrationMethod implementation.</summary>
     public class SimpleIntegrationMethodFactory : IIntegrationMethodFactory

@@ -55,7 +55,7 @@ d1 1 2 mydiode *mydiode is declared outside
 ");
             Assert.Single(result.Errors);
             var error = result.Errors.Single();
-            Assert.Equal(SpiceParserError.NoSuchModel, error.ErrorCode);
+            Assert.Equal(SpiceParserErrorCode.NoSuchModel, error.ErrorCode);
             Assert.Equal("MYDIODE", error.Args[0]);
         }
 
@@ -81,7 +81,7 @@ v1 1 2 5v
 ");
             Assert.Single(result.Errors);
             var error = result.Errors.Single();
-            Assert.Equal(SpiceParserError.NoSuchSubcircuit, error.ErrorCode);
+            Assert.Equal(SpiceParserErrorCode.NoSuchSubcircuit, error.ErrorCode);
             Assert.Equal("VOLTAGEALIAS", error.Args[0]);
         }
 
@@ -120,7 +120,7 @@ r2 22 2 5
 ");
             Assert.Single(result.Errors);
             var error = result.Errors.Single();
-            Assert.Equal(SpiceParserError.CurrentBranchCutset, error.ErrorCode);
+            Assert.Equal(SpiceParserErrorCode.CurrentBranchCutset, error.ErrorCode);
         }
 
         [Fact]
@@ -140,7 +140,7 @@ v2 3 2 4
 ");
             Assert.Single(result.Errors);
             var error = result.Errors.Single();
-            Assert.Equal(SpiceParserError.VoltageBranchCycle, error.ErrorCode);
+            Assert.Equal(SpiceParserErrorCode.VoltageBranchCycle, error.ErrorCode);
         }
 
         [Fact]
@@ -157,7 +157,7 @@ v1 1 0 5v
 ");
             Assert.Single(result.Errors);
             var error = result.Errors.Single();
-            Assert.Equal(SpiceParserError.TerminalNamesNotUnique, error.ErrorCode);
+            Assert.Equal(SpiceParserErrorCode.TerminalNamesNotUnique, error.ErrorCode);
         }
 
         [Fact]
@@ -174,7 +174,7 @@ v1 1 0 5v
 ");
             Assert.Single(result.Errors);
             var error = result.Errors.Single();
-            Assert.Equal(SpiceParserError.TerminalToGround, error.ErrorCode);
+            Assert.Equal(SpiceParserErrorCode.TerminalToGround, error.ErrorCode);
         }
 
 
@@ -191,7 +191,7 @@ v 1 22 5         *oops forgot to connect to node 2
 ");
             Assert.Single(result.Errors);
             var error = result.Errors.Single();
-            Assert.Equal(SpiceParserError.SubcircuitNotConnected, error.ErrorCode);
+            Assert.Equal(SpiceParserErrorCode.SubcircuitNotConnected, error.ErrorCode);
         }
 
         [Fact]

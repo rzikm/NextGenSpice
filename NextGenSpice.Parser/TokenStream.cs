@@ -33,7 +33,7 @@ namespace NextGenSpice.Parser
         ///     are also returned. returns empty collection on EOF.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Token> ReadLogicalLine()
+        public IEnumerable<Token> ReadStatement()
         {
             var token = Read();
             if (token == null) yield break;

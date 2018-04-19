@@ -29,7 +29,7 @@ namespace NextGenSpice.Printing
 
                 // expected token in format <Stat>(device), V(node), V(node1,node2)
                 if (parStart < 1 || parEnd < s.Length - 1 || s.Length <= 3)
-                    context.Errors.Add(tokens[i].ToErrorInfo(SpiceParserError.UnknownPrintStatementParameter));
+                    context.Errors.Add(tokens[i].ToError(SpiceParserErrorCode.UnknownPrintStatementParameter));
                 else
                 {
                     context.DeferredStatements.Add(new DeferredPrintStatement(t, AnalysisTypeIdentifer));

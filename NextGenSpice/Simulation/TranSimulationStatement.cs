@@ -8,6 +8,7 @@ using NextGenSpice.LargeSignal;
 using NextGenSpice.Parser;
 using NextGenSpice.Parser.Utils;
 using NextGenSpice.Printing;
+using SpiceParserError = NextGenSpice.Parser.Utils.SpiceParserError;
 
 namespace NextGenSpice.Simulation
 {
@@ -102,7 +103,7 @@ namespace NextGenSpice.Simulation
     public class PrinterInitializationException : InvalidOperationException
     {
 
-        public PrinterInitializationException(IEnumerable<ErrorInfo> errors) : base(
+        public PrinterInitializationException(IEnumerable<SpiceParserError> errors) : base(
             "There were errors during printer initializations.")
         {
             Errors = errors;
@@ -114,6 +115,6 @@ namespace NextGenSpice.Simulation
         {
         }
 
-        public IEnumerable<ErrorInfo> Errors { get; }
+        public IEnumerable<SpiceParserError> Errors { get; }
     }
 }

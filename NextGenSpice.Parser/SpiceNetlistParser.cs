@@ -109,7 +109,7 @@ namespace NextGenSpice.Parser
             ctx.SymbolTable.FreezeDefaults();
 
             // parse input file by logical lines, each line is an independent statement
-            while ((tokens = stream.ReadLogicalLine().ToArray()).Length > 0) // while not EOF
+            while ((tokens = stream.ReadStatement().ToArray()).Length > 0) // while not EOF
             {
                 var firstToken = tokens[0]; // statement discriminator
                 var c = firstToken.Value[0];
@@ -117,7 +117,7 @@ namespace NextGenSpice.Parser
                 if (char.IsLetter(c)) // possible device statement
                     ProcessDevice(tokens, ctx, deviceProcessors);
                 else if (c != '.') // syntactic error
-                    ctx.Errors.Add(firstToken.ToErrorInfo(SpiceParserError.UnexpectedCharacter, c));
+                    ctx.Errors.Add(firstToken.ToError(SpiceParserErrorCode.UnexpectedCharacter, c));
                 else if (tokens[0].Value == ".END" && tokens.Length == 1)
                     break; // end parsing now
                 else // other .[keyword] statement
@@ -157,27 +157,27 @@ namespace NextGenSpice.Parser
                 string message;
 
                 // translate node indexes to node names used in the input file
-                ErrorInfo error;
+                Utils.SpiceParserError error;
                 switch (e)
                 {
                     case NoDcPathToGroundException ex:
-                        error = new ErrorInfo(SpiceParserError.NoDcPathToGround, 0, 0,
+                        error = new Utils.SpiceParserError(SpiceParserErrorCode.NoDcPathToGround, 0, 0,
                             ctx.SymbolTable.GetNodeNames(ex.Nodes).Cast<object>().ToArray());
                         break;
 
                     case NotConnectedSubcircuitException ex:
                         var names = ex.Components.Select(c => ctx.SymbolTable.GetNodeNames(c).ToArray()).Cast<object>()
                             .ToArray();
-                        error = new ErrorInfo(SpiceParserError.SubcircuitNotConnected, 0, 0, names);
+                        error = new Utils.SpiceParserError(SpiceParserErrorCode.SubcircuitNotConnected, 0, 0, names);
                         break;
 
                     case VoltageBranchCycleException ex:
-                        error = new ErrorInfo(SpiceParserError.VoltageBranchCycle, 0, 0,
+                        error = new Utils.SpiceParserError(SpiceParserErrorCode.VoltageBranchCycle, 0, 0,
                             ex.Devices.Select(el => el.Name).Cast<object>().ToArray());
                         break;
 
                     case CurrentBranchCutsetException ex:
-                        error = new ErrorInfo(SpiceParserError.CurrentBranchCutset, 0, 0,
+                        error = new Utils.SpiceParserError(SpiceParserErrorCode.CurrentBranchCutset, 0, 0,
                             ex.Devices.Select(el => el.Name).Cast<object>().ToArray());
                         break;
 
@@ -199,7 +199,7 @@ namespace NextGenSpice.Parser
             if (processors.TryGetValue(discriminator, out var proc))
                 proc.Process(tokens, ctx);
             else // unknown statement
-                ctx.Errors.Add(tokens[0].ToErrorInfo(SpiceParserError.UnknownStatement));
+                ctx.Errors.Add(tokens[0].ToError(SpiceParserErrorCode.UnknownStatement));
         }
 
         private void ProcessDevice(Token[] tokens, ParsingContext ctx,
@@ -210,7 +210,7 @@ namespace NextGenSpice.Parser
             if (deviceStatementProcessors.TryGetValue(discriminator, out var proc))
                 proc.Process(tokens, ctx);
             else // unknown device
-                ctx.Errors.Add(tokens[0].ToErrorInfo(SpiceParserError.UnknownDevice));
+                ctx.Errors.Add(tokens[0].ToError(SpiceParserErrorCode.UnknownDevice));
         }
     }
 }

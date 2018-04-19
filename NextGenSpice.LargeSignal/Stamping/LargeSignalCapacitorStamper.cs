@@ -1,4 +1,4 @@
-﻿using NextGenSpice.Core.Equations;
+﻿using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Stamping
 {

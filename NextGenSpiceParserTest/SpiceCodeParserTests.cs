@@ -72,12 +72,12 @@ d1 1 1 dmod         * intentionally wrong, nodes 1 and 2 not connected
             ExpectErrors(c =>
             {
                 c.On("TITLE");
-                c.On("R1 0 1 6.96.wef", SpiceParserError.NotANumber);
-                c.On("R1 0 1 5ohm", SpiceParserError.DeviceAlreadyDefined);
-                c.On("r2 0 R1 5", SpiceParserError.NotANode);
-                c.On("wA R1 R2 42Meg4", SpiceParserError.UnknownDevice);
-                c.On("R2 R1 R2 42Meg4", SpiceParserError.DeviceAlreadyDefined, SpiceParserError.NotANode,
-                    SpiceParserError.NotANode, SpiceParserError.NotANumber);
+                c.On("R1 0 1 6.96.wef", SpiceParserErrorCode.NotANumber);
+                c.On("R1 0 1 5ohm", SpiceParserErrorCode.DeviceAlreadyDefined);
+                c.On("r2 0 R1 5", SpiceParserErrorCode.NotANode);
+                c.On("wA R1 R2 42Meg4", SpiceParserErrorCode.UnknownDevice);
+                c.On("R2 R1 R2 42Meg4", SpiceParserErrorCode.DeviceAlreadyDefined, SpiceParserErrorCode.NotANode,
+                    SpiceParserErrorCode.NotANode, SpiceParserErrorCode.NotANumber);
             });
         }
 
@@ -87,18 +87,18 @@ d1 1 1 dmod         * intentionally wrong, nodes 1 and 2 not connected
             ExpectErrors(c =>
             {
                 c.On("TITLE");
-                c.On("v 0 1 exp( 2 3 4 4G 9 3 2 04 39 )     * too many", SpiceParserError.InvalidNumberOfArguments);
+                c.On("v 0 1 exp( 2 3 4 4G 9 3 2 04 39 )     * too many", SpiceParserErrorCode.InvalidNumberOfArguments);
                 c.On("v3 1 0                                * too few arguments",
-                    SpiceParserError.InvalidNumberOfArguments);
+                    SpiceParserErrorCode.InvalidNumberOfArguments);
                 c.On("v4 1 0    exp 3                       * too few arguments",
-                    SpiceParserError.InvalidNumberOfArguments);
+                    SpiceParserErrorCode.InvalidNumberOfArguments);
                 c.On("v5 1 0    fuc 3                       * unknown function",
-                    SpiceParserError.UnknownTransientFunction);
+                    SpiceParserErrorCode.UnknownTransientFunction);
                 c.On("v6 1 0    pwl 0 1 1 3 R 4             * repeat not on breakpoint",
-                    SpiceParserError.NoBreakpointRepetition);
-                c.On("v7 1 0    pwl 0 1 -1 3 R              * negative timepoint", SpiceParserError.NegativeTimepoint);
+                    SpiceParserErrorCode.NoBreakpointRepetition);
+                c.On("v7 1 0    pwl 0 1 -1 3 R              * negative timepoint", SpiceParserErrorCode.NegativeTimepoint);
                 c.On("v8 1 0    pwl 0 1 1 3 5              * odd number of pairs",
-                    SpiceParserError.TimePointWithoutValue);
+                    SpiceParserErrorCode.TimePointWithoutValue);
             });
         }
 

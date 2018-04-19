@@ -28,21 +28,21 @@ namespace NextGenSpiceParserTest
 
         protected interface IParserCaseBuilder
         {
-            void On(string line, params SpiceParserError[] expectedErrors);
+            void On(string line, params SpiceParserErrorCode[] expectedErrors);
         }
 
         class ParserCaseBuilder : IParserCaseBuilder
         {
             private readonly StringBuilder sb;
-            private readonly List<(string line, SpiceParserError[] errors)> specs;
+            private readonly List<(string line, SpiceParserErrorCode[] errors)> specs;
 
             public ParserCaseBuilder()
             {
-                specs = new List<(string line, SpiceParserError[] errors)> {("", new SpiceParserError[0])};
+                specs = new List<(string line, SpiceParserErrorCode[] errors)> {("", new SpiceParserErrorCode[0])};
                 sb = new StringBuilder();
             }
 
-            public void On(string line, params SpiceParserError[] expectedErrors)
+            public void On(string line, params SpiceParserErrorCode[] expectedErrors)
             {
                 Array.Sort(expectedErrors);
                 specs.Add((line, expectedErrors));

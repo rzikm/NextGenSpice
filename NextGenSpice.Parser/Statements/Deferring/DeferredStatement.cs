@@ -16,7 +16,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
 
         /// <summary>Returns set of errors due to which this stetement cannot be processed.</summary>
         /// <returns></returns>
-        public abstract IEnumerable<ErrorInfo> GetErrors();
+        public abstract IEnumerable<Utils.SpiceParserError> GetErrors();
 
         /// <summary>Applies the statement in the given context.</summary>
         /// <param name="context"></param>

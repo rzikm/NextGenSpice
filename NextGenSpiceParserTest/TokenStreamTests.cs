@@ -72,7 +72,7 @@ namespace NextGenSpiceParserTest
 * next line should be connected to the previous one
 +third fourth");
             Assert.Equal(new[] {"FIRST", "SECOND", "THIRD", "FOURTH"},
-                TokenStream.ReadLogicalLine().Select(t => t.Value));
+                TokenStream.ReadStatement().Select(t => t.Value));
         }
 
         [Fact]
@@ -80,9 +80,9 @@ namespace NextGenSpiceParserTest
         {
             InitInput("first  second     third");
 
-            Assert.Equal(new[] {"FIRST", "SECOND", "THIRD"}, TokenStream.ReadLogicalLine().Select(t => t.Value));
-            Assert.Equal(0, TokenStream.ReadLogicalLine().Count());
-            Assert.Equal(0, TokenStream.ReadLogicalLine().Count());
+            Assert.Equal(new[] {"FIRST", "SECOND", "THIRD"}, TokenStream.ReadStatement().Select(t => t.Value));
+            Assert.Equal(0, TokenStream.ReadStatement().Count());
+            Assert.Equal(0, TokenStream.ReadStatement().Count());
         }
 
         [Fact]
@@ -120,16 +120,16 @@ namespace NextGenSpiceParserTest
 
 last*comment in the middle
      *comment on last line of file");
-            Assert.Equal(new[] {"FIRST", "SECOND"}, TokenStream.ReadLogicalLine().Select(t => t.Value));
+            Assert.Equal(new[] {"FIRST", "SECOND"}, TokenStream.ReadStatement().Select(t => t.Value));
             var expected = new Token
             {
                 Value = "LAST",
                 LineColumn = 1,
                 LineNumber = 4
             };
-            var nextLine = TokenStream.ReadLogicalLine();
+            var nextLine = TokenStream.ReadStatement();
             Assert.Equal(expected, nextLine.Single(), new TokenComparer());
-            Assert.Equal(0, TokenStream.ReadLogicalLine().Count());
+            Assert.Equal(0, TokenStream.ReadStatement().Count());
         }
 
         [Fact]
@@ -138,15 +138,15 @@ last*comment in the middle
             InitInput(@"first second   
 
 last");
-            Assert.Equal(new[] {"FIRST", "SECOND"}, TokenStream.ReadLogicalLine().Select(t => t.Value));
+            Assert.Equal(new[] {"FIRST", "SECOND"}, TokenStream.ReadStatement().Select(t => t.Value));
             var expected = new Token
             {
                 Value = "LAST",
                 LineColumn = 1,
                 LineNumber = 3
             };
-            Assert.Equal(expected, TokenStream.ReadLogicalLine().Single(), new TokenComparer());
-            Assert.Equal(0, TokenStream.ReadLogicalLine().Count());
+            Assert.Equal(expected, TokenStream.ReadStatement().Single(), new TokenComparer());
+            Assert.Equal(0, TokenStream.ReadStatement().Count());
         }
     }
 }

@@ -30,14 +30,14 @@ namespace NextGenSpice.Parser.Statements
 
                 if (!matches.Success)
                 {
-                    Context.Errors.Add(token.ToErrorInfo(SpiceParserError.InvalidIcArgument));
+                    Context.Errors.Add(token.ToError(SpiceParserErrorCode.InvalidIcArgument));
                     continue;
                 }
 
                 var nodeName = matches.Groups[1].Value;
                 if (!Context.SymbolTable.TryGetOrCreateNode(nodeName, out var nodeIndex))
                 {
-                    Context.Errors.Add(token.ToErrorInfo(SpiceParserError.NotANode));
+                    Context.Errors.Add(token.ToError(SpiceParserErrorCode.NotANode));
                     nodeIndex = -1;
                     continue;
                 }

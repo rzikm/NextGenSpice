@@ -1,10 +1,10 @@
 namespace NextGenSpice.Parser.Utils
 {
     /// <summary>Provides basic information about an error that occured during parsing of an input file.</summary>
-    public class ErrorInfo
+    public class SpiceParserError
     {
-        /// <summary>Initializes a new instance of the <see cref="ErrorInfo"></see> class.</summary>
-        public ErrorInfo(SpiceParserError errorCode, int lineNumber, int lineColumn, object[] args)
+        /// <summary>Initializes a new instance of the <see cref="SpiceParserError"></see> class.</summary>
+        public SpiceParserError(NextGenSpice.Parser.SpiceParserErrorCode errorCode, int lineNumber, int lineColumn, object[] args)
         {
             LineNumber = lineNumber;
             LineColumn = lineColumn;
@@ -13,7 +13,7 @@ namespace NextGenSpice.Parser.Utils
         }
 
         /// <summary>Error code characterizing this error.</summary>
-        public SpiceParserError ErrorCode { get; }
+        public NextGenSpice.Parser.SpiceParserErrorCode ErrorCode { get; }
 
         /// <summary>Index of a line from input file on which error occured.</summary>
         public int LineNumber { get; }
@@ -27,10 +27,10 @@ namespace NextGenSpice.Parser.Utils
         /// <summary>Messsage summarizing the error.</summary>
         public string Messsage => ErrorCode.GetMessage(Args);
 
-        /// <summary>Creates a new instance of the <see cref="ErrorInfo"></see> class.</summary>
-        public static ErrorInfo Create(SpiceParserError errorCode, int lineNumber, int lineColumn, params object[] args)
+        /// <summary>Creates a new instance of the <see cref="SpiceParserError"></see> class.</summary>
+        public static SpiceParserError Create(NextGenSpice.Parser.SpiceParserErrorCode errorCode, int lineNumber, int lineColumn, params object[] args)
         {
-            return new ErrorInfo(errorCode, lineNumber, lineColumn, args);
+            return new SpiceParserError(errorCode, lineNumber, lineColumn, args);
         }
 
         /// <summary>Returns a string that represents the current object.</summary>

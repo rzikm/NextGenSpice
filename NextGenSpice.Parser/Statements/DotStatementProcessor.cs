@@ -31,7 +31,7 @@ namespace NextGenSpice.Parser.Statements
 
             var firstToken = tokens[0];
             if (tokens.Length - 1 < MinArgs || tokens.Length - 1 > MaxArgs)
-                ctx.Errors.Add(firstToken.ToErrorInfo(SpiceParserError.InvalidNumberOfArguments));
+                ctx.Errors.Add(firstToken.ToError(SpiceParserErrorCode.InvalidNumberOfArguments));
 
             DoProcess(tokens);
 

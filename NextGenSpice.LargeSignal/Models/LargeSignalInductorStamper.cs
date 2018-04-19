@@ -1,5 +1,5 @@
-﻿using NextGenSpice.Core.Equations;
-using NextGenSpice.LargeSignal.Stamping;
+﻿using NextGenSpice.LargeSignal.Stamping;
+using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
 {

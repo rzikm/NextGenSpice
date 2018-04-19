@@ -1,10 +1,9 @@
 #if dd_precision
 using System;
 using System.Collections.Generic;
-using NextGenSpice.Numerics;
 using NextGenSpice.Numerics.Precision;
 
-namespace NextGenSpice.Core.Equations
+namespace NextGenSpice.Numerics.Equations
 {
     /// <summary>Class that is used to build equation system with dd_real coefficients.</summary>
     public class DdEquationSystemBuilder : IEquationSystemBuilder

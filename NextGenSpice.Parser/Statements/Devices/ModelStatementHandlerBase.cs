@@ -24,7 +24,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             if (context.SymbolTable.TryGetModel<T>(name, out _))
             {
                 context.Errors.Add(tokens[1]
-                    .ToErrorInfo(SpiceParserError.ModelAlreadyExists));
+                    .ToError(SpiceParserErrorCode.ModelAlreadyExists));
                 return; // no additional processing required
             }
 
@@ -37,7 +37,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                 if (index <= 0 || index >= token.Value.Length - 1) // no '=' 
                 {
                     context.Errors.Add(
-                        token.ToErrorInfo(SpiceParserError.InvalidModelParameter));
+                        token.ToError(SpiceParserErrorCode.InvalidModelParameter));
                     continue;
                 }
 
@@ -45,7 +45,7 @@ namespace NextGenSpice.Parser.Statements.Devices
 
                 // check validity of the parameter name
                 if (!Mapper.HasKey(paramName))
-                    context.Errors.Add(token.ToErrorInfo(SpiceParserError.UnknownParameter, paramName));
+                    context.Errors.Add(token.ToError(SpiceParserErrorCode.UnknownParameter, paramName));
 
                 // reuse token instance for parsing the value part of the pair
                 token.LineColumn += index + 1; // modify offset to get correct error location.

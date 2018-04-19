@@ -1,6 +1,6 @@
-﻿using NextGenSpice.Core.NumIntegration;
+﻿using NextGenSpice.LargeSignal.NumIntegration;
 
-namespace NextGenSpice.Core.Circuit
+namespace NextGenSpice.LargeSignal
 {
     /// <summary>Class for aggregating device independent parameters for the simulation.</summary>
     public class CircuitParameters

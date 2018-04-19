@@ -1,32 +1,28 @@
-﻿#if dd_precision
-using System;
-using NextGenSpice.Numerics;
-using NextGenSpice.Numerics.Precision;
+﻿using System;
 
-namespace NextGenSpice.Core.Equations
+namespace NextGenSpice.Numerics.Equations
 {
-
-    /// <summary>Class representing linear equation system with inner dd_real coeffitient precision.</summary>
-    public class DdEquationSystem : IEquationEditor
+    /// <summary>Class representing linear equation system with inner double coeffitient precision.</summary>
+    public class EquationSystem : IEquationEditor
     {
-        private readonly (Matrix<dd_real> m, dd_real[] v)[] backup;
+        private readonly (Matrix<double> m, double[] v)[] backup;
 
-        private readonly dd_real[] solution;
+        private readonly double[] solution;
 
-        public DdEquationSystem(Matrix<dd_real> matrix, dd_real[] rhs, int backupDepth = 2)
+        public EquationSystem(Matrix<double> matrix, double[] rhs, int backupDepth = 2)
         {
             // init backup space
-            backup = new (Matrix<dd_real> m, dd_real[] v)[backupDepth];
+            backup = new(Matrix<double> m, double[] v)[backupDepth];
             for (int i = 0; i < backupDepth; i++)
             {
-                backup[i] = (matrix.Clone(), (dd_real[]) rhs.Clone());
+                backup[i] = (matrix.Clone(), (double[])rhs.Clone());
             }
 
             if (matrix.Size != rhs.Length)
                 throw new ArgumentException(
                     $"Matrix side length ({matrix.Size}) is different from right hand side vector length ({rhs.Length})");
             Solution = new double[rhs.Length];
-            solution = new dd_real[rhs.Length];
+            solution = new double[rhs.Length];
 
             Matrix = matrix;
             RightHandSide = rhs;
@@ -36,10 +32,10 @@ namespace NextGenSpice.Core.Equations
         public double[] Solution { get; private set; }
 
         /// <summary>Matrix part of the equation system.</summary>
-        public Matrix<dd_real> Matrix { get; private set; }
+        public Matrix<double> Matrix { get; private set; }
 
         /// <summary>Right hand side vector of the equation system.</summary>
-        public dd_real[] RightHandSide { get; private set; }
+        public double[] RightHandSide { get; private set; }
 
         /// <summary>Count of the variables in the equation.</summary>
         public int VariablesCount => Solution.Length;
@@ -86,7 +82,7 @@ namespace NextGenSpice.Core.Equations
             CopyData(tup.Item1, Matrix, tup.Item2, RightHandSide);
         }
 
-        private void CopyData(Matrix<dd_real> msrc, Matrix<dd_real> mdest, dd_real[] rhssrc, dd_real[] rhsdest)
+        private void CopyData(Matrix<double> msrc, Matrix<double> mdest, double[] rhssrc, double[] rhsdest)
         {
             msrc.RawData.CopyTo(mdest.RawData, 0);
             rhssrc.CopyTo(rhsdest, 0);
@@ -104,9 +100,8 @@ namespace NextGenSpice.Core.Equations
 
             for (int i = 0; i < solution.Length; i++)
             {
-                Solution[i] = solution[i].x0;
+                Solution[i] = solution[i];
             }
         }
     }
 }
-#endif

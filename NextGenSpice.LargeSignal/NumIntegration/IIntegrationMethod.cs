@@ -1,4 +1,4 @@
-﻿namespace NextGenSpice.Core.NumIntegration
+﻿namespace NextGenSpice.LargeSignal.NumIntegration
 {
     /// <summary>Defines basic interface for numeric integration methods to be used in model classes.</summary>
     public interface IIntegrationMethod

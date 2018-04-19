@@ -17,7 +17,7 @@ namespace NextGenSpice.Parser
         public ParsingContext()
         {
             table = new SymbolTable();
-            Errors = new List<ErrorInfo>();
+            Errors = new List<Utils.SpiceParserError>();
             DeferredStatements = new List<DeferredStatement>();
             CircuitBuilder = new CircuitBuilder();
             OtherStatements = new List<SpiceStatement>();
@@ -31,7 +31,7 @@ namespace NextGenSpice.Parser
         public ISymbolTable SymbolTable => table;
 
         /// <summary>Set of errors from the input file.</summary>
-        public List<ErrorInfo> Errors { get; }
+        public List<Utils.SpiceParserError> Errors { get; }
 
         /// <summary>Set of all syntactically correct staements encountered to be evaluated.</summary>
         public List<DeferredStatement> DeferredStatements { get; private set; }

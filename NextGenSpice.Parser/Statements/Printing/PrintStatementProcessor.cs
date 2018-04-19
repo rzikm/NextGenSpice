@@ -33,7 +33,7 @@ namespace NextGenSpice.Parser.Statements.Printing
             var analysisType = tokens[1].Value;
             if (!processors.TryGetValue(analysisType, out var proc))
             {
-                Context.Errors.Add(tokens[1].ToErrorInfo(SpiceParserError.UnknownAnalysisType));
+                Context.Errors.Add(tokens[1].ToError(SpiceParserErrorCode.UnknownAnalysisType));
                 return;
             }
 

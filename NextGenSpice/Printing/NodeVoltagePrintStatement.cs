@@ -32,10 +32,10 @@ namespace NextGenSpice.Printing
         /// <summary>Initializes print statement for given circuit model and returns set of errors that occured (if any).</summary>
         /// <param name="circuitModel">Current model of the circuit.</param>
         /// <returns>Set of errors that errored (if any).</returns>
-        public override IEnumerable<ErrorInfo> Initialize(LargeSignalCircuitModel circuitModel)
+        public override IEnumerable<SpiceParserError> Initialize(LargeSignalCircuitModel circuitModel)
         {
             this.model = circuitModel;
-            return Enumerable.Empty<ErrorInfo>();
+            return Enumerable.Empty<SpiceParserError>();
         }
     }
 
@@ -67,10 +67,10 @@ namespace NextGenSpice.Printing
         /// <summary>Initializes print statement for given circuit model and returns set of errors that occured (if any).</summary>
         /// <param name="circuitModel">Current model of the circuit.</param>
         /// <returns>Set of errors that errored (if any).</returns>
-        public override IEnumerable<ErrorInfo> Initialize(LargeSignalCircuitModel circuitModel)
+        public override IEnumerable<SpiceParserError> Initialize(LargeSignalCircuitModel circuitModel)
         {
             this.model = circuitModel;
-            return Enumerable.Empty<ErrorInfo>();
+            return Enumerable.Empty<SpiceParserError>();
         }
     }
 }

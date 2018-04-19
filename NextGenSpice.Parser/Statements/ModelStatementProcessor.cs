@@ -32,12 +32,12 @@ namespace NextGenSpice.Parser.Statements
         /// <param name="tokens">All tokens of the statement.</param>
         protected override void DoProcess(Token[] tokens)
         {
-            tokens = tokens.Take(2).Concat(Helper.Retokenize(tokens, 2)).ToArray();
+            tokens = tokens.Take(2).Concat(Utils.Parser.Retokenize(tokens, 2)).ToArray();
             var discriminatorToken = tokens[2];
             if (!handlers.TryGetValue(discriminatorToken.Value, out var handler))
             {
                 Context.Errors.Add(
-                    discriminatorToken.ToErrorInfo(SpiceParserError.UnknownDeviceModelDiscriminator));
+                    discriminatorToken.ToError(SpiceParserErrorCode.UnknownDeviceModelDiscriminator));
                 return;
             }
 

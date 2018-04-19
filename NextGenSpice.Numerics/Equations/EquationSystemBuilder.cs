@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using NextGenSpice.Numerics;
 
-namespace NextGenSpice.Core.Equations
+namespace NextGenSpice.Numerics.Equations
 {
     /// <summary>Class that is used to build equation system with double coefficients.</summary>
     public class EquationSystemBuilder : IEquationSystemBuilder

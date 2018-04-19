@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using NextGenSpice.Core.Equations;
 using NextGenSpice.Numerics;
+using NextGenSpice.Numerics.Equations;
 
-namespace NextGenSpice.Core.NumIntegration
+namespace NextGenSpice.LargeSignal.NumIntegration
 {
     /// <summary>Class performing Adams-Moulton integration method of given order.</summary>
     public class AdamsMoultonIntegrationMethod : IIntegrationMethod

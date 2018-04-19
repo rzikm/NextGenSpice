@@ -4,7 +4,7 @@ using NextGenSpice.Core;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Devices.Parameters;
-using NextGenSpice.Core.Equations;
+using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
 {

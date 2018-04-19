@@ -1,4 +1,4 @@
-﻿namespace NextGenSpice.Core.NumIntegration
+﻿namespace NextGenSpice.LargeSignal.NumIntegration
 {
     /// <summary>Defines Method for creating new instance of IIntegrationMethod object.</summary>
     public interface IIntegrationMethodFactory

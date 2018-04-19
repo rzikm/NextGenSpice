@@ -1,4 +1,4 @@
-﻿namespace NextGenSpice.Core.Circuit
+﻿namespace NextGenSpice.LargeSignal
 {
     /// <summary>Defines properties for getting information about the simulation.</summary>
     public interface ISimulationContext

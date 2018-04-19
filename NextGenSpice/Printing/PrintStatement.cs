@@ -17,7 +17,7 @@ namespace NextGenSpice.Printing
         /// <summary>Initializes print statement for given circuit model and returns set of errors that occured (if any).</summary>
         /// <param name="circuitModel">Current model of the circuit.</param>
         /// <returns>Set of errors that errored (if any).</returns>
-        public abstract IEnumerable<ErrorInfo> Initialize(object circuitModel);
+        public abstract IEnumerable<SpiceParserError> Initialize(object circuitModel);
 
         /// <summary>Prints value of handled by this print statement into given TextWriter.</summary>
         /// <param name="output">Output TextWriter where to write.</param>
@@ -35,7 +35,7 @@ namespace NextGenSpice.Printing
         /// <summary>Initializes print statement for given circuit model and returns set of errors that occured (if any).</summary>
         /// <param name="circuitModel">Current model of the circuit.</param>
         /// <returns>Set of errors that errored (if any).</returns>
-        public override IEnumerable<ErrorInfo> Initialize(object circuitModel)
+        public override IEnumerable<SpiceParserError> Initialize(object circuitModel)
         {
             return Initialize((TModel) circuitModel);
         }
@@ -43,6 +43,6 @@ namespace NextGenSpice.Printing
         /// <summary>Initializes print statement for given circuit model and returns set of errors that occured (if any).</summary>
         /// <param name="circuitModel">Current model of the circuit.</param>
         /// <returns>Set of errors that errored (if any).</returns>
-        public abstract IEnumerable<ErrorInfo> Initialize(TModel circuitModel);
+        public abstract IEnumerable<SpiceParserError> Initialize(TModel circuitModel);
     }
 }

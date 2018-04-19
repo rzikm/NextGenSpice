@@ -5,9 +5,9 @@ using System.Linq;
 namespace NextGenSpice.Parser.Utils
 {
     /// <summary>General helper class for SPICE code parsing.</summary>
-    public static class Helper
+    public static class Parser
     {
-        private static readonly IDictionary<string, double> modifiers = new Dictionary<string, double>
+        private static readonly IDictionary<string, double> factors = new Dictionary<string, double>
         {
             ["T"] = 1e12,
             ["G"] = 1e9,
@@ -39,11 +39,11 @@ namespace NextGenSpice.Parser.Utils
             if (!double.TryParse(s, out var value)) value = double.NaN;
 
             // apply modifiers (e.g. 1MEG => 1 000 000)
-            foreach (var modifier in modifiers)
+            foreach (var factor in factors)
             {
-                if (!suff.StartsWith(modifier.Key)) continue;
+                if (!suff.StartsWith(factor.Key)) continue;
 
-                value *= modifier.Value;
+                value *= factor.Value;
                 break;
             }
 
@@ -57,10 +57,10 @@ namespace NextGenSpice.Parser.Utils
         /// <param name="t"></param>
         /// <param name="errors"></param>
         /// <returns></returns>
-        public static double GetNumericValue(this Token t, ICollection<ErrorInfo> errors)
+        public static double GetNumericValue(this Token t, ICollection<SpiceParserError> errors)
         {
             var val = ConvertValue(t.Value);
-            if (double.IsNaN(val)) errors.Add(t.ToErrorInfo(SpiceParserError.NotANumber));
+            if (double.IsNaN(val)) errors.Add(t.ToError(SpiceParserErrorCode.NotANumber));
             return val;
         }
 
@@ -72,10 +72,10 @@ namespace NextGenSpice.Parser.Utils
         /// <param name="t"></param>
         /// <param name="errorCode"></param>
         /// <returns></returns>
-        public static ErrorInfo ToErrorInfo(this Token t, SpiceParserError errorCode, params object[] args)
+        public static SpiceParserError ToError(this Token t, SpiceParserErrorCode errorCode, params object[] args)
         {
             object[] a = args.Length == 0 ? new object[] {t.Value} : args;
-            return new ErrorInfo(errorCode, t.LineNumber, t.LineColumn, a);
+            return new SpiceParserError(errorCode, t.LineNumber, t.LineColumn, a);
         }
 
         /// <summary>

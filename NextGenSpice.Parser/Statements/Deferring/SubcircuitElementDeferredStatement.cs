@@ -9,7 +9,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
     {
         private readonly string deviceName;
 
-        private readonly List<ErrorInfo> errors;
+        private readonly List<Utils.SpiceParserError> errors;
         private readonly Token subcircuitName;
         private readonly int[] terminals;
 
@@ -21,7 +21,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
             this.terminals = terminals;
             this.subcircuitName = subcircuitName;
 
-            errors = new List<ErrorInfo>();
+            errors = new List<Utils.SpiceParserError>();
         }
 
         /// <summary>Returns true if all prerequisites for the statements have been fulfilled and statement is ready to be applied.</summary>
@@ -32,13 +32,13 @@ namespace NextGenSpice.Parser.Statements.Deferring
             errors.Clear();
             if (!context.SymbolTable.TryGetSubcircuit(subcircuitName.Value, out model))
             {
-                errors.Add(subcircuitName.ToErrorInfo(SpiceParserError.NoSuchSubcircuit));
+                errors.Add(subcircuitName.ToError(SpiceParserErrorCode.NoSuchSubcircuit));
                 return false;
             }
 
             if (model.TerminalNodes.Length != terminals.Length)
             {
-                errors.Add(subcircuitName.ToErrorInfo(SpiceParserError.InvalidTerminalCount));
+                errors.Add(subcircuitName.ToError(SpiceParserErrorCode.InvalidTerminalCount));
                 return false;
             }
 
@@ -48,7 +48,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
 
         /// <summary>Returns set of errors due to which this stetement cannot be processed.</summary>
         /// <returns></returns>
-        public override IEnumerable<ErrorInfo> GetErrors()
+        public override IEnumerable<Utils.SpiceParserError> GetErrors()
         {
             return errors;
         }

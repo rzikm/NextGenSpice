@@ -1,6 +1,7 @@
 ﻿using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Equations;
+using NextGenSpice.LargeSignal;
 using NextGenSpice.LargeSignal.Models;
+using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpiceTest
 {

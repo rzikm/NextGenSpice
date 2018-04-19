@@ -30,9 +30,9 @@ namespace NextGenSpice.Parser.Statements.Deferring
 
         /// <summary>Returns set of errors due to which this stetement cannot be processed.</summary>
         /// <returns></returns>
-        public override IEnumerable<ErrorInfo> GetErrors()
+        public override IEnumerable<Utils.SpiceParserError> GetErrors()
         {
-            return new[] {modelNameToken.ToErrorInfo(SpiceParserError.NoSuchModel)};
+            return new[] {modelNameToken.ToError(SpiceParserErrorCode.NoSuchModel)};
         }
 
         /// <summary>Applies the statement in the given context.</summary>

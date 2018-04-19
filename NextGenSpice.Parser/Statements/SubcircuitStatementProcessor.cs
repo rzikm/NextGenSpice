@@ -28,7 +28,7 @@ namespace NextGenSpice.Parser.Statements
             Context.EnterSubcircuit();
             var name = tokens[1].Value;
             if (Context.SymbolTable.TryGetSubcircuit(name, out _))
-                Context.Errors.Add(tokens[1].ToErrorInfo(SpiceParserError.SubcircuitAlreadyExists));
+                Context.Errors.Add(tokens[1].ToError(SpiceParserErrorCode.SubcircuitAlreadyExists));
             root.Statements.Push(tokens); // to be processed in .ENDS statement handler
         }
     }
@@ -76,7 +76,7 @@ namespace NextGenSpice.Parser.Statements
                 if (!Context.SymbolTable.TryGetOrCreateNode(token.Value, out var node))
                 {
                     node = -1;
-                    Context.Errors.Add(token.ToErrorInfo(SpiceParserError.NotANode));
+                    Context.Errors.Add(token.ToError(SpiceParserErrorCode.NotANode));
                 }
 
                 return node;
@@ -90,11 +90,11 @@ namespace NextGenSpice.Parser.Statements
 
             // validate terminal specs - no duplicates
             if (terminals.Distinct().Count() != terminals.Length)
-                Context.Errors.Add(name.ToErrorInfo(SpiceParserError.TerminalNamesNotUnique));
+                Context.Errors.Add(name.ToError(SpiceParserErrorCode.TerminalNamesNotUnique));
 
             // ground node not allowed as terminal
             if (terminals.Contains(0))
-                Context.Errors.Add(name.ToErrorInfo(SpiceParserError.TerminalToGround));
+                Context.Errors.Add(name.ToError(SpiceParserErrorCode.TerminalToGround));
 
             Context.FlushStatements();
             if (errorCount == Context.Errors.Count) // no new errors, try to construct subcircuit
@@ -108,7 +108,7 @@ namespace NextGenSpice.Parser.Statements
                     // translate node indexes to node names used in the input file 
                     var names = e.Components.Select(c => Context.SymbolTable.GetNodeNames(c).ToArray()).Cast<object>()
                         .ToArray();
-                    Context.Errors.Add(new ErrorInfo(SpiceParserError.SubcircuitNotConnected, name.LineNumber,
+                    Context.Errors.Add(new Utils.SpiceParserError(SpiceParserErrorCode.SubcircuitNotConnected, name.LineNumber,
                         name.LineColumn, names));
                 }
             }

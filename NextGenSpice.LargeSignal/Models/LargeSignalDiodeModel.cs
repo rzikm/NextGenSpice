@@ -3,9 +3,9 @@ using NextGenSpice.Core;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Devices.Parameters;
-using NextGenSpice.Core.Equations;
-using NextGenSpice.Core.NumIntegration;
+using NextGenSpice.LargeSignal.NumIntegration;
 using NextGenSpice.LargeSignal.Stamping;
+using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
 {

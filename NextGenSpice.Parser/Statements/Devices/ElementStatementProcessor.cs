@@ -71,9 +71,9 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <param name="source"></param>
         /// <param name="errorCode"></param>
         /// <returns></returns>
-        protected void Error(Token source, SpiceParserError errorCode)
+        protected void Error(Token source, SpiceParserErrorCode errorCode)
         {
-            Context.Errors.Add(source.ToErrorInfo(errorCode));
+            Context.Errors.Add(source.ToError(errorCode));
         }
 
         /// <summary>Returns message, that some device with given name has been already defined.</summary>
@@ -81,7 +81,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <returns></returns>
         private void DeviceAlreadyDefined(Token token)
         {
-            Error(token, SpiceParserError.DeviceAlreadyDefined);
+            Error(token, SpiceParserErrorCode.DeviceAlreadyDefined);
         }
 
         /// <summary>Return message, that given token cannot be converted to a numeric representation.</summary>
@@ -89,7 +89,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <returns></returns>
         private void NotANumber(Token token)
         {
-            Error(token, SpiceParserError.NotANumber);
+            Error(token, SpiceParserErrorCode.NotANumber);
         }
 
         /// <summary>Returns message indicating that given token does not represent a node name.</summary>
@@ -97,7 +97,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <returns></returns>
         private void NotANode(Token token)
         {
-            Error(token, SpiceParserError.NotANode);
+            Error(token, SpiceParserErrorCode.NotANode);
         }
 
         /// <summary>Return message indicatiing that there was wrong number of arguments for given device type.</summary>
@@ -105,7 +105,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <returns></returns>
         protected void InvalidNumberOfArguments(Token token)
         {
-            Error(token, SpiceParserError.InvalidNumberOfArguments);
+            Error(token, SpiceParserErrorCode.InvalidNumberOfArguments);
         }
 
         /// <summary>Gets device name and sets it in symbol table, adds relevant errors into the errors collection</summary>
@@ -176,7 +176,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <returns></returns>
         protected double GetValue(Token token)
         {
-            var value = Helper.ConvertValue(token.Value);
+            var value = Utils.Parser.ConvertValue(token.Value);
             if (double.IsNaN(value)) NotANumber(token);
             return value;
         }

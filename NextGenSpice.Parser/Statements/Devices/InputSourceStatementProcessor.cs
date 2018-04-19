@@ -89,7 +89,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             }
             else // tran function
             {
-                var paramTokens = Helper.Retokenize(RawStatement, 3).ToList();
+                var paramTokens = Utils.Parser.Retokenize(RawStatement, 3).ToList();
                 var param = GetBehaviorParam(paramTokens);
                 statement = GetStatement(name, nodes, param);
             }
@@ -127,7 +127,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                     return GetParameterTokens(dcMapper, paramTokens, 1);
 
                 default:
-                    Error(paramTokens[0], SpiceParserError.UnknownTransientFunction);
+                    Error(paramTokens[0], SpiceParserErrorCode.UnknownTransientFunction);
                     return null;
             }
         }
@@ -151,7 +151,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                     {
                         rep = GetValue(paramTokens[i + 1]);
                         if (!definitionPoints.ContainsKey(rep))
-                            Error(paramTokens[i + 1], SpiceParserError.NoBreakpointRepetition);
+                            Error(paramTokens[i + 1], SpiceParserErrorCode.NoBreakpointRepetition);
                     }
 
                     par.RepeatStart = rep;
@@ -160,15 +160,15 @@ namespace NextGenSpice.Parser.Statements.Devices
 
                 if (i == paramTokens.Count - 1) // this timepoint does not have corresponding value
                 {
-                    Error(paramTokens[i], SpiceParserError.TimePointWithoutValue);
+                    Error(paramTokens[i], SpiceParserErrorCode.TimePointWithoutValue);
                     break;
                 }
 
                 var time = GetValue(paramTokens[i]);
                 var value = GetValue(paramTokens[i + 1]);
 
-                if (time < 0) Error(paramTokens[i], SpiceParserError.NegativeTimepoint);
-                else if (time <= currentTime) Error(paramTokens[i + 1], SpiceParserError.NonascendingTimepoints);
+                if (time < 0) Error(paramTokens[i], SpiceParserErrorCode.NegativeTimepoint);
+                else if (time <= currentTime) Error(paramTokens[i + 1], SpiceParserErrorCode.NonascendingTimepoints);
 
                 definitionPoints[time] = value;
 
@@ -195,7 +195,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                 mapper.Set(i - 1, GetValue(paramTokens[i]));
 
             if (paramTokens.Count < minArgc || paramTokens.Count > mapper.ByIndexCount + 1)
-                Error(paramTokens[0], SpiceParserError.InvalidNumberOfArguments);
+                Error(paramTokens[0], SpiceParserErrorCode.InvalidNumberOfArguments);
 
             var t = mapper.Target;
             mapper.Target = default(T); // free memory

@@ -6,107 +6,107 @@ namespace NextGenSpice.Parser
 {
     public static class SpiceParserErrorToStringConverter
     {
-        public static string GetMessage(this SpiceParserError errorCode, params object[] arg)
+        public static string GetMessage(this SpiceParserErrorCode errorCode, params object[] arg)
         {
             if (arg == null) throw new ArgumentNullException(nameof(arg));
 
             switch (errorCode)
             {
-                case SpiceParserError.DeviceAlreadyDefined:
+                case SpiceParserErrorCode.DeviceAlreadyDefined:
                     return $"Device with name {arg[0]} is already defined.";
 
-                case SpiceParserError.NotANumber:
+                case SpiceParserErrorCode.NotANumber:
                     return $"Cannot convert {arg[0]} to numeric representation.";
 
-                case SpiceParserError.NotANode:
+                case SpiceParserErrorCode.NotANode:
                     return $"Symbol {arg[0]} is not a node";
 
-                case SpiceParserError.InvalidNumberOfArguments:
+                case SpiceParserErrorCode.InvalidNumberOfArguments:
                     return $"Invalid number of arguments for '{arg[0]}'";
 
-                case SpiceParserError.UnexpectedCharacter:
+                case SpiceParserErrorCode.UnexpectedCharacter:
                     return $"Unexpected character: '{arg[0]}'.";
 
-                case SpiceParserError.UnknownTransientFunction:
+                case SpiceParserErrorCode.UnknownTransientFunction:
                     return $"Unknown transient source function: '{arg[0]}'";
 
-                case SpiceParserError.NoBreakpointRepetition:
+                case SpiceParserErrorCode.NoBreakpointRepetition:
                     return "Repetition point must be equal to a function breakpoint.";
 
-                case SpiceParserError.TimePointWithoutValue:
+                case SpiceParserErrorCode.TimePointWithoutValue:
                     return "Timpeoint without corresponding value.";
 
-                case SpiceParserError.NegativeTimepoint:
+                case SpiceParserErrorCode.NegativeTimepoint:
                     return "Timepoints must be nonnegative.";
 
-                case SpiceParserError.NonascendingTimepoints:
+                case SpiceParserErrorCode.NonascendingTimepoints:
                     return "Timepoints must be ascending.";
 
-                case SpiceParserError.ModelAlreadyExists:
+                case SpiceParserErrorCode.ModelAlreadyExists:
                     return $"There already exists model with name '{arg[0]} for this device type.";
 
-                case SpiceParserError.InvalidModelParameter:
+                case SpiceParserErrorCode.InvalidModelParameter:
                     return $"Invalid model parameter '{arg[0]}'";
 
-                case SpiceParserError.UnknownParameter:
+                case SpiceParserErrorCode.UnknownParameter:
                     return $"Unknown model parameter name '{arg[0]}'.";
 
-                case SpiceParserError.InvalidIcArgument:
+                case SpiceParserErrorCode.InvalidIcArgument:
                     return $"Invalid .IC argument '{arg[0]}'";
 
-                case SpiceParserError.UnknownDeviceModelDiscriminator:
+                case SpiceParserErrorCode.UnknownDeviceModelDiscriminator:
                     return $"Unknown device model discriminator'{arg[0]}'";
 
-                case SpiceParserError.UnknownPrintStatementParameter:
+                case SpiceParserErrorCode.UnknownPrintStatementParameter:
                     return $"Unknown .PRINT statement parameter '{arg[0]}'.";
 
-                case SpiceParserError.UnknownAnalysisType:
+                case SpiceParserErrorCode.UnknownAnalysisType:
                     return $"Unknown analysis type: '{arg[0]}'.";
 
-                case SpiceParserError.SubcircuitAlreadyExists:
+                case SpiceParserErrorCode.SubcircuitAlreadyExists:
                     return $"Subcircuit with name '{arg[0]}' already exists.";
 
-                case SpiceParserError.TerminalNamesNotUnique:
+                case SpiceParserErrorCode.TerminalNamesNotUnique:
                     return "Terminal names must be unique.";
 
-                case SpiceParserError.TerminalToGround:
+                case SpiceParserErrorCode.TerminalToGround:
                     return "Cannot specify ground node as a subcircuit terminal.";
 
-                case SpiceParserError.SubcircuitNotConnected:
+                case SpiceParserErrorCode.SubcircuitNotConnected:
                     return
                         $"No path connecting node sets {string.Join(", ", arg.Select(c => $"({string.Join(", ", c as IEnumerable<object>)})"))}.";
 
-                case SpiceParserError.UnknownStatement:
+                case SpiceParserErrorCode.UnknownStatement:
                     return $"Unknown statement '{arg[0]}'";
 
-                case SpiceParserError.UnknownDevice:
+                case SpiceParserErrorCode.UnknownDevice:
                     return $"Unknown device type '{arg[0]}'";
 
-                case SpiceParserError.NoDcPathToGround:
+                case SpiceParserErrorCode.NoDcPathToGround:
                     return $"Some nodes are not connected to the ground node ({string.Join(", ", arg)}).";
 
-                case SpiceParserError.VoltageBranchCycle:
+                case SpiceParserErrorCode.VoltageBranchCycle:
                     return $"Circuit contains a cycle of voltage defined devices ({string.Join(", ", arg)}).";
 
-                case SpiceParserError.CurrentBranchCutset:
+                case SpiceParserErrorCode.CurrentBranchCutset:
                     return $"Circuit contains a cutset of current defined devices ({string.Join(", ", arg)}).";
 
-                case SpiceParserError.NoPrintProvider:
+                case SpiceParserErrorCode.NoPrintProvider:
                     return $"There is no print value provider for '{arg[0]}' for device '{arg[1]}'.";
 
-                case SpiceParserError.NotAnDevice:
+                case SpiceParserErrorCode.NotAnDevice:
                     return $"'{arg[0]}' is not a circuit device.";
 
-                case SpiceParserError.NotANodeOrDevice:
+                case SpiceParserErrorCode.NotANodeOrDevice:
                     return $"'{arg[0]}' is not a node or a circuit device.";
 
-                case SpiceParserError.NoSuchModel:
+                case SpiceParserErrorCode.NoSuchModel:
                     return $"There is no model named '{arg[0]}' for this device type.";
 
-                case SpiceParserError.NoSuchSubcircuit:
+                case SpiceParserErrorCode.NoSuchSubcircuit:
                     return $"There is no model named '{arg[0]}' for this device type.";
 
-                case SpiceParserError.InvalidTerminalCount:
+                case SpiceParserErrorCode.InvalidTerminalCount:
                     return $"Subcircuit has wrong number of terminals '{arg[0]}'";
 
                 default:

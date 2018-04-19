@@ -1,4 +1,4 @@
-﻿namespace NextGenSpice.Core.Equations
+﻿namespace NextGenSpice.Numerics.Equations
 {
     /// <summary>Defines extension methods for the IEquationEditor.</summary>
     public static class EquationEditorExtensions

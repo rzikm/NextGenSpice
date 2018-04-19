@@ -1,4 +1,4 @@
-﻿namespace NextGenSpice.Core.Equations
+﻿namespace NextGenSpice.Numerics.Equations
 {
     /// <summary>Defines methods for adding coeffitients to linear equation system.</summary>
     public interface IEquationEditor

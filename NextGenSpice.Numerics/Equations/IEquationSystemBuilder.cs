@@ -1,4 +1,4 @@
-namespace NextGenSpice.Core.Equations
+namespace NextGenSpice.Numerics.Equations
 {
     /// <summary>Defines methods for building a linear equation system.</summary>
     public interface IEquationSystemBuilder : IEquationEditor

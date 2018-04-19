@@ -6,6 +6,7 @@ using NextGenSpice.LargeSignal.Models;
 using NextGenSpice.Parser;
 using NextGenSpice.Parser.Statements.Deferring;
 using NextGenSpice.Parser.Utils;
+using SpiceParserError = NextGenSpice.Parser.Utils.SpiceParserError;
 
 namespace NextGenSpice.Printing
 {
@@ -13,7 +14,7 @@ namespace NextGenSpice.Printing
     public class DeferredPrintStatement : DeferredStatement
     {
         private readonly string analysisType;
-        private readonly List<ErrorInfo> errors;
+        private readonly List<SpiceParserError> errors;
         private readonly string name;
         private readonly string stat;
         private readonly Token token;
@@ -29,7 +30,7 @@ namespace NextGenSpice.Printing
 
             stat = token.Value.Substring(0, parStart);
             name = token.Value.Substring(parStart + 1, parEnd - parStart - 1);
-            errors = new List<ErrorInfo>();
+            errors = new List<SpiceParserError>();
         }
 
         /// <summary>Returns true if all prerequisites for the statements have been fulfilled and statement is ready to be applied.</summary>
@@ -63,14 +64,14 @@ namespace NextGenSpice.Printing
                     token.LineColumn++;
                     if (!context.SymbolTable.TryGetNodeIndex(n1, out var i1))
                     {
-                        errors.Add(token.ToErrorInfo(SpiceParserError.NotANode, n1));
+                        errors.Add(token.ToError(Parser.SpiceParserErrorCode.NotANode, n1));
                         success = false;
                     }
 
                     token.LineColumn += n1.Length + 1;
                     if (!context.SymbolTable.TryGetNodeIndex(n2, out var i2))
                     {
-                        errors.Add(token.ToErrorInfo(SpiceParserError.NotANode, n2));
+                        errors.Add(token.ToError(Parser.SpiceParserErrorCode.NotANode, n2));
                         success = false;
                     }
 
@@ -79,7 +80,7 @@ namespace NextGenSpice.Printing
                 }
                 else
                 {
-                    errors.Add(token.ToErrorInfo(SpiceParserError.NotANodeOrDevice));
+                    errors.Add(token.ToError(Parser.SpiceParserErrorCode.NotANodeOrDevice));
                 }
             }
             else // only circuit devices with stat other than "V"
@@ -87,7 +88,7 @@ namespace NextGenSpice.Printing
                 if (device != null)
                     printStatement = new DevicePrintStatement(stat, name, token);
                 else
-                    errors.Add(token.ToErrorInfo(SpiceParserError.NotAnDevice));
+                    errors.Add(token.ToError(Parser.SpiceParserErrorCode.NotAnDevice));
             }
 
             return printStatement != null;
@@ -95,7 +96,7 @@ namespace NextGenSpice.Printing
 
         /// <summary>Returns set of errors due to which this stetement cannot be processed.</summary>
         /// <returns></returns>
-        public override IEnumerable<ErrorInfo> GetErrors()
+        public override IEnumerable<SpiceParserError> GetErrors()
         {
             return errors;
         }
@@ -136,16 +137,16 @@ namespace NextGenSpice.Printing
         /// <summary>Initializes print statement for given circuit model and returns set of errors that occured (if any).</summary>
         /// <param name="circuitModel">Current model of the circuit.</param>
         /// <returns>Set of errors that errored (if any).</returns>
-        public override IEnumerable<ErrorInfo> Initialize(LargeSignalCircuitModel circuitModel)
+        public override IEnumerable<SpiceParserError> Initialize(LargeSignalCircuitModel circuitModel)
         {
             var model = circuitModel.GetDevice(name);
             provider = model.GetDeviceStatsProviders().SingleOrDefault(pr => pr.StatName == stat);
             var errorInfos = provider == null
                 ? new[]
                 {
-                    ErrorInfo.Create(SpiceParserError.NoPrintProvider, 0, 0, stat, name)
+                    SpiceParserError.Create(Parser.SpiceParserErrorCode.NoPrintProvider, 0, 0, stat, name)
                 }
-                : Enumerable.Empty<ErrorInfo>();
+                : Enumerable.Empty<SpiceParserError>();
             return errorInfos;
         }
     }

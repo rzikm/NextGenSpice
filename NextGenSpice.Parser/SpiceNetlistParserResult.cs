@@ -12,7 +12,7 @@ namespace NextGenSpice.Parser
     {
         public SpiceNetlistParserResult(string title, ICircuitDefinition circuit,
             IReadOnlyList<SpiceStatement> otherStatements,
-            IReadOnlyList<ErrorInfo> errors,
+            IReadOnlyList<Utils.SpiceParserError> errors,
             IEnumerable<ISubcircuitDefinition> subcircuits, IReadOnlyList<string> nodeNames, IReadOnlyDictionary<Type, IReadOnlyDictionary<string, object>> models)
         {
             CircuitDefinition = circuit;
@@ -40,7 +40,7 @@ namespace NextGenSpice.Parser
         public IReadOnlyList<SpiceStatement> OtherStatements { get; }
 
         /// <summary>Set of errors encountered in input file.</summary>
-        public IReadOnlyList<ErrorInfo> Errors { get; }
+        public IReadOnlyList<Utils.SpiceParserError> Errors { get; }
 
         /// <summary>Title of the netlist file</summary>
         public string Title { get; }

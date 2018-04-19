@@ -25,7 +25,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
 
         /// <summary>Calling this function always results in InvalidOperationException as this statement can always be processed.</summary>
         /// <returns></returns>
-        public override IEnumerable<ErrorInfo> GetErrors()
+        public override IEnumerable<Utils.SpiceParserError> GetErrors()
         {
             throw new InvalidOperationException();
         }
