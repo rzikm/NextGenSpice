@@ -71,7 +71,7 @@ namespace NextGenSpice.LargeSignal.NumIntegration
 
             // see http://qucs.sourceforge.net/tech/node24.html#eq:MoultonInt for details
 
-            var es = new EquationSystem(new Matrix<double>(order), new double[order]);
+            var es = new DEquationSystem(new Matrix<double>(order), new double[order]);
             es.AddMatrixEntry(0, 0, 1);
             es.AddRightHandSideEntry(0, 1);
             for (var i = 1; i < order; i++)

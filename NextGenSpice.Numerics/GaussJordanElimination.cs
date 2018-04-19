@@ -1,5 +1,3 @@
-#define NativeGaussElim
-
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -47,7 +45,7 @@ namespace NextGenSpice.Numerics
         /// <param name="x">The output array for solution x.</param>
         public static void Solve(Matrix<double> a, double[] b, double[] x)
         {
-#if NativeGaussElim
+#if native_gauss
             Solve_Native_double(a, b, x);
 #else
             Solve_Managed_double(a, b, x);
@@ -64,7 +62,7 @@ namespace NextGenSpice.Numerics
         /// <param name="x">The output array for solution x.</param>
         public static void Solve(Matrix<qd_real> a, qd_real[] b, qd_real[] x)
         {
-#if NativeGaussElim
+#if native_gauss
             Solve_Native_qd(a, b, x);
 #else
             Solve_Managed_qd(a, b, x);
@@ -172,7 +170,7 @@ namespace NextGenSpice.Numerics
         /// <param name="x">The output array for solution x.</param>
         public static void Solve(Matrix<dd_real> a, dd_real[] b, dd_real[] x)
         {
-#if NativeGaussElim
+#if native_gauss
             Solve_Native_dd(a, b, x);
 #else
             Solve_Managed_dd(a, b, x);

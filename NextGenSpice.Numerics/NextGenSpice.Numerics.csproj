@@ -8,12 +8,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;DEBUG;dd_precision</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;dd_precision;native_gauss</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;dd_precision</DefineConstants>
+    <DefineConstants>TRACE;dd_precision;native_gauss</DefineConstants>
   </PropertyGroup>
 
 </Project>

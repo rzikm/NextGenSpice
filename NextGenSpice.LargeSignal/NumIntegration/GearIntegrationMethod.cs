@@ -64,7 +64,7 @@ namespace NextGenSpice.LargeSignal.NumIntegration
             if (order < 0) throw new ArgumentOutOfRangeException(nameof(order));
 
             // see http://qucs.sourceforge.net/tech/node24.html#SECTION00713100000000000000 for details
-            var es = new EquationSystem(new Matrix<double>(order + 1), new double[order + 1]);
+            var es = new DEquationSystem(new Matrix<double>(order + 1), new double[order + 1]);
             es.AddRightHandSideEntry(0, 1);
             for (var i = 1; i < es.VariablesCount; i++)
             {

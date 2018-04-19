@@ -6,9 +6,7 @@ using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Models;
 using NextGenSpice.Numerics.Equations;
-#if qd_precision || dd_precision
 using NextGenSpice.Numerics.Precision;
-#endif
 
 namespace NextGenSpice.LargeSignal
 {
@@ -19,13 +17,7 @@ namespace NextGenSpice.LargeSignal
 
         private double[] previousSolution;
 
-#if qd_precision
-        private QdEquationSystem equationSystem;
-#elif dd_precision
-        private DdEquationSystem equationSystem;
-#else
         private EquationSystem equationSystem;
-#endif
 
         public LargeSignalCircuitModel(IEnumerable<double?> initialVoltages, List<ILargeSignalDeviceModel> devices)
         {
@@ -175,13 +167,7 @@ namespace NextGenSpice.LargeSignal
 
         private void BuildEquationSystem()
         {
-#if qd_precision
-            var b = new QdEquationSystemBuilder();
-#elif dd_precision
-            var b = new DdEquationSystemBuilder();
-#else
             var b = new EquationSystemBuilder();
-#endif
             for (var i = 0; i < NodeCount; i++)
                 b.AddVariable();
 
@@ -312,13 +298,7 @@ namespace NextGenSpice.LargeSignal
 
             public CircuitParameters CircuitParameters { get; }
 
-#if qd_precision
-            public QdEquationSystem EquationSystem { get; set; }
-#elif dd_precision
-            public DdEquationSystem EquationSystem { get; set; }
-#else
             public EquationSystem EquationSystem { get; set; }
-#endif
         }
     }
 }

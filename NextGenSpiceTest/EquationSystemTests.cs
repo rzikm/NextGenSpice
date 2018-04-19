@@ -17,7 +17,7 @@ namespace NextGenSpiceTest
         [Fact]
         public void TestCheckSizeConstraintsForConstructor()
         {
-            Assert.Throws<ArgumentException>(() => new EquationSystem(new Matrix<double>(4), new double[5]));
+            Assert.Throws<ArgumentException>(() => new DEquationSystem(new Matrix<double>(4), new double[5]));
         }
 
         [Fact]

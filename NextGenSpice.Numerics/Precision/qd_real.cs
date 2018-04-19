@@ -1,6 +1,10 @@
+#if qd_precision
+using System;
+using System.Runtime.InteropServices;
+using System.Security;
+
 namespace NextGenSpice.Numerics.Precision
 {
-#if qd_precision
     [StructLayout(LayoutKind.Sequential)]
     public struct qd_real : IConvertible, IComparable<qd_real>, IEquatable<qd_real>
     {
@@ -459,5 +463,5 @@ namespace NextGenSpice.Numerics.Precision
             return ((IConvertible) x0).ToUInt64(provider);
         }
     }
-#endif
 }
+#endif
