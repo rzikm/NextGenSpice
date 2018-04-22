@@ -13,7 +13,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;dd_precision;native_gauss</DefineConstants>
+    <DefineConstants>TRACE;dd_precision;qd_precision;native_gauss;RELEASE;NETSTANDARD2_0</DefineConstants>
   </PropertyGroup>
 
 </Project>

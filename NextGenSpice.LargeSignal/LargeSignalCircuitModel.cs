@@ -17,7 +17,7 @@ namespace NextGenSpice.LargeSignal
 
         private double[] previousSolution;
 
-        private EquationSystem equationSystem;
+        private EquationSystemAdapter equationSystem;
 
         public LargeSignalCircuitModel(IEnumerable<double?> initialVoltages, List<ILargeSignalDevice> devices)
         {
