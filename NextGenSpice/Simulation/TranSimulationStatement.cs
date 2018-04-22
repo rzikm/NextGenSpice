@@ -8,7 +8,6 @@ using NextGenSpice.LargeSignal;
 using NextGenSpice.Parser;
 using NextGenSpice.Parser.Utils;
 using NextGenSpice.Printing;
-using SpiceParserError = NextGenSpice.Parser.Utils.SpiceParserError;
 
 namespace NextGenSpice.Simulation
 {
@@ -68,7 +67,7 @@ namespace NextGenSpice.Simulation
             foreach (var device in model.Devices)
             {
                 printers.AddRange(device.GetDeviceStatsProviders()
-                    .Select(pr => new DevicePrintStatement(pr.StatName, device.Name, new Token())));
+                    .Select(pr => new DevicePrintStatement(pr.StatName, device.DefinitionDevice.Name, new Token())));
             }
         }
 

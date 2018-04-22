@@ -8,9 +8,6 @@ namespace NextGenSpice.LargeSignal.Models
     /// <summary>Defines basic methods and properties for large signal devices.</summary>
     public interface ILargeSignalDeviceModel : IAnalysisDeviceModel<LargeSignalCircuitModel>
     {
-        /// <summary>Name identifier of the corresponding device.</summary>
-        string Name { get; }
-
         /// <summary>Specifies how often the model should be updated.</summary>
         ModelUpdateMode UpdateMode { get; }
 

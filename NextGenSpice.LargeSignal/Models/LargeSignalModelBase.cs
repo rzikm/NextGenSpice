@@ -22,9 +22,6 @@ namespace NextGenSpice.LargeSignal.Models
         /// <summary>Specifies how often the model should be updated.</summary>
         public abstract ModelUpdateMode UpdateMode { get; }
 
-        /// <summary>Name identifier of the corresponding device.</summary>
-        public string Name => DefinitionDevice.Name;
-
         ICircuitDefinitionDevice IAnalysisDeviceModel<LargeSignalCircuitModel>.DefinitionDevice => DefinitionDevice;
 
         /// <summary>

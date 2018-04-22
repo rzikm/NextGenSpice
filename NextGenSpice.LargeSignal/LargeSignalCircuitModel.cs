@@ -25,7 +25,7 @@ namespace NextGenSpice.LargeSignal
             NodeVoltages = new double[this.initialVoltages.Length];
             this.devices = devices.ToArray();
 
-            deviceLookup = devices.Where(e => !string.IsNullOrEmpty(e.Name)).ToDictionary(e => e.Name);
+            deviceLookup = devices.Where(e => !string.IsNullOrEmpty(e.DefinitionDevice.Name)).ToDictionary(e => e.DefinitionDevice.Name);
             updaterInitCondition = e => e.ApplyInitialCondition(equationSystem, context);
             updaterModelValues = e => e.ApplyModelValues(equationSystem, context);
         }

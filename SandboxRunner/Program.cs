@@ -216,8 +216,8 @@ namespace SandboxRunner
             //            Console.WriteLine("Voltages:");
             //            Console.WriteLine($"Time                |{string.Join("|", Enumerable.Range(0, model.NodeCount).Select(i => $"{i,20}"))}|Il");
             //            Console.WriteLine("-------------------------------------------------------------------------------------------------");
-            var voltageSource = model.Devices.OfType<LargeSignalVoltageSourceModel>().Single(d => d.Name == "VS");
-            var device = model.Devices.OfType<LargeSignalDiodeModel>().Single(d => d.Name == "D1");
+            var voltageSource = model.Devices.OfType<LargeSignalVoltageSourceModel>().Single(d => d.DefinitionDevice.Name == "VS");
+            var device = model.Devices.OfType<LargeSignalDiodeModel>().Single(d => d.DefinitionDevice.Name == "D1");
 //            var device2 = model.Devices.OfType<LargeSignalDiodeModel>().Single(d => d.Name == "D2");
 //            var device = model.Devices.OfType<LargeSignalCapacitorModel>().Single();
 
