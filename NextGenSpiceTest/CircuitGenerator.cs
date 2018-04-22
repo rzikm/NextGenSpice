@@ -76,49 +76,7 @@ namespace NextGenSpiceTest
                 .BuildCircuit();
         }
 
-        public static LargeSignalCircuitModel GetSimpleTimeDependentModelWithCapacitor(out SwitchModel switchModel)
-        {
-            SwitchModel sw = null;
 
-            var circuit = new CircuitBuilder()
-                .AddVoltageSource(1, 0, new PulseBehaviorParams())
-                .AddDevice(new[] {1, 2}, new SwitchDevice())
-                .AddResistor(2, 3, 1)
-                .AddCapacitor(3, 0, 1e-6)
-                .BuildCircuit();
-
-            AnalysisModelCreator.Instance.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchDevice, SwitchModel>(m =>
-            {
-                sw = new SwitchModel(m);
-                return sw;
-            });
-
-            var model = circuit.GetLargeSignalModel();
-            switchModel = sw;
-            return model;
-        }
-
-        public static LargeSignalCircuitModel GetSimpleTimeDependentModelWithInductor(out SwitchModel switchModel)
-        {
-            SwitchModel sw = null;
-            var circuit = new CircuitBuilder()
-                .AddVoltageSource(1, 0, 15)
-                .AddDevice(new[] {1, 2}, new SwitchDevice())
-                .AddResistor(2, 3, 1)
-                .AddInductor(3, 0, 1e-6)
-                .BuildCircuit();
-
-
-            AnalysisModelCreator.Instance.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchDevice, SwitchModel>(m =>
-            {
-                sw = new SwitchModel(m);
-                return sw;
-            });
-
-            var model = circuit.GetLargeSignalModel();
-            switchModel = sw;
-            return model;
-        }
 
         public static CircuitDefinition GetTruncationErrorModel()
         {

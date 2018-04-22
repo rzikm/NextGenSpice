@@ -18,33 +18,6 @@ namespace NextGenSpiceTest
             creator = new AnalysisModelCreator();
         }
 
-        [Fact]
-        public void SimpleSwitchCircuit()
-        {
-            var circuit = new CircuitBuilder()
-                .AddVoltageSource(1, 0, 1)
-                .AddResistor(1, 2, 1)
-                .AddResistor(1, 3, 1)
-                .AddDevice(new[] {2, 3}, new SwitchDevice())
-                .AddResistor(3, 0, 0.5)
-                .BuildCircuit();
-
-            creator.GetFactory<LargeSignalCircuitModel>().SetModel<SwitchDevice, SwitchModel>(e => new SwitchModel(e));
-
-            var model = creator.GetModel<LargeSignalCircuitModel>(circuit);
-
-            var sw = model.Devices.OfType<SwitchModel>().Single();
-
-            Output.WriteLine("Switch is on");
-            sw.IsOn = true;
-            model.EstablishInitialDcBias();
-            Output.PrintCircuitStats(model);
-
-            Output.WriteLine("Switch is off");
-            sw.IsOn = false;
-            model.EstablishInitialDcBias();
-            Output.PrintCircuitStats(model);
-        }
 
         [Fact]
         public void TestCapacitorAsOpenCircuit()

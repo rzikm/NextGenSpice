@@ -7,7 +7,7 @@ namespace NextGenSpice.Core.Devices
     /// <summary>Class that represents the diode device.</summary>
     public class DiodeDevice : TwoTerminalCircuitDevice
     {
-        public DiodeDevice(DiodeModelParams parameters, string name = null, double voltageHint = 0) : base(name)
+        public DiodeDevice(DiodeModelParams parameters, string name = null, double voltageHint = 0.9) : base(name)
         {
             Parameters = parameters;
             VoltageHint = voltageHint;

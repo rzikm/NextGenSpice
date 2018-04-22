@@ -2,6 +2,7 @@
 using System.Linq;
 using NextGenSpice.Numerics;
 using NextGenSpice.Numerics.Equations;
+using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.NumIntegration
 {
@@ -71,21 +72,21 @@ namespace NextGenSpice.LargeSignal.NumIntegration
 
             // see http://qucs.sourceforge.net/tech/node24.html#eq:MoultonInt for details
 
-            var es = new DEquationSystem(new Matrix<double>(order), new double[order]);
-            es.AddMatrixEntry(0, 0, 1);
-            es.AddRightHandSideEntry(0, 1);
+            var es = new EquationSystem(order);
+            es.Matrix[0, 0] = 1;
+            es.RightHandSide[0] = 1;
             for (var i = 1; i < order; i++)
             {
                 var parity = i % 2 > 0 ? -1 : 1;
 
-                es.AddMatrixEntry(0, i, 1);
-                es.AddMatrixEntry(i, 0, parity);
-                es.AddRightHandSideEntry(i, parity / (i + 1.0));
+                es.Matrix[0, i] = 1;
+                es.Matrix[i, 0] = parity;
+                es.RightHandSide[i] = parity / (i + 1.0);
 
                 var b = i - 1;
                 for (var row = 1; row < order; row++)
                 {
-                    es.AddMatrixEntry(row, i, b);
+                    es.Matrix[row, i] =  b;
                     b *= i - 1;
                 }
             }

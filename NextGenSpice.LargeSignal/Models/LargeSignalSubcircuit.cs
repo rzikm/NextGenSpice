@@ -3,6 +3,7 @@ using System.Linq;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Numerics.Equations;
+using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {
@@ -11,7 +12,6 @@ namespace NextGenSpice.LargeSignal.Models
     {
         private readonly ILargeSignalDevice[] devices;
         private readonly int[] nodeMap;
-        private readonly RedirectingEquationEditor redirectingEquationEditor;
         private readonly RedirectingSimulationContext subContext;
 
         public LargeSignalSubcircuit(SubcircuitDevice definitionDevice,
@@ -20,8 +20,7 @@ namespace NextGenSpice.LargeSignal.Models
         {
             this.devices = devices.ToArray();
 
-            nodeMap = new int[definitionDevice.InnerNodeCount + 1];
-            redirectingEquationEditor = new RedirectingEquationEditor(nodeMap);
+            nodeMap = new int[definitionDevice.InnerNodeCount + 1];;
             subContext = new RedirectingSimulationContext(nodeMap);
         }
 
@@ -56,16 +55,11 @@ namespace NextGenSpice.LargeSignal.Models
             return Enumerable.Empty<IDeviceStatsProvider>(); // no stats for subcircuit
         }
 
-        /// <summary>
-        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
-        ///     And perform other necessary initialization
-        /// </summary>
-        /// <param name="builder">The equation system builder.</param>
+        /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
+        /// <param name="adapter">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>
-        public override void Initialize(IEquationSystemBuilder builder, ISimulationContext context)
+        public override void Initialize(IEquationSystemAdapter adapter, ISimulationContext context)
         {
-            base.Initialize(builder, context);
-
             for (var i = 1; i < nodeMap.Length; i++)
                 nodeMap[i] = -1;
 
@@ -73,76 +67,77 @@ namespace NextGenSpice.LargeSignal.Models
                 nodeMap[DefinitionDevice.TerminalNodes[i]] = DefinitionDevice.ConnectedNodes[i];
 
             for (var i = 1; i < nodeMap.Length; i++)
-                nodeMap[i] = nodeMap[i] < 0 ? builder.AddVariable() : nodeMap[i];
+                nodeMap[i] = nodeMap[i] < 0 ? adapter.AddVariable() : nodeMap[i];
 
-            redirectingEquationEditor.TrueEquationEditor = builder;
-
+            var decorator = new RedirectingEquationEditor(nodeMap, adapter);
             foreach (var model in devices)
-                model.Initialize(builder, context);
+                model.Initialize(decorator, context);
         }
 
         /// <summary>
         ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is
         ///     called once every Newton-Raphson iteration.
         /// </summary>
-        /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>
-        public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
+        public override void ApplyModelValues(ISimulationContext context)
         {
-            redirectingEquationEditor.TrueEquationEditor = equations;
             subContext.TrueContext = context;
 
             foreach (var model in devices)
-                model.ApplyModelValues(redirectingEquationEditor, context);
+                model.ApplyModelValues(context);
         }
 
         /// <summary>Applies model values before first DC bias has been established for the first time.</summary>
-        /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>
-        public override void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
+        public override void ApplyInitialCondition(ISimulationContext context)
         {
-            redirectingEquationEditor.TrueEquationEditor = equations;
             subContext.TrueContext = context;
 
             foreach (var model in devices)
-                model.ApplyInitialCondition(redirectingEquationEditor, context);
+                model.ApplyInitialCondition(context);
         }
 
-        /// <summary>Equation editor with redirection layer for using inside subcircuit model.</summary>
-        private class RedirectingEquationEditor : RedirectorBase, IEquationSystemBuilder
+        /// <summary>Equation adapter with redirection layer for using inside subcircuit model.</summary>
+        private class RedirectingEquationEditor : RedirectorBase, IEquationSystemAdapter
         {
-            public RedirectingEquationEditor(int[] nodeMap) : base(nodeMap)
+            private readonly IEquationSystemAdapter decoreated;
+
+            public RedirectingEquationEditor(int[] nodeMap, IEquationSystemAdapter decoreated) : base(nodeMap)
             {
+                this.decoreated = decoreated;
             }
 
-            /// <summary>Decorated equation editor.</summary>
-            public IEquationEditor TrueEquationEditor { get; set; }
 
-            /// <summary>Count of the variables in the equation.</summary>
-            public int VariablesCount => TrueEquationEditor.VariablesCount;
-
-            /// <summary>Adds a value to coefficient on the given row and column of the equation matrix.</summary>
-            /// <param name="row">The row.</param>
-            /// <param name="column">The column.</param>
-            /// <param name="value">The value to be added to the coefficients.</param>
-            public void AddMatrixEntry(int row, int column, double value)
-            {
-                TrueEquationEditor.AddMatrixEntry(GetMappedIndex(row), GetMappedIndex(column), value);
-            }
-
-            /// <summary>Adds a value to coefficient on the given position of the right hand side of the equation matrix.</summary>
-            /// <param name="index">Index of the position.</param>
-            /// <param name="value">The value.</param>
-            public void AddRightHandSideEntry(int index, double value)
-            {
-                TrueEquationEditor.AddRightHandSideEntry(GetMappedIndex(index), value);
-            }
-
-            /// <summary>Adds a variable to the equation system. Returns the index of the variable.</summary>
+            /// <summary>Adds a new variable to the equation system and returns the index of the variable;</summary>
             /// <returns></returns>
             public int AddVariable()
             {
-                return ((IEquationSystemBuilder) TrueEquationEditor).AddVariable();
+                return decoreated.AddVariable();
+            }
+
+            /// <summary>Returns proxy class for coefficient at given coordinates in the equation matrix.</summary>
+            /// <param name="row">Row coordinate.</param>
+            /// <param name="column">Column coordinate.</param>
+            /// <returns></returns>
+            public IEquationSystemCoefficientProxy GetMatrixCoefficientProxy(int row, int column)
+            {
+                return decoreated.GetMatrixCoefficientProxy(GetMappedIndex(row), GetMappedIndex(column));
+            }
+
+            /// <summary>Returns proxy class for coefficient at given row in the right hand side vector.</summary>
+            /// <param name="row">Row coordinate.</param>
+            /// <returns></returns>
+            public IEquationSystemCoefficientProxy GetRightHandSideCoefficientProxy(int row)
+            {
+                return decoreated.GetRightHandSideCoefficientProxy(GetMappedIndex(row));
+            }
+
+            /// <summary>Returns proxy class for the i-th variable of the solution.</summary>
+            /// <param name="index"></param>
+            /// <returns></returns>
+            public IEquationSystemSolutionProxy GetSolutionProxy(int index)
+            {
+                return decoreated.GetSolutionProxy(GetMappedIndex(index)); 
             }
         }
 
@@ -165,14 +160,6 @@ namespace NextGenSpice.LargeSignal.Models
 
             /// <summary>Last timestep that was used to advance the timepoint.</summary>
             public double TimeStep => TrueContext.TimeStep;
-
-            /// <summary>Gets numerical solution for vairable with given index - either a node voltage or branch current.</summary>
-            /// <param name="index"></param>
-            /// <returns></returns>
-            public double GetSolutionForVariable(int index)
-            {
-                return TrueContext.GetSolutionForVariable(GetMappedIndex(index));
-            }
 
             /// <summary>General parameters of the circuit that is simulated.</summary>
             public CircuitParameters CircuitParameters => TrueContext.CircuitParameters;

@@ -56,38 +56,6 @@ namespace NextGenSpiceTest
         }
 
         [Fact]
-        public void TestSimpleInductorTimeDependentCircuit()
-        {
-            // TODO expected values taken from LTSPICE, file inductor_simple_time.asc - see docs.
-
-            var results = new List<double>();
-
-            var model = CircuitGenerator.GetSimpleTimeDependentModelWithInductor(out var switchModel);
-            var inductor = model.Devices.OfType<LargeSignalInductor>().Single();
-
-            switchModel.IsOn = false;
-            model.EstablishInitialDcBias();
-            switchModel.IsOn = true;
-
-            Output.WriteLine("Voltages:");
-            Output.WriteLine(string.Join("\t", Enumerable.Range(0, model.NodeCount)));
-            Output.WriteLine(string.Join("\t",
-                model.NodeVoltages.Concat(new[] {inductor.Current}).Select(v => v.ToString("F"))));
-
-            results.Add(model.NodeVoltages[2]);
-
-
-            for (var i = 0; i < 40; i++)
-            {
-                model.AdvanceInTime(1e-6); // 1us
-
-                Output.WriteLine(string.Join("\t",
-                    model.NodeVoltages.Concat(new[] {inductor.Current}).Select(v => v.ToString("F"))));
-                results.Add(model.NodeVoltages[2]);
-            }
-        }
-
-        [Fact]
         public void TestTimeSimulationDoesNotChangeResultWhenUsingCapacitor()
         {
             var circuit = CircuitGenerator.GetSimpleCircuitWithCapacitor();

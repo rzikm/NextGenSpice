@@ -1,54 +1,52 @@
-﻿using NextGenSpice.Numerics.Equations;
+﻿using NextGenSpice.LargeSignal.Models;
+using NextGenSpice.Numerics.Equations;
+using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Stamping
 {
-    /// <summary>Class for stamping capacitor devices for large signal circuit model.</summary>
-    public class LargeSignalCapacitorStamper
+    public class CapacitorStamper
     {
-        private readonly int anode;
-        private readonly int branch;
-        private readonly int cathode;
+        private IEquationSystemCoefficientProxy nba;
+        private IEquationSystemCoefficientProxy nbc;
+        private IEquationSystemCoefficientProxy nab;
+        private IEquationSystemCoefficientProxy ncb;
+        private IEquationSystemCoefficientProxy nbb;
 
-        /// <summary>Initializes a new instance of the <see cref="LargeSignalCapacitorStamper"></see> class.</summary>
-        public LargeSignalCapacitorStamper(int anode, int cathode, int branch)
+        private IEquationSystemCoefficientProxy nb;
+
+        private IEquationSystemSolutionProxy sol;
+
+        public int BranchVariable { get; private set; }
+
+        public void Register(IEquationSystemAdapter adapter, int anode, int cathode)
         {
-            this.anode = anode;
-            this.cathode = cathode;
-            this.branch = branch;
+            BranchVariable = adapter.AddVariable();
+
+            nba = adapter.GetMatrixCoefficientProxy(BranchVariable, anode);
+            nbc = adapter.GetMatrixCoefficientProxy(BranchVariable, cathode);
+            nab = adapter.GetMatrixCoefficientProxy(anode, BranchVariable);
+            ncb = adapter.GetMatrixCoefficientProxy(cathode, BranchVariable);
+            nbb = adapter.GetMatrixCoefficientProxy(BranchVariable, BranchVariable);
+
+            nb = adapter.GetRightHandSideCoefficientProxy(BranchVariable);
+
+            sol = adapter.GetSolutionProxy(BranchVariable);
         }
 
-        /// <summary>
-        ///     Adds entries to the equation system that correspond to capacitor with given equivalent current and
-        ///     conductance.
-        /// </summary>
-        /// <param name="equations">The equation system.</param>
-        /// <param name="ieq">Equivalent current of the capacitor in ampers.</param>
-        /// <param name="geq">Equivalent conductance of the capacitor in 1/ohms.</param>
-        public void Stamp(IEquationEditor equations, double ieq, double geq)
+        public void Stamp(double ieq, double geq)
         {
-            equations.AddMatrixEntry(branch, anode, geq);
-            equations.AddMatrixEntry(branch, cathode, -geq);
+            nba.Add(geq);
+            nbc.Add(-geq);
+            nab.Add(1);
+            ncb.Add(-1);
+            nbb.Add(-1);
 
-            AddBranchCurrent(equations, ieq);
+            nb.Add(ieq);
         }
 
-        private void AddBranchCurrent(IEquationEditor equations, double ieq)
+        public double GetCurrent()
         {
-            equations.AddMatrixEntry(anode, branch, 1);
-            equations.AddMatrixEntry(cathode, branch, -1);
-
-            equations.AddMatrixEntry(branch, branch, -1);
-
-            equations.AddRightHandSideEntry(branch, ieq);
-        }
-
-        /// <summary>Adds entries to the equation system that correspond to capacitor with given initial condition.</summary>
-        /// <param name="equations">The equation system.</param>
-        /// <param name="voltage">The initial voltage in volts for the capacitor or null for equilibrium voltage.</param>
-        public void StampInitialCondition(IEquationEditor equations, double? voltage)
-        {
-            if (voltage.HasValue) equations.AddVoltage(anode, cathode, branch, voltage.Value); // fixed voltage
-            else AddBranchCurrent(equations, 0); // model as open circuit
+            return sol.GetValue();
         }
     }
 }

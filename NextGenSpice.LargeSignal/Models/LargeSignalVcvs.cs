@@ -2,6 +2,7 @@
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Numerics.Equations;
+using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {
@@ -9,10 +10,13 @@ namespace NextGenSpice.LargeSignal.Models
     public class LargeSignalVcvs : LargeSignalDeviceBase<VoltageControlledVoltageSourceDevice>,
         ITwoTerminalLargeSignalDevice
     {
-        private int branchVariable;
+        private VcvsStamper stamper;
+        private VoltageProxy voltage;
 
         public LargeSignalVcvs(VoltageControlledVoltageSourceDevice definitionDevice) : base(definitionDevice)
         {
+            stamper = new VcvsStamper();
+            voltage = new VoltageProxy();
         }
 
         /// <summary>Id of node connected to positive terminal of this device.</summary>
@@ -27,16 +31,13 @@ namespace NextGenSpice.LargeSignal.Models
         /// <summary>Negative terminal of the reference voltage.</summary>
         public int ReferenceCathode => DefinitionDevice.ConnectedNodes[3];
 
-        /// <summary>
-        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
-        ///     And perform other necessary initialization
-        /// </summary>
-        /// <param name="builder">The equation system builder.</param>
+        /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
+        /// <param name="adapter">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>
-        public override void Initialize(IEquationSystemBuilder builder, ISimulationContext context)
+        public override void Initialize(IEquationSystemAdapter adapter, ISimulationContext context)
         {
-            base.Initialize(builder, context);
-            branchVariable = builder.AddVariable();
+            stamper.Register(adapter, Anode, Cathode, ReferenceAnode, ReferenceCathode);
+            voltage.Register(adapter, Anode, Cathode);
         }
 
         /// <summary>Specifies how often the model should be updated.</summary>
@@ -51,17 +52,10 @@ namespace NextGenSpice.LargeSignal.Models
         ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is
         ///     called once every Newton-Raphson iteration.
         /// </summary>
-        /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>
-        public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
+        public override void ApplyModelValues(ISimulationContext context)
         {
-            equations.AddMatrixEntry(Anode, branchVariable, 1);
-            equations.AddMatrixEntry(Cathode, branchVariable, -1);
-
-            equations.AddMatrixEntry(branchVariable, Anode, 1);
-            equations.AddMatrixEntry(branchVariable, Cathode, -1);
-            equations.AddMatrixEntry(branchVariable, ReferenceAnode, -DefinitionDevice.Gain);
-            equations.AddMatrixEntry(branchVariable, ReferenceCathode, DefinitionDevice.Gain);
+            stamper.Stamp(DefinitionDevice.Gain);
         }
 
         /// <summary>
@@ -86,8 +80,48 @@ namespace NextGenSpice.LargeSignal.Models
         public override void OnDcBiasEstablished(ISimulationContext context)
         {
             base.OnDcBiasEstablished(context);
-            Voltage = context.GetSolutionForVariable(Anode) - context.GetSolutionForVariable(Cathode);
-            Current = context.GetSolutionForVariable(branchVariable);
+            Voltage = voltage.GetValue();
+            Current = stamper.GetCurrent();
+        }
+    }
+
+    public class VcvsStamper
+    {
+        private IEquationSystemSolutionProxy cur;
+
+        private IEquationSystemCoefficientProxy nab;
+        private IEquationSystemCoefficientProxy ncb;
+        private IEquationSystemCoefficientProxy nba;
+        private IEquationSystemCoefficientProxy nbc;
+        private IEquationSystemCoefficientProxy nbra;
+        private IEquationSystemCoefficientProxy nbrc;
+
+        public int BranchVariable { get; private set; }
+
+        public void Register(IEquationSystemAdapter adapter, int anode, int cathode, int ranode, int rcathode)
+        {
+            BranchVariable = adapter.AddVariable();
+            nab = adapter.GetMatrixCoefficientProxy(anode, BranchVariable);
+            ncb = adapter.GetMatrixCoefficientProxy(cathode, BranchVariable);
+            nba = adapter.GetMatrixCoefficientProxy(BranchVariable, anode);
+            nbc = adapter.GetMatrixCoefficientProxy(BranchVariable, cathode);
+            nbra = adapter.GetMatrixCoefficientProxy(BranchVariable, ranode);
+            nbrc = adapter.GetMatrixCoefficientProxy(BranchVariable, rcathode);
+        }
+
+        public void Stamp(double gain)
+        {
+            nab.Add(1);
+            ncb.Add(-1);
+            nba.Add(1);
+            nbc.Add(-1);
+            nbra.Add(gain);
+            nbrc.Add(gain);
+        }
+
+        public double GetCurrent()
+        {
+            return cur.GetValue();
         }
     }
 }

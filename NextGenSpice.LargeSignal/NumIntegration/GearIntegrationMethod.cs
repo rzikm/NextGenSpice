@@ -2,6 +2,7 @@
 using System.Linq;
 using NextGenSpice.Numerics;
 using NextGenSpice.Numerics.Equations;
+using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.NumIntegration
 {
@@ -64,19 +65,19 @@ namespace NextGenSpice.LargeSignal.NumIntegration
             if (order < 0) throw new ArgumentOutOfRangeException(nameof(order));
 
             // see http://qucs.sourceforge.net/tech/node24.html#SECTION00713100000000000000 for details
-            var es = new DEquationSystem(new Matrix<double>(order + 1), new double[order + 1]);
-            es.AddRightHandSideEntry(0, 1);
+            var es = new EquationSystem(order + 1);
+            es.RightHandSide[0] = 1;
             for (var i = 1; i < es.VariablesCount; i++)
             {
-                es.AddRightHandSideEntry(i, 1);
-                es.AddMatrixEntry(0, i, 1);
-                es.AddMatrixEntry(i, 0, i);
+                es.RightHandSide[i] = 1;
+                es.Matrix[0, i] = 1;
+                es.Matrix[i, 0] = i;
 
 
                 var b = -(i - 1);
                 for (var row = 1; row < es.VariablesCount; row++)
                 {
-                    es.AddMatrixEntry(row, i, b);
+                    es.Matrix[row, i] = b;
                     b *= -(i - 1);
                 }
             }

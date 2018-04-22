@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.Numerics.Equations;
+using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {
@@ -24,30 +24,23 @@ namespace NextGenSpice.LargeSignal.Models
 
         ICircuitDefinitionDevice IAnalysisDeviceModel<LargeSignalCircuitModel>.DefinitionDevice => DefinitionDevice;
 
-        /// <summary>
-        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
-        ///     And perform other necessary initialization
-        /// </summary>
-        /// <param name="builder">The equation system builder.</param>
+        /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
+        /// <param name="adapter">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>
-        public virtual void Initialize(IEquationSystemBuilder builder, ISimulationContext context)
-        {
-        }
+        public abstract void Initialize(IEquationSystemAdapter adapter, ISimulationContext context);
 
         /// <summary>
         ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is
         ///     called once every Newton-Raphson iteration.
         /// </summary>
-        /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>
-        public abstract void ApplyModelValues(IEquationEditor equations, ISimulationContext context);
+        public abstract void ApplyModelValues(ISimulationContext context);
 
         /// <summary>Applies model values before first DC bias has been established for the first time.</summary>
-        /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>
-        public virtual void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
+        public virtual void ApplyInitialCondition(ISimulationContext context)
         {
-            ApplyModelValues(equations, context);
+            ApplyModelValues(context);
         }
 
         /// <summary>

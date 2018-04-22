@@ -5,12 +5,16 @@ using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.Numerics.Equations;
+using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="BjtDevice" /> device.</summary>
     internal class LargeSignalBjt : LargeSignalDeviceBase<BjtDevice>
     {
+        private VoltageProxy vbe, vbc;
+        private BjtStamper stamper;
+
         private double bF;
         private double bR;
 
@@ -34,6 +38,9 @@ namespace NextGenSpice.LargeSignal.Models
 
         public LargeSignalBjt(BjtDevice definitionDevice) : base(definitionDevice)
         {
+            stamper = new BjtStamper();
+            vbe = new VoltageProxy();
+            vbc = new VoltageProxy();
         }
 
         /// <summary>Node connected to collector terminal of the transistor.</summary>
@@ -106,15 +113,15 @@ namespace NextGenSpice.LargeSignal.Models
         }
 
 
-        /// <summary>
-        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
-        ///     And perform other necessary initialization
-        /// </summary>
-        /// <param name="builder">The equation system builder.</param>
+        /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
+        /// <param name="adapter">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>
-        public override void Initialize(IEquationSystemBuilder builder, ISimulationContext context)
+        public override void Initialize(IEquationSystemAdapter adapter, ISimulationContext context)
         {
-            base.Initialize(builder, context);
+            stamper.Register(adapter, Base, Collector, Emitter);
+            vbc.Register(adapter, Base, Collector);
+            vbe.Register(adapter, Base, Emitter);
+
             CacheModelParams();
         }
 
@@ -122,13 +129,12 @@ namespace NextGenSpice.LargeSignal.Models
         ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is
         ///     called once every Newton-Raphson iteration.
         /// </summary>
-        /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>
-        public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
+        public override void ApplyModelValues(ISimulationContext context)
         {
             // calculate values according to Gummel-Poon model
-            VoltageBaseEmitter = Voltage(Base, Emitter, context);
-            VoltageBaseCollector = Voltage(Base, Collector, context);
+            VoltageBaseEmitter = vbe.GetValue();
+            VoltageBaseCollector = vbc.GetValue();
             VoltageCollectorEmitter = VoltageBaseEmitter - VoltageBaseCollector;
 
             var (gBe, gBc, gMf, gMr, iT) = CalculateModelValues();
@@ -139,21 +145,8 @@ namespace NextGenSpice.LargeSignal.Models
 
             CurrentBase = CurrentBaseEmitter + CurrentBaseCollector;
 
-            equations.AddMatrixEntry(Base, Base, gBe + gBc);
-            equations.AddMatrixEntry(Base, Collector, -gBc);
-            equations.AddMatrixEntry(Base, Emitter, -gBe);
+            stamper.Stamp(gBe, gBc, gMf, gMr, (-iBeeq - iBceq) * polarity, (iBceq - iCeeq) * polarity, (iBeeq + iCeeq) * polarity);
 
-            equations.AddMatrixEntry(Collector, Base, -gBc + gMf + gMr);
-            equations.AddMatrixEntry(Collector, Collector, gBc - gMr);
-            equations.AddMatrixEntry(Collector, Emitter, -gMf);
-
-            equations.AddMatrixEntry(Emitter, Base, -gBe - gMf - gMr);
-            equations.AddMatrixEntry(Emitter, Collector, +gMr);
-            equations.AddMatrixEntry(Emitter, Emitter, gBe + gMf);
-
-            equations.AddRightHandSideEntry(Base, (-iBeeq - iBceq) * polarity);
-            equations.AddRightHandSideEntry(Collector, (iBceq - iCeeq) * polarity);
-            equations.AddRightHandSideEntry(Emitter, (iBeeq + iCeeq) * polarity);
         }
 
         /// <summary>
@@ -224,10 +217,59 @@ namespace NextGenSpice.LargeSignal.Models
         {
             return Math.Exp(voltage / (emissionCoef * vT));
         }
+    }
 
-        private double Voltage(int n1, int n2, ISimulationContext context)
+
+    public class BjtStamper
+    {
+        private IEquationSystemCoefficientProxy nbb;
+        private IEquationSystemCoefficientProxy nbc;
+        private IEquationSystemCoefficientProxy nbe;
+        private IEquationSystemCoefficientProxy ncb;
+        private IEquationSystemCoefficientProxy ncc;
+        private IEquationSystemCoefficientProxy nce;
+        private IEquationSystemCoefficientProxy neb;
+        private IEquationSystemCoefficientProxy nec;
+        private IEquationSystemCoefficientProxy nee;
+
+        private IEquationSystemCoefficientProxy nb;
+        private IEquationSystemCoefficientProxy nc;
+        private IEquationSystemCoefficientProxy ne;
+
+        public void Register(IEquationSystemAdapter adapter, int nBase, int nCollector, int nEmitter)
         {
-            return context.GetSolutionForVariable(n1) - context.GetSolutionForVariable(n2);
+            nbb = adapter.GetMatrixCoefficientProxy(nBase, nBase);
+            nbc = adapter.GetMatrixCoefficientProxy(nBase, nCollector);
+            nbe = adapter.GetMatrixCoefficientProxy(nBase, nEmitter);
+            ncb = adapter.GetMatrixCoefficientProxy(nCollector, nBase);
+            ncc = adapter.GetMatrixCoefficientProxy(nCollector, nCollector);
+            nce = adapter.GetMatrixCoefficientProxy(nCollector, nEmitter);
+            neb = adapter.GetMatrixCoefficientProxy(nEmitter, nBase);
+            nec = adapter.GetMatrixCoefficientProxy(nEmitter, nCollector);
+            nee = adapter.GetMatrixCoefficientProxy(nEmitter, nEmitter);
+
+            nb = adapter.GetRightHandSideCoefficientProxy(nBase);
+            nc = adapter.GetRightHandSideCoefficientProxy(nCollector);
+            ne = adapter.GetRightHandSideCoefficientProxy(nEmitter);
+        }
+
+        public void Stamp(double gBe, double gBc, double gMf, double gMr, double iB, double iC, double iE)
+        {
+            nbb.Add(gBe + gBc);
+            nbc.Add(-gBc);
+            nbe.Add(-gBe);
+
+            ncb.Add(-gBc + gMf + gMr);
+            ncc.Add(gBc - gMr);
+            nce.Add(-gMf);
+
+            neb.Add(-gBe - gMf - gMr);
+            nec.Add(+gMr);
+            nee.Add(gBe + gMf);
+
+            nb.Add(iB);
+            nc.Add(iC);
+            ne.Add(iE);
         }
     }
 }

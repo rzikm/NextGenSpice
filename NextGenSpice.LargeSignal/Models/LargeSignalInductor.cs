@@ -2,17 +2,20 @@
 using NextGenSpice.Core.Devices;
 using NextGenSpice.LargeSignal.NumIntegration;
 using NextGenSpice.Numerics.Equations;
+using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="InductorDevice" /> device.</summary>
     public class LargeSignalInductor : TwoTerminalLargeSignalDevice<InductorDevice>
     {
-        private int branchVariable;
-        private LargeSignalInductorStamper stamper;
+        private InductorStamper stamper;
+        private VoltageProxy voltage;
 
         public LargeSignalInductor(InductorDevice definitionDevice) : base(definitionDevice)
         {
+            voltage = new VoltageProxy();
+            stamper = new InductorStamper();
         }
 
         /// <summary>Integration method used for modifying inner state of the device.</summary>
@@ -21,17 +24,13 @@ namespace NextGenSpice.LargeSignal.Models
         /// <summary>Specifies how often the model should be updated.</summary>
         public override ModelUpdateMode UpdateMode => ModelUpdateMode.TimePoint;
 
-        /// <summary>
-        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
-        ///     And perform other necessary initialization
-        /// </summary>
-        /// <param name="builder">The equation system builder.</param>
+        /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
+        /// <param name="adapter">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>
-        public override void Initialize(IEquationSystemBuilder builder, ISimulationContext context)
+        public override void Initialize(IEquationSystemAdapter adapter, ISimulationContext context)
         {
-            branchVariable = builder.AddVariable();
-            base.Initialize(builder, context);
-            stamper = new LargeSignalInductorStamper(Anode, Cathode, branchVariable);
+            stamper.Register(adapter, Anode, Cathode);
+            voltage.Register(adapter, Anode, Cathode);
             IntegrationMethod = context.CircuitParameters.IntegrationMethodFactory.CreateInstance();
         }
 
@@ -39,20 +38,18 @@ namespace NextGenSpice.LargeSignal.Models
         ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is
         ///     called once every Newton-Raphson iteration.
         /// </summary>
-        /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>
-        public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
+        public override void ApplyModelValues(ISimulationContext context)
         {
             var (veq, req) = IntegrationMethod.GetEquivalents(DefinitionDevice.Inductance / context.TimeStep);
-            stamper.Stamp(equations, veq, req);
+            stamper.Stamp(veq, req);
         }
 
         /// <summary>Applies model values before first DC bias has been established for the first time.</summary>
-        /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>
-        public override void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
+        public override void ApplyInitialCondition(ISimulationContext context)
         {
-            stamper.StampInitialCondition(equations, DefinitionDevice.InitialCurrent);
+            stamper.StampInitialCondition(DefinitionDevice.InitialCurrent);
         }
 
         /// <summary>
@@ -63,8 +60,8 @@ namespace NextGenSpice.LargeSignal.Models
         public override void OnDcBiasEstablished(ISimulationContext context)
         {
             base.OnDcBiasEstablished(context);
-            Current = context.GetSolutionForVariable(branchVariable);
-            Voltage = context.GetSolutionForVariable(Anode) - context.GetSolutionForVariable(Cathode);
+            Current = stamper.GetCurrent();
+            Voltage = voltage.GetValue();
 
             IntegrationMethod.SetState(Voltage, Current);
         }

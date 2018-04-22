@@ -6,17 +6,18 @@ using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.LargeSignal.NumIntegration;
 using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
+using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="DiodeDevice" /> device.</summary>
     public class LargeSignalDiode : TwoTerminalLargeSignalDevice<DiodeDevice>
     {
+        private DiodeStamper stamper;
+        private CapacitorStamper capacitorStamper;
+        private VoltageProxy voltage;
+
         private double capacitanceTreshold; // cached treshold values based by model.
-
-        private int capacitorBranch; // variable for capacitor branch current
-
-        private LargeSignalCapacitorStamper capacitorStamper;
 
         private double gmin; // minimal slope of the I-V characteristic of the diode.
         private double ic; // current through the capacitor that models junction capacitance
@@ -31,6 +32,9 @@ namespace NextGenSpice.LargeSignal.Models
 
         public LargeSignalDiode(DiodeDevice definitionDevice) : base(definitionDevice)
         {
+            stamper = new DiodeStamper();
+            capacitorStamper = new CapacitorStamper();
+            voltage = new VoltageProxy();
         }
 
         /// <summary>Diode model parameters.</summary>
@@ -42,17 +46,14 @@ namespace NextGenSpice.LargeSignal.Models
         /// <summary>Specifies how often the model should be updated.</summary>
         public override ModelUpdateMode UpdateMode => ModelUpdateMode.Always;
 
-        /// <summary>
-        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
-        ///     And perform other necessary initialization
-        /// </summary>
-        /// <param name="builder">The equation system builder.</param>
+        /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
+        /// <param name="adapter">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>
-        public override void Initialize(IEquationSystemBuilder builder, ISimulationContext context)
+        public override void Initialize(IEquationSystemAdapter adapter, ISimulationContext context)
         {
-            base.Initialize(builder, context);
-            capacitorBranch = builder.AddVariable();
-            capacitorStamper = new LargeSignalCapacitorStamper(Anode, Cathode, capacitorBranch);
+            stamper.Register(adapter, Anode, Cathode);
+            capacitorStamper.Register(adapter, Anode, Cathode);
+            voltage.Register(adapter, Anode, Cathode);
 
             gmin = Parameters.MinimalResistance ?? context.CircuitParameters.MinimalResistance;
             initialConditionCapacitor = true;
@@ -73,55 +74,47 @@ namespace NextGenSpice.LargeSignal.Models
         ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is
         ///     called once every Newton-Raphson iteration.
         /// </summary>
-        /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>
-        public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
+        public override void ApplyModelValues(ISimulationContext context)
         {
-            var vd = context.GetSolutionForVariable(DefinitionDevice.Anode) -
-                     context.GetSolutionForVariable(DefinitionDevice.Cathode) - Parameters.SeriesResistance * Current;
-            ApplyLinearizedModel(equations, context, vd);
+            var vd = voltage.GetValue() - Parameters.SeriesResistance * Current;
+            ApplyLinearizedModel(context, vd);
         }
 
         /// <summary>Applies model values before first DC bias has been established for the first time.</summary>
-        /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>
-        public override void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
+        public override void ApplyInitialCondition(ISimulationContext context)
         {
-            var vd = context.GetSolutionForVariable(DefinitionDevice.Anode) -
-                     context.GetSolutionForVariable(DefinitionDevice.Cathode);
+            var vd = voltage.GetValue();
             if (initialConditionDiode)
             {
                 vd = DefinitionDevice.VoltageHint;
                 initialConditionDiode = false; // use hint only for the very first iteration
             }
-            else
-            {
-                vd -= Parameters.SeriesResistance * Current;
-            }
 
-            ApplyLinearizedModel(equations, context, vd);
+            vd -= Parameters.SeriesResistance * Current;
+
+            ApplyLinearizedModel(context, vd);
         }
 
         /// <summary>Applies linarized diode model to the equation system.</summary>
         /// <param name="equations"></param>
         /// <param name="context"></param>
         /// <param name="vd"></param>
-        private void ApplyLinearizedModel(IEquationEditor equations, ISimulationContext context, double vd)
+        private void ApplyLinearizedModel(ISimulationContext context, double vd)
         {
             var (id, geq, cd) = GetModelValues(vd);
             var ieq = id - geq * vd;
 
             // Diode
-            equations
-                .AddConductance(Anode, Cathode, geq)
-                .AddCurrent(Cathode, Anode, ieq);
+            stamper.Stamp(geq, -ieq);
 
             // Capacitance
             var (cieq, cgeq) = IntegrationMethod.GetEquivalents(cd / context.TimeStep);
 
             if (initialConditionCapacitor) // initial condition
-                capacitorStamper.StampInitialCondition(equations, null);
-            else capacitorStamper.Stamp(equations, cieq, cgeq);
+                capacitorStamper.Stamp(0, 0);
+            else capacitorStamper.Stamp(cieq, cgeq);
 
             Voltage = vd;
             Current = id + ic;
@@ -135,7 +128,7 @@ namespace NextGenSpice.LargeSignal.Models
         public override void OnDcBiasEstablished(ISimulationContext context)
         {
             base.OnDcBiasEstablished(context);
-            ic = context.GetSolutionForVariable(capacitorBranch);
+            ic = capacitorStamper.GetCurrent();
             if (Math.Abs(context.TimeStep) < double.Epsilon) // set initial condition for the capacitor
                 ic = Current;
             vc = Voltage;
@@ -182,6 +175,24 @@ namespace NextGenSpice.LargeSignal.Models
                 cd += jc / Math.Pow(1 - fc, 1 + m) * (1 - fc * (1 + m) + m * vd / vj);
 
             return (id, geq, cd);
+        }
+    }
+
+    class DiodeStamper
+    {
+        private ConductanceStamper cond = new ConductanceStamper();
+        private CurrentStamper current = new CurrentStamper();
+
+        public void Register(IEquationSystemAdapter adapter, int anode, int cathode)
+        {
+            cond.Register(adapter, anode, cathode);
+            current.Register(adapter, cathode, anode); // current faces the other way
+        }
+
+        public void Stamp(double geq, double ieq)
+        {
+            cond.Stamp(geq);
+            current.Stamp(ieq);
         }
     }
 }

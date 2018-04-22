@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NextGenSpice.Numerics.Precision;
 
 namespace NextGenSpice.Numerics.Equations.Eq
 {
@@ -8,7 +9,7 @@ namespace NextGenSpice.Numerics.Equations.Eq
     {
         /// <summary>Adds a new variable to the equation system and returns the index of the variable;</summary>
         /// <returns></returns>
-        int AddNewVariable();
+        int AddVariable();
 
         /// <summary>Returns proxy class for coefficient at given coordinates in the equation matrix.</summary>
         /// <param name="row">Row coordinate.</param>
@@ -28,12 +29,15 @@ namespace NextGenSpice.Numerics.Equations.Eq
     }
 
     /// <summary>Class used to build and</summary>
-    internal class EquationSystemAdapter : IEquationSystemAdapter
+    public class EquationSystemAdapter : IEquationSystemAdapter
     {
-        private int varCount;
+        /// <summary>Number of variables in the equation system;</summary>
+        public int VariableCount { get; private set; }
+
         private readonly Dictionary<(int, int), MatrixProxy> matrixProxies;
         private readonly Dictionary<int, RhsProxy> rhsProxies;
         private readonly Dictionary<int, SolutionProxy> solutionProxies;
+
 
 #if dd_precision
         private DdEquationSystem system;
@@ -43,9 +47,9 @@ namespace NextGenSpice.Numerics.Equations.Eq
         private EquationSystem system;
 #endif
 
-        public EquationSystemAdapter(int varCount)
+        public EquationSystemAdapter(int variableCount)
         {
-            this.varCount = varCount;
+            VariableCount = variableCount;
             matrixProxies = new Dictionary<(int, int), MatrixProxy>();
             rhsProxies = new Dictionary<int, RhsProxy>();
             solutionProxies = new Dictionary<int, SolutionProxy>();
@@ -54,9 +58,9 @@ namespace NextGenSpice.Numerics.Equations.Eq
 
         /// <summary>Adds a new variable to the equation system and returns the index of the variable;</summary>
         /// <returns></returns>
-        public int AddNewVariable()
+        public int AddVariable()
         {
-            return ++varCount;
+            return VariableCount++;
         }
 
         /// <summary>Returns proxy class for coefficient at given coordinates in the equation matrix.</summary>
@@ -65,8 +69,8 @@ namespace NextGenSpice.Numerics.Equations.Eq
         /// <returns></returns>
         public IEquationSystemCoefficientProxy GetMatrixCoefficientProxy(int row, int column)
         {
-            if (row < 0 || row >= varCount) throw new ArgumentOutOfRangeException(nameof(row));
-            if (column < 0 || column >= varCount) throw new ArgumentOutOfRangeException(nameof(column));
+            if (row < 0 || row >= VariableCount) throw new ArgumentOutOfRangeException(nameof(row));
+            if (column < 0 || column >= VariableCount) throw new ArgumentOutOfRangeException(nameof(column));
             if (system != null) throw new InvalidOperationException("Equation system already frozen.");
 
             if (!matrixProxies.TryGetValue((row, column), out var proxy))
@@ -79,7 +83,7 @@ namespace NextGenSpice.Numerics.Equations.Eq
         /// <returns></returns>
         public IEquationSystemCoefficientProxy GetRightHandSideCoefficientProxy(int row)
         {
-            if (row < 0 || row >= varCount) throw new ArgumentOutOfRangeException(nameof(row));
+            if (row < 0 || row >= VariableCount) throw new ArgumentOutOfRangeException(nameof(row));
             if (system != null) throw new InvalidOperationException("Equation system already frozen.");
 
             if (!rhsProxies.TryGetValue(row, out var proxy))
@@ -92,7 +96,7 @@ namespace NextGenSpice.Numerics.Equations.Eq
         /// <returns></returns>
         public IEquationSystemSolutionProxy GetSolutionProxy(int index)
         {
-            if (index < 0 || index >= varCount) throw new ArgumentOutOfRangeException(nameof(index));
+            if (index < 0 || index >= VariableCount) throw new ArgumentOutOfRangeException(nameof(index));
             if (system != null) throw new InvalidOperationException("Equation system already frozen.");
 
             if (!solutionProxies.TryGetValue(index, out var proxy))
@@ -105,11 +109,11 @@ namespace NextGenSpice.Numerics.Equations.Eq
         {
             if (system != null) throw new InvalidOperationException("Equation system already frozen.");
 #if dd_precision
-            system = new DdEquationSystem(varCount);
+            system = new DdEquationSystem(VariableCount);
 #elif qd_precision
-    system = new QdEquationSystem(varCount);
+    system = new QdEquationSystem(VariableCount);
 #else
-        system = new EquationSystem(varCount);
+        system = new EquationSystem(VariableCount);
 #endif
             // set system to all proxies
             foreach (var proxy in matrixProxies.Values)
@@ -125,9 +129,42 @@ namespace NextGenSpice.Numerics.Equations.Eq
         public void Solve(double[] target)
         {
             if (system == null) throw new InvalidOperationException("Equation system must be frozen before accessing.");
-            if (target.Length != varCount) throw new ArgumentException("The target array is of different size.");
+            if (target.Length != VariableCount) throw new ArgumentException("The target array is of different size.");
             system.Solve();
-            for (var i = 0; i < target.Length; i++) target[i] = (double) system.Solution[i];
+            for (var i = 0; i < target.Length; i++) target[i] = (double)system.Solution[i];
+        }
+
+        public void Anullate()
+        {
+            var m = system.Matrix;
+#if dd_precision
+            for (int i = 0; i < m.Size; i++)
+            {
+                m[i, 0] = dd_real.Zero;
+                m[0, i] = dd_real.Zero;
+            }
+
+            m[0, 0] = new dd_real(1);
+            system.RightHandSide[0] = dd_real.Zero;
+#elif qd_precision
+            for (var i = 0; i < m.Size; i++)
+            {
+                m[i, 0] = qd_real.Zero;
+                m[0, i] = qd_real.Zero;
+            }
+
+            m[0, 0] = new qd_real(1);
+            system.RightHandSide[0] = qd_real.Zero;
+#else
+            for (int i = 0; i < m.Size; i++)
+            {
+                m[i, 0] = 0;
+                m[0, i] = 0;
+            }
+
+            m[0, 0] = 1;
+            system.RightHandSide[0] = 0;
+#endif
         }
 
         private class MatrixProxy : IEquationSystemCoefficientProxy
@@ -152,6 +189,7 @@ namespace NextGenSpice.Numerics.Equations.Eq
             public void Add(double value)
             {
                 if (double.IsNaN(value)) throw new InvalidOperationException("Cannot insert NaN");
+                system.Matrix[row, col] += value;
             }
         }
 
@@ -198,7 +236,34 @@ namespace NextGenSpice.Numerics.Equations.Eq
 
             public double GetValue()
             {
-                return (double) system.Solution[row];
+                return (double)system.Solution[row];
+            }
+        }
+
+        public void Clear()
+        {
+            for (int i = 0; i < system.Matrix.RawData.Length; ++i)
+            {
+
+#if dd_precision
+                system.Matrix.RawData[i] = new dd_real(0);
+#elif qd_precision
+        system.Matrix.RawData[i] = new qd_real(0); 
+#else
+        system.Matrix.RawData[i] = 0;
+#endif
+            }
+
+            for (int i = 0; i < system.RightHandSide.Length; ++i)
+            {
+
+#if dd_precision
+                system.RightHandSide[i] = new dd_real(0);
+#elif qd_precision
+        system.RightHandSide[i] = new qd_real(0); 
+#else
+        system.RightHandSide[i] = 0;
+#endif
             }
         }
     }

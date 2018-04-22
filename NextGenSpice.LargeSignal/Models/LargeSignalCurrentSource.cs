@@ -2,15 +2,20 @@
 using NextGenSpice.Core.Devices;
 using NextGenSpice.LargeSignal.Behaviors;
 using NextGenSpice.Numerics.Equations;
+using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="CurrentSourceDevice" /> device.</summary>
     public class LargeSignalCurrentSource : TwoTerminalLargeSignalDevice<CurrentSourceDevice>
     {
+        private CurrentStamper stamper;
+        private VoltageProxy voltage;
         public LargeSignalCurrentSource(CurrentSourceDevice definitionDevice, IInputSourceBehavior behavior) :
             base(definitionDevice)
         {
+            stamper = new CurrentStamper();
+            voltage = new VoltageProxy();
             Behavior = behavior;
         }
 
@@ -28,19 +33,44 @@ namespace NextGenSpice.LargeSignal.Models
         public override void OnDcBiasEstablished(ISimulationContext context)
         {
             base.OnDcBiasEstablished(context);
-            Voltage = context.GetSolutionForVariable(Anode) - context.GetSolutionForVariable(Cathode);
+            Voltage = voltage.GetValue();
+        }
+
+        /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
+        /// <param name="adapter">The equation system builder.</param>
+        /// <param name="context">Context of current simulation.</param>
+        public override void Initialize(IEquationSystemAdapter adapter, ISimulationContext context)
+        {
+            stamper.Register(adapter, Anode, Cathode);
+            voltage.Register(adapter, Anode, Cathode);
         }
 
         /// <summary>
         ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is
         ///     called once every Newton-Raphson iteration.
         /// </summary>
-        /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>
-        public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
+        public override void ApplyModelValues(ISimulationContext context)
         {
             Current = Behavior.GetValue(context);
-            equations.AddCurrent(Anode, Cathode, -Current);
+            stamper.Stamp(Current);
+        }
+    }
+
+    public class CurrentStamper
+    {
+        private IEquationSystemCoefficientProxy anode;
+        private IEquationSystemCoefficientProxy cathode;
+        public void Register(IEquationSystemAdapter adapter, int anode, int cathode)
+        {
+            this.anode = adapter.GetRightHandSideCoefficientProxy(anode);
+            this.cathode = adapter.GetRightHandSideCoefficientProxy(cathode); ;
+        }
+
+        public void Stamp(double current)
+        {
+            anode.Add(-current);
+            cathode.Add(current);
         }
     }
 }

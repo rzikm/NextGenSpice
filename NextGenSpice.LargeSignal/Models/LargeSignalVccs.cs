@@ -2,6 +2,7 @@
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Numerics.Equations;
+using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {
@@ -9,8 +10,14 @@ namespace NextGenSpice.LargeSignal.Models
     public class LargeSignalVccs : LargeSignalDeviceBase<VoltageControlledCurrentSourceDevice>,
         ITwoTerminalLargeSignalDevice
     {
+        private VoltageProxy voltage;
+        private VoltageProxy refvoltage;
+        private VccsStamper stamper;
         public LargeSignalVccs(VoltageControlledCurrentSourceDevice definitionDevice) : base(definitionDevice)
         {
+            voltage = new VoltageProxy();
+            stamper = new VccsStamper();
+            refvoltage = new VoltageProxy();
         }
 
         /// <summary>Id of node connected to positive terminal of this device.</summary>
@@ -33,19 +40,23 @@ namespace NextGenSpice.LargeSignal.Models
 
         public double Current { get; private set; }
 
+        /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
+        /// <param name="adapter">The equation system builder.</param>
+        /// <param name="context">Context of current simulation.</param>
+        public override void Initialize(IEquationSystemAdapter adapter, ISimulationContext context)
+        {
+            voltage.Register(adapter, Anode, Cathode);
+            refvoltage.Register(adapter, ReferenceAnode, ReferenceCathode);
+        }
+
         /// <summary>
         ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is
         ///     called once every Newton-Raphson iteration.
         /// </summary>
-        /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>
-        public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
+        public override void ApplyModelValues(ISimulationContext context)
         {
-            equations.AddMatrixEntry(Anode, ReferenceAnode, DefinitionDevice.TransConductance);
-            equations.AddMatrixEntry(Cathode, ReferenceAnode, -DefinitionDevice.TransConductance);
-
-            equations.AddMatrixEntry(Anode, ReferenceCathode, -DefinitionDevice.TransConductance);
-            equations.AddMatrixEntry(Cathode, ReferenceCathode, DefinitionDevice.TransConductance);
+            stamper.Stamp(DefinitionDevice.TransConductance);
         }
 
         /// <summary>
@@ -70,10 +81,32 @@ namespace NextGenSpice.LargeSignal.Models
         public override void OnDcBiasEstablished(ISimulationContext context)
         {
             base.OnDcBiasEstablished(context);
-            Voltage = context.GetSolutionForVariable(Anode) - context.GetSolutionForVariable(Cathode);
-            Current =
-                (context.GetSolutionForVariable(ReferenceAnode) - context.GetSolutionForVariable(ReferenceCathode)) *
-                DefinitionDevice.TransConductance;
+            Voltage = voltage.GetValue();
+            Current = (refvoltage.GetValue()) * DefinitionDevice.TransConductance;
+        }
+    }
+
+    public class VccsStamper
+    {
+        private IEquationSystemCoefficientProxy nara;
+        private IEquationSystemCoefficientProxy ncra;
+        private IEquationSystemCoefficientProxy narc;
+        private IEquationSystemCoefficientProxy ncrc;
+
+        public void Register(IEquationSystemAdapter adapter, int anode, int cathode, int ranode, int rcathode)
+        {
+            nara = adapter.GetMatrixCoefficientProxy(anode, ranode);
+            ncra = adapter.GetMatrixCoefficientProxy(cathode, ranode);
+            narc = adapter.GetMatrixCoefficientProxy(anode, rcathode);
+            ncrc = adapter.GetMatrixCoefficientProxy(cathode, rcathode);
+        }
+
+        public void Stamp(double gain)
+        {
+            nara.Add(gain);
+            ncra.Add(-gain);
+            narc.Add(-gain);
+            ncrc.Add(gain);
         }
     }
 }

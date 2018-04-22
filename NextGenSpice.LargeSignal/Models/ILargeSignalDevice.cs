@@ -2,6 +2,7 @@
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.Numerics.Equations;
+using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {
@@ -11,26 +12,21 @@ namespace NextGenSpice.LargeSignal.Models
         /// <summary>Specifies how often the model should be updated.</summary>
         ModelUpdateMode UpdateMode { get; }
 
-        /// <summary>
-        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
-        ///     And perform other necessary initialization
-        /// </summary>
-        /// <param name="builder">The equation system builder.</param>
-        /// <param name="context">Context of current simulation.</param>
-        void Initialize(IEquationSystemBuilder builder, ISimulationContext context);
+        /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
+        /// <param name="adapter">The equation system builder.</param>
+        /// <param name="context">Context of current simulation.</param>>
+        void Initialize(IEquationSystemAdapter adapter, ISimulationContext context);
 
         /// <summary>
         ///     Applies device impact on the circuit equation system. If behavior of the device is nonlinear, this method is
         ///     called once every Newton-Raphson iteration.
         /// </summary>
-        /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>
-        void ApplyModelValues(IEquationEditor equations, ISimulationContext context);
+        void ApplyModelValues(ISimulationContext context);
 
         /// <summary>Applies model values before first DC bias has been established for the first time.</summary>
-        /// <param name="equations">Current linearized circuit equation system.</param>
         /// <param name="context">Context of current simulation.</param>
-        void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context);
+        void ApplyInitialCondition(ISimulationContext context);
 
         /// <summary>
         ///     Notifies model class that DC bias for given timepoint is established. This method can be used for processing
