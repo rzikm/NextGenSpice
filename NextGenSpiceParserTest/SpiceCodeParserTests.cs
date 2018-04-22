@@ -112,7 +112,7 @@ r1 start stop 5
 r2 0 start 10
 "));
             Assert.Empty(res.Errors);
-            var r1 = res.CircuitDefinition.Devices.Single(d => d.Name == "R1") as ResistorDevice;
+            var r1 = res.CircuitDefinition.Devices.Single(d => d.Tag as string == "R1") as ResistorDevice;
             Assert.Equal("START", res.NodeNames[r1.Anode]);
             Assert.Equal("STOP", res.NodeNames[r1.Cathode]);
         }

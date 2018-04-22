@@ -19,9 +19,9 @@ namespace NextGenSpiceTest
                     , IAnalysisDeviceModel<LargeSignalCircuitModel>>>
                 {
                     [typeof(ResistorDevice)] =
-                        (e, ctx) => new LargeSignalResistorModel((ResistorDevice) e),
+                        (e, ctx) => new LargeSignalResistor((ResistorDevice) e),
                     [typeof(VoltageSourceDevice)] =
-                        (e, ctx) => new LargeSignalVoltageSourceModel((VoltageSourceDevice) e, null)
+                        (e, ctx) => new LargeSignalVoltageSource((VoltageSourceDevice) e, null)
                 };
 
 
@@ -48,7 +48,7 @@ namespace NextGenSpiceTest
         {
             var modelName = "R1";
 
-            var device = circuitDefinition.Devices.Single(e => e.Name == modelName);
+            var device = circuitDefinition.Devices.Single(e => e.Tag == modelName);
             var model = context.GetModel(modelName);
 
             Assert.Equal(context.GetModel(device), model);

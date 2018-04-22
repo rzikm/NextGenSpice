@@ -106,8 +106,8 @@ namespace NextGenSpiceTest
         public void ThrowsWhenCurrentSourceCutset()
         {
             // a cutset
-            builder.AddCurrentSource(0, 1, 1, "I1");
             builder.AddCurrentSource(2, 3, 1, "I2");
+            builder.AddCurrentSource(0, 1, 1, "I1");
 
             // some other devices
             builder.AddVoltageSource(1, 2, 1, "V4");
@@ -117,15 +117,15 @@ namespace NextGenSpiceTest
 
             var devices = Assert.Throws<CurrentBranchCutsetException>(() => builder.BuildCircuit()).Devices;
 
-            Assert.Equal(new[] {"I1", "I2"}, devices.Select(e => e.Name).OrderBy(s => s));
+            Assert.Equal(new[] {"I1", "I2"}, devices.Select(e => e.Tag).OrderBy(s => s));
         }
 
         [Fact]
         public void ThrowsWhenVoltageSourceCycle()
         {
             // a cycle
-            builder.AddVoltageSource(0, 1, 1, "V1");
             builder.AddVoltageSource(0, 2, 1, "V2");
+            builder.AddVoltageSource(0, 1, 1, "V1");
             builder.AddVoltageSource(1, 2, 1, "V3");
 
             // some other devices
@@ -134,7 +134,7 @@ namespace NextGenSpiceTest
 
             var devices = Assert.Throws<VoltageBranchCycleException>(() => builder.BuildCircuit()).Devices;
 
-            Assert.Equal(new[] {"V1", "V2", "V3"}, devices.Select(e => e.Name).OrderBy(s => s));
+            Assert.Equal(new[] {"V1", "V2", "V3"}, devices.Select(e => e.Tag).OrderBy(s => s));
         }
     }
 }

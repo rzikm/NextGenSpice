@@ -5,8 +5,8 @@ using NextGenSpice.LargeSignal.Models;
 namespace NextGenSpice.LargeSignal.Behaviors
 {
     /// <summary>
-    ///     Strategy class for constant behavior of <see cref="LargeSignalVoltageSourceModel" /> and
-    ///     <see cref="LargeSignalCurrentSourceModel" />.
+    ///     Strategy class for constant behavior of <see cref="LargeSignalVoltageSource" /> and
+    ///     <see cref="LargeSignalCurrentSource" />.
     /// </summary>
     internal class ConstantSourceBehavior : InputSourceBehavior<ConstantBehaviorParams>
     {

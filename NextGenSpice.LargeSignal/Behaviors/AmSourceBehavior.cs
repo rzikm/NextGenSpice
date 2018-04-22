@@ -6,8 +6,8 @@ using NextGenSpice.LargeSignal.Models;
 namespace NextGenSpice.LargeSignal.Behaviors
 {
     /// <summary>
-    ///     Strategy class for single frequency AM behavior of <see cref="LargeSignalVoltageSourceModel" /> and
-    ///     <see cref="LargeSignalCurrentSourceModel" />.
+    ///     Strategy class for single frequency AM behavior of <see cref="LargeSignalVoltageSource" /> and
+    ///     <see cref="LargeSignalCurrentSource" />.
     /// </summary>
     internal class AmSourceBehavior : InputSourceBehavior<AmBehaviorParams>
     {

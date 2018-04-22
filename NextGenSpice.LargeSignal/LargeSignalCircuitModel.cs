@@ -11,7 +11,7 @@ using NextGenSpice.Numerics.Precision;
 namespace NextGenSpice.LargeSignal
 {
     /// <summary>Main class for performing large signal analysis on electrical circuits.</summary>
-    public class LargeSignalCircuitModel : IAnalysisCircuitModel<ILargeSignalDeviceModel>
+    public class LargeSignalCircuitModel : IAnalysisCircuitModel<ILargeSignalDevice>
     {
         private SimulationContext context;
 
@@ -19,13 +19,14 @@ namespace NextGenSpice.LargeSignal
 
         private EquationSystem equationSystem;
 
-        public LargeSignalCircuitModel(IEnumerable<double?> initialVoltages, List<ILargeSignalDeviceModel> devices)
+        public LargeSignalCircuitModel(IEnumerable<double?> initialVoltages, List<ILargeSignalDevice> devices)
         {
             this.initialVoltages = initialVoltages.ToArray();
             NodeVoltages = new double[this.initialVoltages.Length];
             this.devices = devices.ToArray();
 
-            deviceLookup = devices.Where(e => !string.IsNullOrEmpty(e.DefinitionDevice.Name)).ToDictionary(e => e.DefinitionDevice.Name);
+//            deviceLookup = devices.Where(e => !string.IsNullOrEmpty(e.DefinitionDevice.Name)).ToDictionary(e => e.DefinitionDevice.Name);
+            deviceLookup = devices.Where(e => e.DefinitionDevice.Tag != null).ToDictionary(e => e.DefinitionDevice.Tag);
             updaterInitCondition = e => e.ApplyInitialCondition(equationSystem, context);
             updaterModelValues = e => e.ApplyModelValues(equationSystem, context);
         }
@@ -37,24 +38,35 @@ namespace NextGenSpice.LargeSignal
         public int NodeCount => NodeVoltages.Length;
 
         /// <summary>Set of all devices that this circuit model consists of.</summary>
-        public IReadOnlyList<ILargeSignalDeviceModel> Devices => devices;
+        public IReadOnlyList<ILargeSignalDevice> Devices => devices;
 
-        private ILargeSignalDeviceModel[] constDevices;
-        private ILargeSignalDeviceModel[] nonlinearDevices;
-        private ILargeSignalDeviceModel[] linearTimeDependentDevices;
+        /// <summary>
+        /// Returns device with given tag or null if no such device exists.
+        /// </summary>
+        /// <param name="tag">The tag of the queried device.</param>
+        /// <returns></returns>
+        public ILargeSignalDevice FindDevice(object tag)
+        {
+            deviceLookup.TryGetValue(tag, out var ret);
+            return ret;
+        }
 
-        private readonly Dictionary<string, ILargeSignalDeviceModel> deviceLookup;
+        private ILargeSignalDevice[] constDevices;
+        private ILargeSignalDevice[] nonlinearDevices;
+        private ILargeSignalDevice[] linearTimeDependentDevices;
+
+        private readonly Dictionary<object, ILargeSignalDevice> deviceLookup;
         private readonly double?[] initialVoltages;
-        private readonly ILargeSignalDeviceModel[] devices;
+        private readonly ILargeSignalDevice[] devices;
 
         // cached functors to prevent excessive allocations
-        private readonly Action<ILargeSignalDeviceModel> updaterInitCondition;
-        private readonly Action<ILargeSignalDeviceModel> updaterModelValues;
+        private readonly Action<ILargeSignalDevice> updaterInitCondition;
+        private readonly Action<ILargeSignalDevice> updaterModelValues;
 
         /// <summary>Gets model for the device identified by given name.</summary>
         /// <param name="name">Name of the device.</param>
         /// <returns></returns>
-        public ILargeSignalDeviceModel GetDevice(string name)
+        public ILargeSignalDevice GetDevice(string name)
         {
             return deviceLookup[name];
         }
@@ -63,7 +75,7 @@ namespace NextGenSpice.LargeSignal
         /// <param name="name">Name of the device.</param>
         /// <param name="value">The device model.</param>
         /// <returns></returns>
-        public bool TryGetDevice(string name, out ILargeSignalDeviceModel value)
+        public bool TryGetDevice(string name, out ILargeSignalDevice value)
         {
             return deviceLookup.TryGetValue(name, out value);
         }
@@ -180,7 +192,7 @@ namespace NextGenSpice.LargeSignal
             equationSystem = b.Build();
         }
 
-        private bool EstablishDcBias_Internal(Action<ILargeSignalDeviceModel> updater)
+        private bool EstablishDcBias_Internal(Action<ILargeSignalDevice> updater)
         {
             LastNonLinearIterationCount = 0;
             LastNonLinearIterationDelta = 0;
@@ -195,7 +207,7 @@ namespace NextGenSpice.LargeSignal
             return IsLinear || IterateUntilConvergence(updater);
         }
 
-        private bool IterateUntilConvergence(Action<ILargeSignalDeviceModel> updater)
+        private bool IterateUntilConvergence(Action<ILargeSignalDevice> updater)
         {
             double delta;
 
@@ -272,8 +284,8 @@ namespace NextGenSpice.LargeSignal
                 NodeVoltages[i] = equationSystem.Solution[i];
         }
 
-        private void UpdateEquationSystem(Action<ILargeSignalDeviceModel> updater,
-            ILargeSignalDeviceModel[] elem)
+        private void UpdateEquationSystem(Action<ILargeSignalDevice> updater,
+            ILargeSignalDevice[] elem)
         {
             for (var i = 0; i < elem.Length; i++)
                 updater(elem[i]);

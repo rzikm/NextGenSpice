@@ -173,12 +173,12 @@ namespace NextGenSpice.Parser
 
                     case VoltageBranchCycleException ex:
                         error = new Utils.SpiceParserError(SpiceParserErrorCode.VoltageBranchCycle, 0, 0,
-                            ex.Devices.Select(el => el.Name).Cast<object>().ToArray());
+                            ex.Devices.Select(el => el.Tag).ToArray());
                         break;
 
                     case CurrentBranchCutsetException ex:
                         error = new Utils.SpiceParserError(SpiceParserErrorCode.CurrentBranchCutset, 0, 0,
-                            ex.Devices.Select(el => el.Name).Cast<object>().ToArray());
+                            ex.Devices.Select(el => el.Tag).ToArray());
                         break;
 
                     default:

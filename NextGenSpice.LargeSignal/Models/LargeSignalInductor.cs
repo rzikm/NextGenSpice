@@ -1,18 +1,17 @@
 ﻿using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.LargeSignal.NumIntegration;
-using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    /// <summary>Large signal model for <see cref="CapacitorDevice" /> device.</summary>
-    public class LargeSignalCapacitorModel : TwoTerminalLargeSignalDeviceModel<CapacitorDevice>
+    /// <summary>Large signal model for <see cref="InductorDevice" /> device.</summary>
+    public class LargeSignalInductor : TwoTerminalLargeSignalDevice<InductorDevice>
     {
         private int branchVariable;
-        private LargeSignalCapacitorStamper stamper;
+        private LargeSignalInductorStamper stamper;
 
-        public LargeSignalCapacitorModel(CapacitorDevice definitionDevice) : base(definitionDevice)
+        public LargeSignalInductor(InductorDevice definitionDevice) : base(definitionDevice)
         {
         }
 
@@ -30,9 +29,9 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void Initialize(IEquationSystemBuilder builder, ISimulationContext context)
         {
-            base.Initialize(builder, context);
             branchVariable = builder.AddVariable();
-            stamper = new LargeSignalCapacitorStamper(Anode, Cathode, branchVariable);
+            base.Initialize(builder, context);
+            stamper = new LargeSignalInductorStamper(Anode, Cathode, branchVariable);
             IntegrationMethod = context.CircuitParameters.IntegrationMethodFactory.CreateInstance();
         }
 
@@ -44,8 +43,8 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            var (ieq, geq) = IntegrationMethod.GetEquivalents(DefinitionDevice.Capacity / context.TimeStep);
-            stamper.Stamp(equations, ieq, geq);
+            var (veq, req) = IntegrationMethod.GetEquivalents(DefinitionDevice.Inductance / context.TimeStep);
+            stamper.Stamp(equations, veq, req);
         }
 
         /// <summary>Applies model values before first DC bias has been established for the first time.</summary>
@@ -53,7 +52,7 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyInitialCondition(IEquationEditor equations, ISimulationContext context)
         {
-            stamper.StampInitialCondition(equations, DefinitionDevice.InitialVoltage);
+            stamper.StampInitialCondition(equations, DefinitionDevice.InitialCurrent);
         }
 
         /// <summary>
@@ -65,12 +64,9 @@ namespace NextGenSpice.LargeSignal.Models
         {
             base.OnDcBiasEstablished(context);
             Current = context.GetSolutionForVariable(branchVariable);
+            Voltage = context.GetSolutionForVariable(Anode) - context.GetSolutionForVariable(Cathode);
 
-            var vc = context.GetSolutionForVariable(DefinitionDevice.Anode) -
-                     context.GetSolutionForVariable(DefinitionDevice.Cathode);
-            Voltage = vc;
-
-            IntegrationMethod.SetState(Current, Voltage);
+            IntegrationMethod.SetState(Voltage, Current);
         }
     }
 }

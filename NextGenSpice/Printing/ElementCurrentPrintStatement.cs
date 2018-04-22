@@ -11,7 +11,7 @@ namespace NextGenSpice.Printing
     internal class DeviceCurrentPrintStatement : PrintStatement<LargeSignalCircuitModel>
     {
         private readonly string elemName;
-        private ITwoTerminalLargeSignalDeviceModel model;
+        private ITwoTerminalLargeSignalDevice model;
 
         public DeviceCurrentPrintStatement(string elemName)
         {
@@ -33,7 +33,7 @@ namespace NextGenSpice.Printing
         /// <returns>Set of errors that errored (if any).</returns>
         public override IEnumerable<SpiceParserError> Initialize(LargeSignalCircuitModel circuitModel)
         {
-            this.model = (ITwoTerminalLargeSignalDeviceModel) circuitModel.GetDevice(elemName);
+            this.model = (ITwoTerminalLargeSignalDevice) circuitModel.GetDevice(elemName);
             return Enumerable.Empty<SpiceParserError>();
         }
     }

@@ -46,7 +46,7 @@ namespace NextGenSpice.Simulation
                     if (providers.Any()) output.WriteLine(); // separate from previous data
                     foreach (var provider in providers)
                     {
-                        output.WriteLine($"{provider.StatName}({device.DefinitionDevice.Name}) = {provider.GetValue()}");
+                        output.WriteLine($"{provider.StatName}({device.DefinitionDevice.Tag}) = {provider.GetValue()}");
                     }
                 }
             }

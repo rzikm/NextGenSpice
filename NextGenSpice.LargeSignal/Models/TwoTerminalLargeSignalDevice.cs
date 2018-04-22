@@ -5,11 +5,11 @@ namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Base class for large signal device models that have exactly two terminals.</summary>
     /// <typeparam name="TDefinitionDevice">Class used for the device in the circuit definition that this class is model for.</typeparam>
-    public abstract class TwoTerminalLargeSignalDeviceModel<TDefinitionDevice> : LargeSignalModelBase<TDefinitionDevice>,
-        ITwoTerminalLargeSignalDeviceModel
+    public abstract class TwoTerminalLargeSignalDevice<TDefinitionDevice> : LargeSignalDeviceBase<TDefinitionDevice>,
+        ITwoTerminalLargeSignalDevice
         where TDefinitionDevice : TwoTerminalCircuitDevice
     {
-        protected TwoTerminalLargeSignalDeviceModel(TDefinitionDevice definitionDevice) : base(definitionDevice)
+        protected TwoTerminalLargeSignalDevice(TDefinitionDevice definitionDevice) : base(definitionDevice)
         {
         }
 

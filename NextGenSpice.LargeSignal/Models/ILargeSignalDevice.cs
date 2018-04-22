@@ -6,7 +6,7 @@ using NextGenSpice.Numerics.Equations;
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Defines basic methods and properties for large signal devices.</summary>
-    public interface ILargeSignalDeviceModel : IAnalysisDeviceModel<LargeSignalCircuitModel>
+    public interface ILargeSignalDevice : IAnalysisDeviceModel<LargeSignalCircuitModel>
     {
         /// <summary>Specifies how often the model should be updated.</summary>
         ModelUpdateMode UpdateMode { get; }

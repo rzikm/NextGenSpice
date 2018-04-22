@@ -12,8 +12,8 @@ namespace NextGenSpice.Core.Devices
         /// <summary>Set of terminal connections of this device.</summary>
         NodeConnectionSet ConnectedNodes { get; }
 
-        /// <summary>Name identifier of this device.</summary>
-        string Name { get; }
+        /// <summary>Identifier of this device.</summary>
+        object Tag { get; }
 
         /// <summary>Creates a deep copy of this device.</summary>
         /// <returns></returns>

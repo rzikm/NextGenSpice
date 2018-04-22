@@ -9,14 +9,14 @@ namespace NextGenSpice.Core.Devices
         protected CircuitDefinitionDevice(int terminalCount, string name)
         {
             ConnectedNodes = new NodeConnectionSet(terminalCount);
-            Name = name;
+            Tag = name;
         }
 
         /// <summary>Set of terminal connections.</summary>
-        public NodeConnectionSet ConnectedNodes { get; protected set; }
+        public NodeConnectionSet ConnectedNodes { get; private set; }
 
-        /// <summary>Name identifier of this device.</summary>
-        public string Name { get; protected set; }
+        /// <summary>Identifier of this device.</summary>
+        public object Tag { get; }
 
         /// <summary>Creates a deep copy of this device.</summary>
         /// <returns></returns>

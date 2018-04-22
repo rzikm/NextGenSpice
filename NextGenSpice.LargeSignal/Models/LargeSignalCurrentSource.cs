@@ -5,22 +5,20 @@ using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
 {
-    /// <summary>Large signal model for <see cref="VoltageSourceDevice" /> device.</summary>
-    public class LargeSignalVoltageSourceModel : TwoTerminalLargeSignalDeviceModel<VoltageSourceDevice>
+    /// <summary>Large signal model for <see cref="CurrentSourceDevice" /> device.</summary>
+    public class LargeSignalCurrentSource : TwoTerminalLargeSignalDevice<CurrentSourceDevice>
     {
-        private int branchVariable = -1;
-
-        public LargeSignalVoltageSourceModel(VoltageSourceDevice definitionDevice, IInputSourceBehavior behavior) :
+        public LargeSignalCurrentSource(CurrentSourceDevice definitionDevice, IInputSourceBehavior behavior) :
             base(definitionDevice)
         {
             Behavior = behavior;
         }
 
+        /// <summary>Strategy class specifying behavior of this source.</summary>
+        public IInputSourceBehavior Behavior { get; }
+
         /// <summary>Specifies how often the model should be updated.</summary>
         public override ModelUpdateMode UpdateMode => Behavior.UpdateMode;
-
-        /// <summary>Strategy class specifying behavior of this source.</summary>
-        private IInputSourceBehavior Behavior { get; }
 
         /// <summary>
         ///     Notifies model class that DC bias for given timepoint is established. This method can be used for processing
@@ -30,19 +28,7 @@ namespace NextGenSpice.LargeSignal.Models
         public override void OnDcBiasEstablished(ISimulationContext context)
         {
             base.OnDcBiasEstablished(context);
-            Current = context.GetSolutionForVariable(branchVariable);
-        }
-
-        /// <summary>
-        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
-        ///     And perform other necessary initialization
-        /// </summary>
-        /// <param name="builder">The equation system builder.</param>
-        /// <param name="context">Context of current simulation.</param>
-        public override void Initialize(IEquationSystemBuilder builder, ISimulationContext context)
-        {
-            base.Initialize(builder, context);
-            branchVariable = builder.AddVariable();
+            Voltage = context.GetSolutionForVariable(Anode) - context.GetSolutionForVariable(Cathode);
         }
 
         /// <summary>
@@ -53,8 +39,8 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            Voltage = Behavior.GetValue(context);
-            equations.AddVoltage(Anode, Cathode, branchVariable, Voltage);
+            Current = Behavior.GetValue(context);
+            equations.AddCurrent(Anode, Cathode, -Current);
         }
     }
 }

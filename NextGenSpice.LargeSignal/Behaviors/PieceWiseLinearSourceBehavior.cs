@@ -9,8 +9,8 @@ using NextGenSpice.Numerics;
 namespace NextGenSpice.LargeSignal.Behaviors
 {
     /// <summary>
-    ///     Strategy class for piece-wise linear behavior of <see cref="LargeSignalVoltageSourceModel" /> and
-    ///     <see cref="LargeSignalCurrentSourceModel" />.
+    ///     Strategy class for piece-wise linear behavior of <see cref="LargeSignalVoltageSource" /> and
+    ///     <see cref="LargeSignalCurrentSource" />.
     /// </summary>
     internal class PieceWiseLinearSourceBehavior : InputSourceBehavior<PieceWiseLinearBehaviorParams>
     {

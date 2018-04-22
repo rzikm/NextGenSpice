@@ -4,8 +4,8 @@ using NextGenSpice.LargeSignal.Models;
 namespace NextGenSpice.LargeSignal.Behaviors
 {
     /// <summary>
-    ///     Defines methods for strategy classes directing the behavior of <see cref="LargeSignalVoltageSourceModel" />
-    ///     and <see cref="LargeSignalCurrentSourceModel" />
+    ///     Defines methods for strategy classes directing the behavior of <see cref="LargeSignalVoltageSource" />
+    ///     and <see cref="LargeSignalCurrentSource" />
     /// </summary>
     public interface IInputSourceBehavior
     {

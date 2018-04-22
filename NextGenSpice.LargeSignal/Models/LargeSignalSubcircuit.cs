@@ -7,15 +7,15 @@ using NextGenSpice.Numerics.Equations;
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="SubcircuitDevice" />.</summary>
-    public class LargeSignalSubcircuitModel : LargeSignalModelBase<SubcircuitDevice>
+    public class LargeSignalSubcircuit : LargeSignalDeviceBase<SubcircuitDevice>
     {
-        private readonly ILargeSignalDeviceModel[] devices;
+        private readonly ILargeSignalDevice[] devices;
         private readonly int[] nodeMap;
         private readonly RedirectingEquationEditor redirectingEquationEditor;
         private readonly RedirectingSimulationContext subContext;
 
-        public LargeSignalSubcircuitModel(SubcircuitDevice definitionDevice,
-            IEnumerable<ILargeSignalDeviceModel> devices) :
+        public LargeSignalSubcircuit(SubcircuitDevice definitionDevice,
+            IEnumerable<ILargeSignalDevice> devices) :
             base(definitionDevice)
         {
             this.devices = devices.ToArray();
@@ -26,7 +26,7 @@ namespace NextGenSpice.LargeSignal.Models
         }
 
         /// <summary>Set of classes that model this subcircuit.</summary>
-        public IReadOnlyList<ILargeSignalDeviceModel> Devices => devices;
+        public IReadOnlyList<ILargeSignalDevice> Devices => devices;
 
         /// <summary>Specifies how often the model should be updated.</summary>
         public override ModelUpdateMode UpdateMode =>

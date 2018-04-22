@@ -40,7 +40,7 @@ namespace NextGenSpice.Printing
         {
             errors.Clear();
             var device =
-                context.CircuitBuilder.Devices.FirstOrDefault(el => el.Name == name); // a two terminal device
+                context.CircuitBuilder.Devices.FirstOrDefault(el => el.Tag as string == name); // a two terminal device
 
             if (stat == "V") // output voltage
             {

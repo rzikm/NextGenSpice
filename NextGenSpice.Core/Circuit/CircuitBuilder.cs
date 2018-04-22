@@ -11,7 +11,7 @@ namespace NextGenSpice.Core.Circuit
     public class CircuitBuilder
     {
         private readonly List<ICircuitDefinitionDevice> devices;
-        private readonly Dictionary<string, ICircuitDefinitionDevice> namedDevices;
+        private readonly Dictionary<object, ICircuitDefinitionDevice> namedDevices;
         private readonly List<double?> nodes;
         private CircuitTopologyException circuitException;
         private bool validatedCircuit;
@@ -20,7 +20,7 @@ namespace NextGenSpice.Core.Circuit
         {
             nodes = new List<double?>();
             devices = new List<ICircuitDefinitionDevice>();
-            namedDevices = new Dictionary<string, ICircuitDefinitionDevice>();
+            namedDevices = new Dictionary<object, ICircuitDefinitionDevice>();
             EnsureHasNode(0);
         }
 
@@ -59,8 +59,8 @@ namespace NextGenSpice.Core.Circuit
         /// <returns></returns>
         public CircuitBuilder AddDevice(int[] nodeConnections, ICircuitDefinitionDevice device)
         {
-            if (device.Name != null && namedDevices.ContainsKey(device.Name))
-                throw new InvalidOperationException($"Circuit already contains device with name '{device.Name}'");
+            if (device.Tag != null && namedDevices.ContainsKey(device.Tag))
+                throw new InvalidOperationException($"Circuit already contains device with name '{device.Tag}'");
             if (device.ConnectedNodes.Count != nodeConnections.Length)
                 throw new ArgumentException("Wrong number of connections.");
             if (devices.Contains(device))
@@ -75,8 +75,8 @@ namespace NextGenSpice.Core.Circuit
             }
 
             devices.Add(device);
-            if (device.Name != null)
-                namedDevices[device.Name] = device;
+            if (device.Tag != null)
+                namedDevices[device.Tag] = device;
 
             // invalidate cached validation result
             validatedCircuit = false;

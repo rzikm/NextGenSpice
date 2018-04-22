@@ -38,6 +38,11 @@ namespace NextGenSpiceTest
             }
 
             public IReadOnlyList<ITestDeviceModel> Devices { get; }
+
+            public ITestDeviceModel FindDevice(object tag)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         private class TestDeviceDefinition : TwoTerminalCircuitDevice
@@ -73,7 +78,7 @@ namespace NextGenSpiceTest
             protected override LargeSignalCircuitModel Instantiate(
                 IModelInstantiationContext<LargeSignalCircuitModel> context)
             {
-                return new LargeSignalCircuitModel(new double?[5], new List<ILargeSignalDeviceModel>());
+                return new LargeSignalCircuitModel(new double?[5], new List<ILargeSignalDevice>());
             }
         }
 

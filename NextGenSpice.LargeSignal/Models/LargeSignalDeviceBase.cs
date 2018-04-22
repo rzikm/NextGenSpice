@@ -8,10 +8,10 @@ namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Base class for large signal device models.</summary>
     /// <typeparam name="TDefinitionDevice">Class used for the device in the circuit definition that this class is model for.</typeparam>
-    public abstract class LargeSignalModelBase<TDefinitionDevice> : ILargeSignalDeviceModel
+    public abstract class LargeSignalDeviceBase<TDefinitionDevice> : ILargeSignalDevice
         where TDefinitionDevice : ICircuitDefinitionDevice
     {
-        protected LargeSignalModelBase(TDefinitionDevice definitionDevice)
+        protected LargeSignalDeviceBase(TDefinitionDevice definitionDevice)
         {
             DefinitionDevice = definitionDevice;
         }

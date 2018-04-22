@@ -10,7 +10,7 @@ using NextGenSpice.Numerics.Equations;
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="DiodeDevice" /> device.</summary>
-    public class LargeSignalDiodeModel : TwoTerminalLargeSignalDeviceModel<DiodeDevice>
+    public class LargeSignalDiode : TwoTerminalLargeSignalDevice<DiodeDevice>
     {
         private double capacitanceTreshold; // cached treshold values based by model.
 
@@ -29,7 +29,7 @@ namespace NextGenSpice.LargeSignal.Models
         private double vc; // voltage across the capacitor that models junction capacitance
         private double vt; // thermal voltage based on diode model values.
 
-        public LargeSignalDiodeModel(DiodeDevice definitionDevice) : base(definitionDevice)
+        public LargeSignalDiode(DiodeDevice definitionDevice) : base(definitionDevice)
         {
         }
 

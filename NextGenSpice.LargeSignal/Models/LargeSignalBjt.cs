@@ -9,7 +9,7 @@ using NextGenSpice.Numerics.Equations;
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="BjtDevice" /> device.</summary>
-    internal class LargeSignalBjtModel : LargeSignalModelBase<BjtDevice>
+    internal class LargeSignalBjt : LargeSignalDeviceBase<BjtDevice>
     {
         private double bF;
         private double bR;
@@ -32,7 +32,7 @@ namespace NextGenSpice.LargeSignal.Models
 
         private double vT; // thermal voltage
 
-        public LargeSignalBjtModel(BjtDevice definitionDevice) : base(definitionDevice)
+        public LargeSignalBjt(BjtDevice definitionDevice) : base(definitionDevice)
         {
         }
 

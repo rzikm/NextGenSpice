@@ -6,12 +6,10 @@ using NextGenSpice.Numerics.Equations;
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="VoltageControlledVoltageSourceDevice" /> device.</summary>
-    public class LargeSignalVcvsModel : LargeSignalModelBase<VoltageControlledVoltageSourceDevice>,
-        ITwoTerminalLargeSignalDeviceModel
+    public class LargeSignalVccs : LargeSignalDeviceBase<VoltageControlledCurrentSourceDevice>,
+        ITwoTerminalLargeSignalDevice
     {
-        private int branchVariable;
-
-        public LargeSignalVcvsModel(VoltageControlledVoltageSourceDevice definitionDevice) : base(definitionDevice)
+        public LargeSignalVccs(VoltageControlledCurrentSourceDevice definitionDevice) : base(definitionDevice)
         {
         }
 
@@ -26,18 +24,6 @@ namespace NextGenSpice.LargeSignal.Models
 
         /// <summary>Negative terminal of the reference voltage.</summary>
         public int ReferenceCathode => DefinitionDevice.ConnectedNodes[3];
-
-        /// <summary>
-        ///     Allows models to register additional vairables to the linear system equations. E.g. branch current variables.
-        ///     And perform other necessary initialization
-        /// </summary>
-        /// <param name="builder">The equation system builder.</param>
-        /// <param name="context">Context of current simulation.</param>
-        public override void Initialize(IEquationSystemBuilder builder, ISimulationContext context)
-        {
-            base.Initialize(builder, context);
-            branchVariable = builder.AddVariable();
-        }
 
         /// <summary>Specifies how often the model should be updated.</summary>
         public override ModelUpdateMode UpdateMode =>
@@ -55,13 +41,11 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(IEquationEditor equations, ISimulationContext context)
         {
-            equations.AddMatrixEntry(Anode, branchVariable, 1);
-            equations.AddMatrixEntry(Cathode, branchVariable, -1);
+            equations.AddMatrixEntry(Anode, ReferenceAnode, DefinitionDevice.TransConductance);
+            equations.AddMatrixEntry(Cathode, ReferenceAnode, -DefinitionDevice.TransConductance);
 
-            equations.AddMatrixEntry(branchVariable, Anode, 1);
-            equations.AddMatrixEntry(branchVariable, Cathode, -1);
-            equations.AddMatrixEntry(branchVariable, ReferenceAnode, -DefinitionDevice.Gain);
-            equations.AddMatrixEntry(branchVariable, ReferenceCathode, DefinitionDevice.Gain);
+            equations.AddMatrixEntry(Anode, ReferenceCathode, -DefinitionDevice.TransConductance);
+            equations.AddMatrixEntry(Cathode, ReferenceCathode, DefinitionDevice.TransConductance);
         }
 
         /// <summary>
@@ -87,7 +71,9 @@ namespace NextGenSpice.LargeSignal.Models
         {
             base.OnDcBiasEstablished(context);
             Voltage = context.GetSolutionForVariable(Anode) - context.GetSolutionForVariable(Cathode);
-            Current = context.GetSolutionForVariable(branchVariable);
+            Current =
+                (context.GetSolutionForVariable(ReferenceAnode) - context.GetSolutionForVariable(ReferenceCathode)) *
+                DefinitionDevice.TransConductance;
         }
     }
 }

@@ -6,8 +6,8 @@ using NextGenSpice.Numerics;
 namespace NextGenSpice.LargeSignal.Behaviors
 {
     /// <summary>
-    ///     Strategy class for pulsing behavior of <see cref="LargeSignalVoltageSourceModel" /> and
-    ///     <see cref="LargeSignalCurrentSourceModel" />.
+    ///     Strategy class for pulsing behavior of <see cref="LargeSignalVoltageSource" /> and
+    ///     <see cref="LargeSignalCurrentSource" />.
     /// </summary>
     internal class PulseSourceBehavior : InputSourceBehavior<PulseBehaviorParams>
     {

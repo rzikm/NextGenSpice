@@ -15,20 +15,20 @@ namespace NextGenSpice.LargeSignal
         public LargeSignalAnalysisModelFactory()
         {
             // register default models
-            SetModel<ResistorDevice, LargeSignalResistorModel>(e => new LargeSignalResistorModel(e));
-            SetModel<CurrentSourceDevice, LargeSignalCurrentSourceModel>((e, ctx) =>
-                new LargeSignalCurrentSourceModel(e, (IInputSourceBehavior) ctx.GetParam(e.BehaviorParams)));
-            SetModel<VoltageSourceDevice, LargeSignalVoltageSourceModel>((e, ctx) =>
-                new LargeSignalVoltageSourceModel(e, (IInputSourceBehavior) ctx.GetParam(e.BehaviorParams)));
-            SetModel<CapacitorDevice, LargeSignalCapacitorModel>(e => new LargeSignalCapacitorModel(e));
-            SetModel<InductorDevice, LargeSignalInductorModel>(e => new LargeSignalInductorModel(e));
-            SetModel<DiodeDevice, LargeSignalDiodeModel>(e => new LargeSignalDiodeModel(e));
-            SetModel<BjtDevice, LargeSignalBjtModel>(e => new LargeSignalBjtModel(e));
-            SetModel<VoltageControlledVoltageSourceDevice, LargeSignalVcvsModel>(e => new LargeSignalVcvsModel(e));
-            SetModel<VoltageControlledCurrentSourceDevice, LargeSignalVccsModel>(e => new LargeSignalVccsModel(e));
+            SetModel<ResistorDevice, LargeSignalResistor>(e => new LargeSignalResistor(e));
+            SetModel<CurrentSourceDevice, LargeSignalCurrentSource>((e, ctx) =>
+                new LargeSignalCurrentSource(e, (IInputSourceBehavior) ctx.GetParam(e.BehaviorParams)));
+            SetModel<VoltageSourceDevice, LargeSignalVoltageSource>((e, ctx) =>
+                new LargeSignalVoltageSource(e, (IInputSourceBehavior) ctx.GetParam(e.BehaviorParams)));
+            SetModel<CapacitorDevice, LargeSignalCapacitor>(e => new LargeSignalCapacitor(e));
+            SetModel<InductorDevice, LargeSignalInductor>(e => new LargeSignalInductor(e));
+            SetModel<DiodeDevice, LargeSignalDiode>(e => new LargeSignalDiode(e));
+            SetModel<BjtDevice, LargeSignalBjt>(e => new LargeSignalBjt(e));
+            SetModel<VoltageControlledVoltageSourceDevice, LargeSignalVcvs>(e => new LargeSignalVcvs(e));
+            SetModel<VoltageControlledCurrentSourceDevice, LargeSignalVccs>(e => new LargeSignalVccs(e));
 
-            SetModel<SubcircuitDevice, LargeSignalSubcircuitModel>((e, ctx) =>
-                new LargeSignalSubcircuitModel(e, e.Devices.Select(ctx.GetModel).Cast<ILargeSignalDeviceModel>()));
+            SetModel<SubcircuitDevice, LargeSignalSubcircuit>((e, ctx) =>
+                new LargeSignalSubcircuit(e, e.Devices.Select(ctx.GetModel).Cast<ILargeSignalDevice>()));
 
             // Input source behaviors
             SetParam<ConstantBehaviorParams>(def => new ConstantSourceBehavior(def));
@@ -48,7 +48,7 @@ namespace NextGenSpice.LargeSignal
             IModelInstantiationContext<LargeSignalCircuitModel> context)
         {
             var devices = context.CircuitDefinition.Devices
-                .Select(context.GetModel).Cast<ILargeSignalDeviceModel>().ToList();
+                .Select(context.GetModel).Cast<ILargeSignalDevice>().ToList();
 
             return new LargeSignalCircuitModel(context.CircuitDefinition.InitialVoltages, devices);
         }

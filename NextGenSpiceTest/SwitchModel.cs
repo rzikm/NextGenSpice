@@ -5,7 +5,7 @@ using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpiceTest
 {
-    public class SwitchModel : TwoTerminalLargeSignalDeviceModel<SwitchDevice>
+    public class SwitchModel : TwoTerminalLargeSignalDevice<SwitchDevice>
     {
         private int branchVariable;
 

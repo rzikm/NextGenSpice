@@ -8,5 +8,10 @@ namespace NextGenSpice.Core.Representation
     {
         /// <summary>Devices of this circuit.</summary>
         IReadOnlyList<TDevice> Devices { get; }
+
+        /// <summary>Returns device with given tag or null if no such device exists.</summary>
+        /// <param name="tag">The tag of the queried device.</param>
+        /// <returns></returns>
+        TDevice FindDevice(object tag);
     }
 }

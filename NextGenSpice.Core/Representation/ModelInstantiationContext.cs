@@ -12,7 +12,7 @@ namespace NextGenSpice.Core.Representation
         private readonly Dictionary<Type, Func<ICircuitDefinitionDevice, IModelInstantiationContext<TAnalysisModel>,
             IAnalysisDeviceModel<TAnalysisModel>>> modelCreators;
 
-        private readonly Dictionary<string, ICircuitDefinitionDevice> namedDevices;
+        private readonly Dictionary<object, ICircuitDefinitionDevice> namedDevices;
 
         private readonly Dictionary<Type, Func<object, IModelInstantiationContext<TAnalysisModel>, object>>
             paramCreators;
@@ -30,7 +30,7 @@ namespace NextGenSpice.Core.Representation
             this.modelCreators = modelCreators;
             CircuitDefinition = circuitDefinition;
             resolutionCache = new Dictionary<ICircuitDefinitionDevice, IAnalysisDeviceModel<TAnalysisModel>>();
-            namedDevices = circuitDefinition.Devices.Where(e => e.Name != null).ToDictionary(e => e.Name);
+            namedDevices = circuitDefinition.Devices.Where(e => e.Tag != null).ToDictionary(e => e.Tag);
         }
 
         /// <summary>Current circuit definition.</summary>

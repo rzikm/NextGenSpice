@@ -7,8 +7,8 @@ using NextGenSpice.Numerics;
 namespace NextGenSpice.LargeSignal.Behaviors
 {
     /// <summary>
-    ///     Strategy class for behavior with exponential edges for <see cref="LargeSignalVoltageSourceModel" /> and
-    ///     <see cref="LargeSignalCurrentSourceModel" />.
+    ///     Strategy class for behavior with exponential edges for <see cref="LargeSignalVoltageSource" /> and
+    ///     <see cref="LargeSignalCurrentSource" />.
     /// </summary>
     internal class ExponentialSourceBehavior : InputSourceBehavior<ExponentialBehaviorParams>
     {
