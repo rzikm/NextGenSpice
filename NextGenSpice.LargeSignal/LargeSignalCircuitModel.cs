@@ -51,9 +51,7 @@ namespace NextGenSpice.LargeSignal
             return ret;
         }
 
-        private ILargeSignalDevice[] constDevices;
         private ILargeSignalDevice[] nonlinearDevices;
-        private ILargeSignalDevice[] linearTimeDependentDevices;
 
         private readonly Dictionary<object, ILargeSignalDevice> deviceLookup;
         private readonly double?[] initialVoltages;
@@ -62,26 +60,6 @@ namespace NextGenSpice.LargeSignal
         // cached functors to prevent excessive allocations
         private readonly Action<ILargeSignalDevice> updaterInitCondition;
         private readonly Action<ILargeSignalDevice> updaterModelValues;
-
-        /// <summary>Gets model for the device identified by given name.</summary>
-        /// <param name="name">Name of the device.</param>
-        /// <returns></returns>
-        public ILargeSignalDevice GetDevice(string name)
-        {
-            return deviceLookup[name];
-        }
-
-        /// <summary>Gets model for the device identified by given name.</summary>
-        /// <param name="name">Name of the device.</param>
-        /// <param name="value">The device model.</param>
-        /// <returns></returns>
-        public bool TryGetDevice(string name, out ILargeSignalDevice value)
-        {
-            return deviceLookup.TryGetValue(name, out value);
-        }
-
-        private bool IsLinear => nonlinearDevices.Length == 0;
-
 
         // iteration dependent variables
 
@@ -156,8 +134,6 @@ namespace NextGenSpice.LargeSignal
 
         private void EnsureInitialized()
         {
-            constDevices = Devices.Where(e => e.UpdateMode == ModelUpdateMode.NoUpdate).ToArray();
-            linearTimeDependentDevices = Devices.Where(e => e.UpdateMode == ModelUpdateMode.TimePoint).ToArray();
             nonlinearDevices = Devices.Where(e => e.UpdateMode == ModelUpdateMode.Always).ToArray();
 
             if (context != null) return;
@@ -185,14 +161,8 @@ namespace NextGenSpice.LargeSignal
             LastNonLinearIterationDelta = 0;
 
             UpdateEquationSystem(updater, devices);
-
             SolveAndUpdateVoltages();
-            //            DebugPrint();
-            return IsLinear || IterateUntilConvergence(updater);
-        }
 
-        private bool IterateUntilConvergence(Action<ILargeSignalDevice> updater)
-        {
             double delta;
 
             do
@@ -201,7 +171,6 @@ namespace NextGenSpice.LargeSignal
 
                 UpdateEquationSystem(updater, devices);
                 SolveAndUpdateVoltages();
-                //            DebugPrint();
 
                 for (var i = 0; i < previousSolution.Length; i++)
                 {
