@@ -42,7 +42,7 @@ namespace NextGenSpice.LargeSignal.Models
         public override void ApplyModelValues(ISimulationContext context)
         {
             var (veq, req) = IntegrationMethod.GetEquivalents(DefinitionDevice.Inductance / context.TimeStep);
-            stamper.Stamp(veq, req);
+            stamper.Stamp(-veq, req);
         }
 
         /// <summary>Applies model values before first DC bias has been established for the first time.</summary>

@@ -34,7 +34,7 @@ namespace NextGenSpice.LargeSignal.Models
         public void Stamp(double veq, double req)
         {
             voltage.Stamp(veq);
-            n33.Add(req);
+            n33.Add(-req);
         }
 
         /// <summary>Adds entries to the equation system that correspond to inductor with given initial condition.</summary>
@@ -45,7 +45,7 @@ namespace NextGenSpice.LargeSignal.Models
             if (current.HasValue)
                 currentStamper.Stamp(current.Value);
             else
-                voltage.Stamp(0);
+                voltage.Stamp(0); // closed circuit
         }
 
         public double GetCurrent()
