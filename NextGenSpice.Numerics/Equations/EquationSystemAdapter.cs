@@ -110,36 +110,41 @@ namespace NextGenSpice.Numerics.Equations
             for (var i = 0; i < target.Length; i++) target[i] = (double)system.Solution[i];
         }
 
-        public void Anullate()
+        /// <summary>
+        /// Enforces value 0 of a particular eqation system variable.
+        /// </summary>
+        /// <param name="index"></param>
+        public void Anullate(int index)
         {
             var m = system.Matrix;
+
 #if dd_precision
             for (int i = 0; i < m.Size; i++)
             {
-                m[i, 0] = dd_real.Zero;
-                m[0, i] = dd_real.Zero;
+                m[i, index] = dd_real.Zero;
+                m[index, i] = dd_real.Zero;
             }
 
-            m[0, 0] = new dd_real(1);
-            system.RightHandSide[0] = dd_real.Zero;
+            m[index, index] = new dd_real(1);
+            system.RightHandSide[index] = dd_real.Zero;
 #elif qd_precision
             for (var i = 0; i < m.Size; i++)
             {
-                m[i, 0] = qd_real.Zero;
-                m[0, i] = qd_real.Zero;
+                m[i, index] = qd_real.Zero;
+                m[index, i] = qd_real.Zero;
             }
 
-            m[0, 0] = new qd_real(1);
-            system.RightHandSide[0] = qd_real.Zero;
+            m[index, index] = new qd_real(1);
+            system.RightHandSide[index] = qd_real.Zero;
 #else
             for (int i = 0; i < m.Size; i++)
             {
-                m[i, 0] = 0;
-                m[0, i] = 0;
+                m[i, index] = 0;
+                m[index, i] = 0;
             }
 
-            m[0, 0] = 1;
-            system.RightHandSide[0] = 0;
+            m[index, index] = 1;
+            system.RightHandSide[index] = 0;
 #endif
         }
 

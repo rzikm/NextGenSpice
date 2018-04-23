@@ -26,7 +26,6 @@ namespace NextGenSpice.LargeSignal
             NodeVoltages = new double[this.initialVoltages.Length];
             this.devices = devices.ToArray();
 
-//            deviceLookup = devices.Where(e => !string.IsNullOrEmpty(e.DefinitionDevice.Name)).ToDictionary(e => e.DefinitionDevice.Name);
             deviceLookup = devices.Where(e => e.DefinitionDevice.Tag != null).ToDictionary(e => e.DefinitionDevice.Tag);
             updaterInitCondition = e => e.ApplyInitialCondition(context);
             updaterModelValues = e => e.ApplyModelValues(context);
@@ -227,7 +226,7 @@ namespace NextGenSpice.LargeSignal
         private void SolveAndUpdateVoltages()
         {
             // ensure ground has 0 voltage
-            equationSystemAdapter.Anullate();
+            equationSystemAdapter.Anullate(0);
 
             var tmp = currentSolution;
             currentSolution = previousSolution;
