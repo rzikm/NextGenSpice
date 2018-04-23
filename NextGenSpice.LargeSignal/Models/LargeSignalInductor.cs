@@ -1,16 +1,15 @@
-﻿using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Devices;
+﻿using NextGenSpice.Core.Devices;
 using NextGenSpice.LargeSignal.NumIntegration;
+using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
-using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="InductorDevice" /> device.</summary>
     public class LargeSignalInductor : TwoTerminalLargeSignalDevice<InductorDevice>
     {
-        private InductorStamper stamper;
-        private VoltageProxy voltage;
+        private readonly InductorStamper stamper;
+        private readonly VoltageProxy voltage;
 
         public LargeSignalInductor(InductorDevice definitionDevice) : base(definitionDevice)
         {

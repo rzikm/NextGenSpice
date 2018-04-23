@@ -6,7 +6,6 @@ using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Models;
 using NextGenSpice.Numerics.Equations;
-using NextGenSpice.Numerics.Equations.Eq;
 using NextGenSpice.Numerics.Precision;
 
 namespace NextGenSpice.LargeSignal

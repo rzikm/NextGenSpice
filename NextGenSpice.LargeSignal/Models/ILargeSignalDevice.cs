@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.Numerics.Equations;
-using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {
@@ -14,7 +12,8 @@ namespace NextGenSpice.LargeSignal.Models
 
         /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
         /// <param name="adapter">The equation system builder.</param>
-        /// <param name="context">Context of current simulation.</param>>
+        /// <param name="context">Context of current simulation.</param>
+        /// >
         void Initialize(IEquationSystemAdapter adapter, ISimulationContext context);
 
         /// <summary>

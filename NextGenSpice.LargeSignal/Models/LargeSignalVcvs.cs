@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Devices;
+using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
-using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {
@@ -10,8 +9,8 @@ namespace NextGenSpice.LargeSignal.Models
     public class LargeSignalVcvs : LargeSignalDeviceBase<VoltageControlledVoltageSourceDevice>,
         ITwoTerminalLargeSignalDevice
     {
-        private VcvsStamper stamper;
-        private VoltageProxy voltage;
+        private readonly VcvsStamper stamper;
+        private readonly VoltageProxy voltage;
 
         public LargeSignalVcvs(VoltageControlledVoltageSourceDevice definitionDevice) : base(definitionDevice)
         {
@@ -82,46 +81,6 @@ namespace NextGenSpice.LargeSignal.Models
             base.OnDcBiasEstablished(context);
             Voltage = voltage.GetValue();
             Current = stamper.GetCurrent();
-        }
-    }
-
-    public class VcvsStamper
-    {
-        private IEquationSystemSolutionProxy cur;
-
-        private IEquationSystemCoefficientProxy nab;
-        private IEquationSystemCoefficientProxy ncb;
-        private IEquationSystemCoefficientProxy nba;
-        private IEquationSystemCoefficientProxy nbc;
-        private IEquationSystemCoefficientProxy nbra;
-        private IEquationSystemCoefficientProxy nbrc;
-
-        public int BranchVariable { get; private set; }
-
-        public void Register(IEquationSystemAdapter adapter, int anode, int cathode, int ranode, int rcathode)
-        {
-            BranchVariable = adapter.AddVariable();
-            nab = adapter.GetMatrixCoefficientProxy(anode, BranchVariable);
-            ncb = adapter.GetMatrixCoefficientProxy(cathode, BranchVariable);
-            nba = adapter.GetMatrixCoefficientProxy(BranchVariable, anode);
-            nbc = adapter.GetMatrixCoefficientProxy(BranchVariable, cathode);
-            nbra = adapter.GetMatrixCoefficientProxy(BranchVariable, ranode);
-            nbrc = adapter.GetMatrixCoefficientProxy(BranchVariable, rcathode);
-        }
-
-        public void Stamp(double gain)
-        {
-            nab.Add(1);
-            ncb.Add(-1);
-            nba.Add(1);
-            nbc.Add(-1);
-            nbra.Add(gain);
-            nbrc.Add(gain);
-        }
-
-        public double GetCurrent()
-        {
-            return cur.GetValue();
         }
     }
 }

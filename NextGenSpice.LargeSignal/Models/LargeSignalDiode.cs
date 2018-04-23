@@ -1,23 +1,18 @@
 using System;
 using NextGenSpice.Core;
-using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.LargeSignal.NumIntegration;
 using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
-using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="DiodeDevice" /> device.</summary>
     public class LargeSignalDiode : TwoTerminalLargeSignalDevice<DiodeDevice>
     {
-        private DiodeStamper stamper;
-        private CapacitorStamper capacitorStamper;
-        private VoltageProxy voltage;
-
         private double capacitanceTreshold; // cached treshold values based by model.
+        private readonly CapacitorStamper capacitorStamper;
 
         private double gmin; // minimal slope of the I-V characteristic of the diode.
         private double ic; // current through the capacitor that models junction capacitance
@@ -26,8 +21,10 @@ namespace NextGenSpice.LargeSignal.Models
         private bool initialConditionCapacitor;
         private bool initialConditionDiode;
         private double smallBiasTreshold; // cached treshold for diode model characteristic
+        private readonly DiodeStamper stamper;
 
         private double vc; // voltage across the capacitor that models junction capacitance
+        private readonly VoltageProxy voltage;
         private double vt; // thermal voltage based on diode model values.
 
         public LargeSignalDiode(DiodeDevice definitionDevice) : base(definitionDevice)
@@ -175,24 +172,6 @@ namespace NextGenSpice.LargeSignal.Models
                 cd += jc / Math.Pow(1 - fc, 1 + m) * (1 - fc * (1 + m) + m * vd / vj);
 
             return (id, geq, cd);
-        }
-    }
-
-    class DiodeStamper
-    {
-        private ConductanceStamper cond = new ConductanceStamper();
-        private CurrentStamper current = new CurrentStamper();
-
-        public void Register(IEquationSystemAdapter adapter, int anode, int cathode)
-        {
-            cond.Register(adapter, anode, cathode);
-            current.Register(adapter, cathode, anode); // current faces the other way
-        }
-
-        public void Stamp(double geq, double ieq)
-        {
-            cond.Stamp(geq);
-            current.Stamp(ieq);
         }
     }
 }

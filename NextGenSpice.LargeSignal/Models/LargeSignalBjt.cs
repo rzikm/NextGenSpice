@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using NextGenSpice.Core;
-using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Devices.Parameters;
+using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
-using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="BjtDevice" /> device.</summary>
     internal class LargeSignalBjt : LargeSignalDeviceBase<BjtDevice>
     {
-        private VoltageProxy vbe, vbc;
-        private BjtStamper stamper;
-
         private double bF;
         private double bR;
 
@@ -30,9 +26,12 @@ namespace NextGenSpice.LargeSignal.Models
         private double nR;
 
         private double polarity; // PNP vs NPN
+        private readonly BjtStamper stamper;
 
         private double vAf;
         private double vAr;
+        private readonly VoltageProxy vbe;
+        private readonly VoltageProxy vbc;
 
         private double vT; // thermal voltage
 
@@ -145,8 +144,8 @@ namespace NextGenSpice.LargeSignal.Models
 
             CurrentBase = CurrentBaseEmitter + CurrentBaseCollector;
 
-            stamper.Stamp(gBe, gBc, gMf, gMr, (-iBeeq - iBceq) * polarity, (iBceq - iCeeq) * polarity, (iBeeq + iCeeq) * polarity);
-
+            stamper.Stamp(gBe, gBc, gMf, gMr, (-iBeeq - iBceq) * polarity, (iBceq - iCeeq) * polarity,
+                (iBeeq + iCeeq) * polarity);
         }
 
         /// <summary>
@@ -216,60 +215,6 @@ namespace NextGenSpice.LargeSignal.Models
         private double Slope(double voltage, double emissionCoef)
         {
             return Math.Exp(voltage / (emissionCoef * vT));
-        }
-    }
-
-
-    public class BjtStamper
-    {
-        private IEquationSystemCoefficientProxy nbb;
-        private IEquationSystemCoefficientProxy nbc;
-        private IEquationSystemCoefficientProxy nbe;
-        private IEquationSystemCoefficientProxy ncb;
-        private IEquationSystemCoefficientProxy ncc;
-        private IEquationSystemCoefficientProxy nce;
-        private IEquationSystemCoefficientProxy neb;
-        private IEquationSystemCoefficientProxy nec;
-        private IEquationSystemCoefficientProxy nee;
-
-        private IEquationSystemCoefficientProxy nb;
-        private IEquationSystemCoefficientProxy nc;
-        private IEquationSystemCoefficientProxy ne;
-
-        public void Register(IEquationSystemAdapter adapter, int nBase, int nCollector, int nEmitter)
-        {
-            nbb = adapter.GetMatrixCoefficientProxy(nBase, nBase);
-            nbc = adapter.GetMatrixCoefficientProxy(nBase, nCollector);
-            nbe = adapter.GetMatrixCoefficientProxy(nBase, nEmitter);
-            ncb = adapter.GetMatrixCoefficientProxy(nCollector, nBase);
-            ncc = adapter.GetMatrixCoefficientProxy(nCollector, nCollector);
-            nce = adapter.GetMatrixCoefficientProxy(nCollector, nEmitter);
-            neb = adapter.GetMatrixCoefficientProxy(nEmitter, nBase);
-            nec = adapter.GetMatrixCoefficientProxy(nEmitter, nCollector);
-            nee = adapter.GetMatrixCoefficientProxy(nEmitter, nEmitter);
-
-            nb = adapter.GetRightHandSideCoefficientProxy(nBase);
-            nc = adapter.GetRightHandSideCoefficientProxy(nCollector);
-            ne = adapter.GetRightHandSideCoefficientProxy(nEmitter);
-        }
-
-        public void Stamp(double gBe, double gBc, double gMf, double gMr, double iB, double iC, double iE)
-        {
-            nbb.Add(gBe + gBc);
-            nbc.Add(-gBc);
-            nbe.Add(-gBe);
-
-            ncb.Add(-gBc + gMf + gMr);
-            ncc.Add(gBc - gMr);
-            nce.Add(-gMf);
-
-            neb.Add(-gBe - gMf - gMr);
-            nec.Add(+gMr);
-            nee.Add(gBe + gMf);
-
-            nb.Add(iB);
-            nc.Add(iC);
-            ne.Add(iE);
         }
     }
 }

@@ -2,7 +2,6 @@
 using System.Linq;
 using NextGenSpice.Numerics;
 using NextGenSpice.Numerics.Equations;
-using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.NumIntegration
 {

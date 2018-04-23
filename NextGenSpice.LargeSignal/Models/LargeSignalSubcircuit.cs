@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Numerics.Equations;
-using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {
@@ -20,7 +18,8 @@ namespace NextGenSpice.LargeSignal.Models
         {
             this.devices = devices.ToArray();
 
-            nodeMap = new int[definitionDevice.InnerNodeCount + 1];;
+            nodeMap = new int[definitionDevice.InnerNodeCount + 1];
+            ;
             subContext = new RedirectingSimulationContext(nodeMap);
         }
 
@@ -137,7 +136,7 @@ namespace NextGenSpice.LargeSignal.Models
             /// <returns></returns>
             public IEquationSystemSolutionProxy GetSolutionProxy(int index)
             {
-                return decoreated.GetSolutionProxy(GetMappedIndex(index)); 
+                return decoreated.GetSolutionProxy(GetMappedIndex(index));
             }
         }
 

@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Devices;
+using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
-using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {
@@ -10,9 +9,10 @@ namespace NextGenSpice.LargeSignal.Models
     public class LargeSignalVccs : LargeSignalDeviceBase<VoltageControlledCurrentSourceDevice>,
         ITwoTerminalLargeSignalDevice
     {
-        private VoltageProxy voltage;
-        private VoltageProxy refvoltage;
-        private VccsStamper stamper;
+        private readonly VoltageProxy refvoltage;
+        private readonly VccsStamper stamper;
+        private readonly VoltageProxy voltage;
+
         public LargeSignalVccs(VoltageControlledCurrentSourceDevice definitionDevice) : base(definitionDevice)
         {
             voltage = new VoltageProxy();
@@ -82,31 +82,7 @@ namespace NextGenSpice.LargeSignal.Models
         {
             base.OnDcBiasEstablished(context);
             Voltage = voltage.GetValue();
-            Current = (refvoltage.GetValue()) * DefinitionDevice.TransConductance;
-        }
-    }
-
-    public class VccsStamper
-    {
-        private IEquationSystemCoefficientProxy nara;
-        private IEquationSystemCoefficientProxy ncra;
-        private IEquationSystemCoefficientProxy narc;
-        private IEquationSystemCoefficientProxy ncrc;
-
-        public void Register(IEquationSystemAdapter adapter, int anode, int cathode, int ranode, int rcathode)
-        {
-            nara = adapter.GetMatrixCoefficientProxy(anode, ranode);
-            ncra = adapter.GetMatrixCoefficientProxy(cathode, ranode);
-            narc = adapter.GetMatrixCoefficientProxy(anode, rcathode);
-            ncrc = adapter.GetMatrixCoefficientProxy(cathode, rcathode);
-        }
-
-        public void Stamp(double gain)
-        {
-            nara.Add(gain);
-            ncra.Add(-gain);
-            narc.Add(-gain);
-            ncrc.Add(gain);
+            Current = refvoltage.GetValue() * DefinitionDevice.TransConductance;
         }
     }
 }

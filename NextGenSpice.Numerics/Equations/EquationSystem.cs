@@ -1,6 +1,6 @@
 ﻿using NextGenSpice.Numerics.Precision;
 
-namespace NextGenSpice.Numerics.Equations.Eq
+namespace NextGenSpice.Numerics.Equations
 {
     /// <summary>
     /// Simple equation system with double precision coefficient.

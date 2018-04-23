@@ -2,7 +2,6 @@
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.Numerics.Equations;
-using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {

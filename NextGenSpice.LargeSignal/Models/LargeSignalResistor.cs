@@ -1,16 +1,15 @@
-﻿using System.Collections.Generic;
-using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Devices;
+﻿using NextGenSpice.Core.Devices;
+using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
-using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="ResistorDevice" /> device.</summary>
     public class LargeSignalResistor : TwoTerminalLargeSignalDevice<ResistorDevice>
     {
-        private ConductanceStamper stamper;
-        private VoltageProxy voltage;
+        private readonly ConductanceStamper stamper;
+        private readonly VoltageProxy voltage;
+
         public LargeSignalResistor(ResistorDevice definitionDevice) : base(definitionDevice)
         {
             stamper = new ConductanceStamper();
@@ -39,7 +38,7 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(ISimulationContext context)
         {
-            stamper.Stamp(1/Resistance);
+            stamper.Stamp(1 / Resistance);
         }
 
         /// <summary>
@@ -52,46 +51,6 @@ namespace NextGenSpice.LargeSignal.Models
             base.OnDcBiasEstablished(context);
             Voltage = voltage.GetValue();
             Current = Voltage / Resistance;
-        }
-    }
-
-    public class ConductanceStamper
-    {
-        private IEquationSystemCoefficientProxy n11;
-        private IEquationSystemCoefficientProxy n12;
-        private IEquationSystemCoefficientProxy n22;
-        private IEquationSystemCoefficientProxy n21;
-        public void Register(IEquationSystemAdapter adapter, int anode, int cathode)
-        {
-            n11 = adapter.GetMatrixCoefficientProxy(anode, anode);
-            n12 = adapter.GetMatrixCoefficientProxy(anode, cathode);
-            n21 = adapter.GetMatrixCoefficientProxy(cathode, anode);
-            n22 = adapter.GetMatrixCoefficientProxy(cathode, cathode);
-        }
-
-        public void Stamp(double value)
-        {
-            n11.Add(value);
-            n12.Add(-value);
-            n22.Add(value);
-            n21.Add(-value);
-        }
-    }
-
-    public class VoltageProxy
-    {
-        private IEquationSystemSolutionProxy anode;
-        private IEquationSystemSolutionProxy cathode;
-
-        public void Register(IEquationSystemAdapter adapter, int anode, int cathode)
-        {
-            this.anode = adapter.GetSolutionProxy(anode);
-            this.cathode = adapter.GetSolutionProxy(cathode);
-        }
-
-        public double GetValue()
-        {
-            return anode.GetValue() - cathode.GetValue();
         }
     }
 }

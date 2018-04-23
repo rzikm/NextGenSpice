@@ -1,15 +1,14 @@
-﻿using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Devices;
+﻿using NextGenSpice.Core.Devices;
 using NextGenSpice.LargeSignal.Behaviors;
+using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
-using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="VoltageSourceDevice" /> device.</summary>
     public class LargeSignalVoltageSource : TwoTerminalLargeSignalDevice<VoltageSourceDevice>
     {
-        private VoltageStamper stamper;
+        private readonly VoltageStamper stamper;
 
         public LargeSignalVoltageSource(VoltageSourceDevice definitionDevice, IInputSourceBehavior behavior) :
             base(definitionDevice)

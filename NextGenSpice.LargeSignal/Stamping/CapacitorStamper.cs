@@ -1,23 +1,27 @@
-﻿using NextGenSpice.LargeSignal.Models;
-using NextGenSpice.Numerics.Equations;
-using NextGenSpice.Numerics.Equations.Eq;
+﻿using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Stamping
 {
+    /// <summary>Helper class for stamping capacitor devices onto the equation system.</summary>
     public class CapacitorStamper
     {
-        private IEquationSystemCoefficientProxy nba;
-        private IEquationSystemCoefficientProxy nbc;
         private IEquationSystemCoefficientProxy nab;
-        private IEquationSystemCoefficientProxy ncb;
-        private IEquationSystemCoefficientProxy nbb;
 
         private IEquationSystemCoefficientProxy nb;
+        private IEquationSystemCoefficientProxy nba;
+        private IEquationSystemCoefficientProxy nbb;
+        private IEquationSystemCoefficientProxy nbc;
+        private IEquationSystemCoefficientProxy ncb;
 
         private IEquationSystemSolutionProxy sol;
 
+        /// <summary>Index of the branch variable.</summary>
         public int BranchVariable { get; private set; }
 
+        /// <summary>Registeres the equation system coefficient proxies into the stamper.</summary>
+        /// <param name="adapter">The equation system adapter.</param>
+        /// <param name="anode">Index of anode terminal.</param>
+        /// <param name="cathode">Index of cathode terminal.</param>
         public void Register(IEquationSystemAdapter adapter, int anode, int cathode)
         {
             BranchVariable = adapter.AddVariable();
@@ -33,6 +37,7 @@ namespace NextGenSpice.LargeSignal.Stamping
             sol = adapter.GetSolutionProxy(BranchVariable);
         }
 
+        /// <summary>Stamps the device characteristics onto the equation system through the registered proxies.</summary>
         public void Stamp(double ieq, double geq)
         {
             nba.Add(geq);
@@ -44,6 +49,7 @@ namespace NextGenSpice.LargeSignal.Stamping
             nb.Add(ieq);
         }
 
+        /// <summary>Gets the solution corresponding to the branch current variable</summary>
         public double GetCurrent()
         {
             return sol.GetValue();

@@ -1,16 +1,16 @@
-﻿using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Devices;
+﻿using NextGenSpice.Core.Devices;
 using NextGenSpice.LargeSignal.Behaviors;
+using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
-using NextGenSpice.Numerics.Equations.Eq;
 
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="CurrentSourceDevice" /> device.</summary>
     public class LargeSignalCurrentSource : TwoTerminalLargeSignalDevice<CurrentSourceDevice>
     {
-        private CurrentStamper stamper;
-        private VoltageProxy voltage;
+        private readonly CurrentStamper stamper;
+        private readonly VoltageProxy voltage;
+
         public LargeSignalCurrentSource(CurrentSourceDevice definitionDevice, IInputSourceBehavior behavior) :
             base(definitionDevice)
         {
@@ -54,23 +54,6 @@ namespace NextGenSpice.LargeSignal.Models
         {
             Current = Behavior.GetValue(context);
             stamper.Stamp(Current);
-        }
-    }
-
-    public class CurrentStamper
-    {
-        private IEquationSystemCoefficientProxy anode;
-        private IEquationSystemCoefficientProxy cathode;
-        public void Register(IEquationSystemAdapter adapter, int anode, int cathode)
-        {
-            this.anode = adapter.GetRightHandSideCoefficientProxy(anode);
-            this.cathode = adapter.GetRightHandSideCoefficientProxy(cathode); ;
-        }
-
-        public void Stamp(double current)
-        {
-            anode.Add(-current);
-            cathode.Add(current);
         }
     }
 }
