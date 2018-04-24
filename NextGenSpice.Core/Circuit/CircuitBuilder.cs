@@ -97,13 +97,13 @@ namespace NextGenSpice.Core.Circuit
         ///     it.
         /// </summary>
         /// <returns></returns>
-        public SubcircuitDefinition BuildSubcircuit(int[] terminals, string name = null)
+        public SubcircuitDefinition BuildSubcircuit(int[] terminals, object tag = null)
         {
             circuitException = ValidateSubcircuit_Internal(terminals);
             if (circuitException != null) throw circuitException;
 
             // subtract ground node from total node count
-            return new SubcircuitDefinition(NodeCount - 1, terminals, devices.Select(e => e.Clone()), name);
+            return new SubcircuitDefinition(NodeCount - 1, terminals, devices.Select(e => e.Clone()), tag);
         }
 
         /// <summary>
@@ -114,6 +114,24 @@ namespace NextGenSpice.Core.Circuit
         public bool ValidateSubcircuit(int[] terminals)
         {
             return ValidateSubcircuit_Internal(terminals) == null;
+        }
+
+        /// <summary>
+        ///     Verifies that current subcircuit with given nodes as terminals represents valid SPICE circuit. That is: there
+        ///     are no floating nodes and there is a DC path between any two nodes not going through ground.
+        /// </summary>
+        public bool ValidateCircuit()
+        {
+            if (!validatedCircuit) circuitException = ValidateCircuit_Internal();
+            return circuitException == null;
+        }
+
+        /// <summary>Clears the circuit builder to allow new circuit to be built.</summary>
+        public void Clear()
+        {
+            devices.Clear();
+            namedDevices.Clear();
+            nodes.Clear();
         }
 
         /// <summary>
@@ -146,16 +164,6 @@ namespace NextGenSpice.Core.Circuit
 
             var cycle = GetVoltageCicrle(branches);
             return cycle != null ? new VoltageBranchCycleException(cycle) : null;
-        }
-
-        /// <summary>
-        ///     Verifies that current subcircuit with given nodes as terminals represents valid SPICE circuit. That is: there
-        ///     are no floating nodes and there is a DC path between any two nodes not going through ground.
-        /// </summary>
-        public bool ValidateCircuit()
-        {
-            if (!validatedCircuit) circuitException = ValidateCircuit_Internal();
-            return circuitException == null;
         }
 
         /// <summary>
@@ -206,13 +214,9 @@ namespace NextGenSpice.Core.Circuit
 
             // get indexes of components for faster lookup
             var componentIndexes = new int[NodeCount];
-            for (int i = 0; i < components.Count; i++)
-            {
+            for (var i = 0; i < components.Count; i++)
                 foreach (var n in components[i])
-                {
                     componentIndexes[n] = i;
-                }
-            }
 
             // throw away branches that do not connect nodes from different components
             var result = currentBranches

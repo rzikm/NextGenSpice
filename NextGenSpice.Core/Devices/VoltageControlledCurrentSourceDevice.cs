@@ -5,7 +5,7 @@ namespace NextGenSpice.Core.Devices
     /// <summary>Class representing voltage controlled current source device.</summary>
     public class VoltageControlledCurrentSourceDevice : CircuitDefinitionDevice
     {
-        public VoltageControlledCurrentSourceDevice(double transConductance, string name = null) : base(4, name)
+        public VoltageControlledCurrentSourceDevice(double transConductance, string tag = null) : base(4, tag)
         {
             TransConductance = transConductance;
         }

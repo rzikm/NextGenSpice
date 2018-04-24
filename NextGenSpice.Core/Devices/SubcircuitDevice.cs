@@ -12,7 +12,7 @@ namespace NextGenSpice.Core.Devices
         /// </summary>
         public ISubcircuitDefinition Definition { get; }
 
-        public SubcircuitDevice(ISubcircuitDefinition definition, string name = null) : base(definition.TerminalNodes.Length, name)
+        public SubcircuitDevice(ISubcircuitDefinition definition, object tag = null) : base(definition.TerminalNodes.Length, tag)
         {
             Definition = definition;
         }

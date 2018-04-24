@@ -6,7 +6,7 @@ using NextGenSpice.Numerics.Equations;
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="SubcircuitDevice" />.</summary>
-    public class LargeSignalSubcircuit : LargeSignalDeviceBase<SubcircuitDevice>
+    public class LargeSignalSubcircuit : LargeSignalDeviceBase<SubcircuitDevice>, ILargeSignalSubcircuit
     {
         private readonly ILargeSignalDevice[] devices;
         private readonly int[] nodeMap;

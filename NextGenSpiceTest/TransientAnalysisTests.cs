@@ -36,7 +36,7 @@ namespace NextGenSpiceTest
                 .BuildCircuit();
 
             var model = circuit.GetLargeSignalModel();
-            model.EstablishInitialDcBias();
+            model.EstablishDcBias();
 
             var device = model.Devices.OfType<LargeSignalCapacitor>().Single();
 
@@ -61,11 +61,11 @@ namespace NextGenSpiceTest
             var circuit = CircuitGenerator.GetSimpleCircuitWithCapacitor();
 
             var model = circuit.GetLargeSignalModel();
-            model.EstablishInitialDcBias();
+            model.EstablishDcBias();
             Output.PrintCircuitStats(model);
 
             var expected = model.NodeVoltages.ToArray();
-            model.AdvanceInTime(model.MaxTimeStep);
+            model.AdvanceInTime(1e-6);
             Output.PrintCircuitStats(model);
 
             Assert.Equal(expected, model.NodeVoltages);
@@ -77,11 +77,11 @@ namespace NextGenSpiceTest
             var circuit = CircuitGenerator.GetSimpleCircuitWithInductor();
 
             var model = circuit.GetLargeSignalModel();
-            model.EstablishInitialDcBias();
+            model.EstablishDcBias();
             Output.PrintCircuitStats(model);
 
             var expected = model.NodeVoltages.ToArray();
-            model.AdvanceInTime(model.MaxTimeStep);
+            model.AdvanceInTime(1e-6);
             Output.PrintCircuitStats(model);
 
             Assert.Equal(expected, model.NodeVoltages, new DoubleComparer(1e-4));

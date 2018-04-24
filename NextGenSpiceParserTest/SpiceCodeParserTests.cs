@@ -132,7 +132,7 @@ d1 1 2 dmod
             Assert.Empty(res.Errors);
             var subckt = res.Subcircuits.Single();
             Assert.NotNull(subckt);
-            Assert.Equal("MYSUB", subckt.SubcircuitName);
+            Assert.Equal("MYSUB", subckt.Tag);
         }
 
         [Fact]

@@ -25,7 +25,7 @@ namespace NextGenSpiceTest
                 $"Time      |{string.Join("|", Enumerable.Range(0, model.NodeCount).Select(c => c.ToString().PadLeft(10)))}");
             var elapsed = 0.0;
 
-            model.EstablishInitialDcBias();
+            model.EstablishDcBias();
             while (true)
             {
                 Output.WriteLine(

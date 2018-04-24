@@ -4,8 +4,8 @@ namespace NextGenSpice.Core.Devices
 {
     public interface ISubcircuitDefinition
     {
-        /// <summary>Name of this subcircuit type</summary>
-        string SubcircuitName { get; }
+        /// <summary>Tag for identifying this subcircuit type</summary>
+        object Tag { get; }
 
         /// <summary>Ids from the subcircuit definition that are considered connected to the device terminals.</summary>
         int[] TerminalNodes { get; }

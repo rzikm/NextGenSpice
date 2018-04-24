@@ -7,7 +7,7 @@ namespace NextGenSpice.Core.Devices
     /// <summary>Class that represents Homo-Junction Bipolar Transistor device.</summary>
     public class BjtDevice : CircuitDefinitionDevice
     {
-        public BjtDevice(BjtModelParams parameters, string name = null) : base(4, name)
+        public BjtDevice(BjtModelParams parameters, string tag = null) : base(4, tag)
         {
             Parameters = parameters;
         }

@@ -22,8 +22,8 @@ namespace SandboxRunner
 
         private static void Main(string[] args)
         {
-            PrintFileSizes(); return;
-
+//            PrintFileSizes(); return;
+            Examples.LoadingSubcircuit(); return;
 //            TestSimulationSpeed(); return;
             //            IntegrationTest.Run();
 
@@ -155,9 +155,8 @@ namespace SandboxRunner
 
             model.NonlinearIterationEpsilon = 1e-10;
             model.MaxDcPointIterations = 100;
-            model.MaxTimeStep = 10e-6;
-            model.EstablishInitialDcBias();
-            SimulateAndPrint(model, 10e-3, model.MaxTimeStep);
+            model.EstablishDcBias();
+            SimulateAndPrint(model, 10e-3, 1e-6);
         }
 
         private static string GetProjectName(string filePath)
@@ -250,7 +249,7 @@ namespace SandboxRunner
             model.NonlinearIterationEpsilon = 1e-10;
             model.MaxDcPointIterations = 10000;
 
-            model.EstablishInitialDcBias();
+            model.EstablishDcBias();
             SimulateAndPrint(model, 1000e-6, 1e-6);
         }
 

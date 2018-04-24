@@ -6,13 +6,13 @@ namespace NextGenSpice.Core.Devices
     /// <summary>Class that represents a current source device.</summary>
     public class VoltageSourceDevice : TwoTerminalCircuitDevice
     {
-        public VoltageSourceDevice(SourceBehaviorParams behavior, string name = null) : base(name)
+        public VoltageSourceDevice(SourceBehaviorParams behavior, object tag = null) : base(tag)
         {
             BehaviorParams = behavior;
         }
 
-        public VoltageSourceDevice(double voltage, string name = null) : this(
-            new ConstantBehaviorParams {Value = voltage}, name)
+        public VoltageSourceDevice(double voltage, object tag = null) : this(
+            new ConstantBehaviorParams {Value = voltage}, tag)
         {
         }
 

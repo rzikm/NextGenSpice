@@ -4,7 +4,6 @@ using NextGenSpice.LargeSignal;
 using NextGenSpice.Parser;
 using NextGenSpice.Parser.Statements.Deferring;
 using NextGenSpice.Parser.Utils;
-using SpiceParserError = NextGenSpice.Parser.Utils.SpiceParserError;
 
 namespace NextGenSpice.Printing
 {

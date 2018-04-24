@@ -31,7 +31,7 @@ namespace NextGenSpice.Simulation
             var prints = printStatements.OfType<PrintStatement<LargeSignalCircuitModel>>()
                 .Where(s => s.AnalysisType == "OP").ToList();
 
-            model.EstablishInitialDcBias();
+            model.EstablishDcBias();
 
             if (prints.Count == 0)
             {

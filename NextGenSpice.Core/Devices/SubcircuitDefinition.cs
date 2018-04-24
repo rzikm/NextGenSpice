@@ -6,16 +6,16 @@ namespace NextGenSpice.Core.Devices
     public class SubcircuitDefinition : ISubcircuitDefinition
     {
         internal SubcircuitDefinition(int innerNodeCount, int[] terminalNodes,
-            IEnumerable<ICircuitDefinitionDevice> devices, string name)
+            IEnumerable<ICircuitDefinitionDevice> devices, object tag)
         {
             TerminalNodes = terminalNodes;
             InnerNodeCount = innerNodeCount;
             Devices = devices;
-            SubcircuitName = name;
+            Tag = tag;
         }
 
         /// <summary>Name of this subcircuit type</summary>
-        public string SubcircuitName { get; }
+        public object Tag { get; }
 
         /// <summary>Ids from the subcircuit definition that are considered connected to the device terminals.</summary>
         public int[] TerminalNodes { get; }

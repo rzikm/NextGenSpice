@@ -15,6 +15,11 @@ namespace NextGenSpice.LargeSignal
     {
         private SimulationContext context;
 
+        /// <summary>
+        /// Set of device independent circuit parameters.
+        /// </summary>
+        public CircuitParameters CircuitParameters { get; }
+
         private double[] currentSolution;
         private double[] previousSolution;
 
@@ -25,6 +30,8 @@ namespace NextGenSpice.LargeSignal
             this.initialVoltages = initialVoltages.ToArray();
             NodeVoltages = new double[this.initialVoltages.Length];
             this.devices = devices.ToArray();
+            initVoltProxies = new List<IEquationSystemCoefficientProxy>();
+            CircuitParameters = new CircuitParameters();
 
             deviceLookup = devices.Where(e => e.DefinitionDevice.Tag != null).ToDictionary(e => e.DefinitionDevice.Tag);
             updaterInitCondition = e => e.ApplyInitialCondition(context);
@@ -51,10 +58,9 @@ namespace NextGenSpice.LargeSignal
             return ret;
         }
 
-        private ILargeSignalDevice[] nonlinearDevices;
-
         private readonly Dictionary<object, ILargeSignalDevice> deviceLookup;
         private readonly double?[] initialVoltages;
+        private readonly List<IEquationSystemCoefficientProxy> initVoltProxies;
         private readonly ILargeSignalDevice[] devices;
 
         // cached functors to prevent excessive allocations
@@ -71,9 +77,6 @@ namespace NextGenSpice.LargeSignal
 
         /// <summary>Maximumum number of Newton-Raphson iterations per timepoint.</summary>
         public int MaxDcPointIterations { get; set; } = 1000;
-
-        /// <summary>Maximal timestep between two time points during transient analysis.</summary>
-        public double MaxTimeStep { get; set; } = 1e-6;
 
         /// <summary>How many Newton-Raphson iterations were needed in last operating point calculation.</summary>
         public int LastNonLinearIterationCount { get; private set; }
@@ -92,7 +95,7 @@ namespace NextGenSpice.LargeSignal
         public void AdvanceInTime(double timestep)
         {
             if (timestep < 0) throw new ArgumentOutOfRangeException(nameof(timestep));
-            if (context == null) EstablishInitialDcBias();
+            if (context == null) EstablishDcBias();
 
             while (timestep > 0)
             {
@@ -105,28 +108,26 @@ namespace NextGenSpice.LargeSignal
         }
 
         /// <summary>Establishes initial operating point for the transient analysis.</summary>
-        public void EstablishInitialDcBias(bool initCond = false)
+        public void EstablishDcBias(bool initCond = false)
         {
             context = null; // reset;
             EnsureInitialized();
-            //            context.TimeStep = 0;
-            //            context.TimePoint = 0;
 
-//            for (int i = 0; i < initialVoltages.Length; i++)
-//            {
-//                if (initialVoltages[i].HasValue) // initial condition
-//                {
-//                    context.EquationSystem
-//                        .AddCurrent(i, 0, initialVoltages[i].Value)
-//                        .AddConductance(i, 0, 1);
-//                }
-//            }
+            // initial condition
+            for (int i = 0; i < initialVoltages.Length; i++)
+            {
+                if (initialVoltages[i].HasValue)
+                {
+                    initVoltProxies[2 * i].Add(1);
+                    initVoltProxies[2 * i + 1].Add(initialVoltages[i].Value);
+                }
+            }
 
             if (!EstablishDcBias_Internal(updaterInitCondition))
                 throw new NonConvergenceException();
 
             // rerun without initial voltages
-            if (!EstablishDcBias_Internal(updaterInitCondition))
+            if (!initCond && !EstablishDcBias_Internal(updaterInitCondition))
                 throw new NonConvergenceException();
 
             OnDcBiasEstablished();
@@ -134,23 +135,34 @@ namespace NextGenSpice.LargeSignal
 
         private void EnsureInitialized()
         {
-            nonlinearDevices = Devices.Where(e => e.UpdateMode == ModelUpdateMode.Always).ToArray();
-
             if (context != null) return;
+            context = new SimulationContext(NodeCount, CircuitParameters);
 
-            context = new SimulationContext(NodeCount);
-            BuildEquationSystem();
-        }
-
-        private void BuildEquationSystem()
-        {
+            // build equation system
             equationSystemAdapter = new EquationSystemAdapter(NodeCount);
 
             foreach (var device in Devices)
                 device.Initialize(equationSystemAdapter, context);
 
+            // get proxies for initial conditions
+            initVoltProxies.Clear();
+            for (int i = 0; i < this.initialVoltages.Length; i++)
+            {
+                if (initialVoltages[i].HasValue)
+                {
+                    initVoltProxies.Add(equationSystemAdapter.GetMatrixCoefficientProxy(i, i));
+                    initVoltProxies.Add(equationSystemAdapter.GetRightHandSideCoefficientProxy(i));
+                }
+                else
+                {
+                    initVoltProxies.Add(null);
+                    initVoltProxies.Add(null);
+                }
+            }
+            // finalize making changes
             equationSystemAdapter.Freeze();
-            
+
+            // allocate temporary arrays
             currentSolution = new double[equationSystemAdapter.VariableCount];
             previousSolution = new double[equationSystemAdapter.VariableCount];
         }
@@ -216,10 +228,10 @@ namespace NextGenSpice.LargeSignal
 
         private class SimulationContext : ISimulationContext
         {
-            public SimulationContext(int nodeCount)
+            public SimulationContext(int nodeCount, CircuitParameters parameters)
             {
                 NodeCount = nodeCount;
-                CircuitParameters = new CircuitParameters();
+                CircuitParameters = parameters;
             }
 
             public double NodeCount { get; }

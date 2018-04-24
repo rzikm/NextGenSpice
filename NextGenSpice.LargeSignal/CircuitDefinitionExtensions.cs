@@ -14,13 +14,6 @@ namespace NextGenSpice.LargeSignal
             return AnalysisModelCreator.Instance.GetModel<LargeSignalCircuitModel>(definition);
         }
 
-        /// <summary>Creates instance of <see cref="LargeSignalCircuitModel" /> from given circuit definition.</summary>
-        /// <param name="definition"></param>
-        /// <returns></returns>
-        public static TAnalysisModel GetAnalysisModel<TAnalysisModel>(this ICircuitDefinition definition)
-        {
-            if (definition == null) throw new ArgumentNullException(nameof(definition));
-            return AnalysisModelCreator.Instance.GetModel<TAnalysisModel>(definition);
-        }
+       
     }
 }

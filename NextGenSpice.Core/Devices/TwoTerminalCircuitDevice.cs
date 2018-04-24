@@ -3,7 +3,7 @@
     /// <summary>Base class for devices that have exactly two terminals.</summary>
     public abstract class TwoTerminalCircuitDevice : CircuitDefinitionDevice
     {
-        protected TwoTerminalCircuitDevice(string name) : base(2, name)
+        protected TwoTerminalCircuitDevice(object tag) : base(2, tag)
         {
         }
 

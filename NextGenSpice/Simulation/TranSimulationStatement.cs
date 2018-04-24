@@ -42,7 +42,6 @@ namespace NextGenSpice.Simulation
 
             if (errors.Count > 0) throw new PrinterInitializationException(errors);
 
-            model.MaxTimeStep = param.TimeStep;
             model.AdvanceInTime(param.StartTime);
 
             var time = param.StartTime;

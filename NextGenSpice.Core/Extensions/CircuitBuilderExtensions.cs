@@ -17,9 +17,9 @@ namespace NextGenSpice.Core.Extensions
         /// <param name="name">Name of the device.</param>
         /// <returns></returns>
         public static CircuitBuilder AddResistor(this CircuitBuilder builder, int n1, int n2, double resistance,
-            string name = null)
+            object tag = null)
         {
-            builder.AddDevice(new[] {n1, n2}, new ResistorDevice(resistance, name));
+            builder.AddDevice(new[] {n1, n2}, new ResistorDevice(resistance, tag));
             return builder;
         }
 
@@ -32,9 +32,9 @@ namespace NextGenSpice.Core.Extensions
         /// <param name="name">Name of the device.</param>
         /// <returns></returns>
         public static CircuitBuilder AddInductor(this CircuitBuilder builder, int n1, int n2, double inductance,
-            double? initialCurrent = null, string name = null)
+            double? initialCurrent = null, object tag = null)
         {
-            builder.AddDevice(new[] {n1, n2}, new InductorDevice(inductance, initialCurrent, name));
+            builder.AddDevice(new[] {n1, n2}, new InductorDevice(inductance, initialCurrent, tag));
             return builder;
         }
 
@@ -47,9 +47,9 @@ namespace NextGenSpice.Core.Extensions
         /// <param name="name">Name of the device.</param>
         /// <returns></returns>
         public static CircuitBuilder AddCapacitor(this CircuitBuilder builder, int n1, int n2, double capacitance,
-            double? initialVoltage = null, string name = null)
+            double? initialVoltage = null, object tag = null)
         {
-            builder.AddDevice(new[] {n1, n2}, new CapacitorDevice(capacitance, initialVoltage, name));
+            builder.AddDevice(new[] {n1, n2}, new CapacitorDevice(capacitance, initialVoltage, tag));
             return builder;
         }
 
@@ -61,9 +61,9 @@ namespace NextGenSpice.Core.Extensions
         /// <param name="name">Name of the device.</param>
         /// <returns></returns>
         public static CircuitBuilder AddCurrentSource(this CircuitBuilder builder, int n1, int n2, double current,
-            string name = null)
+            object tag = null)
         {
-            builder.AddDevice(new[] {n1, n2}, new CurrentSourceDevice(current, name));
+            builder.AddDevice(new[] {n1, n2}, new CurrentSourceDevice(current, tag));
             return builder;
         }
 
@@ -75,9 +75,9 @@ namespace NextGenSpice.Core.Extensions
         /// <param name="name">Name of the device.</param>
         /// <returns></returns>
         public static CircuitBuilder AddCurrentSource(this CircuitBuilder builder, int n1, int n2,
-            SourceBehaviorParams param, string name = null)
+            SourceBehaviorParams param, object tag = null)
         {
-            builder.AddDevice(new[] {n1, n2}, new CurrentSourceDevice(param, name));
+            builder.AddDevice(new[] {n1, n2}, new CurrentSourceDevice(param, tag));
             return builder;
         }
 
@@ -89,9 +89,9 @@ namespace NextGenSpice.Core.Extensions
         /// <param name="name">Name of the device.</param>
         /// <returns></returns>
         public static CircuitBuilder AddVoltageSource(this CircuitBuilder builder, int n1, int n2, double voltage,
-            string name = null)
+            object tag = null)
         {
-            builder.AddDevice(new[] {n1, n2}, new VoltageSourceDevice(voltage, name));
+            builder.AddDevice(new[] {n1, n2}, new VoltageSourceDevice(voltage, tag));
             return builder;
         }
 
@@ -103,9 +103,9 @@ namespace NextGenSpice.Core.Extensions
         /// <param name="name">Name of the device.</param>
         /// <returns></returns>
         public static CircuitBuilder AddVoltageSource(this CircuitBuilder builder, int n1, int n2,
-            SourceBehaviorParams param, string name = null)
+            SourceBehaviorParams param, object tag = null)
         {
-            builder.AddDevice(new[] {n1, n2}, new VoltageSourceDevice(param, name));
+            builder.AddDevice(new[] {n1, n2}, new VoltageSourceDevice(param, tag));
             return builder;
         }
 
@@ -117,9 +117,9 @@ namespace NextGenSpice.Core.Extensions
         /// <param name="name">Name of the device.</param>
         /// <returns></returns>
         public static CircuitBuilder AddSubcircuit(this CircuitBuilder builder, int[] nodes, ISubcircuitDefinition subcircuit,
-            string name = null)
+            object tag = null)
         {
-            builder.AddDevice(nodes, new SubcircuitDevice(subcircuit, name));
+            builder.AddDevice(nodes, new SubcircuitDevice(subcircuit, tag));
             return builder;
         }
 
@@ -131,9 +131,9 @@ namespace NextGenSpice.Core.Extensions
         /// <param name="name">Name of the device.</param>
         /// <returns></returns>
         public static CircuitBuilder AddDiode(this CircuitBuilder builder, int n1, int n2, DiodeModelParams param,
-            string name = null)
+            object tag = null)
         {
-            builder.AddDevice(new[] {n1, n2}, new DiodeDevice(param, name));
+            builder.AddDevice(new[] {n1, n2}, new DiodeDevice(param, tag));
             return builder;
         }
 
@@ -145,11 +145,11 @@ namespace NextGenSpice.Core.Extensions
         /// <param name="name">Name of the device.</param>
         /// <returns></returns>
         public static CircuitBuilder AddDiode(this CircuitBuilder builder, int n1, int n2,
-            Action<DiodeModelParams> config, string name = null)
+            Action<DiodeModelParams> config, object tag = null)
         {
             var param = DiodeModelParams.Default;
             config(param);
-            builder.AddDevice(new[] {n1, n2}, new DiodeDevice(param, name));
+            builder.AddDevice(new[] {n1, n2}, new DiodeDevice(param, tag));
             return builder;
         }
     }

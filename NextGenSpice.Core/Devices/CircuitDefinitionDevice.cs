@@ -6,10 +6,10 @@ namespace NextGenSpice.Core.Devices
     /// <summary>Base class for representing a circuit device used in circuit definition.</summary>
     public abstract class CircuitDefinitionDevice : ICircuitDefinitionDevice
     {
-        protected CircuitDefinitionDevice(int terminalCount, string name)
+        protected CircuitDefinitionDevice(int terminalCount, object tag)
         {
             ConnectedNodes = new NodeConnectionSet(terminalCount);
-            Tag = name;
+            Tag = tag;
         }
 
         /// <summary>Set of terminal connections.</summary>

@@ -128,19 +128,15 @@ namespace NextGenSpice.Parser.Statements
                 TerminalNodes = terminals;
                 InnerNodeCount = terminals.Length + 1;
                 Devices = Enumerable.Empty<ICircuitDefinitionDevice>();
-                SubcircuitName = null;
+                Tag = null;
             }
 
-            /// <summary>Name of this subcircuit type</summary>
-            public string SubcircuitName { get; }
+            public object Tag { get; }
 
-            /// <summary>Ids from the subcircuit definition that are considered connected to the device terminals.</summary>
             public int[] TerminalNodes { get; }
 
-            /// <summary>Number of inner nodes of this subcircuit.</summary>
             public int InnerNodeCount { get; }
 
-            /// <summary>Inner devices that define behavior of this subcircuit.</summary>
             public IEnumerable<ICircuitDefinitionDevice> Devices { get; }
         }
     }
