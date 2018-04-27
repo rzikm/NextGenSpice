@@ -17,9 +17,6 @@ namespace NextGenSpice.LargeSignal.Models
             Behavior = behavior;
         }
 
-        /// <summary>Specifies how often the model should be updated.</summary>
-        public override ModelUpdateMode UpdateMode => Behavior.UpdateMode;
-
         /// <summary>Strategy class specifying behavior of this source.</summary>
         private IInputSourceBehavior Behavior { get; }
 

@@ -21,7 +21,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <summary>Processes given set of statements.</summary>
         protected override void DoProcess()
         {
-            var name = DeviceName;
+            var name = DeviceName; // capture
             var nodes = GetNodeIndices(1, 2);
             // cannot check for model existence yet, defer checking for model later
 
@@ -29,7 +29,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             {
                 var modelToken = RawStatement[3]; // capture
                 Context.DeferredStatements.Add(
-                    new ModeledDeviceDeferedStatement<DiodeModelParams>(
+                    new ModeledDeviceDeferedStatement<DiodeParams>(
                         (par, cb) => cb.AddDevice(nodes, new DiodeDevice(par, name)), modelToken));
             }
         }
@@ -42,41 +42,35 @@ namespace NextGenSpice.Parser.Statements.Devices
         }
 
         /// <summary>Class that handles diode device model statements.</summary>
-        private class DiodeModelStatementHandler : ModelStatementHandlerBase<DiodeModelParams>,
+        private class DiodeModelStatementHandler : ModelStatementHandlerBase<DiodeParams>,
             IModelStatementHandler
         {
-            private readonly ParameterMapper<DiodeModelParams> mapper;
-
             public DiodeModelStatementHandler()
             {
-                mapper = new ParameterMapper<DiodeModelParams>();
-                mapper.Map(p => p.SaturationCurrent, "IS");
-                mapper.Map(p => p.SeriesResistance, "RS");
-                mapper.Map(p => p.EmissionCoefficient, "N");
-                mapper.Map(p => p.TransitTime, "TT");
-                mapper.Map(p => p.JunctionCapacitance, "CJO");
-                mapper.Map(p => p.JunctionPotential, "VJ");
-                mapper.Map(p => p.JunctionGradingCoefficient, "M");
-                mapper.Map(p => p.ActivationEnergy, "EG");
-                mapper.Map(p => p.SaturationCurrentTemperatureExponent, "XTI");
-                mapper.Map(p => p.FlickerNoiseCoefficient, "KF");
-                mapper.Map(p => p.FlickerNoiseExponent, "AF");
-                mapper.Map(p => p.ForwardBiasDepletionCapacitanceCoefficient, "FC");
-                mapper.Map(p => p.ReverseBreakdownVoltage, "BV");
-                mapper.Map(p => p.ReverseBreakdownCurrent, "IBV");
+                Map(p => p.SaturationCurrent, "IS");
+                Map(p => p.SeriesResistance, "RS");
+                Map(p => p.EmissionCoefficient, "N");
+                Map(p => p.TransitTime, "TT");
+                Map(p => p.JunctionCapacitance, "CJO");
+                Map(p => p.JunctionPotential, "VJ");
+                Map(p => p.JunctionGradingCoefficient, "M");
+                Map(p => p.ActivationEnergy, "EG");
+                Map(p => p.SaturationCurrentTemperatureExponent, "XTI");
+                Map(p => p.FlickerNoiseCoefficient, "KF");
+                Map(p => p.FlickerNoiseExponent, "AF");
+                Map(p => p.ForwardBiasDepletionCapacitanceCoefficient, "FC");
+                Map(p => p.ReverseBreakdownVoltage, "BV");
+                Map(p => p.ReverseBreakdownCurrent, "IBV");
             }
-
-            /// <summary>Mapper for mapping parsed parameters onto properties.</summary>
-            protected override ParameterMapper<DiodeModelParams> Mapper => mapper;
 
             /// <summary>Discriminator of handled model type.</summary>
             public override string Discriminator => "D";
 
             /// <summary>Creates new instance of parameter class for this device model.</summary>
             /// <returns></returns>
-            protected override DiodeModelParams CreateDefaultModel()
+            protected override DiodeParams CreateDefaultModel()
             {
-                return new DiodeModelParams();
+                return new DiodeParams();
             }
         }
     }

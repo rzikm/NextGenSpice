@@ -32,10 +32,6 @@ namespace NextGenSpice.LargeSignal.Models
         /// <summary>Negative terminal of the reference voltage.</summary>
         public int ReferenceCathode => DefinitionDevice.ConnectedNodes[3];
 
-        /// <summary>Specifies how often the model should be updated.</summary>
-        public override ModelUpdateMode UpdateMode =>
-            ModelUpdateMode.Always; // due to possible dependencies on nonlinear devices.
-
         public double Voltage { get; private set; }
 
         public double Current { get; private set; }

@@ -22,9 +22,6 @@ namespace NextGenSpice.LargeSignal.Models
         /// <summary>Strategy class specifying behavior of this source.</summary>
         public IInputSourceBehavior Behavior { get; }
 
-        /// <summary>Specifies how often the model should be updated.</summary>
-        public override ModelUpdateMode UpdateMode => Behavior.UpdateMode;
-
         /// <summary>
         ///     Notifies model class that DC bias for given timepoint is established. This method can be used for processing
         ///     circuit equation solution for current timepoint.

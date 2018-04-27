@@ -26,10 +26,6 @@ namespace NextGenSpice.LargeSignal.Models
         /// <summary>Set of classes that model this subcircuit.</summary>
         public IReadOnlyList<ILargeSignalDevice> Devices => devices;
 
-        /// <summary>Specifies how often the model should be updated.</summary>
-        public override ModelUpdateMode UpdateMode =>
-            devices.Max(e => e.UpdateMode); // act like the most updating device.
-
         /// <summary>
         ///     Notifies model class that DC bias for given timepoint is established. This method can be used for processing
         ///     circuit equation solution for current timepoint.
@@ -150,9 +146,6 @@ namespace NextGenSpice.LargeSignal.Models
 
             /// <summary>Decorated simulation context.</summary>
             public ISimulationContext TrueContext { get; set; }
-
-            /// <summary>Number of inner nodes.</summary>
-            public double NodeCount => TrueContext.NodeCount;
 
             /// <summary>Curent timepoint of the simulation.</summary>
             public double TimePoint => TrueContext.TimePoint;

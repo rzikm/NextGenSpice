@@ -7,13 +7,9 @@ namespace NextGenSpice.LargeSignal.Models
     /// <summary>Defines basic methods and properties for large signal devices.</summary>
     public interface ILargeSignalDevice : IAnalysisDeviceModel<LargeSignalCircuitModel>
     {
-        /// <summary>Specifies how often the model should be updated.</summary>
-        ModelUpdateMode UpdateMode { get; }
-
         /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
         /// <param name="adapter">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>
-        /// >
         void Initialize(IEquationSystemAdapter adapter, ISimulationContext context);
 
         /// <summary>

@@ -55,10 +55,7 @@ namespace NextGenSpice.LargeSignal.Models
         public int Substrate => DefinitionDevice.Substrate;
 
         /// <summary>Set of parameters for this device model.</summary>
-        public BjtModelParams Parameters => DefinitionDevice.Parameters;
-
-        /// <summary>Specifies how often the model should be updated.</summary>
-        public override ModelUpdateMode UpdateMode => ModelUpdateMode.Always;
+        public BjtParams Parameters => DefinitionDevice.Parameters;
 
         /// <summary>Current flowing through the base terminal.</summary>
         public double CurrentBase { get; private set; }
@@ -144,8 +141,8 @@ namespace NextGenSpice.LargeSignal.Models
 
             CurrentBase = CurrentBaseEmitter + CurrentBaseCollector;
 
-            stamper.Stamp(gBe, gBc, gMf, gMr, (-iBeeq - iBceq) * polarity, (iBceq - iCeeq) * polarity,
-                (iBeeq + iCeeq) * polarity);
+            stamper.Stamp(gBe, gBc, gMf, gMr, (-iBeeq - iBceq) , (iBceq - iCeeq),
+                (iBeeq + iCeeq) );
         }
 
         /// <summary>

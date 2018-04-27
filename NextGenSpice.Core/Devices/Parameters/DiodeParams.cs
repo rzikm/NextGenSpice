@@ -3,13 +3,13 @@
 namespace NextGenSpice.Core.Devices.Parameters
 {
     /// <summary>Represents set of model parameters for the diode device.</summary>
-    public class DiodeModelParams : ICloneable
+    public class DiodeParams : ICloneable
     {
         /// <summary>Default set of model parameters for the diode.</summary>
-        public static DiodeModelParams Default => new DiodeModelParams();
+        public static DiodeParams Default => new DiodeParams();
 
         /// <summary>Set of parameters corresponding to D1N418 diode model.</summary>
-        public static DiodeModelParams D1N4148 => new DiodeModelParams
+        public static DiodeParams D1N4148 => new DiodeParams
         {
             SaturationCurrent = 2.52e-9,
             EmissionCoefficient = 1.752,

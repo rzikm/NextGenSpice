@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
 using NextGenSpice.Parser.Statements.Models;
 using NextGenSpice.Parser.Utils;
 
@@ -9,7 +11,17 @@ namespace NextGenSpice.Parser.Statements.Devices
     public abstract class ModelStatementHandlerBase<T> : IModelStatementHandler
     {
         /// <summary>Mapper for mapping parsed parameters onto properties.</summary>
-        protected abstract ParameterMapper<T> Mapper { get; }
+        private ParameterMapper<T> Mapper { get; }
+
+        protected ModelStatementHandlerBase()
+        {
+            Mapper = new ParameterMapper<T>();
+        }
+
+        protected void Map(Expression<Func<T, double>> mapping, string paramKey)
+        {
+            Mapper.Map(mapping, paramKey);
+        }
 
         /// <summary>Discriminator of handled model type.</summary>
         public abstract string Discriminator { get; }

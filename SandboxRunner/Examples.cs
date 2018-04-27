@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Devices;
@@ -18,11 +20,11 @@ namespace SandboxRunner
         {
             var builder = new CircuitBuilder();
             builder
-                .AddDevice(new[] {1, 0}, new VoltageSourceDevice(12, "VS"))
-                .AddDevice(new[] {0, 2}, new ResistorDevice(10))
-                .AddDevice(new[] {1, 2}, new ResistorDevice(10))
-                .AddDevice(new[] {2, 3}, new ResistorDevice(5))
-                .AddDevice(new[] {1, 3}, new ResistorDevice(5));
+                .AddDevice(new[] { 1, 0 }, new VoltageSourceDevice(12, "VS"))
+                .AddDevice(new[] { 0, 2 }, new ResistorDevice(10))
+                .AddDevice(new[] { 1, 2 }, new ResistorDevice(10))
+                .AddDevice(new[] { 2, 3 }, new ResistorDevice(5))
+                .AddDevice(new[] { 1, 3 }, new ResistorDevice(5));
             var circuit = builder.BuildCircuit();
 
             //                        var builder = new CircuitBuilder();
@@ -53,7 +55,7 @@ namespace SandboxRunner
             // equivalent to
             // var vsource = (ITwoTerminalLargeSignalDevice) model.Devices.Single(
             //    dev => dev.DefinitionDevice.Tag.Equals("VS"));
-            var vsouce = (ITwoTerminalLargeSignalDevice) model.FindDevice("VS");
+            var vsouce = (ITwoTerminalLargeSignalDevice)model.FindDevice("VS");
 
             Console.WriteLine(vsouce.Current); // -0.8 V
         }
@@ -77,7 +79,7 @@ namespace SandboxRunner
             Console.WriteLine(model.NodeVoltages[2]); //  8 V
             Console.WriteLine(model.NodeVoltages[3]); // 10 V
 
-            var vsouce = (ITwoTerminalLargeSignalDevice) model.FindDevice("VS");
+            var vsouce = (ITwoTerminalLargeSignalDevice)model.FindDevice("VS");
 
             Console.WriteLine(vsouce.Current); // -0.8 V
         }
@@ -98,13 +100,13 @@ namespace SandboxRunner
                 .BuildCircuit();
 
             var model = circuit.GetLargeSignalModel();
-            
+
             model.EstablishDcBias();
 
             Console.WriteLine("Time V(1) V(3)");
 
             var timestep = 0.2e-3; // use 0.2 ms timestep
-            while (model.CurrentTimePoint <= 50e-3) // simulate for 50 ms
+            while (model.CurrentTimePoint <= 55e-3) // simulate for 55 ms
             {
                 var time = model.CurrentTimePoint;
                 var v1 = model.NodeVoltages[1];
@@ -125,23 +127,23 @@ namespace SandboxRunner
             var batteryDefinition = builder
                 .AddVoltageSource(1, 2, 9)
                 .AddResistor(2, 3, 1.5)
-                .BuildSubcircuit(new [] {1, 3});
+                .BuildSubcircuit(new[] { 1, 3 });
 
             builder.Clear();
             builder
-                .AddDevice(new[] {0, 1}, new SubcircuitDevice(batteryDefinition))
-                .AddSubcircuit(new[] {0, 1}, batteryDefinition);
+                .AddDevice(new[] { 0, 1 }, new SubcircuitDevice(batteryDefinition))
+                .AddSubcircuit(new[] { 0, 1 }, batteryDefinition);
         }
 
         public static void LoadingSubcircuit()
         {
             var parser = SpiceNetlistParser.WithDefaults();
             var result = parser.Parse(new StreamReader("doubledouble.txt"));
-//            var result = parser.Parse(new StreamReader("circuit.cir"));
+            //            var result = parser.Parse(new StreamReader("circuit.cir"));
             var circuit = result.CircuitDefinition;
 
             var model = circuit.GetLargeSignalModel();
-            var d1 = (ITwoTerminalLargeSignalDevice) model.FindDevice("D1");
+            var d1 = (ITwoTerminalLargeSignalDevice)model.FindDevice("D1");
             var inNode = result.NodeIndices["IN"];
 
             Console.WriteLine("Time V(IN) I(D1)");
@@ -168,16 +170,63 @@ namespace SandboxRunner
                     Amplitude = 5,
                     Frequency = 1e3
                 })
-                .AddCapacitor(1, 2, 0.125)
+                .AddCapacitor(1, 2, 0.125, null, "C1")
                 .AddResistor(2, 0, 1);
 
-            var c1 = builder.BuildCircuit();
-
-
-            var m1 = c1.GetLargeSignalModel();
-
+            var m1 = builder.BuildCircuit().GetLargeSignalModel();
             m1.EstablishDcBias();
 
+
+            Console.WriteLine("Time V_1 V_2");
+            var timestep = 10e-6;
+            while (m1.CurrentTimePoint <= 1e-3)
+            {
+                var time = m1.CurrentTimePoint;
+                Console.WriteLine($"{time} {m1.NodeVoltages[1]} {m1.NodeVoltages[2]}");
+
+                m1.AdvanceInTime(timestep);
+            }
+
+            builder.AddCapacitor(2, 0, 0.125, null, "C2");
+            var m2 = builder.BuildCircuit().GetLargeSignalModel();
+
+            var c1 = (LargeSignalCapacitor)m1.FindDevice("C1");
+            var intprop = typeof(LargeSignalCapacitor).GetProperty("IntegrationMethod",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            intprop.SetValue(m2.FindDevice("C1"), intprop.GetValue(c1));
+
+            var ctxprop =
+                typeof(LargeSignalCircuitModel).GetField("context", BindingFlags.Instance | BindingFlags.NonPublic);
+            var ctx = (ISimulationContext)ctxprop.GetValue(m1);
+
+            // too complex not worth it
+
+            var tpprop = ctx.GetType().GetProperty("TimePoint", BindingFlags.NonPublic | BindingFlags.Instance);
+            tpprop.SetValue(ctxprop.GetValue(m2), ctx.TimePoint);
+        }
+
+        public static void ResistorSweep()
+        {
+            var builder = new CircuitBuilder();
+            builder
+                .AddVoltageSource(1, 0, 12, "VS")
+                .AddResistor(0, 2, 10)
+                .AddResistor(1, 2, 10)
+                .AddResistor(2, 3, 5, "R1")
+                .AddResistor(1, 3, 5);
+            var circuit = builder.BuildCircuit();
+
+            var model = circuit.GetLargeSignalModel();
+
+
+            var vsouce = (ITwoTerminalLargeSignalDevice)model.FindDevice("VS");
+            var res = (ResistorDevice)circuit.FindDevice("R1");
+            for (int i = 0; i < 15; i++)
+            {
+                res.Resistance = i+1;
+                model.EstablishDcBias();
+                Console.WriteLine($"{i+1}Ohm: {model.NodeVoltages[1]}V {model.NodeVoltages[2]}V {model.NodeVoltages[3]}V {vsouce.Current}A");
+            }
         }
     }
 }

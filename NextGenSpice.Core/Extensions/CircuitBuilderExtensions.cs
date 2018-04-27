@@ -130,7 +130,7 @@ namespace NextGenSpice.Core.Extensions
         /// <param name="param">Model parameters of the device.</param>
         /// <param name="name">Name of the device.</param>
         /// <returns></returns>
-        public static CircuitBuilder AddDiode(this CircuitBuilder builder, int n1, int n2, DiodeModelParams param,
+        public static CircuitBuilder AddDiode(this CircuitBuilder builder, int n1, int n2, DiodeParams param,
             object tag = null)
         {
             builder.AddDevice(new[] {n1, n2}, new DiodeDevice(param, tag));
@@ -145,9 +145,9 @@ namespace NextGenSpice.Core.Extensions
         /// <param name="name">Name of the device.</param>
         /// <returns></returns>
         public static CircuitBuilder AddDiode(this CircuitBuilder builder, int n1, int n2,
-            Action<DiodeModelParams> config, object tag = null)
+            Action<DiodeParams> config, object tag = null)
         {
-            var param = DiodeModelParams.Default;
+            var param = DiodeParams.Default;
             config(param);
             builder.AddDevice(new[] {n1, n2}, new DiodeDevice(param, tag));
             return builder;

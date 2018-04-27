@@ -7,7 +7,7 @@ namespace NextGenSpice.Core.Devices
     /// <summary>Class that represents Homo-Junction Bipolar Transistor device.</summary>
     public class BjtDevice : CircuitDefinitionDevice
     {
-        public BjtDevice(BjtModelParams parameters, string tag = null) : base(4, tag)
+        public BjtDevice(BjtParams parameters, string tag = null) : base(4, tag)
         {
             Parameters = parameters;
         }
@@ -25,14 +25,14 @@ namespace NextGenSpice.Core.Devices
         public int Substrate => ConnectedNodes[3];
 
         /// <summary>Set of model parameters for this device.</summary>
-        public BjtModelParams Parameters { get; set; }
+        public BjtParams Parameters { get; set; }
 
         /// <summary>Creates a deep copy of this device.</summary>
         /// <returns></returns>
         public override ICircuitDefinitionDevice Clone()
         {
             var clone = (BjtDevice) base.Clone();
-            clone.Parameters = (BjtModelParams) clone.Parameters.Clone();
+            clone.Parameters = (BjtParams) clone.Parameters.Clone();
             return clone;
         }
 

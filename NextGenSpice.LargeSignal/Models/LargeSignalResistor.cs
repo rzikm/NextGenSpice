@@ -16,9 +16,6 @@ namespace NextGenSpice.LargeSignal.Models
             voltage = new VoltageProxy();
         }
 
-        /// <summary>Specifies how often the model should be updated.</summary>
-        public override ModelUpdateMode UpdateMode => ModelUpdateMode.NoUpdate;
-
         /// <summary>Resistance of the device in ohms.</summary>
         public double Resistance => DefinitionDevice.Resistance;
 

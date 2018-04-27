@@ -34,7 +34,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                 var modelToken = RawStatement.Last(); // capture
 
                 Context.DeferredStatements.Add(
-                    new ModeledDeviceDeferedStatement<BjtModelParams>(
+                    new ModeledDeviceDeferedStatement<BjtParams>(
                         (par, cb) => cb.AddDevice(nodes, new BjtDevice(par, name)), // deferred evaluation.
                         modelToken));
             }
@@ -50,7 +50,7 @@ namespace NextGenSpice.Parser.Statements.Devices
 
 
         /// <summary>Class that handles Homo-Junction Bipolar Trannsistor device model statements.</summary>
-        private class BjtModelStatementHandler : ModelStatementHandlerBase<BjtModelParams>
+        private class BjtModelStatementHandler : ModelStatementHandlerBase<BjtParams>
         {
             private readonly bool isPnp;
 
@@ -58,65 +58,59 @@ namespace NextGenSpice.Parser.Statements.Devices
             {
                 this.isPnp = isPnp;
                 Discriminator = isPnp ? "PNP" : "NPN";
-                var mapper = new ParameterMapper<BjtModelParams>();
 
-                mapper.Map(x => x.SaturationCurrent, "IS");
+                Map(x => x.SaturationCurrent, "IS");
 
-                mapper.Map(x => x.ForwardBeta, "BF");
-                mapper.Map(x => x.ForwardEmissionCoefficient, "NF");
-                mapper.Map(x => x.ForwardEarlyVoltage, "VAF");
-                mapper.Map(x => x.ForwardCurrentCorner, "IKF");
-                mapper.Map(x => x.EmitterSaturationCurrent, "ISE");
-                mapper.Map(x => x.EmitterSaturationCoefficient, "NE");
-                mapper.Map(x => x.ReverseBeta, "BR");
-                mapper.Map(x => x.ReverseEmissionCoefficient, "NR");
-                mapper.Map(x => x.ReverseEarlyVoltage, "VAR");
-                mapper.Map(x => x.ReverseCurrentCorner, "IKR");
-                mapper.Map(x => x.CollectorSaturationCurrent, "ISC");
-                mapper.Map(x => x.CollectorSaturationCoefficient, "NC");
-                mapper.Map(x => x.BaseResistance, "RB");
-                mapper.Map(x => x.CurrentBaseResistanceMidpoint, "IRB");
+                Map(x => x.ForwardBeta, "BF");
+                Map(x => x.ForwardEmissionCoefficient, "NF");
+                Map(x => x.ForwardEarlyVoltage, "VAF");
+                Map(x => x.ForwardCurrentCorner, "IKF");
+                Map(x => x.EmitterSaturationCurrent, "ISE");
+                Map(x => x.EmitterSaturationCoefficient, "NE");
+                Map(x => x.ReverseBeta, "BR");
+                Map(x => x.ReverseEmissionCoefficient, "NR");
+                Map(x => x.ReverseEarlyVoltage, "VAR");
+                Map(x => x.ReverseCurrentCorner, "IKR");
+                Map(x => x.CollectorSaturationCurrent, "ISC");
+                Map(x => x.CollectorSaturationCoefficient, "NC");
+                Map(x => x.BaseResistance, "RB");
+                Map(x => x.CurrentBaseResistanceMidpoint, "IRB");
 
-                mapper.Map(x => x.MinimumBaseResistance, "RBM");
-                mapper.Map(x => x.EmitterResistance, "RE");
-                mapper.Map(x => x.CollectorResistance, "RC");
-                mapper.Map(x => x.EmitterCapacitance, "CJE");
-                mapper.Map(x => x.EmitterPotential, "VJE");
-                mapper.Map(x => x.EmitterExponentialFactor, "MJE");
-                mapper.Map(x => x.ForwardTransitTime, "TF");
-                mapper.Map(x => x.CurrentBaseResistanceMidpoint, "XTF");
-                mapper.Map(x => x.VbcDependenceOfTransitTime, "VTF");
-                mapper.Map(x => x.ForwardTransitHighCurrent, "ITF");
-                //                mapper.Map(x => x., "PTF");
-                mapper.Map(x => x.CollectorCapacitance, "CJC");
-                mapper.Map(x => x.CollectorPotential, "VJC");
-                mapper.Map(x => x.CollectorExponentialFactor, "MJC");
-                mapper.Map(x => x.CurrentBaseResistanceMidpoint, "XCJC");
-                mapper.Map(x => x.ReverseTransitTime, "TR");
-                mapper.Map(x => x.SubstrateCapacitance, "CJS");
-                mapper.Map(x => x.SubstrateExponentialFactor, "MJS");
-                mapper.Map(x => x.TemperatureExponentBeta, "XTB");
-                mapper.Map(x => x.EnergyGap, "EG");
-                mapper.Map(x => x.TemperatureExponentSaturationCurrent, "XTI");
-                mapper.Map(x => x.FlickerNoiseCoeffitient, "KF");
-                mapper.Map(x => x.FlickerNoiseExponent, "AF");
-                mapper.Map(x => x.ForwardBiasDepletionCoefficient, "FC");
-                mapper.Map(x => x.NominalTemperature, "TNOM");
-
-                Mapper = mapper;
+                Map(x => x.MinimumBaseResistance, "RBM");
+                Map(x => x.EmitterResistance, "RE");
+                Map(x => x.CollectorResistance, "RC");
+                Map(x => x.EmitterCapacitance, "CJE");
+                Map(x => x.EmitterPotential, "VJE");
+                Map(x => x.EmitterExponentialFactor, "MJE");
+                Map(x => x.ForwardTransitTime, "TF");
+                Map(x => x.CurrentBaseResistanceMidpoint, "XTF");
+                Map(x => x.VbcDependenceOfTransitTime, "VTF");
+                Map(x => x.ForwardTransitHighCurrent, "ITF");
+                //                Map(x => x., "PTF");
+                Map(x => x.CollectorCapacitance, "CJC");
+                Map(x => x.CollectorPotential, "VJC");
+                Map(x => x.CollectorExponentialFactor, "MJC");
+                Map(x => x.CurrentBaseResistanceMidpoint, "XCJC");
+                Map(x => x.ReverseTransitTime, "TR");
+                Map(x => x.SubstrateCapacitance, "CJS");
+                Map(x => x.SubstrateExponentialFactor, "MJS");
+                Map(x => x.TemperatureExponentBeta, "XTB");
+                Map(x => x.EnergyGap, "EG");
+                Map(x => x.TemperatureExponentSaturationCurrent, "XTI");
+                Map(x => x.FlickerNoiseCoeffitient, "KF");
+                Map(x => x.FlickerNoiseExponent, "AF");
+                Map(x => x.ForwardBiasDepletionCoefficient, "FC");
+                Map(x => x.NominalTemperature, "TNOM");
             }
-
-            /// <summary>Mapper for mapping parsed parameters onto properties.</summary>
-            protected override ParameterMapper<BjtModelParams> Mapper { get; }
 
             /// <summary>Discriminator of handled model type.</summary>
             public override string Discriminator { get; }
 
             /// <summary>Creates new instance of parameter class for this device model.</summary>
             /// <returns></returns>
-            protected override BjtModelParams CreateDefaultModel()
+            protected override BjtParams CreateDefaultModel()
             {
-                return new BjtModelParams() {IsPnp = isPnp};
+                return new BjtParams() {IsPnp = isPnp};
             }
         }
     }

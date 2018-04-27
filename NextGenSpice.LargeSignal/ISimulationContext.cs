@@ -3,9 +3,6 @@
     /// <summary>Defines properties for getting information about the simulation.</summary>
     public interface ISimulationContext
     {
-        /// <summary>Number of inner nodes.</summary>
-        double NodeCount { get; }
-
         /// <summary>Curent timepoint of the simulation.</summary>
         double TimePoint { get; }
 

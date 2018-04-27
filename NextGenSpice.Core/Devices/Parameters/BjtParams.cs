@@ -3,7 +3,7 @@
 namespace NextGenSpice.Core.Devices.Parameters
 {
     /// <summary>Represents set of parameters for Homo-Junction Bipolar Transistor.</summary>
-    public class BjtModelParams : ICloneable
+    public class BjtParams : ICloneable
     {
         /// <summary>Saturation current in ampers.</summary>
         public double SaturationCurrent { get; set; } = 1e-16;

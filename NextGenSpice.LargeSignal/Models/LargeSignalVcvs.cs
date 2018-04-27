@@ -39,10 +39,6 @@ namespace NextGenSpice.LargeSignal.Models
             voltage.Register(adapter, Anode, Cathode);
         }
 
-        /// <summary>Specifies how often the model should be updated.</summary>
-        public override ModelUpdateMode UpdateMode =>
-            ModelUpdateMode.Always; // due to possible dependencies on nonlinear devices.
-
         public double Voltage { get; private set; }
 
         public double Current { get; private set; }

@@ -2,7 +2,7 @@
   "profiles": {
     "NextGenSpice": {
       "commandName": "Project",
-      "commandLineArgs": "test.txt",
+      "commandLineArgs": "NPN.TXT",
       "workingDirectory": "D:\\Visual Studio 2017\\Projects\\NextGen Spice\\Debug"
     }
   }

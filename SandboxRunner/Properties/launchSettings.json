@@ -1,8 +1,7 @@
 {
   "profiles": {
     "SandboxRunner": {
-      "commandName": "Project",
-      "commandLineArgs": "npn.txt"
+      "commandName": "Project"
     }
   }
 }

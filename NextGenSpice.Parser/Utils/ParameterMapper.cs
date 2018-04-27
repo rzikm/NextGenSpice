@@ -108,5 +108,6 @@ namespace NextGenSpice.Parser.Utils
                 throw new ArgumentException($"Index '{index}' is not mapped to any property");
             setter(Target, value);
         }
+
     }
 }

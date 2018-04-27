@@ -50,7 +50,7 @@ namespace NextGenSpiceTest
                 .AddResistor(0, 1, 1)
                 .AddCapacitor(1, 2, 5)
                 .AddCurrentSource(0, 3, 5)
-                .AddDiode(3, 4, DiodeModelParams.Default)
+                .AddDiode(3, 4, DiodeParams.Default)
                 .AddInductor(4, 2, 5)
                 .AddVoltageSource(2, 0, 5)
                 .BuildCircuit();
@@ -88,8 +88,8 @@ namespace NextGenSpiceTest
                 }, "VS")
 //                .AddResistor(2, 3, 3 * 10000000000000e-6)
                 .AddResistor(2, 3, 1e-6)
-                .AddDiode(1, 2, DiodeModelParams.D1N4148, "D1")
-                .AddDiode(0, 3, DiodeModelParams.D1N4148, "D2")
+                .AddDiode(1, 2, DiodeParams.D1N4148, "D1")
+                .AddDiode(0, 3, DiodeParams.D1N4148, "D2")
                 //                .AddResistor(1,2, 1)
 //                                .AddResistor(3,0, 10)
                 .BuildCircuit();

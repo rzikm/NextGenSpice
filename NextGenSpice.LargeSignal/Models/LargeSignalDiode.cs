@@ -35,13 +35,10 @@ namespace NextGenSpice.LargeSignal.Models
         }
 
         /// <summary>Diode model parameters.</summary>
-        private DiodeModelParams Parameters => DefinitionDevice.Parameters;
+        private DiodeParams Parameters => DefinitionDevice.Parameters;
 
         /// <summary>Integration method used for modifying inner state of the device.</summary>
         private IIntegrationMethod IntegrationMethod { get; set; }
-
-        /// <summary>Specifies how often the model should be updated.</summary>
-        public override ModelUpdateMode UpdateMode => ModelUpdateMode.Always;
 
         /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
         /// <param name="adapter">The equation system builder.</param>

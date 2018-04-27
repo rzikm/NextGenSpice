@@ -7,14 +7,14 @@ namespace NextGenSpice.Core.Devices
     /// <summary>Class that represents the diode device.</summary>
     public class DiodeDevice : TwoTerminalCircuitDevice
     {
-        public DiodeDevice(DiodeModelParams parameters, object tag = null, double voltageHint = 0) : base(tag)
+        public DiodeDevice(DiodeParams parameters, object tag = null, double voltageHint = 0) : base(tag)
         {
             Parameters = parameters;
             VoltageHint = voltageHint;
         }
 
         /// <summary>Diode model parameters.</summary>
-        public DiodeModelParams Parameters { get; set; }
+        public DiodeParams Parameters { get; set; }
 
 
         /// <summary>Hint for initial voltage across the diode in volts for faster first dc-bias calculation.</summary>
@@ -25,7 +25,7 @@ namespace NextGenSpice.Core.Devices
         public override ICircuitDefinitionDevice Clone()
         {
             var clone = (DiodeDevice) base.Clone();
-            clone.Parameters = (DiodeModelParams) clone.Parameters.Clone();
+            clone.Parameters = (DiodeParams) clone.Parameters.Clone();
             return clone;
         }
 

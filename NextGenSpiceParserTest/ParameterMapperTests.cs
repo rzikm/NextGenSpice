@@ -9,8 +9,8 @@ namespace NextGenSpiceParserTest
         [Fact]
         public void MapsProperties()
         {
-            var mapper = new ParameterMapper<DiodeModelParams>();
-            mapper.Target = DiodeModelParams.Default;
+            var mapper = new ParameterMapper<DiodeParams>();
+            mapper.Target = DiodeParams.Default;
             mapper.Map(p => p.SaturationCurrent, "IS");
             mapper.Map(p => p.SaturationCurrent, 0);
 

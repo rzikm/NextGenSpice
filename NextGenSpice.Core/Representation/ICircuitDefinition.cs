@@ -14,5 +14,9 @@ namespace NextGenSpice.Core.Representation
 
         /// <summary>Set of devices that define this circuit.</summary>
         IReadOnlyList<ICircuitDefinitionDevice> Devices { get; }
+
+        /// <summary>Returns contained device with given tag or null if no such device is found.</summary>
+        /// <param name="tag">The tag of the device.</param>
+        ICircuitDefinitionDevice FindDevice(object tag);
     }
 }

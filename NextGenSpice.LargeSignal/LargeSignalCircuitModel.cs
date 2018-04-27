@@ -230,11 +230,9 @@ namespace NextGenSpice.LargeSignal
         {
             public SimulationContext(int nodeCount, CircuitParameters parameters)
             {
-                NodeCount = nodeCount;
                 CircuitParameters = parameters;
             }
 
-            public double NodeCount { get; }
             public double TimePoint { get; set; }
             public double TimeStep { get; set; }
 

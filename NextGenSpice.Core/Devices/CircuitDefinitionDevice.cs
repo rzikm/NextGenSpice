@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NextGenSpice.Core.Circuit;
 
 namespace NextGenSpice.Core.Devices
@@ -29,6 +30,9 @@ namespace NextGenSpice.Core.Devices
 
         /// <summary>Gets metadata about this device interconnections in the circuit.</summary>
         /// <returns></returns>
-        public abstract IEnumerable<CircuitBranchMetadata> GetBranchMetadata();
+        public virtual IEnumerable<CircuitBranchMetadata> GetBranchMetadata()
+        {
+            return Enumerable.Empty<CircuitBranchMetadata>();
+        }
     }
 }

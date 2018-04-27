@@ -18,9 +18,6 @@ namespace NextGenSpice.LargeSignal.Models
         /// <summary>Parent definition device that this model instance corresponds to.</summary>
         public TDefinitionDevice DefinitionDevice { get; }
 
-        /// <summary>Specifies how often the model should be updated.</summary>
-        public abstract ModelUpdateMode UpdateMode { get; }
-
         ICircuitDefinitionDevice IAnalysisDeviceModel<LargeSignalCircuitModel>.DefinitionDevice => DefinitionDevice;
 
         /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>

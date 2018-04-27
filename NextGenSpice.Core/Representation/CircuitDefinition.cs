@@ -28,6 +28,13 @@ namespace NextGenSpice.Core.Representation
         /// <summary>Set of devices that define this circuit.</summary>
         public IReadOnlyList<ICircuitDefinitionDevice> Devices { get; }
 
-        
+        /// <summary>Returns contained device with given tag or null if no such device is found.</summary>
+        /// <param name="tag">The tag of the device.</param>
+        public ICircuitDefinitionDevice FindDevice(object tag)
+        {
+            if (tag == null) throw new ArgumentNullException(nameof(tag));
+
+            return Devices.FirstOrDefault(dev => Equals(dev.Tag, tag));
+        }
     }
 }

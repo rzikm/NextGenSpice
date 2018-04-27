@@ -9,7 +9,7 @@ namespace NextGenSpiceParserTest
         public SymbolTableTests()
         {
             table = new SymbolTable();
-            table.AddModel(new DiodeModelParams(), "default");
+            table.AddModel(new DiodeParams(), "default");
             table.FreezeDefaults();
         }
 
@@ -18,17 +18,17 @@ namespace NextGenSpiceParserTest
         [Fact]
         public void DoesNotShowUpperScopeModels()
         {
-            table.AddModel(new DiodeModelParams(), "D");
+            table.AddModel(new DiodeParams(), "D");
 
-            Assert.True(table.TryGetModel<DiodeModelParams>("D", out var m));
+            Assert.True(table.TryGetModel<DiodeParams>("D", out var m));
             Assert.NotNull(m);
 
             table.EnterSubcircuit();
-            Assert.False(table.TryGetModel<DiodeModelParams>("D", out m));
+            Assert.False(table.TryGetModel<DiodeParams>("D", out m));
             Assert.Null(m);
             table.ExitSubcircuit();
 
-            Assert.True(table.TryGetModel<DiodeModelParams>("D", out m));
+            Assert.True(table.TryGetModel<DiodeParams>("D", out m));
             Assert.NotNull(m);
         }
 
@@ -36,13 +36,13 @@ namespace NextGenSpiceParserTest
         public void HidesInnerModelsFromOuterScope()
         {
             table.EnterSubcircuit();
-            table.AddModel(new DiodeModelParams(), "D");
+            table.AddModel(new DiodeParams(), "D");
 
-            Assert.True(table.TryGetModel<DiodeModelParams>("D", out var m));
+            Assert.True(table.TryGetModel<DiodeParams>("D", out var m));
             Assert.NotNull(m);
 
             table.ExitSubcircuit();
-            Assert.False(table.TryGetModel<DiodeModelParams>("D", out m));
+            Assert.False(table.TryGetModel<DiodeParams>("D", out m));
             Assert.Null(m);
         }
 
@@ -63,7 +63,7 @@ namespace NextGenSpiceParserTest
         {
             table.EnterSubcircuit();
 
-            Assert.True(table.TryGetModel<DiodeModelParams>("default", out var m));
+            Assert.True(table.TryGetModel<DiodeParams>("default", out var m));
             Assert.NotNull(m);
         }
     }

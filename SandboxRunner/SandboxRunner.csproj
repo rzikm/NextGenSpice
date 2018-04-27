@@ -16,12 +16,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>D:\Visual Studio 2017\Projects\NextGen Spice\Release\</OutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.10.14" />
+  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\NextGenSpice.Core\NextGenSpice.Core.csproj" />
     <ProjectReference Include="..\NextGenSpice.LargeSignal\NextGenSpice.LargeSignal.csproj" />
-    <ProjectReference Include="..\NextGenSpice.Numerics\NextGenSpice.Numerics.csproj" />
-    <ProjectReference Include="..\NextGenSpiceTest\NextGenSpice.Test.csproj" />
     <ProjectReference Include="..\NextGenSpice\NextGenSpice.csproj" />
   </ItemGroup>
 
