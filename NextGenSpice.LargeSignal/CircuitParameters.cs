@@ -7,9 +7,9 @@ namespace NextGenSpice.LargeSignal
     public class CircuitParameters
     {
         private IIntegrationMethodFactory integrationMethodFactory =
-//            new SimpleIntegrationMethodFactory(() => new GearIntegrationMethod(2));
+            new SimpleIntegrationMethodFactory(() => new GearIntegrationMethod(2));
 //            new SimpleIntegrationMethodFactory(() => new BackwardEulerIntegrationMethod());
-            new SimpleIntegrationMethodFactory(() => new TrapezoidalIntegrationMethod());
+//            new SimpleIntegrationMethodFactory(() => new TrapezoidalIntegrationMethod());
 
         /// <summary>Convergence aid for some devices.</summary>
         public double MinimalResistance { get; set; } = 1e-12;

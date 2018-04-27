@@ -28,6 +28,11 @@ namespace NextGenSpice.LargeSignal.Models
             stamper.Register(adapter, Anode, Cathode);
             voltage.Register(adapter, Anode, Cathode);
             IntegrationMethod = context.CircuitParameters.IntegrationMethodFactory.CreateInstance();
+
+            //            if (DefinitionDevice.InitialCurrent.HasValue) // apply init condition
+            //            {
+            //                IntegrationMethod.SetState(0, DefinitionDevice.InitialCurrent.Value);
+            //            }
         }
 
         /// <summary>
@@ -46,6 +51,7 @@ namespace NextGenSpice.LargeSignal.Models
         public override void ApplyInitialCondition(ISimulationContext context)
         {
             stamper.StampInitialCondition(DefinitionDevice.InitialCurrent);
+            //            var (veq, req) = IntegrationMethod.GetEquivalents(1/DefinitionDevice.Inductance);
         }
 
         /// <summary>

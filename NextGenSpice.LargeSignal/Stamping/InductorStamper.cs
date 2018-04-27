@@ -8,7 +8,12 @@ namespace NextGenSpice.LargeSignal.Stamping
         private readonly CurrentStamper currentStamper;
         private readonly VoltageStamper voltage;
 
+        private IEquationSystemCoefficientProxy n13;
+        private IEquationSystemCoefficientProxy n23;
         private IEquationSystemCoefficientProxy n33;
+
+        private IEquationSystemCoefficientProxy r3;
+
 
         public InductorStamper()
         {
@@ -28,7 +33,11 @@ namespace NextGenSpice.LargeSignal.Stamping
         {
             voltage.Register(adapter, anode, cathode);
             currentStamper.Register(adapter, anode, cathode);
+            n13 = adapter.GetMatrixCoefficientProxy(anode, BranchVariable);
+            n23 = adapter.GetMatrixCoefficientProxy(cathode, BranchVariable);
             n33 = adapter.GetMatrixCoefficientProxy(BranchVariable, BranchVariable);
+
+            r3 = adapter.GetRightHandSideCoefficientProxy(BranchVariable);
         }
 
         /// <summary>Stamps the device characteristics onto the equation system through the registered proxies.</summary>
@@ -44,7 +53,13 @@ namespace NextGenSpice.LargeSignal.Stamping
         public void StampInitialCondition(double? current)
         {
             if (current.HasValue)
-                currentStamper.Stamp(current.Value);
+            {
+                voltage.Stamp(0);
+//                n33.Add(1);
+
+//                r3.Add(current.Value);
+                currentStamper.Stamp(-current.Value);
+            }
             else
                 voltage.Stamp(0); // closed circuit
         }

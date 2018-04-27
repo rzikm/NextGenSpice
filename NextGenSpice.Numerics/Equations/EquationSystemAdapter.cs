@@ -1,6 +1,10 @@
-﻿using System;
+﻿//#undef dd_precision
+//#undef qd_precision
+
+using System;
 using System.Collections.Generic;
 using NextGenSpice.Numerics.Precision;
+
 
 namespace NextGenSpice.Numerics.Equations
 {
