@@ -70,7 +70,7 @@ namespace NextGenSpice.Numerics
 #endif
         }
 
-        private static void Solve_Managed_qd(Matrix<qd_real> m, qd_real[] b, qd_real[] x)
+        public static void Solve_Managed_qd(Matrix<qd_real> m, qd_real[] b, qd_real[] x)
         {
             qd_real Abs(qd_real val)
             {
@@ -150,8 +150,8 @@ namespace NextGenSpice.Numerics
 
         [DllImport(Constants.DllPath, CallingConvention = CallingConvention.StdCall)]
         [SuppressUnmanagedCodeSecurity]
-        private static extern void gauss_solve_qd(qd_real* mat, qd_real* b, uint size);
-        private static void Solve_Native_qd(Matrix<qd_real> m, qd_real[] b, qd_real[] x)
+        public static extern void gauss_solve_qd(qd_real* mat, qd_real* b, uint size);
+        public static void Solve_Native_qd(Matrix<qd_real> m, qd_real[] b, qd_real[] x)
         {
             fixed (qd_real* mat = m.RawData)
             fixed (qd_real* rhs = b)
@@ -178,7 +178,7 @@ namespace NextGenSpice.Numerics
 #endif
         }
 
-        private static void Solve_Managed_dd(Matrix<dd_real> m, dd_real[] b, dd_real[] x)
+        public static void Solve_Managed_dd(Matrix<dd_real> m, dd_real[] b, dd_real[] x)
         {
             dd_real Abs(dd_real val)
             {
@@ -258,8 +258,8 @@ namespace NextGenSpice.Numerics
 
         [DllImport(Constants.DllPath, CallingConvention = CallingConvention.StdCall)]
         [SuppressUnmanagedCodeSecurity]
-        private static extern void gauss_solve_dd(dd_real* mat, dd_real* b, uint size);
-        private static void Solve_Native_dd(Matrix<dd_real> m, dd_real[] b, dd_real[] x)
+        public static extern void gauss_solve_dd(dd_real* mat, dd_real* b, uint size);
+        public static void Solve_Native_dd(Matrix<dd_real> m, dd_real[] b, dd_real[] x)
         {
             fixed (dd_real* mat = m.RawData)
             fixed (dd_real* rhs = b)
@@ -271,7 +271,7 @@ namespace NextGenSpice.Numerics
         }
 #endif
 
-        private static void Solve_Managed_double(Matrix<double> m, double[] b, double[] x)
+        public static void Solve_Managed_double(Matrix<double> m, double[] b, double[] x)
         {
             var size = m.Size;
 
@@ -346,7 +346,7 @@ namespace NextGenSpice.Numerics
             PrintSolution(b);
         }
 
-        private static void Solve_Native_double(Matrix<double> m, double[] b, double[] x)
+        public static void Solve_Native_double(Matrix<double> m, double[] b, double[] x)
         {
             fixed (double* mat = m.RawData)
             fixed (double* rhs = b)

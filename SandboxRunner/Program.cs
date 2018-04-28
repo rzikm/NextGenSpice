@@ -29,7 +29,8 @@ namespace SandboxRunner
         {
 //            PrintFileSizes(); return;
 //            Examples.ResistorSweep(); return;
-            Examples.SimpleRlc(); return;
+//            Examples.SimpleRlc(); return;
+            var summary = BenchmarkRunner.Run<GaussianEliminationTests>(); return;
 //            var summary = BenchmarkRunner.Run<PInvokeOverheadTest>(); return;
             //            IntegrationTest.Run();
 

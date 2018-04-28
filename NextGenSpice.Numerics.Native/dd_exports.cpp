@@ -51,3 +51,13 @@ NUMERICSNATIVE_API void d_mul(double& self, double val)
 {
 	self *= val;
 }
+
+NUMERICSNATIVE_API void d_sub(double& self, double val)
+{
+	self -= val;
+}
+
+NUMERICSNATIVE_API void d_div(double& self, double val)
+{
+	self /= val;
+}

@@ -78,58 +78,125 @@ namespace SandboxRunner
             return sum;
         }
 
-        struct d_managed
+      
+    }
+
+    struct d_managed
+    {
+        public double val;
+
+        public d_managed(double d)
         {
-            public double val;
-
-            public d_managed(double d)
-            {
-                val = d;
-            }
-
-            [MethodImpl(MethodImplOptions.NoInlining)]
-            public static d_managed operator +(d_managed self, d_managed other)
-            {
-                return new d_managed(self.val + other.val);
-            }
-
-            [MethodImpl(MethodImplOptions.NoInlining)]
-            public static d_managed operator *(d_managed self, d_managed other)
-            {
-                return new d_managed(self.val * other.val);
-            }
+            val = d;
         }
 
-        struct d_native
+        public static d_managed operator +(d_managed self, d_managed other)
         {
-            public double val;
+            return new d_managed(self.val + other.val);
+        }
 
-            public d_native(double d)
-            {
-                val = d;
-            }
+        public static d_managed operator -(d_managed self, d_managed other)
+        {
+            return new d_managed(self.val - other.val);
+        }
 
-            [DllImport("D:\\Visual Studio 2017\\Projects\\NextGen Spice\\Release\\NextGenSpice.Numerics.Native.dll",
-                CallingConvention = CallingConvention.StdCall)]
-            [SuppressUnmanagedCodeSecurity]
-            private static extern void d_add(ref d_native self, ref d_native val);
+        public static d_managed operator *(d_managed self, d_managed other)
+        {
+            return new d_managed(self.val * other.val);
+        }
 
-            public static d_native operator +(d_native self, d_native other)
-            {
-                d_add(ref self, ref other);
-                return self;
-            }
+        public static bool operator <(d_managed self, d_managed other)
+        {
+            return self.val < other.val;
+        }
 
-            [DllImport("D:\\Visual Studio 2017\\Projects\\NextGen Spice\\Release\\NextGenSpice.Numerics.Native.dll",
-                CallingConvention = CallingConvention.StdCall)]
-            [SuppressUnmanagedCodeSecurity]
-            private static extern void d_mul(ref d_native self, ref d_native val);
+        public static bool operator >(d_managed self, d_managed other)
+        {
+            return self.val > other.val;
+        }
 
-            public static d_native operator *(d_native self, d_native other)
-            {
-                d_mul(ref self, ref other);
-                return self;
-            }
+        public static bool operator ==(d_managed self, d_managed other)
+        {
+            return self.val == other.val;
+        }
+
+        public static bool operator !=(d_managed self, d_managed other)
+        {
+            return self.val != other.val;
+        }
+
+        public static d_managed operator /(d_managed self, d_managed other)
+        {
+            return new d_managed(self.val / other.val);
+        }
+    }
+
+    struct d_native
+    {
+        public double val;
+
+        public d_native(double d)
+        {
+            val = d;
+        }
+
+        [DllImport("D:\\Visual Studio 2017\\Projects\\NextGen Spice\\Release\\NextGenSpice.Numerics.Native.dll",
+            CallingConvention = CallingConvention.StdCall)]
+        [SuppressUnmanagedCodeSecurity]
+        private static extern void d_add(ref d_native self, ref d_native val);
+
+        public static d_native operator +(d_native self, d_native other)
+        {
+            d_add(ref self, ref other);
+            return self;
+        }
+
+        [DllImport("D:\\Visual Studio 2017\\Projects\\NextGen Spice\\Release\\NextGenSpice.Numerics.Native.dll",
+            CallingConvention = CallingConvention.StdCall)]
+        [SuppressUnmanagedCodeSecurity]
+        private static extern void d_mul(ref d_native self, ref d_native val);
+
+        public static d_native operator *(d_native self, d_native other)
+        {
+            d_mul(ref self, ref other);
+            return self;
+        }
+        [DllImport("D:\\Visual Studio 2017\\Projects\\NextGen Spice\\Release\\NextGenSpice.Numerics.Native.dll",
+            CallingConvention = CallingConvention.StdCall)]
+        [SuppressUnmanagedCodeSecurity]
+        private static extern void d_sub(ref d_native self, ref d_native val);
+        public static d_native operator -(d_native self, d_native other)
+        {
+            return new d_native(self.val - other.val);
+        }
+
+        public static bool operator <(d_native self, d_native other)
+        {
+            return self.val < other.val;
+        }
+
+        public static bool operator >(d_native self, d_native other)
+        {
+            return self.val > other.val;
+        }
+        
+        public static bool operator ==(d_native self, d_native other)
+        {
+            return self.val == other.val;
+        }
+
+        public static bool operator !=(d_native self, d_native other)
+        {
+            return self.val != other.val;
+        }
+
+        [DllImport("D:\\Visual Studio 2017\\Projects\\NextGen Spice\\Release\\NextGenSpice.Numerics.Native.dll",
+            CallingConvention = CallingConvention.StdCall)]
+        [SuppressUnmanagedCodeSecurity]
+        private static extern void d_div(ref d_native self, ref d_native val);
+        public static d_native operator /(d_native self, d_native other)
+        {
+            return new d_native(self.val / other.val);
         }
     }
 }
