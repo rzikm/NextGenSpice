@@ -29,7 +29,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             {
                 var modelToken = RawStatement[3]; // capture
                 Context.DeferredStatements.Add(
-                    new ModeledDeviceDeferedStatement<DiodeParams>(
+                    new ModeledDeviceDeferedStatement<DiodeParams>(Context.CurrentScope,
                         (par, cb) => cb.AddDevice(nodes, new DiodeDevice(par, name)), modelToken));
             }
         }

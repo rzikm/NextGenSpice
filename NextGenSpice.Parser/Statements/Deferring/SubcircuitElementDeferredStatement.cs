@@ -9,25 +9,25 @@ namespace NextGenSpice.Parser.Statements.Deferring
     {
         private readonly string deviceName;
 
-        private readonly List<Utils.SpiceParserError> errors;
+        private readonly List<SpiceParserError> errors;
         private readonly Token subcircuitName;
         private readonly int[] terminals;
 
         private ISubcircuitDefinition model;
 
-        public SubcircuitDeviceDeferredStatement(string deviceName, int[] terminals, Token subcircuitName)
+        public SubcircuitDeviceDeferredStatement(ParsingScope context, string deviceName, int[] terminals, Token subcircuitName) : base(context)
         {
             this.deviceName = deviceName;
             this.terminals = terminals;
             this.subcircuitName = subcircuitName;
 
-            errors = new List<Utils.SpiceParserError>();
+            errors = new List<SpiceParserError>();
         }
 
         /// <summary>Returns true if all prerequisites for the statements have been fulfilled and statement is ready to be applied.</summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override bool CanApply(ParsingContext context)
+        public override bool CanApply()
         {
             errors.Clear();
             if (!context.SymbolTable.TryGetSubcircuit(subcircuitName.Value, out model))
@@ -48,15 +48,17 @@ namespace NextGenSpice.Parser.Statements.Deferring
 
         /// <summary>Returns set of errors due to which this stetement cannot be processed.</summary>
         /// <returns></returns>
-        public override IEnumerable<Utils.SpiceParserError> GetErrors()
+        public override IEnumerable<SpiceParserError> GetErrors()
         {
             return errors;
         }
 
         /// <summary>Applies the statement in the given context.</summary>
         /// <param name="context"></param>
-        public override void Apply(ParsingContext context)
+        public override void Apply()
         {
+            base.Apply();
+
             context.CircuitBuilder.AddDevice(
                 terminals,
                 new SubcircuitDevice(model,

@@ -39,7 +39,7 @@ v 1 2 5Volts
         }
 
         [Fact]
-        public void CannotUseCustomModelInsideSubcircuit()
+        public void CanUseCustomModelInsideSubcircuit()
         {
             var result = Parse(@"
 v1 1 0 5V
@@ -53,10 +53,7 @@ d1 1 2 mydiode *mydiode is declared outside
 .ends
 
 ");
-            Assert.Single(result.Errors);
-            var error = result.Errors.Single();
-            Assert.Equal(SpiceParserErrorCode.NoSuchModel, error.ErrorCode);
-            Assert.Equal("MYDIODE", error.Args[0]);
+            Assert.Empty(result.Errors);
         }
 
         [Fact]
@@ -86,6 +83,29 @@ v1 1 2 5v
         }
 
         [Fact]
+        public void CanUsedSubcktInNestedSubckt()
+        {
+            var result = Parse(@"
+v1 1 0 5V
+r1 1 2 5OHM
+x1 0 1 sub2
+
+.subckt sub2 1 2
+d1 1 2 D
+x1 1 2 sub1
+
+.subckt sub1 1 2
+i1 1 2 5v
+.ends
+
+.ends
+
+");
+            Assert.Empty(result.Errors);
+        }
+
+
+        [Fact]
         public void CanUseDefaultModelInsideSubcircuit()
         {
             var result = Parse(@"
@@ -111,9 +131,9 @@ x1 2 3 curAlias
 r2 3 0 5Ohm
 
 .subckt curAlias 1 2
-r1 1 21 5
-i2 21 22 5
-r2 22 2 5
+r1 1 3 5
+i2 3 4 5
+r2 4 2 5
 .ends
 
 

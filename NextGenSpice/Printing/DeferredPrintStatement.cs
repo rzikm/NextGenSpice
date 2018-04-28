@@ -17,7 +17,7 @@ namespace NextGenSpice.Printing
         private readonly Token token;
         private PrintStatement<LargeSignalCircuitModel> printStatement;
 
-        public DeferredPrintStatement(Token token, string analysisType)
+        public DeferredPrintStatement(ParsingScope scope, Token token, string analysisType):base(scope)
         {
             this.token = token;
             this.analysisType = analysisType;
@@ -33,7 +33,7 @@ namespace NextGenSpice.Printing
         /// <summary>Returns true if all prerequisites for the statements have been fulfilled and statement is ready to be applied.</summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override bool CanApply(ParsingContext context)
+        public override bool CanApply()
         {
             errors.Clear();
             var device =
@@ -91,19 +91,21 @@ namespace NextGenSpice.Printing
             return printStatement != null;
         }
 
+        /// <summary>Applies the statement in the given context.</summary>
+        /// <param name="context"></param>
+        public override void Apply()
+        {
+            base.Apply();
+
+            printStatement.AnalysisType = analysisType;
+            context.OtherStatements.Add(printStatement);
+        }
+
         /// <summary>Returns set of errors due to which this stetement cannot be processed.</summary>
         /// <returns></returns>
         public override IEnumerable<SpiceParserError> GetErrors()
         {
             return errors;
-        }
-
-        /// <summary>Applies the statement in the given context.</summary>
-        /// <param name="context"></param>
-        public override void Apply(ParsingContext context)
-        {
-            printStatement.AnalysisType = analysisType;
-            context.OtherStatements.Add(printStatement);
         }
     }
 }

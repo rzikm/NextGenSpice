@@ -109,6 +109,8 @@ namespace NextGenSpice.Parser
                 case SpiceParserErrorCode.InvalidTerminalCount:
                     return $"Subcircuit has wrong number of terminals '{arg[0]}'";
 
+                case SpiceParserErrorCode.UnexpectedEnds:
+                    return $"Unexpected .ENDS statement for '{arg[0]}'";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(errorCode), errorCode, null);
             }

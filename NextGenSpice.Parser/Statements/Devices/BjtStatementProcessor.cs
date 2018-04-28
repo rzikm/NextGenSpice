@@ -34,7 +34,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                 var modelToken = RawStatement.Last(); // capture
 
                 Context.DeferredStatements.Add(
-                    new ModeledDeviceDeferedStatement<BjtParams>(
+                    new ModeledDeviceDeferedStatement<BjtParams>(Context.CurrentScope,
                         (par, cb) => cb.AddDevice(nodes, new BjtDevice(par, name)), // deferred evaluation.
                         modelToken));
             }

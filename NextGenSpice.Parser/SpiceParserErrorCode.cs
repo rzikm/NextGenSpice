@@ -48,6 +48,8 @@
 
         NoSuchModel,
         NoSuchSubcircuit,
-        InvalidTerminalCount
+        InvalidTerminalCount,
+
+        UnexpectedEnds
     }
 }

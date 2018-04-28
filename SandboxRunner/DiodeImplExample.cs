@@ -70,9 +70,9 @@ namespace SandboxRunner
 
                 if (Errors == 0)
                 {
-                    var modelToken = RawStatement[3]; // capture
+                    var modelToken = RawStatement[3];
                     Context.DeferredStatements.Add(
-                        new ModeledDeviceDeferedStatement<ShockleyDiodeParams>(
+                        new ModeledDeviceDeferedStatement<ShockleyDiodeParams>(Context.CurrentScope,
                             (par, cb) => cb.AddDevice(nodes, new ShockleyDiode(par, name)), modelToken));
                 }
             }

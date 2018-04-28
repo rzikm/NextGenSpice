@@ -49,7 +49,7 @@ namespace NextGenSpice.Parser.Statements
                     Value = matches.Groups[2].Value
                 }.GetNumericValue(Context.Errors);
 
-                if (nodeIndex >= 0) Context.CircuitBuilder.SetNodeVoltage(nodeIndex, value);
+                if (nodeIndex >= 0) Context.CurrentScope.CircuitBuilder.SetNodeVoltage(nodeIndex, value);
             }
         }
     }

@@ -14,7 +14,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
 
         private TModel model;
 
-        public ModeledDeviceDeferedStatement(Action<TModel, CircuitBuilder> builderFunc, Token modelNameToken)
+        public ModeledDeviceDeferedStatement(ParsingScope context, Action<TModel, CircuitBuilder> builderFunc, Token modelNameToken) : base(context)
         {
             this.builderFunc = builderFunc;
             this.modelNameToken = modelNameToken;
@@ -23,22 +23,23 @@ namespace NextGenSpice.Parser.Statements.Deferring
         /// <summary>Returns true if all prerequisites for the statements have been fulfilled and statement is ready to be applied.</summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override bool CanApply(ParsingContext context)
+        public override bool CanApply()
         {
             return context.SymbolTable.TryGetModel(modelNameToken.Value, out model);
         }
 
         /// <summary>Returns set of errors due to which this stetement cannot be processed.</summary>
         /// <returns></returns>
-        public override IEnumerable<Utils.SpiceParserError> GetErrors()
+        public override IEnumerable<SpiceParserError> GetErrors()
         {
             return new[] {modelNameToken.ToError(SpiceParserErrorCode.NoSuchModel)};
         }
 
         /// <summary>Applies the statement in the given context.</summary>
         /// <param name="context"></param>
-        public override void Apply(ParsingContext context)
+        public override void Apply()
         {
+            base.Apply();
             builderFunc(model, context.CircuitBuilder);
         }
     }

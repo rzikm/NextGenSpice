@@ -54,9 +54,8 @@ namespace NextGenSpice.Parser
             p.RegisterDevice(new VoltageControlledVoltageSourceStatementProcessor());
             p.RegisterDevice(new VoltageControlledCurrentSourceStatementProcessor());
 
-            var root = new SubcircuitStatementRoot();
-            p.RegisterStatement(new SubcircuitStatementProcessor(root), true, true);
-            p.RegisterStatement(new SubcircuitEndStatementProcessor(root), false, true);
+            p.RegisterStatement(new SubcircuitStatementProcessor(), true, true);
+            p.RegisterStatement(new SubcircuitEndStatementProcessor(), false, true);
             p.RegisterStatement(new InitialConditionStatement(), true, false);
 
             return p;
@@ -106,7 +105,6 @@ namespace NextGenSpice.Parser
             ITokenStream stream = new TokenStream(input, 1);
             Token[] tokens;
             modelProcessor.RegisterDefaultModels(ctx);
-            ctx.SymbolTable.FreezeDefaults();
 
             // parse input file by logical lines, each line is an independent statement
             while ((tokens = stream.ReadStatement().ToArray()).Length > 0) // while not EOF
@@ -140,8 +138,8 @@ namespace NextGenSpice.Parser
                 circuitDefinition,
                 ctx.OtherStatements,
                 ctx.Errors.OrderBy(e => e.LineNumber).ThenBy(e => e.LineColumn).ToList(), // order errors
-                ctx.SymbolTable.GetSubcircuits().OfType<SubcircuitDefinition>().ToList(), // only valid subcircuit definitions, no NullCircuitDefinitions
-                ctx.SymbolTable.GetNodeNames(Enumerable.Range(0, ctx.CircuitBuilder.NodeCount)).ToList(),
+                ctx.SymbolTable.GetLocalSubcircuits().OfType<SubcircuitDefinition>().ToList(), // only valid subcircuit definitions, no NullCircuitDefinitions
+                ctx.SymbolTable.GetNodeNames(Enumerable.Range(0, ctx.CurrentScope.CircuitBuilder.NodeCount)).ToList(),
                 ctx.SymbolTable.GetAllModels());
         }
 
@@ -150,34 +148,32 @@ namespace NextGenSpice.Parser
             CircuitDefinition circuitDefinition = null;
             try
             {
-                circuitDefinition = ctx.CircuitBuilder.BuildCircuit();
+                circuitDefinition = ctx.CurrentScope.CircuitBuilder.BuildCircuit();
             }
             catch (Exception e)
             {
-                string message;
-
                 // translate node indexes to node names used in the input file
-                Utils.SpiceParserError error;
+                SpiceParserError error;
                 switch (e)
                 {
                     case NoDcPathToGroundException ex:
-                        error = new Utils.SpiceParserError(SpiceParserErrorCode.NoDcPathToGround, 0, 0,
+                        error = new SpiceParserError(SpiceParserErrorCode.NoDcPathToGround, 0, 0,
                             ctx.SymbolTable.GetNodeNames(ex.Nodes).Cast<object>().ToArray());
                         break;
 
                     case NotConnectedSubcircuitException ex:
                         var names = ex.Components.Select(c => ctx.SymbolTable.GetNodeNames(c).ToArray()).Cast<object>()
                             .ToArray();
-                        error = new Utils.SpiceParserError(SpiceParserErrorCode.SubcircuitNotConnected, 0, 0, names);
+                        error = new SpiceParserError(SpiceParserErrorCode.SubcircuitNotConnected, 0, 0, names);
                         break;
 
                     case VoltageBranchCycleException ex:
-                        error = new Utils.SpiceParserError(SpiceParserErrorCode.VoltageBranchCycle, 0, 0,
+                        error = new SpiceParserError(SpiceParserErrorCode.VoltageBranchCycle, 0, 0,
                             ex.Devices.Select(el => el.Tag).ToArray());
                         break;
 
                     case CurrentBranchCutsetException ex:
-                        error = new Utils.SpiceParserError(SpiceParserErrorCode.CurrentBranchCutset, 0, 0,
+                        error = new SpiceParserError(SpiceParserErrorCode.CurrentBranchCutset, 0, 0,
                             ex.Devices.Select(el => el.Tag).ToArray());
                         break;
 
@@ -195,7 +191,7 @@ namespace NextGenSpice.Parser
         {
             // find processor that can handle this statement
             var discriminator = tokens[0].Value;
-            var processors = ctx.SubcircuitDepth == 0 ? statementProcessors : insubcircuitStatementProcessors;
+            var processors = ctx.CurrentScope.Depth == 0 ? statementProcessors : insubcircuitStatementProcessors;
             if (processors.TryGetValue(discriminator, out var proc))
                 proc.Process(tokens, ctx);
             else // unknown statement

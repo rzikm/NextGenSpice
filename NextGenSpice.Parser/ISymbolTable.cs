@@ -8,9 +8,6 @@ namespace NextGenSpice.Parser
     /// <summary>Defines methods for manipulating existing symbols during SPICE code parsing.</summary>
     public interface ISymbolTable
     {
-        /// <summary>Locks all contents of symbol tables as defaultly visible in all scopes and starts global scope.</summary>
-        void FreezeDefaults();
-
         /// <summary>Gets the model parameters of given type associated with given name.</summary>
         /// <param name="modelType">Type of the model parameters.</param>
         /// <param name="name">Name of the model.</param>
@@ -62,7 +59,7 @@ namespace NextGenSpice.Parser
 
         /// <summary>Returns all subcircuits from the symbol table.</summary>
         /// <returns></returns>
-        IEnumerable<ISubcircuitDefinition> GetSubcircuits();
+        IEnumerable<ISubcircuitDefinition> GetLocalSubcircuits();
 
         /// <summary>Adds given symbol to the set of device names, returns true if it not already used.</summary>
         /// <param name="name"></param>

@@ -22,7 +22,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             var gain = GetValue(5);
 
             if (Errors == 0)
-                Context.DeferredStatements.Add(new SimpleDeviceDeferredStatement(builder =>
+                Context.DeferredStatements.Add(new SimpleDeviceDeferredStatement(Context.CurrentScope, builder =>
                     builder.AddDevice(
                         nodes,
                         new VoltageControlledVoltageSourceDevice(
@@ -53,7 +53,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             var gain = GetValue(5);
 
             if (Errors == 0)
-                Context.DeferredStatements.Add(new SimpleDeviceDeferredStatement(builder =>
+                Context.DeferredStatements.Add(new SimpleDeviceDeferredStatement(Context.CurrentScope, builder =>
                     builder.AddDevice(
                         nodes,
                         new VoltageControlledCurrentSourceDevice(

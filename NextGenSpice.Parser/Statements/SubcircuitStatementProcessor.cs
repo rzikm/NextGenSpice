@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Exceptions;
+using NextGenSpice.Parser.Statements.Deferring;
 using NextGenSpice.Parser.Utils;
 
 namespace NextGenSpice.Parser.Statements
@@ -10,11 +11,8 @@ namespace NextGenSpice.Parser.Statements
     /// <summary>Class for handling SPICE .SUBCKT statements.</summary>
     public class SubcircuitStatementProcessor : DotStatementProcessor
     {
-        private readonly SubcircuitStatementRoot root;
-
-        public SubcircuitStatementProcessor(SubcircuitStatementRoot root)
+        public SubcircuitStatementProcessor()
         {
-            this.root = root;
             MinArgs = 2;
         }
 
@@ -25,108 +23,114 @@ namespace NextGenSpice.Parser.Statements
         /// <param name="tokens">All tokens of the statement.</param>
         protected override void DoProcess(Token[] tokens)
         {
-            Context.EnterSubcircuit();
-            var name = tokens[1].Value;
-            if (Context.SymbolTable.TryGetSubcircuit(name, out _))
-                Context.Errors.Add(tokens[1].ToError(SpiceParserErrorCode.SubcircuitAlreadyExists));
-            root.Statements.Push(tokens); // to be processed in .ENDS statement handler
-        }
-    }
+            var stmt = new DeferredSubcktStatement(Context.CurrentScope, tokens);
+            Context.DeferredStatements.Add(stmt);
 
-    /// <summary>Class for handling SPICE .ENDS statements.</summary>
-    public class SubcircuitEndStatementProcessor : DotStatementProcessor
-    {
-        private readonly SubcircuitStatementRoot root;
-
-        public SubcircuitEndStatementProcessor(SubcircuitStatementRoot root)
-        {
-            MinArgs = MaxArgs = 0;
-            this.root = root;
+            Context.EnterSubcircuit(tokens);
+            stmt.subScope = Context.CurrentScope; // add subscope information
+            //            root.Statements.Push(tokens); // to be processed in .ENDS statement handler
         }
 
-
-        /// <summary>Statement discriminator, that this class can handle.</summary>
-        public override string Discriminator => ".ENDS";
-
-        /// <summary>Processes given statement.</summary>
-        /// <param name="tokens">All tokens of the statement.</param>
-        protected override void DoProcess(Token[] tokens)
+        public class DeferredSubcktStatement : DeferredStatement
         {
-            Debug.Assert(root.Statements.Count > 0);
-            var stack = root.Statements.Pop();
+            private readonly List<SpiceParserError> errors;
+            private readonly Token[] tokens;
 
-            var name = stack[1].Value;
-            var terminals = GetNodeIndices(stack.Skip(2));
-            // enforce node existence, initial condition for nodes inside subcircuit is not supported and not used
-            Context.CircuitBuilder.SetNodeVoltage(terminals.Max(), null);
-            
-            var subcircuit = CreateSubcircuit(stack[1], terminals);
-            Context.ExitSubcircuit();
+            private ISubcircuitDefinition def;
+            private string subname;
+            public ParsingScope subScope;
 
-            Context.SymbolTable.AddSubcircuit(name, subcircuit);
-        }
-
-        /// <summary>Gets indices of the nodes represented by given set of tokens. Adds relevant errors into the errors collection.</summary>
-        /// <param name="tokens"></param>
-        /// <returns></returns>
-        private int[] GetNodeIndices(IEnumerable<Token> tokens)
-        {
-            return tokens.Select(token =>
+            public DeferredSubcktStatement(ParsingScope context, Token[] tokens) : base(context)
             {
-                if (!Context.SymbolTable.TryGetOrCreateNode(token.Value, out var node))
-                {
-                    node = -1;
-                    Context.Errors.Add(token.ToError(SpiceParserErrorCode.NotANode));
-                }
+                this.tokens = tokens;
+                errors = new List<SpiceParserError>();
+            }
 
-                return node;
-            }).ToArray();
-        }
-
-        private ISubcircuitDefinition CreateSubcircuit(Token name, int[] terminals)
-        {
-            ISubcircuitDefinition subcircuit = null;
-            var errorCount = Context.Errors.Count;
-
-            // validate terminal specs - no duplicates
-            if (terminals.Distinct().Count() != terminals.Length)
-                Context.Errors.Add(name.ToError(SpiceParserErrorCode.TerminalNamesNotUnique));
-
-            // ground node not allowed as terminal
-            if (terminals.Contains(0))
-                Context.Errors.Add(name.ToError(SpiceParserErrorCode.TerminalToGround));
-
-            Context.FlushStatements();
-            if (errorCount == Context.Errors.Count) // no new errors, try to construct subcircuit
+            /// <summary>Returns true if all prerequisites for the statements have been fulfilled and statement is ready to be applied.</summary>
+            /// <param name="context"></param>
+            /// <returns></returns>
+            public override bool CanApply()
             {
+                // wait until the subcircuit statements are processed
+                return subScope.Statements.Count == 0;
+            }
+
+            /// <summary>Returns set of errors due to which this stetement cannot be processed.</summary>
+            /// <returns></returns>
+            public override IEnumerable<SpiceParserError> GetErrors()
+            {
+                throw new InvalidOperationException();
+            }
+
+            /// <summary>Applies the statement in the given context.</summary>
+            /// <param name="context"></param>
+            public override void Apply()
+            {
+                base.Apply();
+
+                var name = tokens[1];
+                subname = name.Value;
+
+                var terminals = GetNodeIndices(tokens.Skip(2), subScope);
+
+                if (context.SymbolTable.TryGetSubcircuit(name.Value, out _))
+                    errors.Add(tokens[1].ToError(SpiceParserErrorCode.SubcircuitAlreadyExists));
+
+                // validate terminal specs - no duplicates
+                if (terminals.Distinct().Count() != terminals.Length)
+                    errors.Add(name.ToError(SpiceParserErrorCode.TerminalNamesNotUnique));
+
+                // ground node not allowed as terminal
+                if (terminals.Contains(0))
+                    errors.Add(name.ToError(SpiceParserErrorCode.TerminalToGround));
+
                 try
                 {
-                    subcircuit = Context.CircuitBuilder.BuildSubcircuit(terminals, name.Value);
+                    if (subScope.Errors.Count + errors.Count == 0)
+                    {
+                        subScope.CircuitBuilder.SetNodeVoltage(terminals.Max(), null);
+                        def = subScope.CircuitBuilder.BuildSubcircuit(terminals, name.Value);
+                    }
                 }
                 catch (NotConnectedSubcircuitException e)
                 {
                     // translate node indexes to node names used in the input file 
-                    var names = e.Components.Select(c => Context.SymbolTable.GetNodeNames(c).ToArray()).Cast<object>()
+                    var names = e.Components.Select(c => subScope.SymbolTable.GetNodeNames(c).ToArray()).Cast<object>()
                         .ToArray();
-                    Context.Errors.Add(new SpiceParserError(SpiceParserErrorCode.SubcircuitNotConnected, name.LineNumber,
+                    errors.Add(new SpiceParserError(SpiceParserErrorCode.SubcircuitNotConnected, name.LineNumber,
                         name.LineColumn, names));
                 }
+
+                if (def == null) def = new NullSubcircuitDefinition(terminals, subScope.CircuitBuilder.NodeCount);
+
+                context.Errors.AddRange(errors);
+                context.SymbolTable.AddSubcircuit(subname, def);
             }
 
-            if (subcircuit == null) // create a "null object" to avoid explicit null checking
+            /// <summary>Gets indices of the nodes represented by given set of tokens. Adds relevant errors into the errors collection.</summary>
+            /// <param name="tokens"></param>
+            /// <returns></returns>
+            private int[] GetNodeIndices(IEnumerable<Token> tokens, ParsingScope context)
             {
-                subcircuit = new NullSubcircuitDefinition(terminals);
-            }
+                return tokens.Select(token =>
+                {
+                    if (!context.SymbolTable.TryGetOrCreateNode(token.Value, out var node))
+                    {
+                        node = -1;
+                        context.Errors.Add(token.ToError(SpiceParserErrorCode.NotANode));
+                    }
 
-            return subcircuit;
+                    return node;
+                }).ToArray();
+            }
         }
 
-        class NullSubcircuitDefinition : ISubcircuitDefinition
+        private class NullSubcircuitDefinition : ISubcircuitDefinition
         {
-            public NullSubcircuitDefinition(int[] terminals)
+            public NullSubcircuitDefinition(int[] terminals, int innerNodes)
             {
                 TerminalNodes = terminals;
-                InnerNodeCount = terminals.Length + 1;
+                InnerNodeCount = innerNodes;
                 Devices = Enumerable.Empty<ICircuitDefinitionDevice>();
                 Tag = null;
             }
@@ -141,13 +145,27 @@ namespace NextGenSpice.Parser.Statements
         }
     }
 
-    public class SubcircuitStatementRoot
+    /// <summary>Class for handling SPICE .ENDS statements.</summary>
+    public class SubcircuitEndStatementProcessor : DotStatementProcessor
     {
-        public SubcircuitStatementRoot()
+        public SubcircuitEndStatementProcessor()
         {
-            Statements = new Stack<Token[]>();
+            MinArgs = 0;
+            MaxArgs = 1;
         }
 
-        public Stack<Token[]> Statements { get; }
+
+        /// <summary>Statement discriminator, that this class can handle.</summary>
+        public override string Discriminator => ".ENDS";
+
+        /// <summary>Processes given statement.</summary>
+        /// <param name="tokens">All tokens of the statement.</param>
+        protected override void DoProcess(Token[] tokens)
+        {
+            if (tokens.Length == 2 && tokens[1].Value != Context.CurrentScope.SubcktStatement[1].Value)
+                Context.Errors.Add(tokens[0].ToError(SpiceParserErrorCode.UnexpectedEnds, tokens[1].Value));
+
+            Context.ExitSubcircuit();
+        }
     }
 }

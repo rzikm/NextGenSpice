@@ -21,7 +21,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             var subcircuitName = RawStatement[RawStatement.Length - 1];
 
             if (Errors == 0)
-                Context.DeferredStatements.Add(new SubcircuitDeviceDeferredStatement(name, nodes, subcircuitName));
+                Context.DeferredStatements.Add(new SubcircuitDeviceDeferredStatement(Context.CurrentScope, name, nodes, subcircuitName));
         }
     }
 }

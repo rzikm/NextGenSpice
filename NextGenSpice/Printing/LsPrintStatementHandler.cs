@@ -32,7 +32,7 @@ namespace NextGenSpice.Printing
                     context.Errors.Add(tokens[i].ToError(SpiceParserErrorCode.UnknownPrintStatementParameter));
                 else
                 {
-                    context.DeferredStatements.Add(new DeferredPrintStatement(t, AnalysisTypeIdentifer));
+                    context.DeferredStatements.Add(new DeferredPrintStatement(context.CurrentScope, t, AnalysisTypeIdentifer));
                 }
             }
         }

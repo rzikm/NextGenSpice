@@ -10,7 +10,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
     {
         private readonly Action<CircuitBuilder> builderFunc;
 
-        public SimpleDeviceDeferredStatement(Action<CircuitBuilder> builderFunc)
+        public SimpleDeviceDeferredStatement(ParsingScope context, Action<CircuitBuilder> builderFunc) : base(context)
         {
             this.builderFunc = builderFunc;
         }
@@ -18,7 +18,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
         /// <summary>Returns true if all prerequisites for the statements have been fulfilled and statement is ready to be applied.</summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override bool CanApply(ParsingContext ctx)
+        public override bool CanApply()
         {
             return true;
         }
@@ -32,9 +32,10 @@ namespace NextGenSpice.Parser.Statements.Deferring
 
         /// <summary>Applies the statement in the given context.</summary>
         /// <param name="context"></param>
-        public override void Apply(ParsingContext ctx)
+        public override void Apply()
         {
-            builderFunc(ctx.CircuitBuilder);
+            base.Apply();
+            builderFunc(context.CircuitBuilder);
         }
     }
 }
