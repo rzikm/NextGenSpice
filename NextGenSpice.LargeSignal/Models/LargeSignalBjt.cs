@@ -6,6 +6,8 @@ using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
 
+using static NextGenSpice.LargeSignal.Models.DeviceHelpers;
+
 namespace NextGenSpice.LargeSignal.Models
 {
     /// <summary>Large signal model for <see cref="BjtDevice" /> device.</summary>
@@ -84,7 +86,7 @@ namespace NextGenSpice.LargeSignal.Models
         private void CacheModelParams()
         {
             vT = PhysicalConstants.Boltzmann *
-                 PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
+                 PhysicalConstants.CelsiusToKelvin(27) /
                  PhysicalConstants.DevicearyCharge;
 
             iS = Parameters.SaturationCurrent;
@@ -115,6 +117,7 @@ namespace NextGenSpice.LargeSignal.Models
         public override void Initialize(IEquationSystemAdapter adapter, ISimulationContext context)
         {
             stamper.Register(adapter, Base, Collector, Emitter);
+
             vbc.Register(adapter, Base, Collector);
             vbe.Register(adapter, Base, Emitter);
 
@@ -129,20 +132,21 @@ namespace NextGenSpice.LargeSignal.Models
         public override void ApplyModelValues(ISimulationContext context)
         {
             // calculate values according to Gummel-Poon model
-            VoltageBaseEmitter = vbe.GetValue();
-            VoltageBaseCollector = vbc.GetValue();
-            VoltageCollectorEmitter = VoltageBaseEmitter - VoltageBaseCollector;
 
-            var (gBe, gBc, gMf, gMr, iT) = CalculateModelValues();
+            var Ube = vbe.GetValue() * polarity;
+            var Ubc = vbc.GetValue() * polarity;
+            var Uce = Ube - Ubc;
 
-            var iBeeq = CurrentBaseEmitter - gBe * VoltageBaseEmitter;
-            var iBceq = CurrentBaseCollector - gBc * VoltageBaseCollector;
-            var iCeeq = iT - gMf * VoltageBaseEmitter - gMr * VoltageBaseCollector;
+            var (gBE, gBC, gitr, gitf, iT) = CalculateModelValues();
+
+            var ieqB = CurrentBaseEmitter - Ube * gBE;
+            var ieqC = CurrentBaseCollector - Ubc * gBC;
+            var ieqE = iT - Ube * gitf + Uce * gitr;
 
             CurrentBase = CurrentBaseEmitter + CurrentBaseCollector;
 
-            stamper.Stamp(gBe, gBc, gMf, gMr, (-iBeeq - iBceq) , (iBceq - iCeeq),
-                (iBeeq + iCeeq) );
+            stamper.Stamp(gBE, gBC, gitr, gitf, (-ieqB - ieqC) * polarity, (ieqC - ieqE) * polarity,
+                (ieqB + ieqE) * polarity);
         }
 
         /// <summary>
@@ -166,52 +170,243 @@ namespace NextGenSpice.LargeSignal.Models
         }
 
 
-        private (double gBe, double gBc, double gMf, double gMr, double iT) CalculateModelValues()
+        private (double gBE, double gBC, double gitr, double gitf, double iT) CalculateModelValues()
         {
             // for details see http://qucs.sourceforge.net/tech/node70.html
 
-            var iF = DiodeCurrent(iS, VoltageBaseEmitter, nF);
-            var iR = DiodeCurrent(iS, VoltageBaseCollector, nR);
+            var UbeCrit = PnCriticalVoltage(iS, nF * vT);
+            var UbcCrit = PnCriticalVoltage(iS, nR * vT);
 
-            var q1 = 1 / (1 - VoltageBaseCollector / vAf - VoltageBaseEmitter / vAr);
+            var Ube = vbe.GetValue();
+            var Ubc = vbc.GetValue();
+
+            //            VoltageBaseEmitter = Ube = pnVoltage(Ube, Ube, nF * vT, UbeCrit);
+            VoltageBaseEmitter = Ube = PnLimitVoltage(Ube, VoltageBaseEmitter, nF * vT, UbeCrit);
+            //            VoltageBaseCollector = Ubc = pnVoltage(Ubc, Ubc, nR * vT, UbcCrit);
+            VoltageBaseCollector = Ubc = PnLimitVoltage(Ubc, VoltageBaseCollector, nR * vT, UbcCrit);
+
+            double iF, gif;
+            PnJunction(iS, Ube, nF * vT, out iF, out gif);
+            double iBEn, gBEn;
+            PnJunction(iSe, Ube, nE * vT, out iBEn, out gBEn);
+
+            double iBEi = iF / bF;
+            double gBEi = gif / bF;
+
+            double iBE = iBEi + iBEn;
+            double gBE = gBEi + gBEn;
+            CurrentBaseEmitter = iBE;
+
+            double iR, gir;
+            PnJunction(iS, Ubc, nR * vT, out iR, out gir);
+            double iBCn, gBCn;
+            PnJunction(iSc, Ubc, nC * vT, out iBCn, out gBCn);
+
+            double iBCi = iR / bR;
+            double gBCi = gir / bR;
+
+            double iBC = iBCi + iBCn;
+            double gBC = gBCi + gBCn;
+            CurrentBaseCollector = iBC;
+
+            var q1 = 1 / (1 - Ubc / vAf - Ube / vAr); // shouldn't it be * vaf, *var
             var q2 = iF / iKf + iR / iKr;
 
-            var qB = q1 / 2 * (1 + Math.Sqrt(1 + 4 * q2));
+            var sqrt = Math.Sqrt(1 + 4 * q2);
+            var qB = q1 / 2 * (1 + sqrt);
 
-            CurrentBaseEmitter = iF / bF + DiodeCurrent(iSe, VoltageBaseEmitter, nE);
-            var gBei = iS * Slope(VoltageBaseEmitter, nF) / (nF * vT * bF);
-            var gBe = gBei + iSe * Slope(VoltageBaseEmitter, nE) / (nE * vT);
-
-            CurrentBaseCollector = iR / bR + DiodeCurrent(iSc, VoltageBaseCollector, nC);
-            var gBci = iS * Slope(VoltageBaseCollector, nR) / (nR * vT * bR);
-            var gBc = gBci + iSc * Slope(VoltageBaseCollector, nC) / (nC * vT);
+            var dQdbUbe = q1 * (qB / vAr + gif / (iKf * sqrt)); // shouldn't it be * vaf, *var
+            var dQbdUbc = q1 * (qB / vAf + gir / (iKr * sqrt));
 
             var iT = (iF - iR) / qB;
 
-            var gIf = gBei * bF;
-            var dQbdVbe = q1 * (qB / vAr + gIf / (iKf * Math.Sqrt(1 + 4 * q2)));
+            var gitf = (gif - iT * dQdbUbe) / qB;
+            var gitr = (gir - iT * dQbdUbc) / qB;
 
-            var gIr = gBci * bR;
-            var dQbdVbc = q1 * (qB / vAf + gIr / (iKr * Math.Sqrt(1 + 4 * q2)));
-
-            var gMf = 1 / qB * (gIf - iT * dQbdVbe);
-            var gMr = 1 / qB * (-gIr - iT * dQbdVbc);
+            var go = -gitr;
+            var gm = gitf - go;
 
             // calculate terminal currents
             CurrentCollector = iT - 1 / bR * iR;
             CurrentEmitter = -iT - 1 / bF * iF;
 
-            return (gBe, gBc, gMf, gMr, iT);
+            return (gBE, gBC, gitr, gitf, iT);
         }
 
-        private double DiodeCurrent(double saturationCurrent, double voltage, double emissionCoef)
-        {
-            return saturationCurrent * (Slope(voltage, emissionCoef) - 1);
-        }
 
-        private double Slope(double voltage, double emissionCoef)
-        {
-            return Math.Exp(voltage / (emissionCoef * vT));
-        }
+        //
+        //        private void calcDC()
+        //        {
+        //
+        //            // fetch device model parameters
+        //            double Is = getScaledProperty("Is");
+        //            double Nf = getPropertyDouble("Nf");
+        //            double Nr = getPropertyDouble("Nr");
+        //            double Vaf = getPropertyDouble("Vaf");
+        //            double Var = getPropertyDouble("Var");
+        //            double Ikf = getScaledProperty("Ikf");
+        //            double Ikr = getScaledProperty("Ikr");
+        //            double Bf = getScaledProperty("Bf");
+        //            double Br = getScaledProperty("Br");
+        //            double Ise = getScaledProperty("Ise");
+        //            double Isc = getScaledProperty("Isc");
+        //            double Ne = getPropertyDouble("Ne");
+        //            double Nc = getPropertyDouble("Nc");
+        //            double Rb = getScaledProperty("Rb");
+        //            double Rbm = getScaledProperty("Rbm");
+        //            double Irb = getScaledProperty("Irb");
+        //            double T = getPropertyDouble("Temp");
+        //
+        //            double pol = polarity;
+        //
+        //            double Ut, Q1, Q2;
+        //            double Iben, Ibcn, Ibei, Ibci, Ibc, gbe, gbc, gtiny;
+        //            double IeqB, IeqC, IeqE, IeqS, UbeCrit, UbcCrit;
+        //            double gm, go;
+        //
+        //            var Ube = VoltageBaseEmitter * polarity;
+        //            var Ubc = VoltageBaseCollector * polarity;
+        //
+        //            // critical voltage necessary for bad start values
+        //            UbeCrit = pnCriticalVoltage(Is, Nf * vT);
+        //            UbcCrit = pnCriticalVoltage(Is, Nr * vT);
+        //            UbePrev = Ube = pnVoltage(Ube, UbePrev, vT * Nf, UbeCrit);
+        //            UbcPrev = Ubc = pnVoltage(Ubc, UbcPrev, vT * Nr, UbcCrit);
+        //
+        //            double Uce = Ube - Ubc;
+        //
+        //            // base-emitter diodes
+        //            gtiny = Ube < -10 * vT * Nf ? (Is + Ise) : 0;
+        //
+        //
+        //            pnJunctionBIP(Ube, Is, vT * Nf, If, gif);
+        //
+        //            Ibei = If / Bf;
+        //            gbei = gif / Bf;
+        //
+        //            pnJunctionBIP(Ube, Ise, vT * Ne, Iben, gben);
+        //            Iben += gtiny * Ube;
+        //
+        //            Ibe = Ibei + Iben;
+        //            gbe = gbei + gben;
+        //
+        //            // base-collector diodes
+        //            gtiny = Ubc < -10 * vT * Nr ? (Is + Isc) : 0;
+        //
+        //            pnJunctionBIP(Ubc, Is, vT * Nr, Ir, gir);
+        //            Ibci = Ir / Br;
+        //            gbci = gir / Br;
+        //            pnJunctionBIP(Ubc, Isc, vT * Nc, Ibcn, gbcn);
+        //            Ibcn += gtiny * Ubc;
+        //            gbcn += gtiny;
+        //            Ibc = Ibci + Ibcn;
+        //            gbc = gbci + gbcn;
+        //
+        //            // compvTe base charge quantities
+        //            Q1 = 1 / (1 - Ubc * Vaf - Ube * Var);
+        //            Q2 = If * Ikf + Ir * Ikr;
+        //            double SArg = 1.0 + 4.0 * Q2;
+        //            double Sqrt = SArg > 0 ? qucs::sqrt(SArg) : 1;
+        //            Qb = Q1 * (1 + Sqrt) / 2;
+        //            dQbdUbe = Q1 * (Qb * Var + gif * Ikf / Sqrt);
+        //            dQbdUbc = Q1 * (Qb * Vaf + gir * Ikr / Sqrt);
+        //
+        //            // If and gif will be later used also for the capacitance/charge calculations
+        //            // Values compvTed from the excess phase rovTine should be used only
+        //            //   for compvTing the companion model current and conductance
+        //            double Ifx = If;
+        //            double gifx = gif;
+        //            // during transient analysis only
+        //            if (doTR)
+        //            {
+        //                // calculate excess phase influence
+        //                Ifx /= Qb;
+        //                excessPhase(cexState, Ifx, gifx);
+        //                Ifx *= Qb;
+        //            }
+        //
+        //            // compvTe transfer current
+        //            It = (Ifx - Ir) / Qb;
+        //
+        //            // compvTe forward and backward transconductance
+        //            gitf = (+gifx - It * dQbdUbe) / Qb;
+        //            gitr = (-gir - It * dQbdUbc) / Qb;
+        //
+        //            // compvTe old SPICE values
+        //            go = -gitr;
+        //            gm = +gitf - go;
+        //            setOperatingPoint("gm", gm);
+        //            setOperatingPoint("go", go);
+        //
+        //            // calculate current-dependent base resistance
+        //            if (Rbm != 0.0)
+        //            {
+        //                if (Irb != 0.0)
+        //                {
+        //                    nr_double_t a, b, z;
+        //                    a = (Ibci + Ibcn + Ibei + Iben) / Irb;
+        //                    a = std::max(a, NR_TINY); // enforce positive values
+        //                    z = (qucs::sqrt(1 + 144 / sqr(pi) * a) - 1) / 24 * sqr(pi) / qucs::sqrt(a);
+        //                    b = qucs::tan(z);
+        //                    Rbb = Rbm + 3 * (Rb - Rbm) * (b - z) / z / sqr(b);
+        //                }
+        //                else
+        //                {
+        //                    Rbb = Rbm + (Rb - Rbm) / Qb;
+        //                }
+        //                rb->setScaledProperty("R", Rbb);
+        //                rb->calcDC();
+        //            }
+        //
+        //            // compvTe avTonomic current sources
+        //            IeqB = Ibe - Ube * gbe;
+        //            IeqC = Ibc - Ubc * gbc;
+        //#if NEWSGP
+        //  IeqE = It - Ube * gitf - Ubc * gitr;
+        //#else
+        //            IeqE = It - Ube * gm - Uce * go;
+        //#endif
+        //            IeqS = 0;
+        //            setI(NODE_B, (-IeqB - IeqC) * pol);
+        //            setI(NODE_C, (+IeqC - IeqE - IeqS) * pol);
+        //            setI(NODE_E, (+IeqB + IeqE) * pol);
+        //            setI(NODE_S, (+IeqS) * pol);
+        //
+        //            // apply admittance matrix elements
+        //#if NEWSGP
+        //  setY (NODE_B, NODE_B, gbc + gbe);
+        //  setY (NODE_B, NODE_C, -gbc);
+        //  setY (NODE_B, NODE_E, -gbe);
+        //  setY (NODE_B, NODE_S, 0);
+        //  setY (NODE_C, NODE_B, -gbc + gitf + gitr);
+        //  setY (NODE_C, NODE_C, gbc - gitr);
+        //  setY (NODE_C, NODE_E, -gitf);
+        //  setY (NODE_C, NODE_S, 0);
+        //  setY (NODE_E, NODE_B, -gbe - gitf - gitr);
+        //  setY (NODE_E, NODE_C, gitr);
+        //  setY (NODE_E, NODE_E, gbe + gitf);
+        //  setY (NODE_E, NODE_S, 0);
+        //  setY (NODE_S, NODE_B, 0);
+        //  setY (NODE_S, NODE_C, 0);
+        //  setY (NODE_S, NODE_E, 0);
+        //  setY (NODE_S, NODE_S, 0);
+        //#else
+        //            setY(NODE_B, NODE_B, gbc + gbe);
+        //            setY(NODE_B, NODE_C, -gbc);
+        //            setY(NODE_B, NODE_E, -gbe);
+        //            setY(NODE_B, NODE_S, 0);
+        //            setY(NODE_C, NODE_B, -gbc + gm);
+        //            setY(NODE_C, NODE_C, go + gbc);
+        //            setY(NODE_C, NODE_E, -go - gm);
+        //            setY(NODE_C, NODE_S, 0);
+        //            setY(NODE_E, NODE_B, -gbe - gm);
+        //            setY(NODE_E, NODE_C, -go);
+        //            setY(NODE_E, NODE_E, gbe + go + gm);
+        //            setY(NODE_E, NODE_S, 0);
+        //            setY(NODE_S, NODE_B, 0);
+        //            setY(NODE_S, NODE_C, 0);
+        //            setY(NODE_S, NODE_E, 0);
+        //            setY(NODE_S, NODE_S, 0);
+        //        }
     }
 }

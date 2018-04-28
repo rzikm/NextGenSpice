@@ -108,7 +108,7 @@ namespace NextGenSpice.Parser.Statements
                     // translate node indexes to node names used in the input file 
                     var names = e.Components.Select(c => Context.SymbolTable.GetNodeNames(c).ToArray()).Cast<object>()
                         .ToArray();
-                    Context.Errors.Add(new Utils.SpiceParserError(SpiceParserErrorCode.SubcircuitNotConnected, name.LineNumber,
+                    Context.Errors.Add(new SpiceParserError(SpiceParserErrorCode.SubcircuitNotConnected, name.LineNumber,
                         name.LineColumn, names));
                 }
             }

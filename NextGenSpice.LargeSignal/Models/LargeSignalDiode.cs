@@ -5,6 +5,7 @@ using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.LargeSignal.NumIntegration;
 using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
+using static NextGenSpice.LargeSignal.Models.DeviceHelpers;
 
 namespace NextGenSpice.LargeSignal.Models
 {
@@ -145,10 +146,14 @@ namespace NextGenSpice.LargeSignal.Models
             var bv = Parameters.ReverseBreakdownVoltage;
 
             double id, geq;
+            double vcrit = PnCriticalVoltage(iss, vt);
+            vd = PnLimitVoltage(vd, Voltage, vt, vcrit);
+
             if (vd >= smallBiasTreshold)
             {
-                id = iss * (Math.Exp(vd / vt) - 1) + vd * gmin;
-                geq = iss * Math.Exp(vd / vt) / vt + gmin;
+                PnJunction(iss, vd, vt, out id, out geq);
+                id += vd * gmin;
+                geq += gmin;
             }
             else if (vd > -bv)
             {

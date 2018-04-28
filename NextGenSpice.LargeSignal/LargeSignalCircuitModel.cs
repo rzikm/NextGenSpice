@@ -165,6 +165,9 @@ namespace NextGenSpice.LargeSignal
             // allocate temporary arrays
             currentSolution = new double[equationSystemAdapter.VariableCount];
             previousSolution = new double[equationSystemAdapter.VariableCount];
+//            equationSystemAdapter.system.Solution[2] += 0.79;
+//            equationSystemAdapter.system.Solution[1] += 2.89;
+//            equationSystemAdapter.system.Solution[3] += 5;
         }
 
         private bool EstablishDcBias_Internal(Action<ILargeSignalDevice> updater)
@@ -215,7 +218,13 @@ namespace NextGenSpice.LargeSignal
             equationSystemAdapter.Solve(currentSolution);
 
             for (var i = 0; i < NodeCount; i++)
+            {
                 NodeVoltages[i] = currentSolution[i];
+//                Console.WriteLine(NodeVoltages[i]);
+                
+            }
+
+//            Console.WriteLine();
         }
 
         private void UpdateEquationSystem(Action<ILargeSignalDevice> updater,

@@ -41,19 +41,19 @@ namespace NextGenSpice.LargeSignal.Stamping
         }
 
         /// <summary>Stamps the device characteristics onto the equation system through the registered proxies.</summary>
-        public void Stamp(double gBe, double gBc, double gMf, double gMr, double iB, double iC, double iE)
+        public void Stamp(double gBe, double gBc, double gitr, double gitf, double iB, double iC, double iE)
         {
-            nbb.Add(gBe + gBc);
+            nbb.Add(gBc + gBe);
             nbc.Add(-gBc);
             nbe.Add(-gBe);
 
-            ncb.Add(-gBc + gMf + gMr);
-            ncc.Add(gBc - gMr);
-            nce.Add(-gMf);
+            ncb.Add(-gBc + gitf + gitr);
+            ncc.Add(gBc + gitr);
+            nce.Add(-gitf);
 
-            neb.Add(-gBe - gMf - gMr);
-            nec.Add(+gMr);
-            nee.Add(gBe + gMf);
+            neb.Add(-gBe -gitf - gitr);
+            nec.Add(gitr);
+            nee.Add(gBe + gitf);
 
             nb.Add(iB);
             nc.Add(iC);
