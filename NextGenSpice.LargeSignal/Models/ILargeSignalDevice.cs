@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using NextGenSpice.Core.Representation;
+﻿using NextGenSpice.Core.Representation;
 using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Models
@@ -23,15 +22,15 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         void ApplyInitialCondition(ISimulationContext context);
 
+        /// <summary>This method is called each time an equation is solved.</summary>
+        /// <param name="context">Context of current simulation.</param>
+        void OnEquationSolution(ISimulationContext context);
+
         /// <summary>
-        ///     Notifies model class that DC bias for given timepoint is established. This method can be used for processing
-        ///     circuit equation solution for current timepoint.
+        ///     Notifies model class that DC bias for given timepoint is established (i.e after Newton-Raphson iterations
+        ///     converged).
         /// </summary>
         /// <param name="context">Context of current simulation.</param>
         void OnDcBiasEstablished(ISimulationContext context);
-
-        /// <summary>Gets stats provider instances for this device.</summary>
-        /// <returns>IPrintValueProviders for specified attribute.</returns>
-        IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders();
     }
 }

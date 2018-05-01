@@ -36,16 +36,16 @@ namespace NextGenSpice.Parser.Statements.Devices
 
         /// <summary>Gets list of model statement handlers that are responsible to parsing respective models of this device.</summary>
         /// <returns></returns>
-        public override IEnumerable<IModelStatementHandler> GetModelStatementHandlers()
+        public override IEnumerable<IDeviceModelHandler> GetModelStatementHandlers()
         {
-            return new IModelStatementHandler[] {new DiodeModelStatementHandler()};
+            return new IDeviceModelHandler[] {new DiodeModelHandler()};
         }
 
         /// <summary>Class that handles diode device model statements.</summary>
-        private class DiodeModelStatementHandler : ModelStatementHandlerBase<DiodeParams>,
-            IModelStatementHandler
+        private class DiodeModelHandler : DeviceModelHandlerBase<DiodeParams>,
+            IDeviceModelHandler
         {
-            public DiodeModelStatementHandler()
+            public DiodeModelHandler()
             {
                 Map(p => p.SaturationCurrent, "IS");
                 Map(p => p.SeriesResistance, "RS");

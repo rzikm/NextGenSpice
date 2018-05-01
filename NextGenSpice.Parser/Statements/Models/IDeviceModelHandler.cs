@@ -1,7 +1,7 @@
 namespace NextGenSpice.Parser.Statements.Models
 {
     /// <summary>Defines methods for handling concrete .MODEL statements</summary>
-    public interface IModelStatementHandler
+    public interface IDeviceModelHandler
     {
         /// <summary>Discriminator of model type.</summary>
         string Discriminator { get; }

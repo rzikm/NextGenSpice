@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.LargeSignal;
 using NextGenSpice.LargeSignal.Models;
+using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
+using NextGenSpice.Parser;
 using NextGenSpice.Parser.Statements.Deferring;
 using NextGenSpice.Parser.Statements.Devices;
 using NextGenSpice.Parser.Statements.Models;
@@ -35,9 +38,9 @@ namespace SandboxRunner
         }
 
         // requires NextGenSpice.Parser.Statements.Devices; namespace
-        private class ShockleyDiodeModelStatementHandler : ModelStatementHandlerBase<ShockleyDiodeParams>
+        private class ShockleyDiodeModelHandler : DeviceModelHandlerBase<ShockleyDiodeParams>
         {
-            public ShockleyDiodeModelStatementHandler()
+            public ShockleyDiodeModelHandler()
             {
                 Map(p => p.SaturationCurrent, "IS");
                 Map(p => p.ThermalVoltage, "VT");
@@ -65,7 +68,7 @@ namespace SandboxRunner
             protected override void DoProcess()
             {
                 var name = DeviceName; // use local variable for capture
-                var nodes = GetNodeIndices(1, 2); 
+                var nodes = GetNodeIndices(1, 2);
                 // cannot check for model existence yet, defer checking for model later
 
                 if (Errors == 0)
@@ -76,22 +79,69 @@ namespace SandboxRunner
                             (par, cb) => cb.AddDevice(nodes, new ShockleyDiode(par, name)), modelToken));
                 }
             }
+
+            public override IEnumerable<IDeviceModelHandler> GetModelStatementHandlers()
+            {
+                return new[] { new ShockleyDiodeModelHandler() };
+            }
         }
 
+
+        public static void RegisteringTheHandler()
+        {
+            var parser =  SpiceNetlistParser.WithDefaults();
+            parser.RegisterDevice(new ShockleyDiodeStatementProcessor());
+
+            // ...
+        }
+
+        // requires NextGenSpice.Numerics.Equations namespace
         public class LargeSignalShockleyDiode : TwoTerminalLargeSignalDevice<ShockleyDiode>
         {
+            // classes encapsulating the work with equation system coefficient proxies
+            // requires NextGenSpice.LargeSignal.Stamping namespace
+            private VoltageProxy voltage; // used to get voltage across the diode
+
+            // stamping equivalent circuit model
+            private CurrentStamper currentStamper;
+            private ConductanceStamper conductanceStamper;
+
             public LargeSignalShockleyDiode(ShockleyDiode definitionDevice) : base(definitionDevice)
             {
+                voltage = new VoltageProxy();
+                currentStamper = new CurrentStamper();
+                conductanceStamper = new ConductanceStamper();
             }
 
             public override void Initialize(IEquationSystemAdapter adapter, ISimulationContext context)
             {
-                throw new System.NotImplementedException();
+                // get proxies
+                voltage.Register(adapter, Anode, Cathode);
+                currentStamper.Register(adapter, Anode, Cathode);
+                conductanceStamper.Register(adapter, Anode, Cathode);
             }
 
             public override void ApplyModelValues(ISimulationContext context)
             {
-                throw new System.NotImplementedException();
+                var Is = DefinitionDevice.Param.SaturationCurrent;
+                var Vt = DefinitionDevice.Param.ThermalVoltage;
+                var n = DefinitionDevice.Param.IdealityCoefficient;
+
+                var Vd = voltage.GetValue();
+                // calculates current through the diode and it's derivative
+                DeviceHelpers.PnJunction(Is, Vd, Vt * n, out var Id, out var Geq);
+
+                // stamp the equivalent circuit
+                var Ieq = Id - Geq * Vd;
+                conductanceStamper.Stamp(Geq);
+                currentStamper.Stamp(Ieq);
+            }
+
+            /// <summary>This method is called each time an equation is solved.</summary>
+            /// <param name="context">Context of current simulation.</param>
+            public override void OnEquationSolution(ISimulationContext context)
+            {
+                
             }
         }
     }

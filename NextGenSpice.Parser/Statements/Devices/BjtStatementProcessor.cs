@@ -42,19 +42,19 @@ namespace NextGenSpice.Parser.Statements.Devices
 
         /// <summary>Gets list of model statement handlers that are responsible to parsing respective models of this device.</summary>
         /// <returns></returns>
-        public override IEnumerable<IModelStatementHandler> GetModelStatementHandlers()
+        public override IEnumerable<IDeviceModelHandler> GetModelStatementHandlers()
         {
-            return new IModelStatementHandler[]
-                {new BjtModelStatementHandler(true), new BjtModelStatementHandler(false),};
+            return new IDeviceModelHandler[]
+                {new BjtModelHandler(true), new BjtModelHandler(false),};
         }
 
 
         /// <summary>Class that handles Homo-Junction Bipolar Trannsistor device model statements.</summary>
-        private class BjtModelStatementHandler : ModelStatementHandlerBase<BjtParams>
+        private class BjtModelHandler : DeviceModelHandlerBase<BjtParams>
         {
             private readonly bool isPnp;
 
-            public BjtModelStatementHandler(bool isPnp)
+            public BjtModelHandler(bool isPnp)
             {
                 this.isPnp = isPnp;
                 Discriminator = isPnp ? "PNP" : "NPN";

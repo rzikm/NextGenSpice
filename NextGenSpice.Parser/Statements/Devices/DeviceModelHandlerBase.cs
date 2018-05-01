@@ -8,12 +8,12 @@ namespace NextGenSpice.Parser.Statements.Devices
 {
     /// <summary>Base class implementing basic functionality of parsing SPICE .MODEL parameters.</summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class ModelStatementHandlerBase<T> : IModelStatementHandler
+    public abstract class DeviceModelHandlerBase<T> : IDeviceModelHandler
     {
         /// <summary>Mapper for mapping parsed parameters onto properties.</summary>
         private ParameterMapper<T> Mapper { get; }
 
-        protected ModelStatementHandlerBase()
+        protected DeviceModelHandlerBase()
         {
             Mapper = new ParameterMapper<T>();
         }
@@ -72,7 +72,7 @@ namespace NextGenSpice.Parser.Statements.Devices
 
         /// <summary>Creates new instance of model parameter class with default values.</summary>
         /// <returns></returns>
-        object IModelStatementHandler.CreateDefaultModel()
+        object IDeviceModelHandler.CreateDefaultModel()
         {
             return CreateDefaultModel();
         }

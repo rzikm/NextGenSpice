@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NextGenSpice.Core;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Devices.Parameters;
+using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
 
@@ -147,6 +148,12 @@ namespace NextGenSpice.LargeSignal.Models
 
             stamper.Stamp(gBE, gBC, gitr, gitf, (-ieqB - ieqC) * polarity, (ieqC - ieqE) * polarity,
                 (ieqB + ieqE) * polarity);
+        }
+
+        /// <summary>This method is called each time an equation is solved.</summary>
+        /// <param name="context">Context of current simulation.</param>
+        public override void OnEquationSolution(ISimulationContext context)
+        {
         }
 
         /// <summary>

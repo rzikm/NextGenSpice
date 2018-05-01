@@ -33,6 +33,8 @@ namespace NextGenSpice.LargeSignal.Models
             stamper = new DiodeStamper();
             capacitorStamper = new CapacitorStamper();
             voltage = new VoltageProxy();
+
+            Voltage = definitionDevice.VoltageHint;
         }
 
         /// <summary>Diode model parameters.</summary>
@@ -92,6 +94,13 @@ namespace NextGenSpice.LargeSignal.Models
             ApplyLinearizedModel(context, vd);
         }
 
+        /// <summary>This method is called each time an equation is solved.</summary>
+        /// <param name="context">Context of current simulation.</param>
+        public override void OnEquationSolution(ISimulationContext context)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>Applies linarized diode model to the equation system.</summary>
         /// <param name="equations"></param>
         /// <param name="context"></param>
@@ -116,8 +125,8 @@ namespace NextGenSpice.LargeSignal.Models
         }
 
         /// <summary>
-        ///     Notifies model class that DC bias for given timepoint is established. This method can be used for processing
-        ///     circuit equation solution for current timepoint.
+        ///     Notifies model class that DC bias for given timepoint is established (i.e after Newton-Raphson iterations
+        ///     converged).
         /// </summary>
         /// <param name="context">Context of current simulation.</param>
         public override void OnDcBiasEstablished(ISimulationContext context)

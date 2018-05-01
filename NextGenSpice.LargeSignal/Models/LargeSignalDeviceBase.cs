@@ -39,9 +39,13 @@ namespace NextGenSpice.LargeSignal.Models
             ApplyModelValues(context);
         }
 
+        /// <summary>This method is called each time an equation is solved.</summary>
+        /// <param name="context">Context of current simulation.</param>
+        public abstract void OnEquationSolution(ISimulationContext context);
+
         /// <summary>
-        ///     Notifies model class that DC bias for given timepoint is established. This method can be used for processing
-        ///     circuit equation solution for current timepoint.
+        ///     Notifies model class that DC bias for given timepoint is established (i.e after Newton-Raphson iterations
+        ///     converged).
         /// </summary>
         /// <param name="context">Context of current simulation.</param>
         public virtual void OnDcBiasEstablished(ISimulationContext context)

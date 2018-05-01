@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using NextGenSpice.Core.Devices;
+using NextGenSpice.Core.Representation;
 
 namespace NextGenSpice.LargeSignal.Models
 {

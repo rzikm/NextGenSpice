@@ -58,9 +58,9 @@ namespace NextGenSpice.Parser.Statements.Devices
 
         /// <summary>Gets list of model statement handlers that are responsible to parsing respective models of this device.</summary>
         /// <returns></returns>
-        public virtual IEnumerable<IModelStatementHandler> GetModelStatementHandlers()
+        public virtual IEnumerable<IDeviceModelHandler> GetModelStatementHandlers()
         {
-            return Enumerable.Empty<IModelStatementHandler>();
+            return Enumerable.Empty<IDeviceModelHandler>();
         }
 
         /// <summary>Processes given set of statements.</summary>

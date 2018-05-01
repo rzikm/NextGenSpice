@@ -1,4 +1,5 @@
-﻿using NextGenSpice.Core.Devices;
+﻿using System.Collections.Generic;
+using NextGenSpice.Core.Devices;
 
 namespace NextGenSpice.Core.Representation
 {
@@ -11,5 +12,10 @@ namespace NextGenSpice.Core.Representation
     {
         /// <summary>Instance of definition device that corresponds to this device analysis model.</summary>
         ICircuitDefinitionDevice DefinitionDevice { get; }
+
+
+        /// <summary>Gets stats provider instances for this device.</summary>
+        /// <returns>IPrintValueProviders for specified attribute.</returns>
+        IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders();
     }
 }

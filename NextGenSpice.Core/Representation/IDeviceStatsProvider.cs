@@ -1,4 +1,4 @@
-﻿namespace NextGenSpice.LargeSignal.Models
+﻿namespace NextGenSpice.Core.Representation
 {
     public interface IDeviceStatsProvider
     {

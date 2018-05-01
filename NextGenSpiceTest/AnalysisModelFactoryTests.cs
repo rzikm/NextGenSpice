@@ -67,6 +67,13 @@ namespace NextGenSpiceTest
         {
             /// <summary>Instance of definition device that corresponds to this device analysis model.</summary>
             public ICircuitDefinitionDevice DefinitionDevice => throw new NotImplementedException();
+
+            /// <summary>Gets stats provider instances for this device.</summary>
+            /// <returns>IPrintValueProviders for specified attribute.</returns>
+            public IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders()
+            {
+                return new List<IDeviceStatsProvider>();
+            }
         }
 
 

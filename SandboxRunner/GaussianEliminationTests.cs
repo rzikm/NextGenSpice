@@ -72,9 +72,6 @@ namespace SandboxRunner
                     b[i] = tmp;
                 }
 
-                //                PrintSystem(m, b);
-
-
                 // eliminate current variable in all columns
                 for (var k = i + 1; k < size; k++)
                 {
@@ -155,9 +152,6 @@ namespace SandboxRunner
                     b[maxRow] = b[i];
                     b[i] = tmp;
                 }
-
-                //                PrintSystem(m, b);
-
 
                 // eliminate current variable in all columns
                 for (var k = i + 1; k < size; k++)

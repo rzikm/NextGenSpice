@@ -8,14 +8,14 @@ namespace NextGenSpice.Parser.Statements
     /// <summary>Class responsible for processing .MODEL statements.</summary>
     internal class ModelStatementProcessor : DotStatementProcessor
     {
-        private readonly Dictionary<string, IModelStatementHandler> handlers;
+        private readonly Dictionary<string, IDeviceModelHandler> handlers;
 
         public ModelStatementProcessor()
         {
             MaxArgs = int.MaxValue;
             MinArgs = 2;
 
-            handlers = new Dictionary<string, IModelStatementHandler>();
+            handlers = new Dictionary<string, IDeviceModelHandler>();
         }
 
         /// <summary>Statement discriminator, that this class can handle.</summary>
@@ -23,7 +23,7 @@ namespace NextGenSpice.Parser.Statements
 
         /// <summary>Adds handler for a specific device model type.</summary>
         /// <param name="handler"></param>
-        public void AddHandler(IModelStatementHandler handler)
+        public void AddHandler(IDeviceModelHandler handler)
         {
             handlers.Add(handler.Discriminator, handler);
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using NextGenSpice.Core.Representation;
 
 namespace NextGenSpice.LargeSignal.Models
 {
