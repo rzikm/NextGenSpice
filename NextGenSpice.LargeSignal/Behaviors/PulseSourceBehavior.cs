@@ -1,6 +1,6 @@
 ﻿using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
-using NextGenSpice.LargeSignal.Models;
+using NextGenSpice.LargeSignal.Devices;
 using NextGenSpice.Numerics;
 
 namespace NextGenSpice.LargeSignal.Behaviors

@@ -1,30 +1,34 @@
-﻿using NextGenSpice.Core.Devices;
+﻿using System.Collections.Generic;
+using NextGenSpice.Core.Devices;
+using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
 
-namespace NextGenSpice.LargeSignal.Models
+namespace NextGenSpice.LargeSignal.Devices
 {
-    /// <summary>Large signal model for <see cref="ResistorDevice" /> device.</summary>
-    public class LargeSignalResistor : TwoTerminalLargeSignalDevice<ResistorDevice>
+    /// <summary>Large signal model for <see cref="CurrentControlledCurrentSourceDevice" /> device.</summary>
+    public class LargeSignalCccs : TwoTerminalLargeSignalDevice<CurrentControlledCurrentSourceDevice>
     {
-        private readonly ConductanceStamper stamper;
+        private readonly CccsStamper stamper;
         private readonly VoltageProxy voltage;
 
-        public LargeSignalResistor(ResistorDevice definitionDevice) : base(definitionDevice)
+        private readonly LargeSignalVoltageSource ampermeter;
+
+        public LargeSignalCccs(CurrentControlledCurrentSourceDevice definitionDevice, LargeSignalVoltageSource ampermeterDevice) : base(definitionDevice)
         {
-            stamper = new ConductanceStamper();
             voltage = new VoltageProxy();
+            stamper = new CccsStamper();
+            ampermeter = ampermeterDevice;
         }
 
-        /// <summary>Resistance of the device in ohms.</summary>
-        public double Resistance => DefinitionDevice.Resistance;
+        public double ReferenceCurrent => ampermeter.Current;
 
         /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
         /// <param name="adapter">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>
         public override void Initialize(IEquationSystemAdapter adapter, ISimulationContext context)
         {
-            stamper.Register(adapter, Anode, Cathode);
+            stamper.Register(adapter, Anode, Cathode, ampermeter.BranchVariable);
             voltage.Register(adapter, Anode, Cathode);
         }
 
@@ -35,7 +39,7 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(ISimulationContext context)
         {
-            stamper.Stamp(1 / Resistance);
+            stamper.Stamp(DefinitionDevice.Gain);
         }
 
         /// <summary>This method is called each time an equation is solved.</summary>
@@ -43,7 +47,7 @@ namespace NextGenSpice.LargeSignal.Models
         public override void OnEquationSolution(ISimulationContext context)
         {
             Voltage = voltage.GetValue();
-            Current = Voltage / Resistance;
+            Current = ReferenceCurrent * DefinitionDevice.Gain;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using NextGenSpice.Core.Circuit;
-using NextGenSpice.LargeSignal.Models;
+using NextGenSpice.LargeSignal.Devices;
 
 namespace NextGenSpice.LargeSignal.Behaviors
 {

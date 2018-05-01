@@ -8,7 +8,7 @@ using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Extensions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal;
-using NextGenSpice.LargeSignal.Models;
+using NextGenSpice.LargeSignal.Devices;
 using NextGenSpice.LargeSignal.NumIntegration;
 using NextGenSpice.Parser;
 

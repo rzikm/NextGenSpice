@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace NextGenSpice.LargeSignal.Models
+namespace NextGenSpice.LargeSignal.Devices
 {
     public interface ILargeSignalSubcircuit : ILargeSignalDevice
     {

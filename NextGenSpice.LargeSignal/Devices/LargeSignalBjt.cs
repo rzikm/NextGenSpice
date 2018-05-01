@@ -7,9 +7,7 @@ using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
 
-using static NextGenSpice.LargeSignal.Models.DeviceHelpers;
-
-namespace NextGenSpice.LargeSignal.Models
+namespace NextGenSpice.LargeSignal.Devices
 {
     /// <summary>Large signal model for <see cref="BjtDevice" /> device.</summary>
     internal class LargeSignalBjt : LargeSignalDeviceBase<BjtDevice>
@@ -181,21 +179,21 @@ namespace NextGenSpice.LargeSignal.Models
         {
             // for details see http://qucs.sourceforge.net/tech/node70.html
 
-            var UbeCrit = PnCriticalVoltage(iS, nF * vT);
-            var UbcCrit = PnCriticalVoltage(iS, nR * vT);
+            var UbeCrit = DeviceHelpers.PnCriticalVoltage(iS, nF * vT);
+            var UbcCrit = DeviceHelpers.PnCriticalVoltage(iS, nR * vT);
 
             var Ube = vbe.GetValue() * polarity;
             var Ubc = vbc.GetValue() * polarity;
 
             //            VoltageBaseEmitter = Ube = pnVoltage(Ube, Ube, nF * vT, UbeCrit);
-            VoltageBaseEmitter = Ube = PnLimitVoltage(Ube, VoltageBaseEmitter, nF * vT, UbeCrit);
+            VoltageBaseEmitter = Ube = DeviceHelpers.PnLimitVoltage(Ube, VoltageBaseEmitter, nF * vT, UbeCrit);
             //            VoltageBaseCollector = Ubc = pnVoltage(Ubc, Ubc, nR * vT, UbcCrit);
-            VoltageBaseCollector = Ubc = PnLimitVoltage(Ubc, VoltageBaseCollector, nR * vT, UbcCrit);
+            VoltageBaseCollector = Ubc = DeviceHelpers.PnLimitVoltage(Ubc, VoltageBaseCollector, nR * vT, UbcCrit);
 
             double iF, gif;
-            PnJunction(iS, Ube, nF * vT, out iF, out gif);
+            DeviceHelpers.PnJunction(iS, Ube, nF * vT, out iF, out gif);
             double iBEn, gBEn;
-            PnJunction(iSe, Ube, nE * vT, out iBEn, out gBEn);
+            DeviceHelpers.PnJunction(iSe, Ube, nE * vT, out iBEn, out gBEn);
 
             double iBEi = iF / bF;
             double gBEi = gif / bF;
@@ -205,9 +203,9 @@ namespace NextGenSpice.LargeSignal.Models
             CurrentBaseEmitter = iBE;
 
             double iR, gir;
-            PnJunction(iS, Ubc, nR * vT, out iR, out gir);
+            DeviceHelpers.PnJunction(iS, Ubc, nR * vT, out iR, out gir);
             double iBCn, gBCn;
-            PnJunction(iSc, Ubc, nC * vT, out iBCn, out gBCn);
+            DeviceHelpers.PnJunction(iSc, Ubc, nC * vT, out iBCn, out gBCn);
 
             double iBCi = iR / bR;
             double gBCi = gir / bR;

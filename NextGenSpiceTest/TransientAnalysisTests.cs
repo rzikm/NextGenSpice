@@ -4,7 +4,7 @@ using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Extensions;
 using NextGenSpice.LargeSignal;
-using NextGenSpice.LargeSignal.Models;
+using NextGenSpice.LargeSignal.Devices;
 using Xunit;
 using Xunit.Abstractions;
 

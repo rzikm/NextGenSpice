@@ -1,27 +1,22 @@
 ﻿using NextGenSpice.Core.Devices;
-using NextGenSpice.LargeSignal.Behaviors;
-using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
 
-namespace NextGenSpice.LargeSignal.Models
+namespace NextGenSpice.LargeSignal.Devices
 {
-    /// <summary>Large signal model for <see cref="VoltageSourceDevice" /> device.</summary>
-    public class LargeSignalVoltageSource : TwoTerminalLargeSignalDevice<VoltageSourceDevice>
+    /// <summary>Large signal model for <see cref="CurrentControlledVoltageSourceDevice" /> device.</summary>
+    public class LargeSignalCcvs : TwoTerminalLargeSignalDevice<CurrentControlledVoltageSourceDevice>
     {
-        private readonly VoltageStamper stamper;
+        private readonly CcvsStamper stamper;
 
-        public LargeSignalVoltageSource(VoltageSourceDevice definitionDevice, IInputSourceBehavior behavior) :
-            base(definitionDevice)
+        private readonly LargeSignalVoltageSource ampermeter;
+
+        public LargeSignalCcvs(CurrentControlledVoltageSourceDevice definitionDevice, LargeSignalVoltageSource ampermeterDevice) : base(definitionDevice)
         {
-            stamper = new VoltageStamper();
-            Behavior = behavior;
+            stamper = new CcvsStamper();
+            ampermeter = ampermeterDevice;
         }
 
-        /// <summary>Strategy class specifying behavior of this source.</summary>
-        private IInputSourceBehavior Behavior { get; }
-
-        /// <summary>Index of branch variable which holds current flowing through the voltage source.</summary>
-        public int BranchVariable => stamper.BranchVariable;
+        public double ReferenceCurrent => ampermeter.Current;
 
         /// <summary>Allows devices to register any additional variables.</summary>
         /// <param name="adapter">The equation system builder.</param>
@@ -36,7 +31,7 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void Initialize(IEquationSystemAdapter adapter, ISimulationContext context)
         {
-            stamper.Register(adapter, Anode, Cathode);
+            stamper.Register(adapter, Anode, Cathode, ampermeter.BranchVariable);
         }
 
         /// <summary>
@@ -46,8 +41,7 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(ISimulationContext context)
         {
-            Voltage = Behavior.GetValue(context);
-            stamper.Stamp(Voltage);
+            stamper.Stamp(DefinitionDevice.Gain);
         }
 
         /// <summary>This method is called each time an equation is solved.</summary>
@@ -55,6 +49,7 @@ namespace NextGenSpice.LargeSignal.Models
         public override void OnEquationSolution(ISimulationContext context)
         {
             Current = stamper.GetCurrent();
+            Voltage = ReferenceCurrent * DefinitionDevice.Gain;
         }
     }
 }

@@ -2,7 +2,7 @@
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Representation;
 
-namespace NextGenSpice.LargeSignal.Models
+namespace NextGenSpice.LargeSignal.Devices
 {
     /// <summary>Base class for large signal device models that have exactly two terminals.</summary>
     /// <typeparam name="TDefinitionDevice">Class used for the device in the circuit definition that this class is model for.</typeparam>

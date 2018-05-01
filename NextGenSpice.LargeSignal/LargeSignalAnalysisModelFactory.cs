@@ -4,7 +4,7 @@ using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Behaviors;
-using NextGenSpice.LargeSignal.Models;
+using NextGenSpice.LargeSignal.Devices;
 
 namespace NextGenSpice.LargeSignal
 {
@@ -26,6 +26,8 @@ namespace NextGenSpice.LargeSignal
             SetModel<BjtDevice, LargeSignalBjt>(e => new LargeSignalBjt(e));
             SetModel<VoltageControlledVoltageSourceDevice, LargeSignalVcvs>(e => new LargeSignalVcvs(e));
             SetModel<VoltageControlledCurrentSourceDevice, LargeSignalVccs>(e => new LargeSignalVccs(e));
+            SetModel<CurrentControlledVoltageSourceDevice, LargeSignalCcvs>((e,ctx) => new LargeSignalCcvs(e, (LargeSignalVoltageSource) ctx.GetModel(e.Ampermeter)));
+            SetModel<CurrentControlledCurrentSourceDevice, LargeSignalCccs>((e,ctx) => new LargeSignalCccs(e, (LargeSignalVoltageSource) ctx.GetModel(e.Ampermeter)));
 
             SetModel<SubcircuitDevice, LargeSignalSubcircuit>((e, ctx) =>
                 new LargeSignalSubcircuit(e, e.Devices.Select(ctx.GetModel).Cast<ILargeSignalDevice>()));

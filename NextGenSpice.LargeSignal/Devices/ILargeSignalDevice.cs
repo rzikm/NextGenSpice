@@ -1,7 +1,7 @@
 ﻿using NextGenSpice.Core.Representation;
 using NextGenSpice.Numerics.Equations;
 
-namespace NextGenSpice.LargeSignal.Models
+namespace NextGenSpice.LargeSignal.Devices
 {
     /// <summary>Defines basic methods and properties for large signal devices.</summary>
     public interface ILargeSignalDevice : IAnalysisDeviceModel<LargeSignalCircuitModel>

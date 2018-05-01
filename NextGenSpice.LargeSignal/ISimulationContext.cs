@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using NextGenSpice.LargeSignal.Models;
 
 namespace NextGenSpice.LargeSignal
 {

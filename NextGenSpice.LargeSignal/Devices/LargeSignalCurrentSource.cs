@@ -3,7 +3,7 @@ using NextGenSpice.LargeSignal.Behaviors;
 using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
 
-namespace NextGenSpice.LargeSignal.Models
+namespace NextGenSpice.LargeSignal.Devices
 {
     /// <summary>Large signal model for <see cref="CurrentSourceDevice" /> device.</summary>
     public class LargeSignalCurrentSource : TwoTerminalLargeSignalDevice<CurrentSourceDevice>

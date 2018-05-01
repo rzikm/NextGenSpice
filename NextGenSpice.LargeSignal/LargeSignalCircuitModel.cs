@@ -4,7 +4,7 @@ using System.Linq;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Representation;
-using NextGenSpice.LargeSignal.Models;
+using NextGenSpice.LargeSignal.Devices;
 using NextGenSpice.Numerics.Equations;
 using NextGenSpice.Numerics.Precision;
 

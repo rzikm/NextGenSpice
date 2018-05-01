@@ -1,7 +1,7 @@
 ﻿using System;
 using NextGenSpice.Core.Representation;
 
-namespace NextGenSpice.LargeSignal.Models
+namespace NextGenSpice.LargeSignal.Devices
 {
     /// <summary>Simple implementation of IPrintValueProvider that wraps simple lambdas.</summary>
     internal class SimpleDeviceStatsProvider : IDeviceStatsProvider

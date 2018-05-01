@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NextGenSpice.LargeSignal.Models
+namespace NextGenSpice.LargeSignal.Devices
 {
     /// <summary>
     /// Helper class for calculations for semiconductor devices

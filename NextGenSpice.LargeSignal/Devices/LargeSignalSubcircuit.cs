@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.Numerics.Equations;
 
-namespace NextGenSpice.LargeSignal.Models
+namespace NextGenSpice.LargeSignal.Devices
 {
     /// <summary>Large signal model for <see cref="SubcircuitDevice" />.</summary>
     public class LargeSignalSubcircuit : LargeSignalDeviceBase<SubcircuitDevice>, ILargeSignalSubcircuit

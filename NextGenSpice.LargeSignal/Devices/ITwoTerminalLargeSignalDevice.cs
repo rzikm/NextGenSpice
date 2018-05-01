@@ -1,4 +1,4 @@
-﻿namespace NextGenSpice.LargeSignal.Models
+﻿namespace NextGenSpice.LargeSignal.Devices
 {
     /// <summary>Defines basic methods and properties for large signal models of devices that have only two terminals.</summary>
     public interface ITwoTerminalLargeSignalDevice : ILargeSignalDevice
