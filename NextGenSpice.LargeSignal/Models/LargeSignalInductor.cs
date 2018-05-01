@@ -11,6 +11,8 @@ namespace NextGenSpice.LargeSignal.Models
         private readonly InductorStamper stamper;
         private readonly VoltageProxy voltage;
 
+        private bool firstDcPoint;
+
         public LargeSignalInductor(InductorDevice definitionDevice) : base(definitionDevice)
         {
             voltage = new VoltageProxy();
@@ -27,12 +29,8 @@ namespace NextGenSpice.LargeSignal.Models
         {
             stamper.Register(adapter, Anode, Cathode);
             voltage.Register(adapter, Anode, Cathode);
+            firstDcPoint = true;
             IntegrationMethod = context.CircuitParameters.IntegrationMethodFactory.CreateInstance();
-
-            //            if (DefinitionDevice.InitialCurrent.HasValue) // apply init condition
-            //            {
-            //                IntegrationMethod.SetState(0, DefinitionDevice.InitialCurrent.Value);
-            //            }
         }
 
         /// <summary>
@@ -42,22 +40,23 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(ISimulationContext context)
         {
-            var (veq, req) = IntegrationMethod.GetEquivalents(DefinitionDevice.Inductance / context.TimeStep);
-            stamper.Stamp(-veq, req);
-        }
-
-        /// <summary>Applies model values before first DC bias has been established for the first time.</summary>
-        /// <param name="context">Context of current simulation.</param>
-        public override void ApplyInitialCondition(ISimulationContext context)
-        {
-            stamper.StampInitialCondition(DefinitionDevice.InitialCurrent);
-            //            var (veq, req) = IntegrationMethod.GetEquivalents(1/DefinitionDevice.Inductance);
+            if (firstDcPoint) // initial dc bias
+            {
+                stamper.StampInitialCondition(DefinitionDevice.InitialCurrent);
+            }
+            else
+            {
+                var (veq, req) = IntegrationMethod.GetEquivalents(DefinitionDevice.Inductance / context.TimeStep);
+                stamper.Stamp(-veq, req);
+            }
         }
 
         /// <summary>This method is called each time an equation is solved.</summary>
         /// <param name="context">Context of current simulation.</param>
         public override void OnEquationSolution(ISimulationContext context)
         {
+            Current = stamper.GetCurrent();
+            Voltage = voltage.GetValue();
         }
 
         /// <summary>
@@ -68,10 +67,8 @@ namespace NextGenSpice.LargeSignal.Models
         public override void OnDcBiasEstablished(ISimulationContext context)
         {
             base.OnDcBiasEstablished(context);
-            Current = stamper.GetCurrent();
-            Voltage = voltage.GetValue();
-
             IntegrationMethod.SetState(Voltage, Current);
+            firstDcPoint = false;
         }
     }
 }

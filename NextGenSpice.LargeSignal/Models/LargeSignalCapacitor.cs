@@ -17,7 +17,6 @@ namespace NextGenSpice.LargeSignal.Models
         {
             voltage = new VoltageProxy();
             stamper = new CapacitorStamper();
-
         }
 
         /// <summary>Integration method used for modifying inner state of the device.</summary>
@@ -41,24 +40,33 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(ISimulationContext context)
         {
-            var (ieq, geq) = IntegrationMethod.GetEquivalents(DefinitionDevice.Capacity / context.TimeStep);
-            stamper.Stamp(ieq, geq);
-        }
-
-        /// <summary>Applies model values before first DC bias has been established for the first time.</summary>
-        /// <param name="context">Context of current simulation.</param>
-        public override void ApplyInitialCondition(ISimulationContext context)
-        {
-            if (DefinitionDevice.InitialVoltage.HasValue)
-                stamper.Stamp(DefinitionDevice.InitialVoltage.Value, 1);
+            double ieq, geq;
+            if (firtDcPoint)
+            {
+                if (DefinitionDevice.InitialVoltage.HasValue)
+                {
+                    ieq = DefinitionDevice.InitialVoltage.Value;
+                    geq = 1;
+                }
+                else
+                {
+                    ieq = geq = 0; // open circuit
+                }
+            }
             else
-                stamper.Stamp(0, 0); // open circuit
+            {
+                (ieq, geq) = IntegrationMethod.GetEquivalents(DefinitionDevice.Capacity / context.TimeStep);
+            }
+
+            stamper.Stamp(ieq, geq);
         }
 
         /// <summary>This method is called each time an equation is solved.</summary>
         /// <param name="context">Context of current simulation.</param>
         public override void OnEquationSolution(ISimulationContext context)
         {
+            Current = stamper.GetCurrent();
+            Voltage = voltage.GetValue();
         }
 
         /// <summary>
@@ -69,8 +77,7 @@ namespace NextGenSpice.LargeSignal.Models
         public override void OnDcBiasEstablished(ISimulationContext context)
         {
             base.OnDcBiasEstablished(context);
-            Current = stamper.GetCurrent();
-            Voltage = voltage.GetValue();
+            firtDcPoint = false;
             IntegrationMethod.SetState(Current, Voltage);
         }
     }

@@ -18,10 +18,6 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         void ApplyModelValues(ISimulationContext context);
 
-        /// <summary>Applies model values before first DC bias has been established for the first time.</summary>
-        /// <param name="context">Context of current simulation.</param>
-        void ApplyInitialCondition(ISimulationContext context);
-
         /// <summary>This method is called each time an equation is solved.</summary>
         /// <param name="context">Context of current simulation.</param>
         void OnEquationSolution(ISimulationContext context);

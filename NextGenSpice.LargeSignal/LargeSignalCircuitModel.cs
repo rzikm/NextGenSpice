@@ -34,8 +34,6 @@ namespace NextGenSpice.LargeSignal
             CircuitParameters = new CircuitParameters();
 
             deviceLookup = devices.Where(e => e.DefinitionDevice.Tag != null).ToDictionary(e => e.DefinitionDevice.Tag);
-            updaterInitCondition = e => e.ApplyInitialCondition(context);
-            updaterModelValues = e => e.ApplyModelValues(context);
         }
 
         /// <summary>Last computed node voltages.</summary>
@@ -62,12 +60,6 @@ namespace NextGenSpice.LargeSignal
         private readonly double?[] initialVoltages;
         private readonly List<IEquationSystemCoefficientProxy> initVoltProxies;
         private readonly ILargeSignalDevice[] devices;
-
-        // cached functors to prevent excessive allocations
-        private readonly Action<ILargeSignalDevice> updaterInitCondition;
-        private readonly Action<ILargeSignalDevice> updaterModelValues;
-
-        // iteration dependent variables
 
         /// <summary>
         ///     Minimum absolute difference between two consecutive Newton-Raphson iterations before stable solution is
@@ -101,7 +93,7 @@ namespace NextGenSpice.LargeSignal
             {
                 context.TimePoint = context.TimePoint + timestep;
                 context.TimeStep = timestep;
-                EstablishDcBias_Internal(updaterModelValues);
+                EstablishDcBias_Internal();
                 OnDcBiasEstablished();
                 timestep -= timestep;
             }
@@ -123,11 +115,11 @@ namespace NextGenSpice.LargeSignal
                 }
             }
 
-            if (!EstablishDcBias_Internal(updaterInitCondition))
+            if (!EstablishDcBias_Internal())
                 throw new NonConvergenceException();
 
             // rerun without initial voltages
-            if (!initCond && !EstablishDcBias_Internal(updaterInitCondition))
+            if (!initCond && !EstablishDcBias_Internal())
                 throw new NonConvergenceException();
 
             OnDcBiasEstablished();
@@ -136,7 +128,7 @@ namespace NextGenSpice.LargeSignal
         private void EnsureInitialized()
         {
             if (context != null) return;
-            context = new SimulationContext(NodeCount, CircuitParameters);
+            context = new SimulationContext(CircuitParameters);
 
             // build equation system
             equationSystemAdapter = new EquationSystemAdapter(NodeCount);
@@ -165,17 +157,14 @@ namespace NextGenSpice.LargeSignal
             // allocate temporary arrays
             currentSolution = new double[equationSystemAdapter.VariableCount];
             previousSolution = new double[equationSystemAdapter.VariableCount];
-//            equationSystemAdapter.system.Solution[2] += 0.79;
-//            equationSystemAdapter.system.Solution[1] += 2.89;
-//            equationSystemAdapter.system.Solution[3] += 5;
         }
 
-        private bool EstablishDcBias_Internal(Action<ILargeSignalDevice> updater)
+        private bool EstablishDcBias_Internal()
         {
             LastNonLinearIterationCount = 0;
             LastNonLinearIterationDelta = 0;
 
-            UpdateEquationSystem(updater, devices);
+            UpdateEquationSystem();
             SolveAndUpdateVoltages();
 
             double delta;
@@ -184,7 +173,7 @@ namespace NextGenSpice.LargeSignal
             {
                 delta = 0;
 
-                UpdateEquationSystem(updater, devices);
+                UpdateEquationSystem();
                 SolveAndUpdateVoltages();
 
                 for (var i = 0; i < previousSolution.Length; i++)
@@ -228,17 +217,19 @@ namespace NextGenSpice.LargeSignal
             }
         }
 
-        private void UpdateEquationSystem(Action<ILargeSignalDevice> updater,
-            ILargeSignalDevice[] elem)
+        private void UpdateEquationSystem()
         {
             equationSystemAdapter.Clear();
-            for (var i = 0; i < elem.Length; i++)
-                updater(elem[i]);
+
+            for (int i = 0; i < devices.Length; i++)
+            {
+                devices[i].ApplyModelValues(context);
+            }
         }
 
         private class SimulationContext : ISimulationContext
         {
-            public SimulationContext(int nodeCount, CircuitParameters parameters)
+            public SimulationContext(CircuitParameters parameters)
             {
                 CircuitParameters = parameters;
             }

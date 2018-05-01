@@ -90,16 +90,6 @@ namespace NextGenSpice.LargeSignal.Models
                 model.ApplyModelValues(context);
         }
 
-        /// <summary>Applies model values before first DC bias has been established for the first time.</summary>
-        /// <param name="context">Context of current simulation.</param>
-        public override void ApplyInitialCondition(ISimulationContext context)
-        {
-            subContext.TrueContext = context;
-
-            foreach (var model in devices)
-                model.ApplyInitialCondition(context);
-        }
-
         /// <summary>Equation adapter with redirection layer for using inside subcircuit model.</summary>
         private class RedirectingEquationEditor : RedirectorBase, IEquationSystemAdapter
         {
