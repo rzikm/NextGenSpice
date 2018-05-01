@@ -69,12 +69,12 @@ namespace NextGenSpice.LargeSignal.Devices
         ///     For example "I" for the current flowing throught the two terminal device.
         /// </summary>
         /// <returns>IPrintValueProvider for specified attribute.</returns>
-        public override IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders()
+        public override IEnumerable<IDeviceStateProvider> GetDeviceStateProviders()
         {
             return new[]
             {
-                new SimpleDeviceStatsProvider("I", () => Current),
-                new SimpleDeviceStatsProvider("V", () => Voltage)
+                new SimpleDeviceStateProvider("I", () => Current),
+                new SimpleDeviceStateProvider("V", () => Voltage)
             };
         }
 

@@ -16,6 +16,6 @@ namespace NextGenSpice.Core.Representation
 
         /// <summary>Gets stats provider instances for this device.</summary>
         /// <returns>IPrintValueProviders for specified attribute.</returns>
-        IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders();
+        IEnumerable<IDeviceStateProvider> GetDeviceStateProviders();
     }
 }

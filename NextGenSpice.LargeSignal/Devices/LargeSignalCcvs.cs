@@ -1,4 +1,5 @@
 ﻿using NextGenSpice.Core.Devices;
+using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Devices

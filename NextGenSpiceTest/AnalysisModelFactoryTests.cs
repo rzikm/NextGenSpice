@@ -70,9 +70,9 @@ namespace NextGenSpice.Test
 
             /// <summary>Gets stats provider instances for this device.</summary>
             /// <returns>IPrintValueProviders for specified attribute.</returns>
-            public IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders()
+            public IEnumerable<IDeviceStateProvider> GetDeviceStateProviders()
             {
-                return new List<IDeviceStatsProvider>();
+                return new List<IDeviceStateProvider>();
             }
         }
 

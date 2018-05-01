@@ -65,8 +65,8 @@ namespace NextGenSpice.Simulation
 
             foreach (var device in model.Devices)
             {
-                printers.AddRange(device.GetDeviceStatsProviders()
-                    .Select(pr => new DevicePrintStatement(pr.StatName, device.DefinitionDevice.Tag as string, new Token())));
+                printers.AddRange(device.GetDeviceStateProviders()
+                    .Select(pr => new DevicePrintStatement(pr.Name, device.DefinitionDevice.Tag as string, new Token())));
             }
         }
 

@@ -1,6 +1,6 @@
 ﻿using NextGenSpice.Numerics.Equations;
 
-namespace NextGenSpice.LargeSignal.Devices
+namespace NextGenSpice.LargeSignal.Stamping
 {
     /// <summary>Helper class for stamping current controlled voltage source devices onto the equation system.</summary>
     public class CcvsStamper

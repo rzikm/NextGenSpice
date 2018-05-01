@@ -159,18 +159,18 @@ namespace NextGenSpice.LargeSignal.Devices
         ///     For example "I" for the current flowing throught the two terminal device.
         /// </summary>
         /// <returns>IPrintValueProvider for specified attribute.</returns>
-        public override IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders()
+        public override IEnumerable<IDeviceStateProvider> GetDeviceStateProviders()
         {
             return new[]
             {
-                new SimpleDeviceStatsProvider("IB", () => CurrentBase),
-                new SimpleDeviceStatsProvider("IC", () => CurrentCollector),
-                new SimpleDeviceStatsProvider("IE", () => CurrentEmitter),
-                new SimpleDeviceStatsProvider("IBE", () => CurrentBaseEmitter),
-                new SimpleDeviceStatsProvider("IBC", () => CurrentBaseCollector),
-                new SimpleDeviceStatsProvider("VBE", () => VoltageBaseEmitter),
-                new SimpleDeviceStatsProvider("VBC", () => VoltageBaseCollector),
-                new SimpleDeviceStatsProvider("VCE", () => VoltageCollectorEmitter)
+                new SimpleDeviceStateProvider("IB", () => CurrentBase),
+                new SimpleDeviceStateProvider("IC", () => CurrentCollector),
+                new SimpleDeviceStateProvider("IE", () => CurrentEmitter),
+                new SimpleDeviceStateProvider("IBE", () => CurrentBaseEmitter),
+                new SimpleDeviceStateProvider("IBC", () => CurrentBaseCollector),
+                new SimpleDeviceStateProvider("VBE", () => VoltageBaseEmitter),
+                new SimpleDeviceStateProvider("VBC", () => VoltageBaseCollector),
+                new SimpleDeviceStateProvider("VCE", () => VoltageCollectorEmitter)
             };
         }
 

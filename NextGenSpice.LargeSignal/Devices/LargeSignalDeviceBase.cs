@@ -56,6 +56,6 @@ namespace NextGenSpice.LargeSignal.Devices
         ///     For example "I" for the current flowing throught the two terminal device.
         /// </summary>
         /// <returns>IPrintValueProvider for specified attribute.</returns>
-        public abstract IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders();
+        public abstract IEnumerable<IDeviceStateProvider> GetDeviceStateProviders();
     }
 }

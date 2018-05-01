@@ -50,9 +50,9 @@ namespace NextGenSpice.LargeSignal.Devices
         ///     For example "I" for the current flowing throught the two terminal device.
         /// </summary>
         /// <returns>IPrintValueProvider for specified attribute.</returns>
-        public override IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders()
+        public override IEnumerable<IDeviceStateProvider> GetDeviceStateProviders()
         {
-            return Enumerable.Empty<IDeviceStatsProvider>(); // no stats for subcircuit
+            return Enumerable.Empty<IDeviceStateProvider>(); // no stats for subcircuit
         }
 
 

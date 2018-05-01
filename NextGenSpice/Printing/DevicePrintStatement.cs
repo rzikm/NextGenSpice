@@ -14,7 +14,7 @@ namespace NextGenSpice.Printing
         private readonly string name;
         private readonly string stat;
         private readonly Token t;
-        private IDeviceStatsProvider provider;
+        private IDeviceStateProvider provider;
 
         public DevicePrintStatement(string stat, string name, Token t)
         {
@@ -39,7 +39,7 @@ namespace NextGenSpice.Printing
         public override IEnumerable<SpiceParserError> Initialize(LargeSignalCircuitModel circuitModel)
         {
             var model = circuitModel.FindDevice(name);
-            provider = model.GetDeviceStatsProviders().SingleOrDefault(pr => pr.StatName == stat);
+            provider = model.GetDeviceStateProviders().SingleOrDefault(pr => pr.Name == stat);
             var errorInfos = provider == null
                 ? new[]
                 {

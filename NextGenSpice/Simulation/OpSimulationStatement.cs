@@ -42,11 +42,11 @@ namespace NextGenSpice.Simulation
 
                 foreach (var device in model.Devices)
                 {
-                    var providers = device.GetDeviceStatsProviders();
+                    var providers = device.GetDeviceStateProviders();
                     if (providers.Any()) output.WriteLine(); // separate from previous data
                     foreach (var provider in providers)
                     {
-                        output.WriteLine($"{provider.StatName}({device.DefinitionDevice.Tag}) = {provider.GetValue()}");
+                        output.WriteLine($"{provider.Name}({device.DefinitionDevice.Tag}) = {provider.GetValue()}");
                     }
                 }
             }
