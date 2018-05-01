@@ -43,6 +43,11 @@ namespace NextGenSpice.Test
             {
                 throw new NotImplementedException();
             }
+
+            public ITestDeviceModel FindDevice(ICircuitDefinitionDevice device)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         private class TestDeviceDefinition : TwoTerminalCircuitDevice

@@ -58,6 +58,7 @@ namespace NextGenSpice.LargeSignal.Devices
                 a = a * a * a;
                 current = -saturationCurrent * (1 + a);
                 conductance = +saturationCurrent * 3 * a / voltage;
+                return;
             }
 
             var e = Math.Exp(voltage / thermalVoltage);

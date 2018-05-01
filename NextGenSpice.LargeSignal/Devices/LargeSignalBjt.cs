@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using NextGenSpice.Core;
+﻿using NextGenSpice.Core;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
+using System;
+using System.Collections.Generic;
 
 namespace NextGenSpice.LargeSignal.Devices
 {
     /// <summary>Large signal model for <see cref="BjtDevice" /> device.</summary>
-    internal class LargeSignalBjt : LargeSignalDeviceBase<BjtDevice>
+    public class LargeSignalBjt : LargeSignalDeviceBase<BjtDevice>
     {
         private double bF;
         private double bR;
@@ -26,8 +26,10 @@ namespace NextGenSpice.LargeSignal.Devices
         private double nF;
         private double nR;
 
+        private double gmin;
+
         private double polarity; // PNP vs NPN
-        private readonly BjtStamper stamper;
+        private readonly BjtTransistorStamper stamper;
 
         private double vAf;
         private double vAr;
@@ -38,7 +40,7 @@ namespace NextGenSpice.LargeSignal.Devices
 
         public LargeSignalBjt(BjtDevice definitionDevice) : base(definitionDevice)
         {
-            stamper = new BjtStamper();
+            stamper = new BjtTransistorStamper();
             vbe = new VoltageProxy();
             vbc = new VoltageProxy();
         }
@@ -106,6 +108,8 @@ namespace NextGenSpice.LargeSignal.Devices
             iKf = Parameters.ForwardCurrentCorner;
             iKr = Parameters.ReverseCurrentCorner;
 
+            gmin = 1e-12;
+
             polarity = Parameters.IsPnp ? 1 : -1;
         }
 
@@ -132,19 +136,23 @@ namespace NextGenSpice.LargeSignal.Devices
         {
             // calculate values according to Gummel-Poon model
 
+
+
             var Ube = vbe.GetValue() * polarity;
             var Ubc = vbc.GetValue() * polarity;
             var Uce = Ube - Ubc;
 
-            var (gBE, gBC, gitr, gitf, iT) = CalculateModelValues();
+            //            var  (gpi, gmu, gmf, gmr, iT) = CalculateModelValues();
+            var (gpi, gmu, gm, go, iT) = CalculateModelValues();
 
-            var ieqB = CurrentBaseEmitter - Ube * gBE;
-            var ieqC = CurrentBaseCollector - Ubc * gBC;
-            var ieqE = iT - Ube * gitf + Uce * gitr;
+            var ieqB = CurrentBaseEmitter - Ube * gpi;
+            var ieqC = CurrentBaseCollector - Ubc * gmu;
+            var ieqE = iT - Ube * gm - Uce * go;
 
             CurrentBase = CurrentBaseEmitter + CurrentBaseCollector;
 
-            stamper.Stamp(gBE, gBC, gitr, gitf, (-ieqB - ieqC) * polarity, (ieqC - ieqE) * polarity,
+            stamper.Stamp(gpi, gmu, gm, go, (-ieqB - ieqC) * polarity, (ieqC - ieqE) * polarity,
+                //            stamper.Stamp(gpi, gmu, gmf, gmr, (-ieqB - ieqC) * polarity, (ieqC - ieqE) * polarity,
                 (ieqB + ieqE) * polarity);
         }
 
@@ -182,12 +190,10 @@ namespace NextGenSpice.LargeSignal.Devices
             var UbeCrit = DeviceHelpers.PnCriticalVoltage(iS, nF * vT);
             var UbcCrit = DeviceHelpers.PnCriticalVoltage(iS, nR * vT);
 
-            var Ube = vbe.GetValue() * polarity;
-            var Ubc = vbc.GetValue() * polarity;
+            var Ube = vbe.GetValue();
+            var Ubc = vbc.GetValue();
 
-            //            VoltageBaseEmitter = Ube = pnVoltage(Ube, Ube, nF * vT, UbeCrit);
             VoltageBaseEmitter = Ube = DeviceHelpers.PnLimitVoltage(Ube, VoltageBaseEmitter, nF * vT, UbeCrit);
-            //            VoltageBaseCollector = Ubc = pnVoltage(Ubc, Ubc, nR * vT, UbcCrit);
             VoltageBaseCollector = Ubc = DeviceHelpers.PnLimitVoltage(Ubc, VoltageBaseCollector, nR * vT, UbcCrit);
 
             double iF, gif;
@@ -225,17 +231,21 @@ namespace NextGenSpice.LargeSignal.Devices
 
             var iT = (iF - iR) / qB;
 
-            var gitf = (gif - iT * dQdbUbe) / qB;
-            var gitr = (gir - iT * dQbdUbc) / qB;
+            var gmf = (gif - iT * dQdbUbe) / qB;
+            var gmr = (gir - iT * dQbdUbc) / qB;
 
-            var go = -gitr;
-            var gm = gitf - go;
+            var go = -gmr;
+            var gm = gmf + gmr;
+
+            var gpi = gBE + gmin;
+            var gmu = gBC + gmin;
 
             // calculate terminal currents
             CurrentCollector = iT - 1 / bR * iR;
             CurrentEmitter = -iT - 1 / bF * iF;
 
-            return (gBE, gBC, gitr, gitf, iT);
+            //            return (gpi, gmu, gmf, gmr, iT);
+            return (gpi, gmu, gm, go, iT);
         }
     }
 }

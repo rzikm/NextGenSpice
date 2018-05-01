@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NextGenSpice.Core.Devices;
 
 namespace NextGenSpice.Core.Representation
 {
@@ -13,5 +14,11 @@ namespace NextGenSpice.Core.Representation
         /// <param name="tag">The tag of the queried device.</param>
         /// <returns></returns>
         TDevice FindDevice(object tag);
+
+
+        /// <summary>Returns device implementation for corresponding circuit definition device.</summary>
+        /// <param name="device">The tag of the queried device.</param>
+        /// <returns></returns>
+        TDevice FindDevice(ICircuitDefinitionDevice device);
     }
 }

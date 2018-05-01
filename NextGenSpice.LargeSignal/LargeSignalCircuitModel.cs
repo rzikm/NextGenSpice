@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NextGenSpice.Core.Circuit;
+using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Devices;
@@ -33,7 +34,8 @@ namespace NextGenSpice.LargeSignal
             initVoltProxies = new List<IEquationSystemCoefficientProxy>();
             CircuitParameters = new CircuitParameters();
 
-            deviceLookup = devices.Where(e => e.DefinitionDevice.Tag != null).ToDictionary(e => e.DefinitionDevice.Tag);
+            deviceTagLookup = devices.Where(e => e.DefinitionDevice.Tag != null).ToDictionary(e => e.DefinitionDevice.Tag);
+            deviceLookup = devices.ToDictionary(e => e.DefinitionDevice);
         }
 
         /// <summary>Last computed node voltages.</summary>
@@ -52,11 +54,21 @@ namespace NextGenSpice.LargeSignal
         /// <returns></returns>
         public ILargeSignalDevice FindDevice(object tag)
         {
-            deviceLookup.TryGetValue(tag, out var ret);
+            deviceTagLookup.TryGetValue(tag, out var ret);
             return ret;
         }
 
-        private readonly Dictionary<object, ILargeSignalDevice> deviceLookup;
+        /// <summary>Returns device implementation for corresponding circuit definition device.</summary>
+        /// <param name="device">The tag of the queried device.</param>
+        /// <returns></returns>
+        public ILargeSignalDevice FindDevice(ICircuitDefinitionDevice device)
+        {
+            deviceLookup.TryGetValue(device, out var ret);
+            return ret;
+        }
+
+        private readonly Dictionary<object, ILargeSignalDevice> deviceTagLookup;
+        private readonly Dictionary<ICircuitDefinitionDevice, ILargeSignalDevice> deviceLookup;
         private readonly double?[] initialVoltages;
         private readonly List<IEquationSystemCoefficientProxy> initVoltProxies;
         private readonly ILargeSignalDevice[] devices;

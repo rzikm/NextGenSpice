@@ -212,20 +212,28 @@ namespace SandboxRunner
                 .AddVoltageSource(1, 0, 12, "VS")
                 .AddResistor(0, 2, 10)
                 .AddResistor(1, 2, 10)
-                .AddResistor(2, 3, 5, "R1")
-                .AddResistor(1, 3, 5);
+                .AddResistor(2, 3, 5)
+                .AddResistor(1, 3, 5, "R1");
             var circuit = builder.BuildCircuit();
 
             var model = circuit.GetLargeSignalModel();
-
-
+            
             var vsouce = (ITwoTerminalLargeSignalDevice)model.FindDevice("VS");
             var res = (ResistorDevice)circuit.FindDevice("R1");
-            for (int i = 0; i < 15; i++)
+            // sweep for values from 1 Ohm to 15 Ohm
+            for (int i = 1; i <= 15; i++)
             {
-                res.Resistance = i+1;
+                res.Resistance = i+1; // set resistance
+
+                // calculate
                 model.EstablishDcBias();
-                Console.WriteLine($"{i+1}Ohm: {model.NodeVoltages[1]}V {model.NodeVoltages[2]}V {model.NodeVoltages[3]}V {vsouce.Current}A");
+                var v1 = model.NodeVoltages[1];
+                var v2 = model.NodeVoltages[2];
+                var v3 = model.NodeVoltages[3];
+                var iV = vsouce.Current;
+
+                // print values
+                Console.WriteLine($"{i+1}Ohm: {v1}V {v2}V {v3}V {iV}A");
             }
         }
     }

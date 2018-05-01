@@ -4,6 +4,7 @@ using System.Linq;
 
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Devices.Parameters;
+using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal;
 using NextGenSpice.LargeSignal.Devices;
 using NextGenSpice.LargeSignal.Stamping;
@@ -87,15 +88,23 @@ namespace SandboxRunner
         }
 
 
-        public static void RegisteringTheHandler()
+        public static void UsingTheDiode()
         {
             var parser =  SpiceNetlistParser.WithDefaults();
             parser.RegisterDevice(new ShockleyDiodeStatementProcessor());
 
             // ...
+
+            // requires NextGenSpice.Core.Representation
+            var factory = AnalysisModelCreator.Instance.GetFactory<LargeSignalCircuitModel>();
+            factory.SetModel<ShockleyDiode, LargeSignalShockleyDiode>(
+                e => new LargeSignalShockleyDiode(e));
+
+
         }
 
-        // requires NextGenSpice.Numerics.Equations namespace
+        // requires NextGenSpice.Numerics.Equations and
+        // NextGenSpice.LargeSignal.Devices namespaces
         public class LargeSignalShockleyDiode : TwoTerminalLargeSignalDevice<ShockleyDiode>
         {
             // classes encapsulating the work with equation system coefficient proxies
@@ -130,6 +139,7 @@ namespace SandboxRunner
                 var Vd = voltage.GetValue();
                 // calculates current through the diode and it's derivative
                 DeviceHelpers.PnJunction(Is, Vd, Vt * n, out var Id, out var Geq);
+                Current = Id; 
 
                 // stamp the equivalent circuit
                 var Ieq = Id - Geq * Vd;
@@ -137,12 +147,11 @@ namespace SandboxRunner
                 currentStamper.Stamp(Ieq);
             }
 
-            /// <summary>This method is called each time an equation is solved.</summary>
-            /// <param name="context">Context of current simulation.</param>
             public override void OnEquationSolution(ISimulationContext context)
-            {
-                
+            {   // read voltage across the diode
+                Current = voltage.GetValue();
             }
         }
+
     }
 }
