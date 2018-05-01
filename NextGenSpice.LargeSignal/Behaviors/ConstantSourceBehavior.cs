@@ -14,9 +14,6 @@ namespace NextGenSpice.LargeSignal.Behaviors
         {
         }
 
-        /// <summary>Specifies how often the model should be updated.</summary>
-        public override ModelUpdateMode UpdateMode => ModelUpdateMode.NoUpdate;
-
         /// <summary>Gets input source value for given timepoint.</summary>
         /// <param name="context"></param>
         /// <returns></returns>

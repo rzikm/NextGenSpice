@@ -24,17 +24,6 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void OnEquationSolution(ISimulationContext context)
         {
-            
-        }
-
-        /// <summary>
-        ///     Notifies model class that DC bias for given timepoint is established (i.e after Newton-Raphson iterations
-        ///     converged).
-        /// </summary>
-        /// <param name="context">Context of current simulation.</param>
-        public override void OnDcBiasEstablished(ISimulationContext context)
-        {
-            base.OnDcBiasEstablished(context);
             Current = stamper.GetCurrent();
         }
 

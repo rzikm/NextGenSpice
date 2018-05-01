@@ -23,9 +23,6 @@ namespace NextGenSpice.LargeSignal.Behaviors
             values = timepoints.Select(i => parameters.DefinitionPoints[i]).ToList();
         }
 
-        /// <summary>Specifies how often the model should be updated.</summary>
-        public override ModelUpdateMode UpdateMode => ModelUpdateMode.TimePoint;
-
         /// <summary>Gets input source value for given timepoint.</summary>
         /// <param name="context"></param>
         /// <returns></returns>

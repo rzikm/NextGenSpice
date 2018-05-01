@@ -40,8 +40,10 @@ namespace NextGenSpice.LargeSignal.Models
             voltage.Register(adapter, Anode, Cathode);
         }
 
+        /// <summary>Voltage across this device, difference of potential between positive and negative terminals.</summary>
         public double Voltage { get; private set; }
 
+        /// <summary>Current flowing from positive terminal to negative terminal through the device.</summary>
         public double Current { get; private set; }
 
         /// <summary>
@@ -72,17 +74,6 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void OnEquationSolution(ISimulationContext context)
         {
-            
-        }
-
-        /// <summary>
-        ///     Notifies model class that DC bias for given timepoint is established (i.e after Newton-Raphson iterations
-        ///     converged).
-        /// </summary>
-        /// <param name="context">Context of current simulation.</param>
-        public override void OnDcBiasEstablished(ISimulationContext context)
-        {
-            base.OnDcBiasEstablished(context);
             Voltage = voltage.GetValue();
             Current = stamper.GetCurrent();
         }

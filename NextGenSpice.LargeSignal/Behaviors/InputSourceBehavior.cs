@@ -23,8 +23,5 @@ namespace NextGenSpice.LargeSignal.Behaviors
         /// <param name="context"></param>
         /// <returns></returns>
         public abstract double GetValue(ISimulationContext context);
-
-        /// <summary>Specifies how often the model should be updated.</summary>
-        public abstract ModelUpdateMode UpdateMode { get; }
     }
 }
