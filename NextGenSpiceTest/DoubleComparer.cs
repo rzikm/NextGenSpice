@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NextGenSpice.Test
 {
-    internal class DoubleComparer : IEqualityComparer<double>
+    public class DoubleComparer : IEqualityComparer<double>
     {
         private readonly double epsilon;
 

@@ -164,7 +164,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <returns></returns>
         protected double GetValue(int index)
         {
-            if (index < 0 || index >= RawStatement.Length) return double.NaN;
+            if (index < 0 || index >= RawStatement.Length) throw new IndexOutOfRangeException();
             return GetValue(RawStatement[index]);
         }
 

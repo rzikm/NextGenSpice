@@ -20,7 +20,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             var name = DeviceName;
             var nodes = GetNodeIndices(1, 2);
             var vsource = RawStatement[3];
-            var gain = GetValue(5);
+            var gain = GetValue(4);
 
             if (Errors == 0)
                 Context.DeferredStatements.Add(new VoltageSourceDependentDeferredStatement(Context.CurrentScope, vsource, (builder, vs) =>

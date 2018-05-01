@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using NextGenSpice.Core.Devices;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace NextGenSpice.Parser.Test
@@ -21,6 +22,11 @@ R1 1 0 5
 R2 1 2 5;
 R3 3 0 5
 ");
+            Assert.Empty(result.Errors);
+
+            var f1 = (CurrentControlledCurrentSourceDevice) result.CircuitDefinition.FindDevice("F1");
+
+            Assert.Equal(1, f1.Gain);
         }
 
         [Fact]
@@ -37,6 +43,10 @@ R3 3 0 5
 ");
 
             Assert.Empty(result.Errors);
+
+            var f1 = (CurrentControlledVoltageSourceDevice)result.CircuitDefinition.FindDevice("H1");
+
+            Assert.Equal(1, f1.Gain); ;
         }
 
         [Fact]
