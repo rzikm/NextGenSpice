@@ -45,8 +45,6 @@ namespace NextGenSpice.Parser
         public ParsingContext()
         {
             allScopes = new List<ParsingScope>();
-            OtherStatements = new List<SpiceStatement>();
-
             stack = new Stack<ParsingScope>();
             stack.Push(new ParsingScope(null));
             allScopes.Add(CurrentScope);
@@ -64,10 +62,7 @@ namespace NextGenSpice.Parser
         public List<DeferredStatement> DeferredStatements => CurrentScope.Statements;
 
         /// <summary>Statements that are recognized, but otherwise unused.</summary>
-        public List<SpiceStatement> OtherStatements { get; }
-
-        /// <summary>Builder responsible for creating the circuit definition from the statements.</summary>
-        //        public CircuitBuilder CircuitBuilder => CurrentScope.CircuitBulder;
+        public List<SpiceStatement> OtherStatements => CurrentScope.OtherStatements;
 
         /// <summary>Temporarily suspends parsing of current circuit and creates new frame to parse a subcircuit.</summary>
         public void EnterSubcircuit(Token[] stmt)

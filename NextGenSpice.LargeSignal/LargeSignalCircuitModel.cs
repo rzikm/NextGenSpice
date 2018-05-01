@@ -217,14 +217,15 @@ namespace NextGenSpice.LargeSignal
             previousSolution = tmp;
             equationSystemAdapter.Solve(currentSolution);
 
+            for (int i = 0; i < devices.Length; i++)
+            {
+                devices[i].OnEquationSolution(context);
+            }
+
             for (var i = 0; i < NodeCount; i++)
             {
                 NodeVoltages[i] = currentSolution[i];
-//                Console.WriteLine(NodeVoltages[i]);
-                
             }
-
-//            Console.WriteLine();
         }
 
         private void UpdateEquationSystem(Action<ILargeSignalDevice> updater,

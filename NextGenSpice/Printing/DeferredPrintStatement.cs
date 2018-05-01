@@ -61,14 +61,14 @@ namespace NextGenSpice.Printing
                     token.LineColumn++;
                     if (!context.SymbolTable.TryGetNodeIndex(n1, out var i1))
                     {
-                        errors.Add(token.ToError(Parser.SpiceParserErrorCode.NotANode, n1));
+                        errors.Add(token.ToError(SpiceParserErrorCode.NotANode, n1));
                         success = false;
                     }
 
                     token.LineColumn += n1.Length + 1;
                     if (!context.SymbolTable.TryGetNodeIndex(n2, out var i2))
                     {
-                        errors.Add(token.ToError(Parser.SpiceParserErrorCode.NotANode, n2));
+                        errors.Add(token.ToError(SpiceParserErrorCode.NotANode, n2));
                         success = false;
                     }
 
@@ -77,7 +77,7 @@ namespace NextGenSpice.Printing
                 }
                 else
                 {
-                    errors.Add(token.ToError(Parser.SpiceParserErrorCode.NotANodeOrDevice));
+                    errors.Add(token.ToError(SpiceParserErrorCode.NotANodeOrDevice));
                 }
             }
             else // only circuit devices with stat other than "V"
@@ -85,7 +85,7 @@ namespace NextGenSpice.Printing
                 if (device != null)
                     printStatement = new DevicePrintStatement(stat, name, token);
                 else
-                    errors.Add(token.ToError(Parser.SpiceParserErrorCode.NotAnDevice));
+                    errors.Add(token.ToError(SpiceParserErrorCode.NotAnDevice));
             }
 
             return printStatement != null;

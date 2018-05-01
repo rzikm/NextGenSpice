@@ -11,10 +11,13 @@ namespace NextGenSpice.LargeSignal.Models
         private readonly CapacitorStamper stamper;
         private readonly VoltageProxy voltage;
 
+        private bool firtDcPoint;
+
         public LargeSignalCapacitor(CapacitorDevice definitionDevice) : base(definitionDevice)
         {
             voltage = new VoltageProxy();
             stamper = new CapacitorStamper();
+
         }
 
         /// <summary>Integration method used for modifying inner state of the device.</summary>
@@ -27,7 +30,7 @@ namespace NextGenSpice.LargeSignal.Models
         {
             stamper.Register(adapter, Anode, Cathode);
             voltage.Register(adapter, Anode, Cathode);
-
+            firtDcPoint = true;
             IntegrationMethod = context.CircuitParameters.IntegrationMethodFactory.CreateInstance();
         }
 

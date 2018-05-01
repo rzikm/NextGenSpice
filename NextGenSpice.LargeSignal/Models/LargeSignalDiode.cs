@@ -20,7 +20,6 @@ namespace NextGenSpice.LargeSignal.Models
 
         // flags if initial condition for given subdevice should be applied
         private bool initialConditionCapacitor;
-        private bool initialConditionDiode;
         private double smallBiasTreshold; // cached treshold for diode model characteristic
         private readonly DiodeStamper stamper;
 
@@ -54,7 +53,6 @@ namespace NextGenSpice.LargeSignal.Models
 
             gmin = Parameters.MinimalResistance ?? context.CircuitParameters.MinimalResistance;
             initialConditionCapacitor = true;
-            initialConditionDiode = true;
             IntegrationMethod = context.CircuitParameters.IntegrationMethodFactory.CreateInstance();
 
             Voltage = DefinitionDevice.VoltageHint;
@@ -78,31 +76,14 @@ namespace NextGenSpice.LargeSignal.Models
             ApplyLinearizedModel(context, vd);
         }
 
-        /// <summary>Applies model values before first DC bias has been established for the first time.</summary>
-        /// <param name="context">Context of current simulation.</param>
-        public override void ApplyInitialCondition(ISimulationContext context)
-        {
-            var vd = voltage.GetValue();
-            if (initialConditionDiode)
-            {
-                vd = DefinitionDevice.VoltageHint;
-                initialConditionDiode = false; // use hint only for the very first iteration
-            }
-
-            vd -= Parameters.SeriesResistance * Current;
-
-            ApplyLinearizedModel(context, vd);
-        }
-
         /// <summary>This method is called each time an equation is solved.</summary>
         /// <param name="context">Context of current simulation.</param>
         public override void OnEquationSolution(ISimulationContext context)
         {
-            throw new NotImplementedException();
+            Voltage = voltage.GetValue();
         }
 
         /// <summary>Applies linarized diode model to the equation system.</summary>
-        /// <param name="equations"></param>
         /// <param name="context"></param>
         /// <param name="vd"></param>
         private void ApplyLinearizedModel(ISimulationContext context, double vd)
