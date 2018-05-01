@@ -53,6 +53,9 @@ namespace NextGenSpice.Parser
 
             p.RegisterDevice(new VoltageControlledVoltageSourceStatementProcessor());
             p.RegisterDevice(new VoltageControlledCurrentSourceStatementProcessor());
+            p.RegisterDevice(new CurrentControlledVoltageSourceStatementProcessor());
+            p.RegisterDevice(new CurrentControlledCurrentSourceStatementProcessor());
+
 
             p.RegisterStatement(new SubcircuitStatementProcessor(), true, true);
             p.RegisterStatement(new SubcircuitEndStatementProcessor(), false, true);

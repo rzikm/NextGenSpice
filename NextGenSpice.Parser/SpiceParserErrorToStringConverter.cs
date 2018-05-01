@@ -111,6 +111,9 @@ namespace NextGenSpice.Parser
 
                 case SpiceParserErrorCode.UnexpectedEnds:
                     return $"Unexpected .ENDS statement for '{arg[0]}'";
+
+                case SpiceParserErrorCode.NotVoltageSource:
+                    return $"'{arg[0]} is not a Voltage source device.'";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(errorCode), errorCode, null);
             }

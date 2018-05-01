@@ -1,11 +1,10 @@
 ﻿using NextGenSpice.Core.Circuit;
-using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Extensions;
 using NextGenSpice.LargeSignal;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace NextGenSpiceTest
+namespace NextGenSpice.Test
 {
     public class SubcircuitTests : TracedTestBase
     {

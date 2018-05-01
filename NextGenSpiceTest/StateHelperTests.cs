@@ -1,7 +1,7 @@
 ﻿using NextGenSpice.Core.Helpers;
 using Xunit;
 
-namespace NextGenSpiceTest
+namespace NextGenSpice.Test
 {
     public class StateHelperTests
     {

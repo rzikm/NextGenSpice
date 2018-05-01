@@ -20,6 +20,8 @@ namespace NextGenSpice.LargeSignal.Models
         /// <summary>Strategy class specifying behavior of this source.</summary>
         private IInputSourceBehavior Behavior { get; }
 
+        /// <summary>Index of branch variable which holds current flowing through the voltage source.</summary>
+        public int BranchVariable => stamper.BranchVariable;
 
         /// <summary>Allows devices to register any additional variables.</summary>
         /// <param name="adapter">The equation system builder.</param>

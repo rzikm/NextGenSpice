@@ -2,7 +2,7 @@
 using NextGenSpice.Parser.Utils;
 using Xunit;
 
-namespace NextGenSpiceParserTest
+namespace NextGenSpice.Parser.Test
 {
     public class ParameterMapperTests
     {

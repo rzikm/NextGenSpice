@@ -3,9 +3,8 @@ using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.Core.Extensions;
 using NextGenSpice.Core.Representation;
-using NextGenSpice.LargeSignal;
 
-namespace NextGenSpiceTest
+namespace NextGenSpice.Test
 {
     public class CircuitGenerator
     {

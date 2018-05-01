@@ -7,7 +7,7 @@ using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Extensions;
 using Xunit;
 
-namespace NextGenSpiceTest
+namespace NextGenSpice.Test
 {
     public class CircuitBuilderTests
     {

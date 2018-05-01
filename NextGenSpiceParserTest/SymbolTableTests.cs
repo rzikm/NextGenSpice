@@ -1,8 +1,4 @@
-﻿using NextGenSpice.Core.Devices.Parameters;
-using NextGenSpice.Parser;
-using Xunit;
-
-namespace NextGenSpiceParserTest
+﻿namespace NextGenSpice.Parser.Test
 {
     public class SymbolTableTests
     {

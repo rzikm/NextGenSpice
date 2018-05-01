@@ -7,7 +7,7 @@ using NextGenSpice.LargeSignal;
 using NextGenSpice.LargeSignal.Models;
 using Xunit;
 
-namespace NextGenSpiceTest
+namespace NextGenSpice.Test
 {
     public class CircuitInstantiationTests
     {

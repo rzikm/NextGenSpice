@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NextGenSpiceTest
+namespace NextGenSpice.Test
 {
     internal class DoubleComparer : IEqualityComparer<double>
     {

@@ -20,6 +20,7 @@
     <ProjectReference Include="..\NextGenSpice.Core\NextGenSpice.Core.csproj" />
     <ProjectReference Include="..\NextGenSpice.LargeSignal\NextGenSpice.LargeSignal.csproj" />
     <ProjectReference Include="..\NextGenSpice.Numerics\NextGenSpice.Numerics.csproj" />
+    <ProjectReference Include="..\NextGenSpice.Parser\NextGenSpice.Parser.csproj" />
   </ItemGroup>
 
 </Project>

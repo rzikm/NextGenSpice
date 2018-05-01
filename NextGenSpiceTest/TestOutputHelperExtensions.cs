@@ -1,7 +1,7 @@
 ﻿using NextGenSpice.LargeSignal;
 using Xunit.Abstractions;
 
-namespace NextGenSpiceTest
+namespace NextGenSpice.Test
 {
     public static class TestOutputHelperExtensions
     {

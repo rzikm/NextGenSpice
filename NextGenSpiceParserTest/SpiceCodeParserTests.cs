@@ -2,11 +2,10 @@
 using System.Linq;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Devices.Parameters;
-using NextGenSpice.Parser;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace NextGenSpiceParserTest
+namespace NextGenSpice.Parser.Test
 {
     public class SpiceCodeParserTests : ParserTestBase
     {

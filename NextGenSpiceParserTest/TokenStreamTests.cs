@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NextGenSpice.Parser;
 using Xunit;
 
-namespace NextGenSpiceParserTest
+namespace NextGenSpice.Parser.Test
 {
     public class TokenStreamTests
     {

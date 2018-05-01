@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
+using NextGenSpice.Parser;
 using Xunit.Abstractions;
 
-namespace NextGenSpiceTest
+namespace NextGenSpice.Test
 {
     public class TracedTestBase : IDisposable
     {
@@ -14,7 +16,13 @@ namespace NextGenSpiceTest
         [ThreadStatic] protected static bool DoTrace;
 
         private static readonly MyTraceListener myTraceListener;
-
+        public SpiceNetlistParserResult Parse(string code)
+        {
+            SpiceNetlistParser parser = SpiceNetlistParser.WithDefaults();
+            var result = parser.Parse(new StringReader(code));
+            Output.WriteLine(string.Join("\n", result.Errors));
+            return result;
+        }
         static TracedTestBase()
         {
             myTraceListener = new MyTraceListener();

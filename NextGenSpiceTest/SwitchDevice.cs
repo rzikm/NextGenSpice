@@ -2,7 +2,7 @@
 using System.Linq;
 using NextGenSpice.Core.Devices;
 
-namespace NextGenSpiceTest
+namespace NextGenSpice.Test
 {
     public class SwitchDevice : TwoTerminalCircuitDevice
     {

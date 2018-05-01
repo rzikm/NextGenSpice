@@ -8,7 +8,7 @@ using NextGenSpice.LargeSignal;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace NextGenSpiceTest
+namespace NextGenSpice.Test
 {
     public class InputSourceBehaviorTests : TracedTestBase
     {

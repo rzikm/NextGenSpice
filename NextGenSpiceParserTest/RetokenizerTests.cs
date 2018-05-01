@@ -1,18 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NextGenSpice.Parser;
-using NextGenSpice.Parser.Utils;
 using Xunit;
 
-namespace NextGenSpiceParserTest
+namespace NextGenSpice.Parser.Test
 {
     public class RetokenizerTests
     {
         private IEnumerable<string> Retokenize(string line, int startPos = 0)
         {
             TokenStream stream = new TokenStream(new StringReader(line), 0);
-            return Parser.Retokenize(stream.ReadStatement().ToArray(), startPos).Select(c => c.Value);
+            return Utils.Parser.Retokenize(stream.ReadStatement().ToArray(), startPos).Select(c => c.Value);
         }
 
         [Fact]

@@ -4,15 +4,15 @@ using NextGenSpice.Parser.Statements.Deferring;
 namespace NextGenSpice.Parser.Statements.Devices
 {
     /// <summary>Class for processing voltage controlled voltage source SPICE statements.</summary>
-    public class VoltageControlledVoltageSourceStatementProcessor : DeviceStatementProcessor
+    public class VoltageControlledCurrentSourceStatementProcessor : DeviceStatementProcessor
     {
-        public VoltageControlledVoltageSourceStatementProcessor()
+        public VoltageControlledCurrentSourceStatementProcessor()
         {
             MinArgs = MaxArgs = 5;
         }
 
         /// <summary>Discriminator of the device type this processor can parse.</summary>
-        public override char Discriminator => 'E';
+        public override char Discriminator => 'G';
 
         /// <summary>Processes given set of statements.</summary>
         protected override void DoProcess()
@@ -25,7 +25,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                 Context.DeferredStatements.Add(new SimpleDeviceDeferredStatement(Context.CurrentScope, builder =>
                     builder.AddDevice(
                         nodes,
-                        new VoltageControlledVoltageSourceDevice(
+                        new VoltageControlledCurrentSourceDevice(
                             gain,
                             name
                         )

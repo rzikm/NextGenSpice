@@ -1,12 +1,11 @@
 ﻿using System.IO;
 using System.Linq;
 using NextGenSpice.LargeSignal;
-using NextGenSpice.Parser;
-using NextGenSpiceTest;
+using NextGenSpice.Test;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace NextGenSpiceParserTest
+namespace NextGenSpice.Parser.Test
 {
     public class SubcircuitTests : TracedTestBase
     {
@@ -14,13 +13,7 @@ namespace NextGenSpiceParserTest
         {
         }
 
-        public SpiceNetlistParserResult Parse(string code)
-        {
-            SpiceNetlistParser parser = SpiceNetlistParser.WithDefaults();
-            var result = parser.Parse(new StringReader(code));
-            Output.WriteLine(string.Join("\n", result.Errors));
-            return result;
-        }
+       
 
 
         [Fact]

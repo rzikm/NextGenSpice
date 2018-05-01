@@ -50,6 +50,7 @@
         NoSuchSubcircuit,
         InvalidTerminalCount,
 
-        UnexpectedEnds
+        UnexpectedEnds,
+        NotVoltageSource
     }
 }

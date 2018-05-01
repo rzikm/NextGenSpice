@@ -1,7 +1,7 @@
 ﻿using NextGenSpice.LargeSignal.NumIntegration;
 using Xunit;
 
-namespace NextGenSpiceTest
+namespace NextGenSpice.Test
 {
     public class MiscTests
     {

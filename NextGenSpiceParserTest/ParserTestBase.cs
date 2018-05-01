@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using NextGenSpice.Parser;
-using NextGenSpiceTest;
+using NextGenSpice.Test;
 using Xunit.Abstractions;
 
-namespace NextGenSpiceParserTest
+namespace NextGenSpice.Parser.Test
 {
     public class ParserTestBase : TracedTestBase
     {
