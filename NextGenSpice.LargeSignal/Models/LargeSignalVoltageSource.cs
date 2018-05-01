@@ -20,11 +20,13 @@ namespace NextGenSpice.LargeSignal.Models
         /// <summary>Strategy class specifying behavior of this source.</summary>
         private IInputSourceBehavior Behavior { get; }
 
-        /// <summary>This method is called each time an equation is solved.</summary>
-        /// <param name="context">Context of current simulation.</param>
-        public override void OnEquationSolution(ISimulationContext context)
+
+        /// <summary>Allows devices to register any additional variables.</summary>
+        /// <param name="adapter">The equation system builder.</param>
+        public override void RegisterAdditionalVariables(IEquationSystemAdapter adapter)
         {
-            Current = stamper.GetCurrent();
+            base.RegisterAdditionalVariables(adapter);
+            stamper.RegisterVariable(adapter);
         }
 
         /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
@@ -44,6 +46,13 @@ namespace NextGenSpice.LargeSignal.Models
         {
             Voltage = Behavior.GetValue(context);
             stamper.Stamp(Voltage);
+        }
+
+        /// <summary>This method is called each time an equation is solved.</summary>
+        /// <param name="context">Context of current simulation.</param>
+        public override void OnEquationSolution(ISimulationContext context)
+        {
+            Current = stamper.GetCurrent();
         }
     }
 }

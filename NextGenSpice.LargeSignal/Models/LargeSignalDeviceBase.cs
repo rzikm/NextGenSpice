@@ -20,6 +20,12 @@ namespace NextGenSpice.LargeSignal.Models
 
         ICircuitDefinitionDevice IAnalysisDeviceModel<LargeSignalCircuitModel>.DefinitionDevice => DefinitionDevice;
 
+        /// <summary>Allows devices to register any additional variables.</summary>
+        /// <param name="adapter">The equation system builder.</param>
+        public virtual void RegisterAdditionalVariables(IEquationSystemAdapter adapter)
+        {  // no registration default
+        }
+
         /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
         /// <param name="adapter">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>

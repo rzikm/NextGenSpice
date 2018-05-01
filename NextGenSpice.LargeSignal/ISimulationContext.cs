@@ -1,4 +1,7 @@
-﻿namespace NextGenSpice.LargeSignal
+﻿using System.Collections.Generic;
+using NextGenSpice.LargeSignal.Models;
+
+namespace NextGenSpice.LargeSignal
 {
     /// <summary>Defines properties for getting information about the simulation.</summary>
     public interface ISimulationContext

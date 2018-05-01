@@ -16,6 +16,15 @@ namespace NextGenSpice.LargeSignal.Stamping
 
         public int BranchVariable { get; private set; }
 
+        /// <summary>
+        /// Registers the branch variable for the voltage source device
+        /// </summary>
+        /// <param name="adapter"></param>
+        public void RegisterVariable(IEquationSystemAdapter adapter)
+        {
+            BranchVariable = adapter.AddVariable();
+        }
+
         /// <summary>Registeres the equation system coefficient proxies into the stamper.</summary>
         /// <param name="adapter">The equation system adapter.</param>
         /// <param name="anode">Index of anode terminal.</param>
@@ -24,7 +33,6 @@ namespace NextGenSpice.LargeSignal.Stamping
         /// <param name="rcathode">Index of reference cathode terminal.</param>
         public void Register(IEquationSystemAdapter adapter, int anode, int cathode, int ranode, int rcathode)
         {
-            BranchVariable = adapter.AddVariable();
             nab = adapter.GetMatrixCoefficientProxy(anode, BranchVariable);
             ncb = adapter.GetMatrixCoefficientProxy(cathode, BranchVariable);
             nba = adapter.GetMatrixCoefficientProxy(BranchVariable, anode);

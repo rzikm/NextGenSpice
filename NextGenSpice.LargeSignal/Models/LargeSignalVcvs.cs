@@ -31,6 +31,14 @@ namespace NextGenSpice.LargeSignal.Models
         /// <summary>Negative terminal of the reference voltage.</summary>
         public int ReferenceCathode => DefinitionDevice.ConnectedNodes[3];
 
+        /// <summary>Allows devices to register any additional variables.</summary>
+        /// <param name="adapter">The equation system builder.</param>
+        public override void RegisterAdditionalVariables(IEquationSystemAdapter adapter)
+        {
+            base.RegisterAdditionalVariables(adapter);
+            stamper.RegisterVariable(adapter);
+        }
+
         /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
         /// <param name="adapter">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>

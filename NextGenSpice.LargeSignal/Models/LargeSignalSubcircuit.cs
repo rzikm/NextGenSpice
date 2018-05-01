@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Representation;
@@ -11,7 +12,6 @@ namespace NextGenSpice.LargeSignal.Models
     {
         private readonly ILargeSignalDevice[] devices;
         private readonly int[] nodeMap;
-        private readonly RedirectingSimulationContext subContext;
 
         public LargeSignalSubcircuit(SubcircuitDevice definitionDevice,
             IEnumerable<ILargeSignalDevice> devices) :
@@ -20,8 +20,6 @@ namespace NextGenSpice.LargeSignal.Models
             this.devices = devices.ToArray();
 
             nodeMap = new int[definitionDevice.InnerNodeCount + 1];
-            ;
-            subContext = new RedirectingSimulationContext(nodeMap);
         }
 
         /// <summary>Set of classes that model this subcircuit.</summary>
@@ -31,7 +29,8 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void OnEquationSolution(ISimulationContext context)
         {
-            
+            foreach (var model in devices)
+                model.OnEquationSolution(context);
         }
 
         /// <summary>
@@ -42,7 +41,6 @@ namespace NextGenSpice.LargeSignal.Models
         public override void OnDcBiasEstablished(ISimulationContext context)
         {
             base.OnDcBiasEstablished(context);
-            subContext.TrueContext = context;
 
             foreach (var model in devices)
                 model.OnDcBiasEstablished(context);
@@ -56,6 +54,17 @@ namespace NextGenSpice.LargeSignal.Models
         public override IEnumerable<IDeviceStatsProvider> GetDeviceStatsProviders()
         {
             return Enumerable.Empty<IDeviceStatsProvider>(); // no stats for subcircuit
+        }
+
+
+        /// <summary>Allows devices to register any additional variables.</summary>
+        /// <param name="adapter">The equation system builder.</param>
+        public override void RegisterAdditionalVariables(IEquationSystemAdapter adapter)
+        {
+            base.RegisterAdditionalVariables(adapter);
+
+            foreach (var model in devices)
+                model.RegisterAdditionalVariables(adapter);
         }
 
         /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
@@ -84,8 +93,6 @@ namespace NextGenSpice.LargeSignal.Models
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(ISimulationContext context)
         {
-            subContext.TrueContext = context;
-
             foreach (var model in devices)
                 model.ApplyModelValues(context);
         }
@@ -134,29 +141,8 @@ namespace NextGenSpice.LargeSignal.Models
             }
         }
 
-        /// <summary>Simulation context with redirection layer to be used inside subcircuit model.</summary>
-        private class RedirectingSimulationContext : RedirectorBase, ISimulationContext
-        {
-            public RedirectingSimulationContext(int[] nodeMap) : base(nodeMap)
-            {
-            }
-
-
-            /// <summary>Decorated simulation context.</summary>
-            public ISimulationContext TrueContext { get; set; }
-
-            /// <summary>Curent timepoint of the simulation.</summary>
-            public double TimePoint => TrueContext.TimePoint;
-
-            /// <summary>Last timestep that was used to advance the timepoint.</summary>
-            public double TimeStep => TrueContext.TimeStep;
-
-            /// <summary>General parameters of the circuit that is simulated.</summary>
-            public CircuitParameters CircuitParameters => TrueContext.CircuitParameters;
-        }
-
         /// <summary>
-        ///     Base class for <see cref="RedirectingEquationEditor" /> and <see cref="RedirectingSimulationContext" />
+        ///     Base class for <see cref="RedirectingEquationEditor"/>
         ///     implementing calculation of redirected index.
         /// </summary>
         private class RedirectorBase

@@ -134,6 +134,9 @@ namespace NextGenSpice.LargeSignal
             equationSystemAdapter = new EquationSystemAdapter(NodeCount);
 
             foreach (var device in Devices)
+                device.RegisterAdditionalVariables(equationSystemAdapter);
+
+            foreach (var device in Devices)
                 device.Initialize(equationSystemAdapter, context);
 
             // get proxies for initial conditions

@@ -89,7 +89,7 @@ namespace NextGenSpice.Core.Circuit
         public CircuitDefinition BuildCircuit()
         {
             if (!ValidateCircuit()) throw circuitException;
-            return new CircuitDefinition(nodes.ToArray(), devices.Select(e => e.Clone()).ToArray());
+            return new CircuitDefinition(nodes.ToArray(), devices.ToArray());
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace NextGenSpice.Core.Circuit
             if (circuitException != null) throw circuitException;
 
             // subtract ground node from total node count
-            return new SubcircuitDefinition(NodeCount - 1, terminals, devices.Select(e => e.Clone()), tag);
+            return new SubcircuitDefinition(NodeCount - 1, terminals, devices.ToArray(), tag);
         }
 
         /// <summary>
