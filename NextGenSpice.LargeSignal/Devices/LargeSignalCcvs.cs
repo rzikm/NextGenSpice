@@ -4,14 +4,14 @@ using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Devices
 {
-    /// <summary>Large signal model for <see cref="CurrentControlledVoltageSourceDevice" /> device.</summary>
-    public class LargeSignalCcvs : TwoTerminalLargeSignalDevice<CurrentControlledVoltageSourceDevice>
+    /// <summary>Large signal model for <see cref="CurrentControlledVoltageSource" /> device.</summary>
+    public class LargeSignalCcvs : TwoTerminalLargeSignalDevice<CurrentControlledVoltageSource>
     {
         private readonly CcvsStamper stamper;
 
         private readonly LargeSignalVoltageSource ampermeter;
 
-        public LargeSignalCcvs(CurrentControlledVoltageSourceDevice definitionDevice, LargeSignalVoltageSource ampermeterDevice) : base(definitionDevice)
+        public LargeSignalCcvs(CurrentControlledVoltageSource definitionDevice, LargeSignalVoltageSource ampermeterDevice) : base(definitionDevice)
         {
             stamper = new CcvsStamper();
             ampermeter = ampermeterDevice;

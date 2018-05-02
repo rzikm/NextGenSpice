@@ -5,13 +5,13 @@ using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Devices
 {
-    /// <summary>Large signal model for <see cref="CurrentSourceDevice" /> device.</summary>
-    public class LargeSignalCurrentSource : TwoTerminalLargeSignalDevice<CurrentSourceDevice>
+    /// <summary>Large signal model for <see cref="CurrentSource" /> device.</summary>
+    public class LargeSignalCurrentSource : TwoTerminalLargeSignalDevice<CurrentSource>
     {
         private readonly CurrentStamper stamper;
         private readonly VoltageProxy voltage;
 
-        public LargeSignalCurrentSource(CurrentSourceDevice definitionDevice, IInputSourceBehavior behavior) :
+        public LargeSignalCurrentSource(CurrentSource definitionDevice, IInputSourceBehavior behavior) :
             base(definitionDevice)
         {
             stamper = new CurrentStamper();

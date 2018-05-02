@@ -4,14 +4,14 @@ using NextGenSpice.Core.BehaviorParams;
 namespace NextGenSpice.Core.Devices
 {
     /// <summary>Class that represents a current source device.</summary>
-    public class CurrentSourceDevice : TwoTerminalCircuitDevice
+    public class CurrentSource : TwoTerminalCircuitDevice
     {
-        public CurrentSourceDevice(SourceBehaviorParams behavior, object tag = null) : base(tag)
+        public CurrentSource(SourceBehaviorParams behavior, object tag = null) : base(tag)
         {
             BehaviorParams = behavior;
         }
 
-        public CurrentSourceDevice(double current, object tag = null) : this(
+        public CurrentSource(double current, object tag = null) : this(
             new ConstantBehaviorParams {Value = current}, tag)
         {
         }
@@ -23,7 +23,7 @@ namespace NextGenSpice.Core.Devices
         /// <returns></returns>
         public override ICircuitDefinitionDevice Clone()
         {
-            var clone = (CurrentSourceDevice) base.Clone();
+            var clone = (CurrentSource) base.Clone();
             clone.BehaviorParams = (SourceBehaviorParams) clone.BehaviorParams.Clone();
             return clone;
         }

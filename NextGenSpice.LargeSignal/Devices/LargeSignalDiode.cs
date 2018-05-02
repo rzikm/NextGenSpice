@@ -8,8 +8,8 @@ using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Devices
 {
-    /// <summary>Large signal model for <see cref="DiodeDevice" /> device.</summary>
-    public class LargeSignalDiode : TwoTerminalLargeSignalDevice<DiodeDevice>
+    /// <summary>Large signal model for <see cref="Diode" /> device.</summary>
+    public class LargeSignalDiode : TwoTerminalLargeSignalDevice<Diode>
     {
         private double capacitanceTreshold; // cached treshold values based by model.
         private readonly CapacitorStamper capacitorStamper;
@@ -26,7 +26,7 @@ namespace NextGenSpice.LargeSignal.Devices
         private readonly VoltageProxy voltage;
         private double vt; // thermal voltage based on diode model values.
 
-        public LargeSignalDiode(DiodeDevice definitionDevice) : base(definitionDevice)
+        public LargeSignalDiode(Diode definitionDevice) : base(definitionDevice)
         {
             stamper = new DiodeStamper();
             capacitorStamper = new CapacitorStamper();

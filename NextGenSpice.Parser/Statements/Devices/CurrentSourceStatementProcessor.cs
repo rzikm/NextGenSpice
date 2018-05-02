@@ -18,7 +18,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         protected override DeferredStatement GetStatement(string name, int[] nodes, SourceBehaviorParams par)
         {
             return new SimpleDeviceDeferredStatement(Context.CurrentScope, builder =>
-                builder.AddDevice(nodes, new CurrentSourceDevice(par, name)));
+                builder.AddDevice(nodes, new CurrentSource(par, name)));
         }
     }
 }

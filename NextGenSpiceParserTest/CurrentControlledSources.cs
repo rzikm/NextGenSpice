@@ -24,7 +24,7 @@ R3 3 0 5
 ");
             Assert.Empty(result.Errors);
 
-            var f1 = (CurrentControlledCurrentSourceDevice) result.CircuitDefinition.FindDevice("F1");
+            var f1 = (CurrentControlledCurrentSource) result.CircuitDefinition.FindDevice("F1");
 
             Assert.Equal(1, f1.Gain);
         }
@@ -44,7 +44,7 @@ R3 3 0 5
 
             Assert.Empty(result.Errors);
 
-            var f1 = (CurrentControlledVoltageSourceDevice)result.CircuitDefinition.FindDevice("H1");
+            var f1 = (CurrentControlledVoltageSource)result.CircuitDefinition.FindDevice("H1");
 
             Assert.Equal(1, f1.Gain); ;
         }

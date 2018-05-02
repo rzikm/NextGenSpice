@@ -5,9 +5,9 @@ using NextGenSpice.Core.Devices.Parameters;
 namespace NextGenSpice.Core.Devices
 {
     /// <summary>Class that represents the diode device.</summary>
-    public class DiodeDevice : TwoTerminalCircuitDevice
+    public class Diode : TwoTerminalCircuitDevice
     {
-        public DiodeDevice(DiodeParams parameters, object tag = null, double voltageHint = 0) : base(tag)
+        public Diode(DiodeParams parameters, object tag = null, double voltageHint = 0) : base(tag)
         {
             Parameters = parameters;
             VoltageHint = voltageHint;
@@ -24,7 +24,7 @@ namespace NextGenSpice.Core.Devices
         /// <returns></returns>
         public override ICircuitDefinitionDevice Clone()
         {
-            var clone = (DiodeDevice) base.Clone();
+            var clone = (Diode) base.Clone();
             clone.Parameters = (DiodeParams) clone.Parameters.Clone();
             return clone;
         }

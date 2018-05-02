@@ -23,7 +23,7 @@ namespace NextGenSpice.Parser.Statements.Devices
 
             if (Errors == 0)
                 Context.DeferredStatements.Add(new SimpleDeviceDeferredStatement(Context.CurrentScope, builder =>
-                    builder.AddDevice(nodes, new ResistorDevice(rvalue, name))));
+                    builder.AddDevice(nodes, new Resistor(rvalue, name))));
         }
     }
 }

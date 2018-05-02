@@ -3,9 +3,9 @@
 namespace NextGenSpice.Core.Devices
 {
     /// <summary>Class that represents an inductor device.</summary>
-    public class InductorDevice : TwoTerminalCircuitDevice
+    public class Inductor : TwoTerminalCircuitDevice
     {
-        public InductorDevice(double inductance, double? initialCurrent = null, object tag = null) : base(tag)
+        public Inductor(double inductance, double? initialCurrent = null, object tag = null) : base(tag)
         {
             Inductance = inductance;
             InitialCurrent = initialCurrent;

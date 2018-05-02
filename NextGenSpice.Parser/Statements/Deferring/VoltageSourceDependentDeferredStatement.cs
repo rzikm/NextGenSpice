@@ -15,7 +15,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
         private readonly Token vsourcName;
 
         public VoltageSourceDependentDeferredStatement(ParsingScope context, Token vsourcName,
-            Action<CircuitBuilder, VoltageSourceDevice> builderFunc)
+            Action<CircuitBuilder, VoltageSource> builderFunc)
             : base(context, b => builderFunc(b, FindVoltageSource(b, vsourcName.Value)))
         {
             this.vsourcName = vsourcName;
@@ -30,9 +30,9 @@ namespace NextGenSpice.Parser.Statements.Deferring
             return vs != null;
         }
 
-        private static VoltageSourceDevice FindVoltageSource(CircuitBuilder builder, string name)
+        private static VoltageSource FindVoltageSource(CircuitBuilder builder, string name)
         {
-            return builder.Devices.FirstOrDefault(dev => Equals(dev.Tag, name)) as VoltageSourceDevice;
+            return builder.Devices.FirstOrDefault(dev => Equals(dev.Tag, name)) as VoltageSource;
         }
 
         /// <summary>Calling this function always results in InvalidOperationException as this statement can always be processed.</summary>

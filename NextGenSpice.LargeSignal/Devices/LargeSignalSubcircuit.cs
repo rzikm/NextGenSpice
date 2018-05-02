@@ -6,13 +6,13 @@ using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Devices
 {
-    /// <summary>Large signal model for <see cref="SubcircuitDevice" />.</summary>
-    public class LargeSignalSubcircuit : LargeSignalDeviceBase<SubcircuitDevice>, ILargeSignalSubcircuit
+    /// <summary>Large signal model for <see cref="Subcircuit" />.</summary>
+    public class LargeSignalSubcircuit : LargeSignalDeviceBase<Subcircuit>, ILargeSignalSubcircuit
     {
         private readonly ILargeSignalDevice[] devices;
         private readonly int[] nodeMap;
 
-        public LargeSignalSubcircuit(SubcircuitDevice definitionDevice,
+        public LargeSignalSubcircuit(Subcircuit definitionDevice,
             IEnumerable<ILargeSignalDevice> devices) :
             base(definitionDevice)
         {

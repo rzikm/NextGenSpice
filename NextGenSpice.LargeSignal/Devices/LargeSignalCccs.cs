@@ -6,15 +6,15 @@ using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Devices
 {
-    /// <summary>Large signal model for <see cref="CurrentControlledCurrentSourceDevice" /> device.</summary>
-    public class LargeSignalCccs : TwoTerminalLargeSignalDevice<CurrentControlledCurrentSourceDevice>
+    /// <summary>Large signal model for <see cref="CurrentControlledCurrentSource" /> device.</summary>
+    public class LargeSignalCccs : TwoTerminalLargeSignalDevice<CurrentControlledCurrentSource>
     {
         private readonly CccsStamper stamper;
         private readonly VoltageProxy voltage;
 
         private readonly LargeSignalVoltageSource ampermeter;
 
-        public LargeSignalCccs(CurrentControlledCurrentSourceDevice definitionDevice, LargeSignalVoltageSource ampermeterDevice) : base(definitionDevice)
+        public LargeSignalCccs(CurrentControlledCurrentSource definitionDevice, LargeSignalVoltageSource ampermeterDevice) : base(definitionDevice)
         {
             voltage = new VoltageProxy();
             stamper = new CccsStamper();

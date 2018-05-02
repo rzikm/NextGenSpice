@@ -21,7 +21,7 @@ namespace NextGenSpice.Test
         [Fact]
         public void CanAddClonedDevice()
         {
-            var device = new ResistorDevice(5);
+            var device = new Resistor(5);
             builder.AddDevice(new[] {1, 2}, device);
             builder.AddDevice(new[] {1, 2}, device.Clone());
         }
@@ -42,8 +42,8 @@ namespace NextGenSpice.Test
         [Fact]
         public void TestThrowOnInvalidNumberOfConnections()
         {
-            Assert.Throws<ArgumentException>(() => builder.AddDevice(new[] {1}, new ResistorDevice(3)));
-            Assert.Throws<ArgumentException>(() => builder.AddDevice(new[] {1, 2, 3}, new ResistorDevice(3)));
+            Assert.Throws<ArgumentException>(() => builder.AddDevice(new[] {1}, new Resistor(3)));
+            Assert.Throws<ArgumentException>(() => builder.AddDevice(new[] {1, 2, 3}, new Resistor(3)));
         }
 
 
@@ -87,8 +87,8 @@ namespace NextGenSpice.Test
         [Fact]
         public void ThrowsWhenAddingDeviceWithDuplicateName()
         {
-            var elem1 = new ResistorDevice(5, "R1");
-            var elem2 = new ResistorDevice(5, "R1");
+            var elem1 = new Resistor(5, "R1");
+            var elem2 = new Resistor(5, "R1");
 
             builder.AddDevice(new[] {1, 2}, elem1);
             Assert.Throws<InvalidOperationException>(() => builder.AddDevice(new[] {1, 2}, elem2));
@@ -97,7 +97,7 @@ namespace NextGenSpice.Test
         [Fact]
         public void ThrowsWhenAddingSameDeviceTwice()
         {
-            var device = new ResistorDevice(5);
+            var device = new Resistor(5);
             builder.AddDevice(new[] {1, 2}, device);
             Assert.Throws<InvalidOperationException>(() => builder.AddDevice(new[] {1, 2}, device));
         }

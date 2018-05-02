@@ -2,10 +2,10 @@
 
 namespace NextGenSpice.Core.Devices
 {
-    /// <summary>Class representing current controlled current source device.</summary>
-    public class CurrentControlledCurrentSourceDevice : TwoTerminalCircuitDevice
+    /// <summary>Class representing current controlled voltage source device.</summary>
+    public class CurrentControlledVoltageSource : TwoTerminalCircuitDevice
     {
-        public CurrentControlledCurrentSourceDevice(VoltageSourceDevice ampermeter, double gain, string tag = null) :
+        public CurrentControlledVoltageSource(VoltageSource ampermeter, double gain, string tag = null) :
             base(tag)
         {
             Ampermeter = ampermeter;
@@ -13,9 +13,9 @@ namespace NextGenSpice.Core.Devices
         }
 
         /// <summary>Voltage sourced device that is used as an ampermeter</summary>
-        public VoltageSourceDevice Ampermeter { get; }
+        public VoltageSource Ampermeter { get; }
 
-        /// <summary>Multiplier of the reference current to current output.</summary>
+        /// <summary>Multiplier of the reference current to voltage output.</summary>
         public double Gain { get; set; }
 
         /// <summary>Gets metadata about this device interconnections in the circuit.</summary>
@@ -24,7 +24,7 @@ namespace NextGenSpice.Core.Devices
         {
             return new[]
             {
-                new CircuitBranchMetadata(Anode, Cathode, BranchType.CurrentDefined, this)
+                new CircuitBranchMetadata(Anode, Cathode, BranchType.VoltageDefined, this)
             };
         }
     }

@@ -25,7 +25,7 @@ namespace NextGenSpice.Parser.Statements.Devices
 
             if (Errors == 0)
                 Context.DeferredStatements.Add(new SimpleDeviceDeferredStatement(Context.CurrentScope, cb =>
-                    cb.AddDevice(nodes, new CapacitorDevice(cvalue, ic, name))));
+                    cb.AddDevice(nodes, new Capacitor(cvalue, ic, name))));
         }
     }
 }

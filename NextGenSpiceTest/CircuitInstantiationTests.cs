@@ -18,10 +18,10 @@ namespace NextGenSpice.Test
                 new Dictionary<Type, Func<ICircuitDefinitionDevice, IModelInstantiationContext<LargeSignalCircuitModel>
                     , IAnalysisDeviceModel<LargeSignalCircuitModel>>>
                 {
-                    [typeof(ResistorDevice)] =
-                        (e, ctx) => new LargeSignalResistor((ResistorDevice) e),
-                    [typeof(VoltageSourceDevice)] =
-                        (e, ctx) => new LargeSignalVoltageSource((VoltageSourceDevice) e, null)
+                    [typeof(Resistor)] =
+                        (e, ctx) => new LargeSignalResistor((Resistor) e),
+                    [typeof(VoltageSource)] =
+                        (e, ctx) => new LargeSignalVoltageSource((VoltageSource) e, null)
                 };
 
 

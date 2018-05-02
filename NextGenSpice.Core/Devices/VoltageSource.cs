@@ -4,14 +4,14 @@ using NextGenSpice.Core.BehaviorParams;
 namespace NextGenSpice.Core.Devices
 {
     /// <summary>Class that represents a current source device.</summary>
-    public class VoltageSourceDevice : TwoTerminalCircuitDevice
+    public class VoltageSource : TwoTerminalCircuitDevice
     {
-        public VoltageSourceDevice(SourceBehaviorParams behavior, object tag = null) : base(tag)
+        public VoltageSource(SourceBehaviorParams behavior, object tag = null) : base(tag)
         {
             BehaviorParams = behavior;
         }
 
-        public VoltageSourceDevice(double voltage, object tag = null) : this(
+        public VoltageSource(double voltage, object tag = null) : this(
             new ConstantBehaviorParams {Value = voltage}, tag)
         {
         }
@@ -23,7 +23,7 @@ namespace NextGenSpice.Core.Devices
         /// <returns></returns>
         public override ICircuitDefinitionDevice Clone()
         {
-            var clone = (VoltageSourceDevice) base.Clone();
+            var clone = (VoltageSource) base.Clone();
             clone.BehaviorParams = (SourceBehaviorParams) clone.BehaviorParams.Clone();
             return clone;
         }

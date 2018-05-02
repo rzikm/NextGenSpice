@@ -61,7 +61,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
 
             context.CircuitBuilder.AddDevice(
                 terminals,
-                new SubcircuitDevice(model,
+                new Subcircuit(model,
                     deviceName
                 )
             );

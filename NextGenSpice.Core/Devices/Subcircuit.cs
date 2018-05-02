@@ -5,14 +5,14 @@ using NextGenSpice.Core.Circuit;
 namespace NextGenSpice.Core.Devices
 {
     /// <summary>Class that represents a composite device from a set of simple ones.</summary>
-    public class SubcircuitDevice : CircuitDefinitionDevice
+    public class Subcircuit : CircuitDefinitionDevice
     {
         /// <summary>
         /// Description of the devices of this subcircuit.
         /// </summary>
         public ISubcircuitDefinition Definition { get; }
 
-        public SubcircuitDevice(ISubcircuitDefinition definition, object tag = null) : base(definition.TerminalNodes.Length, tag)
+        public Subcircuit(ISubcircuitDefinition definition, object tag = null) : base(definition.TerminalNodes.Length, tag)
         {
             Definition = definition;
         }
@@ -30,7 +30,7 @@ namespace NextGenSpice.Core.Devices
         /// <returns></returns>
         public override ICircuitDefinitionDevice Clone()
         {
-            var clone = (SubcircuitDevice) base.Clone();
+            var clone = (Subcircuit) base.Clone();
             clone.Devices.Select(e => e.Clone()).ToArray();
             return clone;
         }

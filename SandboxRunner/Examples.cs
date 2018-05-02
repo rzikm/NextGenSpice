@@ -20,11 +20,11 @@ namespace SandboxRunner
         {
             var builder = new CircuitBuilder();
             builder
-                .AddDevice(new[] { 1, 0 }, new VoltageSourceDevice(12, "VS"))
-                .AddDevice(new[] { 0, 2 }, new ResistorDevice(10))
-                .AddDevice(new[] { 1, 2 }, new ResistorDevice(10))
-                .AddDevice(new[] { 2, 3 }, new ResistorDevice(5))
-                .AddDevice(new[] { 1, 3 }, new ResistorDevice(5));
+                .AddDevice(new[] { 1, 0 }, new VoltageSource(12, "VS"))
+                .AddDevice(new[] { 0, 2 }, new Resistor(10))
+                .AddDevice(new[] { 1, 2 }, new Resistor(10))
+                .AddDevice(new[] { 2, 3 }, new Resistor(5))
+                .AddDevice(new[] { 1, 3 }, new Resistor(5));
             var circuit = builder.BuildCircuit();
 
             //                        var builder = new CircuitBuilder();
@@ -131,7 +131,7 @@ namespace SandboxRunner
 
             builder.Clear();
             builder
-                .AddDevice(new[] { 0, 1 }, new SubcircuitDevice(batteryDefinition))
+                .AddDevice(new[] { 0, 1 }, new Subcircuit(batteryDefinition))
                 .AddSubcircuit(new[] { 0, 1 }, batteryDefinition);
         }
 
@@ -219,7 +219,7 @@ namespace SandboxRunner
             var model = circuit.GetLargeSignalModel();
             
             var vsouce = (ITwoTerminalLargeSignalDevice)model.FindDevice("VS");
-            var res = (ResistorDevice)circuit.FindDevice("R1");
+            var res = (Resistor)circuit.FindDevice("R1");
             // sweep for values from 1 Ohm to 15 Ohm
             for (int i = 1; i <= 15; i++)
             {

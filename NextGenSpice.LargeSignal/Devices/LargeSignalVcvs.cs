@@ -6,14 +6,14 @@ using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Devices
 {
-    /// <summary>Large signal model for <see cref="VoltageControlledVoltageSourceDevice" /> device.</summary>
-    public class LargeSignalVcvs : LargeSignalDeviceBase<VoltageControlledVoltageSourceDevice>,
+    /// <summary>Large signal model for <see cref="VoltageControlledVoltageSource" /> device.</summary>
+    public class LargeSignalVcvs : LargeSignalDeviceBase<VoltageControlledVoltageSource>,
         ITwoTerminalLargeSignalDevice
     {
         private readonly VcvsStamper stamper;
         private readonly VoltageProxy voltage;
 
-        public LargeSignalVcvs(VoltageControlledVoltageSourceDevice definitionDevice) : base(definitionDevice)
+        public LargeSignalVcvs(VoltageControlledVoltageSource definitionDevice) : base(definitionDevice)
         {
             stamper = new VcvsStamper();
             voltage = new VoltageProxy();

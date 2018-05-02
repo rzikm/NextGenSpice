@@ -15,21 +15,21 @@ namespace NextGenSpice.LargeSignal
         public LargeSignalAnalysisModelFactory()
         {
             // register default models
-            SetModel<ResistorDevice, LargeSignalResistor>(e => new LargeSignalResistor(e));
-            SetModel<CurrentSourceDevice, LargeSignalCurrentSource>((e, ctx) =>
+            SetModel<Resistor, LargeSignalResistor>(e => new LargeSignalResistor(e));
+            SetModel<CurrentSource, LargeSignalCurrentSource>((e, ctx) =>
                 new LargeSignalCurrentSource(e, (IInputSourceBehavior) ctx.GetParam(e.BehaviorParams)));
-            SetModel<VoltageSourceDevice, LargeSignalVoltageSource>((e, ctx) =>
+            SetModel<VoltageSource, LargeSignalVoltageSource>((e, ctx) =>
                 new LargeSignalVoltageSource(e, (IInputSourceBehavior) ctx.GetParam(e.BehaviorParams)));
-            SetModel<CapacitorDevice, LargeSignalCapacitor>(e => new LargeSignalCapacitor(e));
-            SetModel<InductorDevice, LargeSignalInductor>(e => new LargeSignalInductor(e));
-            SetModel<DiodeDevice, LargeSignalDiode>(e => new LargeSignalDiode(e));
+            SetModel<Capacitor, LargeSignalCapacitor>(e => new LargeSignalCapacitor(e));
+            SetModel<Inductor, LargeSignalInductor>(e => new LargeSignalInductor(e));
+            SetModel<Diode, LargeSignalDiode>(e => new LargeSignalDiode(e));
             SetModel<BjtDevice, LargeSignalBjt>(e => new LargeSignalBjt(e));
-            SetModel<VoltageControlledVoltageSourceDevice, LargeSignalVcvs>(e => new LargeSignalVcvs(e));
-            SetModel<VoltageControlledCurrentSourceDevice, LargeSignalVccs>(e => new LargeSignalVccs(e));
-            SetModel<CurrentControlledVoltageSourceDevice, LargeSignalCcvs>((e,ctx) => new LargeSignalCcvs(e, (LargeSignalVoltageSource) ctx.GetModel(e.Ampermeter)));
-            SetModel<CurrentControlledCurrentSourceDevice, LargeSignalCccs>((e,ctx) => new LargeSignalCccs(e, (LargeSignalVoltageSource) ctx.GetModel(e.Ampermeter)));
+            SetModel<VoltageControlledVoltageSource, LargeSignalVcvs>(e => new LargeSignalVcvs(e));
+            SetModel<VoltageControlledCurrentSource, LargeSignalVccs>(e => new LargeSignalVccs(e));
+            SetModel<CurrentControlledVoltageSource, LargeSignalCcvs>((e,ctx) => new LargeSignalCcvs(e, (LargeSignalVoltageSource) ctx.GetModel(e.Ampermeter)));
+            SetModel<CurrentControlledCurrentSource, LargeSignalCccs>((e,ctx) => new LargeSignalCccs(e, (LargeSignalVoltageSource) ctx.GetModel(e.Ampermeter)));
 
-            SetModel<SubcircuitDevice, LargeSignalSubcircuit>((e, ctx) =>
+            SetModel<Subcircuit, LargeSignalSubcircuit>((e, ctx) =>
                 new LargeSignalSubcircuit(e, e.Devices.Select(ctx.GetSubContext().GetModel).Cast<ILargeSignalDevice>()));
 
             // Input source behaviors

@@ -3,9 +3,9 @@
 namespace NextGenSpice.Core.Devices
 {
     /// <summary>Class representing voltage controlled voltage source device.</summary>
-    public class VoltageControlledVoltageSourceDevice : CircuitDefinitionDevice
+    public class VoltageControlledVoltageSource : CircuitDefinitionDevice
     {
-        public VoltageControlledVoltageSourceDevice(double gain, string tag = null) : base(4, tag)
+        public VoltageControlledVoltageSource(double gain, string tag = null) : base(4, tag)
         {
             Gain = gain;
         }

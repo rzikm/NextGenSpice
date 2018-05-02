@@ -4,13 +4,13 @@ using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Devices
 {
-    /// <summary>Large signal model for <see cref="ResistorDevice" /> device.</summary>
-    public class LargeSignalResistor : TwoTerminalLargeSignalDevice<ResistorDevice>
+    /// <summary>Large signal model for <see cref="Resistor" /> device.</summary>
+    public class LargeSignalResistor : TwoTerminalLargeSignalDevice<Resistor>
     {
         private readonly ConductanceStamper stamper;
         private readonly VoltageProxy voltage;
 
-        public LargeSignalResistor(ResistorDevice definitionDevice) : base(definitionDevice)
+        public LargeSignalResistor(Resistor definitionDevice) : base(definitionDevice)
         {
             stamper = new ConductanceStamper();
             voltage = new VoltageProxy();

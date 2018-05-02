@@ -5,15 +5,15 @@ using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Devices
 {
-    /// <summary>Large signal model for <see cref="CapacitorDevice" /> device.</summary>
-    public class LargeSignalCapacitor : TwoTerminalLargeSignalDevice<CapacitorDevice>
+    /// <summary>Large signal model for <see cref="Capacitor" /> device.</summary>
+    public class LargeSignalCapacitor : TwoTerminalLargeSignalDevice<Capacitor>
     {
         private readonly CapacitorStamper stamper;
         private readonly VoltageProxy voltage;
 
         private bool firtDcPoint;
 
-        public LargeSignalCapacitor(CapacitorDevice definitionDevice) : base(definitionDevice)
+        public LargeSignalCapacitor(Capacitor definitionDevice) : base(definitionDevice)
         {
             voltage = new VoltageProxy();
             stamper = new CapacitorStamper();
