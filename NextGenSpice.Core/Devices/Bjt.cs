@@ -5,9 +5,9 @@ using NextGenSpice.Core.Devices.Parameters;
 namespace NextGenSpice.Core.Devices
 {
     /// <summary>Class that represents Homo-Junction Bipolar Transistor device.</summary>
-    public class BjtDevice : CircuitDefinitionDevice
+    public class Bjt : CircuitDefinitionDevice
     {
-        public BjtDevice(BjtParams parameters, object tag = null) : base(4, tag)
+        public Bjt(BjtParams parameters, object tag = null) : base(4, tag)
         {
             Parameters = parameters;
         }
@@ -31,7 +31,7 @@ namespace NextGenSpice.Core.Devices
         /// <returns></returns>
         public override ICircuitDefinitionDevice Clone()
         {
-            var clone = (BjtDevice) base.Clone();
+            var clone = (Bjt) base.Clone();
             clone.Parameters = (BjtParams) clone.Parameters.Clone();
             return clone;
         }

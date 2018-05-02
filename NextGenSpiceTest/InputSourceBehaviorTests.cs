@@ -46,7 +46,7 @@ namespace NextGenSpice.Test
         {
             var circuit = new CircuitBuilder()
                 .AddVoltageSource(1, 0,
-                    new ExponentialBehaviorParams
+                    new ExponentialBehavior
                     {
                         InitialLevel = 1,
                         PulseLevel = 5,
@@ -67,7 +67,7 @@ namespace NextGenSpice.Test
         {
             var circuit = new CircuitBuilder()
                 .AddVoltageSource(1, 0,
-                    new PieceWiseLinearBehaviorParams
+                    new PieceWiseLinearBehavior
                     {
                         InitialValue = 1,
                         DefinitionPoints = new Dictionary<double, double>
@@ -93,7 +93,7 @@ namespace NextGenSpice.Test
         {
             var circuit = new CircuitBuilder()
                 .AddVoltageSource(1, 0,
-                    new PulseBehaviorParams
+                    new PulseBehavior
                     {
                         InitialLevel = 1,
                         PulseLevel = 5,
@@ -115,7 +115,7 @@ namespace NextGenSpice.Test
         {
             var circuit = new CircuitBuilder()
                 .AddVoltageSource(1, 0,
-                    new SinusoidalBehaviorParams
+                    new SinusoidalBehavior
                     {
                         DcOffset = 1,
                         Amplitude = 1,

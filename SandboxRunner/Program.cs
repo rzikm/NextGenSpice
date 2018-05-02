@@ -112,7 +112,7 @@ namespace SandboxRunner
         private static void RunModel()
         {
             var circuit = new CircuitBuilder()
-                .AddVoltageSource(1, 0, new PieceWiseLinearBehaviorParams
+                .AddVoltageSource(1, 0, new PieceWiseLinearBehavior
                 {
                     DefinitionPoints = new Dictionary<double, double>
                     {

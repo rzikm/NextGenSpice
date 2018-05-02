@@ -1,7 +1,7 @@
 ﻿namespace NextGenSpice.Core.BehaviorParams
 {
     /// <summary>Specifies behavior parameters for input source with exponential rising and falling edges.</summary>
-    public class ExponentialBehaviorParams : SourceBehaviorParams
+    public class ExponentialBehavior : InputSourceBehavior
     {
         /// <summary>Value on the start of the simulation in volts or ampers.</summary>
         public double InitialLevel { get; set; }

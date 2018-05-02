@@ -6,15 +6,15 @@ using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Devices
 {
-    /// <summary>Large signal model for <see cref="VoltageControlledVoltageSource" /> device.</summary>
-    public class LargeSignalVccs : LargeSignalDeviceBase<VoltageControlledCurrentSource>,
+    /// <summary>Large signal model for <see cref="Vcvs" /> device.</summary>
+    public class LargeSignalVccs : LargeSignalDeviceBase<Vccs>,
         ITwoTerminalLargeSignalDevice
     {
         private readonly VoltageProxy refvoltage;
         private readonly VccsStamper stamper;
         private readonly VoltageProxy voltage;
 
-        public LargeSignalVccs(VoltageControlledCurrentSource definitionDevice) : base(definitionDevice)
+        public LargeSignalVccs(Vccs definitionDevice) : base(definitionDevice)
         {
             voltage = new VoltageProxy();
             stamper = new VccsStamper();
@@ -53,7 +53,7 @@ namespace NextGenSpice.LargeSignal.Devices
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(ISimulationContext context)
         {
-            stamper.Stamp(DefinitionDevice.TransConductance);
+            stamper.Stamp(DefinitionDevice.Gain);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace NextGenSpice.LargeSignal.Devices
         public override void OnEquationSolution(ISimulationContext context)
         {
             Voltage = voltage.GetValue();
-            Current = refvoltage.GetValue() * DefinitionDevice.TransConductance;
+            Current = refvoltage.GetValue() * DefinitionDevice.Gain;
         }
     }
 }

@@ -6,25 +6,25 @@ namespace NextGenSpice.Core.Devices
     /// <summary>Class that represents a current source device.</summary>
     public class CurrentSource : TwoTerminalCircuitDevice
     {
-        public CurrentSource(SourceBehaviorParams behavior, object tag = null) : base(tag)
+        public CurrentSource(InputSourceBehavior behavior, object tag = null) : base(tag)
         {
-            BehaviorParams = behavior;
+            Behavior = behavior;
         }
 
         public CurrentSource(double current, object tag = null) : this(
-            new ConstantBehaviorParams {Value = current}, tag)
+            new ConstantBehavior {Value = current}, tag)
         {
         }
 
         /// <summary>Behavior parameters of the input source.</summary>
-        public SourceBehaviorParams BehaviorParams { get; set; }
+        public InputSourceBehavior Behavior { get; set; }
 
         /// <summary>Creates a deep copy of this device.</summary>
         /// <returns></returns>
         public override ICircuitDefinitionDevice Clone()
         {
             var clone = (CurrentSource) base.Clone();
-            clone.BehaviorParams = (SourceBehaviorParams) clone.BehaviorParams.Clone();
+            clone.Behavior = (InputSourceBehavior) clone.Behavior.Clone();
             return clone;
         }
 

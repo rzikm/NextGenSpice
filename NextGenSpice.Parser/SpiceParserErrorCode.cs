@@ -19,8 +19,7 @@
         NonascendingTimepoints,
 
         ModelAlreadyExists,
-        InvalidModelParameter,
-        UnknownParameter,
+        InvalidParameter,
 
         InvalidIcArgument,
 

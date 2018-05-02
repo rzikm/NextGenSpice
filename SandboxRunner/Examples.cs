@@ -87,7 +87,7 @@ namespace SandboxRunner
         public static void SimpleRlc()
         {
             var circuit = new CircuitBuilder()
-                .AddVoltageSource(1, 0, new PulseBehaviorParams
+                .AddVoltageSource(1, 0, new PulseBehavior
                 {
                     InitialLevel = 0,
                     PulseLevel = 5,
@@ -165,7 +165,7 @@ namespace SandboxRunner
         {
             var builder = new CircuitBuilder();
             builder
-                .AddVoltageSource(1, 0, new SinusoidalBehaviorParams()
+                .AddVoltageSource(1, 0, new SinusoidalBehavior()
                 {
                     Amplitude = 5,
                     Frequency = 1e3

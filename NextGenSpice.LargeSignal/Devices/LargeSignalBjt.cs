@@ -9,8 +9,8 @@ using System.Collections.Generic;
 
 namespace NextGenSpice.LargeSignal.Devices
 {
-    /// <summary>Large signal model for <see cref="BjtDevice" /> device.</summary>
-    public class LargeSignalBjt : LargeSignalDeviceBase<BjtDevice>
+    /// <summary>Large signal model for <see cref="Bjt" /> device.</summary>
+    public class LargeSignalBjt : LargeSignalDeviceBase<Bjt>
     {
         private double bF;
         private double bR;
@@ -38,7 +38,7 @@ namespace NextGenSpice.LargeSignal.Devices
 
         private double vT; // thermal voltage
 
-        public LargeSignalBjt(BjtDevice definitionDevice) : base(definitionDevice)
+        public LargeSignalBjt(Bjt definitionDevice) : base(definitionDevice)
         {
             stamper = new BjtTransistorStamper();
             vbe = new VoltageProxy();

@@ -25,7 +25,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                 Context.DeferredStatements.Add(new SimpleDeviceDeferredStatement(Context.CurrentScope, builder =>
                     builder.AddDevice(
                         nodes,
-                        new VoltageControlledCurrentSource(
+                        new Vccs(
                             gain,
                             name
                         )

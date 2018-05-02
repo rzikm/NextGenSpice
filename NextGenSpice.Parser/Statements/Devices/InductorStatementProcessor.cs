@@ -21,12 +21,33 @@ namespace NextGenSpice.Parser.Statements.Devices
             var name = DeviceName;
             var nodes = GetNodeIndices(1, 2);
             var lvalue = GetValue(3);
-            var ic = RawStatement.Length == 5 ? GetValue(4) : (double?) null;
+            var ic = GetInitialCondition();
 
 
             if (Errors == 0)
                 Context.DeferredStatements.Add(new SimpleDeviceDeferredStatement(Context.CurrentScope, cb =>
                     cb.AddDevice(nodes, new Inductor(lvalue, ic, name))));
+        }
+
+        private double? GetInitialCondition()
+        {
+            double? ic = null;
+            if (RawStatement.Length == 5)
+            {
+                var t = RawStatement[4];
+                if (!t.Value.StartsWith("IC="))
+                {
+                    Error(t, SpiceParserErrorCode.InvalidParameter);
+                }
+                else
+                {
+                    t.LineColumn += 3;
+                    t.Value = t.Value.Substring(3);
+                    ic = GetValue(4);
+                }
+            }
+
+            return ic;
         }
     }
 }

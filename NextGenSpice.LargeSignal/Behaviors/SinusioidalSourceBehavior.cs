@@ -9,9 +9,9 @@ namespace NextGenSpice.LargeSignal.Behaviors
     ///     Strategy class for sinusoidal behavior of <see cref="LargeSignalVoltageSource" /> and
     ///     <see cref="LargeSignalCurrentSource" />.
     /// </summary>
-    internal class SinusioidalSourceBehavior : InputSourceBehavior<SinusoidalBehaviorParams>
+    internal class SinusioidalSourceBehavior : InputSourceBehavior<SinusoidalBehavior>
     {
-        public SinusioidalSourceBehavior(SinusoidalBehaviorParams parameters) : base(parameters)
+        public SinusioidalSourceBehavior(SinusoidalBehavior parameters) : base(parameters)
         {
         }
 

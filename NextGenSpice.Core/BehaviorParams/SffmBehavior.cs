@@ -1,7 +1,7 @@
 ﻿namespace NextGenSpice.Core.BehaviorParams
 {
     /// <summary>Specifies behavior parameters for input source with frequency modulation.</summary>
-    public class SffmBehaviorParams : SourceBehaviorParams
+    public class SffmBehavior : InputSourceBehavior
     {
         /// <summary>Offset of the signal in volts or ampers.</summary>
         public double DcOffset { get; set; }

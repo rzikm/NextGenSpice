@@ -9,9 +9,9 @@ namespace NextGenSpice.LargeSignal.Behaviors
     ///     Strategy class for pulsing behavior of <see cref="LargeSignalVoltageSource" /> and
     ///     <see cref="LargeSignalCurrentSource" />.
     /// </summary>
-    internal class PulseSourceBehavior : InputSourceBehavior<PulseBehaviorParams>
+    internal class PulseSourceBehavior : InputSourceBehavior<PulseBehavior>
     {
-        public PulseSourceBehavior(PulseBehaviorParams parameters) : base(parameters)
+        public PulseSourceBehavior(PulseBehavior parameters) : base(parameters)
         {
         }
 

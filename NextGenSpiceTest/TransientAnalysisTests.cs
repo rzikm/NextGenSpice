@@ -25,7 +25,7 @@ namespace NextGenSpice.Test
             var results = new List<double>();
 
             var circuit = new CircuitBuilder()
-                .AddVoltageSource(1, 0, new PulseBehaviorParams
+                .AddVoltageSource(1, 0, new PulseBehavior
                 {
                     Delay = 1e-6,
                     PulseWidth = 1,

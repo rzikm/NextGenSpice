@@ -9,9 +9,9 @@ namespace NextGenSpice.LargeSignal.Behaviors
     ///     Strategy class for single frequency AM behavior of <see cref="LargeSignalVoltageSource" /> and
     ///     <see cref="LargeSignalCurrentSource" />.
     /// </summary>
-    internal class AmSourceBehavior : InputSourceBehavior<AmBehaviorParams>
+    internal class AmSourceBehavior : InputSourceBehavior<AmBehavior>
     {
-        public AmSourceBehavior(AmBehaviorParams parameters) : base(parameters)
+        public AmSourceBehavior(AmBehavior parameters) : base(parameters)
         {
         }
 

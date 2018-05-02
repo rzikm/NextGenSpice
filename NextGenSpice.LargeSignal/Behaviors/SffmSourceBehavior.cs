@@ -9,9 +9,9 @@ namespace NextGenSpice.LargeSignal.Behaviors
     ///     Strategy class for single frequency FM behavior of <see cref="LargeSignalVoltageSource" /> and
     ///     <see cref="LargeSignalCurrentSource" />.
     /// </summary>
-    internal class SffmSourceBehavior : InputSourceBehavior<SffmBehaviorParams>
+    internal class SffmSourceBehavior : InputSourceBehavior<SffmBehavior>
     {
-        public SffmSourceBehavior(SffmBehaviorParams parameters) : base(parameters)
+        public SffmSourceBehavior(SffmBehavior parameters) : base(parameters)
         {
         }
 

@@ -9,7 +9,7 @@ namespace NextGenSpice.LargeSignal.Behaviors
     ///     <see cref="LargeSignalCurrentSource" />.
     /// </summary>
     /// <typeparam name="TParams">Type defining the set of parameters for the behavior.</typeparam>
-    internal abstract class InputSourceBehavior<TParams> : IInputSourceBehavior where TParams : SourceBehaviorParams
+    internal abstract class InputSourceBehavior<TParams> : IInputSourceBehavior where TParams : InputSourceBehavior
     {
         protected InputSourceBehavior(TParams parameters)
         {

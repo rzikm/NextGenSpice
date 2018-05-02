@@ -10,9 +10,9 @@ namespace NextGenSpice.LargeSignal.Behaviors
     ///     Strategy class for behavior with exponential edges for <see cref="LargeSignalVoltageSource" /> and
     ///     <see cref="LargeSignalCurrentSource" />.
     /// </summary>
-    internal class ExponentialSourceBehavior : InputSourceBehavior<ExponentialBehaviorParams>
+    internal class ExponentialSourceBehavior : InputSourceBehavior<ExponentialBehavior>
     {
-        public ExponentialSourceBehavior(ExponentialBehaviorParams parameters) : base(parameters)
+        public ExponentialSourceBehavior(ExponentialBehavior parameters) : base(parameters)
         {
         }
 

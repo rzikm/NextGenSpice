@@ -49,7 +49,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                 if (index <= 0 || index >= token.Value.Length - 1) // no '=' 
                 {
                     context.Errors.Add(
-                        token.ToError(SpiceParserErrorCode.InvalidModelParameter));
+                        token.ToError(SpiceParserErrorCode.InvalidParameter));
                     continue;
                 }
 
@@ -57,7 +57,7 @@ namespace NextGenSpice.Parser.Statements.Devices
 
                 // check validity of the parameter name
                 if (!Mapper.HasKey(paramName))
-                    context.Errors.Add(token.ToError(SpiceParserErrorCode.UnknownParameter, paramName));
+                    context.Errors.Add(token.ToError(SpiceParserErrorCode.InvalidParameter, paramName));
 
                 // reuse token instance for parsing the value part of the pair
                 token.LineColumn += index + 1; // modify offset to get correct error location.

@@ -12,12 +12,12 @@ namespace NextGenSpice.LargeSignal.Behaviors
     ///     Strategy class for piece-wise linear behavior of <see cref="LargeSignalVoltageSource" /> and
     ///     <see cref="LargeSignalCurrentSource" />.
     /// </summary>
-    internal class PieceWiseLinearSourceBehavior : InputSourceBehavior<PieceWiseLinearBehaviorParams>
+    internal class PieceWiseLinearSourceBehavior : InputSourceBehavior<PieceWiseLinearBehavior>
     {
         private readonly List<double> timepoints;
         private readonly List<double> values;
 
-        public PieceWiseLinearSourceBehavior(PieceWiseLinearBehaviorParams parameters) : base(parameters)
+        public PieceWiseLinearSourceBehavior(PieceWiseLinearBehavior parameters) : base(parameters)
         {
             timepoints = parameters.DefinitionPoints.Keys.ToList();
             values = timepoints.Select(i => parameters.DefinitionPoints[i]).ToList();

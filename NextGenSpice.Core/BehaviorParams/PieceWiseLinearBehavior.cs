@@ -2,7 +2,7 @@
 
 namespace NextGenSpice.Core.BehaviorParams
 {
-    public class PieceWiseLinearBehaviorParams : SourceBehaviorParams
+    public class PieceWiseLinearBehavior : InputSourceBehavior
     {
         public IReadOnlyDictionary<double, double> DefinitionPoints { get; set; }
         public double InitialValue { get; set; }

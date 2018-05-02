@@ -10,21 +10,21 @@ namespace NextGenSpice.Parser.Statements.Devices
     /// <summary>Class responsible for handling both current and voltage input source statements</summary>
     public abstract class InputSourceStatementProcessor : DeviceStatementProcessor
     {
-        private readonly ParameterMapper<AmBehaviorParams> amMapper;
-        private readonly ParameterMapper<ConstantBehaviorParams> dcMapper;
-        private readonly ParameterMapper<ExponentialBehaviorParams> expMapper;
-        private readonly ParameterMapper<PulseBehaviorParams> pulseMapper;
-        private readonly ParameterMapper<SffmBehaviorParams> sffmMapper;
-        private readonly ParameterMapper<SinusoidalBehaviorParams> sinMapper;
+        private readonly ParameterMapper<AmBehavior> amMapper;
+        private readonly ParameterMapper<ConstantBehavior> dcMapper;
+        private readonly ParameterMapper<ExponentialBehavior> expMapper;
+        private readonly ParameterMapper<PulseBehavior> pulseMapper;
+        private readonly ParameterMapper<SffmBehavior> sffmMapper;
+        private readonly ParameterMapper<SinusoidalBehavior> sinMapper;
 
         protected InputSourceStatementProcessor()
         {
-            sinMapper = new ParameterMapper<SinusoidalBehaviorParams>();
-            expMapper = new ParameterMapper<ExponentialBehaviorParams>();
-            pulseMapper = new ParameterMapper<PulseBehaviorParams>();
-            amMapper = new ParameterMapper<AmBehaviorParams>();
-            sffmMapper = new ParameterMapper<SffmBehaviorParams>();
-            dcMapper = new ParameterMapper<ConstantBehaviorParams>();
+            sinMapper = new ParameterMapper<SinusoidalBehavior>();
+            expMapper = new ParameterMapper<ExponentialBehavior>();
+            pulseMapper = new ParameterMapper<PulseBehavior>();
+            amMapper = new ParameterMapper<AmBehavior>();
+            sffmMapper = new ParameterMapper<SffmBehavior>();
+            dcMapper = new ParameterMapper<ConstantBehavior>();
 
             InitMappers();
 
@@ -85,7 +85,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             if (char.IsDigit(RawStatement[3].Value[0])) // constant source
             {
                 var val = GetValue(3);
-                statement = GetStatement(name, nodes, new ConstantBehaviorParams {Value = val});
+                statement = GetStatement(name, nodes, new ConstantBehavior {Value = val});
             }
             else // tran function
             {
@@ -101,7 +101,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <summary>Gets behavior parameters for given list of tokens or null if no such transient function exists.</summary>
         /// <param name="paramTokens"></param>
         /// <returns></returns>
-        private SourceBehaviorParams GetBehaviorParam(List<Token> paramTokens)
+        private InputSourceBehavior GetBehaviorParam(List<Token> paramTokens)
         {
             switch (paramTokens[0].Value)
             {
@@ -135,9 +135,9 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <summary>Functino responsible for parsing Piece-wise linear behavior of the input source.</summary>
         /// <param name="paramTokens"></param>
         /// <returns></returns>
-        private SourceBehaviorParams GetPwlParams(List<Token> paramTokens)
+        private InputSourceBehavior GetPwlParams(List<Token> paramTokens)
         {
-            var par = new PieceWiseLinearBehaviorParams();
+            var par = new PieceWiseLinearBehavior();
 
             var currentTime = -double.Epsilon;
 
@@ -207,6 +207,6 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <param name="nodes"></param>
         /// <param name="par"></param>
         /// <returns></returns>
-        protected abstract DeferredStatement GetStatement(string name, int[] nodes, SourceBehaviorParams par);
+        protected abstract DeferredStatement GetStatement(string name, int[] nodes, InputSourceBehavior par);
     }
 }

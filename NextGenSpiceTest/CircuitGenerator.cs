@@ -80,7 +80,7 @@ namespace NextGenSpice.Test
         public static CircuitDefinition GetTruncationErrorModel()
         {
             return new CircuitBuilder()
-                .AddVoltageSource(1, 0, new SinusoidalBehaviorParams
+                .AddVoltageSource(1, 0, new SinusoidalBehavior
                 {
                     Amplitude = 5,
                     Frequency = 100
@@ -105,7 +105,7 @@ namespace NextGenSpice.Test
                 //                    Delay = 1e-4,
                 //                    Period = 15e-4
                 //                })
-                .AddVoltageSource(1, 0, new SinusoidalBehaviorParams
+                .AddVoltageSource(1, 0, new SinusoidalBehavior
                 {
                     Amplitude = 5,
                     Frequency = 500

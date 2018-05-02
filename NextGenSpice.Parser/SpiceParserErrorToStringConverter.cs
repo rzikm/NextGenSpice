@@ -45,11 +45,8 @@ namespace NextGenSpice.Parser
                 case SpiceParserErrorCode.ModelAlreadyExists:
                     return $"There already exists model with name '{arg[0]} for this device type.";
 
-                case SpiceParserErrorCode.InvalidModelParameter:
-                    return $"Invalid model parameter '{arg[0]}'";
-
-                case SpiceParserErrorCode.UnknownParameter:
-                    return $"Unknown model parameter name '{arg[0]}'.";
+                case SpiceParserErrorCode.InvalidParameter:
+                    return $"Invalid parameter '{arg[0]}'.";
 
                 case SpiceParserErrorCode.InvalidIcArgument:
                     return $"Invalid .IC argument '{arg[0]}'";

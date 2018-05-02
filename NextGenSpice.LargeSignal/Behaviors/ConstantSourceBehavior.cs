@@ -8,9 +8,9 @@ namespace NextGenSpice.LargeSignal.Behaviors
     ///     Strategy class for constant behavior of <see cref="LargeSignalVoltageSource" /> and
     ///     <see cref="LargeSignalCurrentSource" />.
     /// </summary>
-    internal class ConstantSourceBehavior : InputSourceBehavior<ConstantBehaviorParams>
+    internal class ConstantSourceBehavior : InputSourceBehavior<ConstantBehavior>
     {
-        public ConstantSourceBehavior(ConstantBehaviorParams parameters) : base(parameters)
+        public ConstantSourceBehavior(ConstantBehavior parameters) : base(parameters)
         {
         }
 

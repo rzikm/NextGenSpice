@@ -2,12 +2,12 @@
 
 namespace NextGenSpice.Core.Devices
 {
-    /// <summary>Class representing voltage controlled current source device.</summary>
-    public class VoltageControlledCurrentSource : CircuitDefinitionDevice
+    /// <summary>Class representing voltage controlled voltage source device.</summary>
+    public class Vcvs : CircuitDefinitionDevice
     {
-        public VoltageControlledCurrentSource(double transConductance, string tag = null) : base(4, tag)
+        public Vcvs(double gain, string tag = null) : base(4, tag)
         {
-            TransConductance = transConductance;
+            Gain = gain;
         }
 
         /// <summary>Positive terminal of the device.</summary>
@@ -22,8 +22,8 @@ namespace NextGenSpice.Core.Devices
         /// <summary>Negative terminal of the reference voltage.</summary>
         public int ReferenceCathode => ConnectedNodes[3];
 
-        /// <summary>Multiplier of the reference voltage to current output.</summary>
-        public double TransConductance { get; set; }
+        /// <summary>Multiplier of the reference voltage.</summary>
+        public double Gain { get; set; }
 
         /// <summary>Gets metadata about this device interconnections in the circuit.</summary>
         /// <returns></returns>
@@ -31,7 +31,7 @@ namespace NextGenSpice.Core.Devices
         {
             return new[]
             {
-                new CircuitBranchMetadata(Anode, Cathode, BranchType.CurrentDefined, this)
+                new CircuitBranchMetadata(Anode, Cathode, BranchType.VoltageDefined, this)
             };
         }
     }

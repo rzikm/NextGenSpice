@@ -15,7 +15,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <param name="nodes"></param>
         /// <param name="par"></param>
         /// <returns></returns>
-        protected override DeferredStatement GetStatement(string name, int[] nodes, SourceBehaviorParams par)
+        protected override DeferredStatement GetStatement(string name, int[] nodes, InputSourceBehavior par)
         {
             return new SimpleDeviceDeferredStatement(Context.CurrentScope, builder =>
                 builder.AddDevice(nodes, new VoltageSource(par, name)));

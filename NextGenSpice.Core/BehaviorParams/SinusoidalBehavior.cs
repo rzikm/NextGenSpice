@@ -1,7 +1,7 @@
 ﻿namespace NextGenSpice.Core.BehaviorParams
 {
     /// <summary>Specifies behavior parameters for sinusoidal input source.</summary>
-    public class SinusoidalBehaviorParams : SourceBehaviorParams
+    public class SinusoidalBehavior : InputSourceBehavior
     {
         /// <summary>Offset of the signal in volts or ampers.</summary>
         public double DcOffset { get; set; }

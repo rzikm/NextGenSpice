@@ -1,7 +1,7 @@
 ﻿namespace NextGenSpice.Core.BehaviorParams
 {
     /// <summary>Specifies behavior parameters for input source with alternating pulses.</summary>
-    public class PulseBehaviorParams : SourceBehaviorParams
+    public class PulseBehavior : InputSourceBehavior
     {
         /// <summary>Value in volts or ampers on the beginning of the simulation.</summary>
         public double InitialLevel { get; set; }

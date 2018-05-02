@@ -17,29 +17,29 @@ namespace NextGenSpice.LargeSignal
             // register default models
             SetModel<Resistor, LargeSignalResistor>(e => new LargeSignalResistor(e));
             SetModel<CurrentSource, LargeSignalCurrentSource>((e, ctx) =>
-                new LargeSignalCurrentSource(e, (IInputSourceBehavior) ctx.GetParam(e.BehaviorParams)));
+                new LargeSignalCurrentSource(e, (IInputSourceBehavior) ctx.GetParam(e.Behavior)));
             SetModel<VoltageSource, LargeSignalVoltageSource>((e, ctx) =>
-                new LargeSignalVoltageSource(e, (IInputSourceBehavior) ctx.GetParam(e.BehaviorParams)));
+                new LargeSignalVoltageSource(e, (IInputSourceBehavior) ctx.GetParam(e.Behavior)));
             SetModel<Capacitor, LargeSignalCapacitor>(e => new LargeSignalCapacitor(e));
             SetModel<Inductor, LargeSignalInductor>(e => new LargeSignalInductor(e));
             SetModel<Diode, LargeSignalDiode>(e => new LargeSignalDiode(e));
-            SetModel<BjtDevice, LargeSignalBjt>(e => new LargeSignalBjt(e));
-            SetModel<VoltageControlledVoltageSource, LargeSignalVcvs>(e => new LargeSignalVcvs(e));
-            SetModel<VoltageControlledCurrentSource, LargeSignalVccs>(e => new LargeSignalVccs(e));
-            SetModel<CurrentControlledVoltageSource, LargeSignalCcvs>((e,ctx) => new LargeSignalCcvs(e, (LargeSignalVoltageSource) ctx.GetModel(e.Ampermeter)));
-            SetModel<CurrentControlledCurrentSource, LargeSignalCccs>((e,ctx) => new LargeSignalCccs(e, (LargeSignalVoltageSource) ctx.GetModel(e.Ampermeter)));
+            SetModel<Bjt, LargeSignalBjt>(e => new LargeSignalBjt(e));
+            SetModel<Vcvs, LargeSignalVcvs>(e => new LargeSignalVcvs(e));
+            SetModel<Vccs, LargeSignalVccs>(e => new LargeSignalVccs(e));
+            SetModel<Ccvs, LargeSignalCcvs>((e,ctx) => new LargeSignalCcvs(e, (LargeSignalVoltageSource) ctx.GetModel(e.Ampermeter)));
+            SetModel<Cccs, LargeSignalCccs>((e,ctx) => new LargeSignalCccs(e, (LargeSignalVoltageSource) ctx.GetModel(e.Ampermeter)));
 
             SetModel<Subcircuit, LargeSignalSubcircuit>((e, ctx) =>
                 new LargeSignalSubcircuit(e, e.Devices.Select(ctx.GetSubContext().GetModel).Cast<ILargeSignalDevice>()));
 
             // Input source behaviors
-            SetParam<ConstantBehaviorParams>(def => new ConstantSourceBehavior(def));
-            SetParam<PulseBehaviorParams>(def => new PulseSourceBehavior(def));
-            SetParam<PieceWiseLinearBehaviorParams>(def => new PieceWiseLinearSourceBehavior(def));
-            SetParam<SinusoidalBehaviorParams>(def => new SinusioidalSourceBehavior(def));
-            SetParam<ExponentialBehaviorParams>(def => new ExponentialSourceBehavior(def));
-            SetParam<SffmBehaviorParams>(def => new SffmSourceBehavior(def));
-            SetParam<AmBehaviorParams>(def => new AmSourceBehavior(def));
+            SetParam<ConstantBehavior>(def => new ConstantSourceBehavior(def));
+            SetParam<PulseBehavior>(def => new PulseSourceBehavior(def));
+            SetParam<PieceWiseLinearBehavior>(def => new PieceWiseLinearSourceBehavior(def));
+            SetParam<SinusoidalBehavior>(def => new SinusioidalSourceBehavior(def));
+            SetParam<ExponentialBehavior>(def => new ExponentialSourceBehavior(def));
+            SetParam<SffmBehavior>(def => new SffmSourceBehavior(def));
+            SetParam<AmBehavior>(def => new AmSourceBehavior(def));
         }
 
 

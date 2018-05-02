@@ -75,7 +75,7 @@ namespace NextGenSpice.Core.Extensions
         /// <param name="tag">Tag to identify the device.</param>
         /// <returns></returns>
         public static CircuitBuilder AddCurrentSource(this CircuitBuilder builder, int n1, int n2,
-            SourceBehaviorParams param, object tag = null)
+            InputSourceBehavior param, object tag = null)
         {
             builder.AddDevice(new[] {n1, n2}, new CurrentSource(param, tag));
             return builder;
@@ -103,7 +103,7 @@ namespace NextGenSpice.Core.Extensions
         /// <param name="tag">Tag to identify the device.</param>
         /// <returns></returns>
         public static CircuitBuilder AddVoltageSource(this CircuitBuilder builder, int n1, int n2,
-            SourceBehaviorParams param, object tag = null)
+            InputSourceBehavior param, object tag = null)
         {
             builder.AddDevice(new[] {n1, n2}, new VoltageSource(param, tag));
             return builder;
@@ -166,7 +166,7 @@ namespace NextGenSpice.Core.Extensions
         public static CircuitBuilder AddBjt(this CircuitBuilder builder, int nCollector, int nBase, int nEmitter,
             BjtParams param, object tag = null)
         {
-            builder.AddDevice(new[] { nCollector, nBase, nEmitter, 0 }, new BjtDevice(param, tag));
+            builder.AddDevice(new[] { nCollector, nBase, nEmitter, 0 }, new Bjt(param, tag));
             return builder;
         }
 
@@ -183,7 +183,7 @@ namespace NextGenSpice.Core.Extensions
         {
             var param = BjtParams.Default;
             config(param);
-            builder.AddDevice(new[] {nCollector, nBase, nEmitter, 0}, new BjtDevice(param, tag));
+            builder.AddDevice(new[] {nCollector, nBase, nEmitter, 0}, new Bjt(param, tag));
             return builder;
         }
     }

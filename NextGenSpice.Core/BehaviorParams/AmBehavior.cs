@@ -1,7 +1,7 @@
 ﻿namespace NextGenSpice.Core.BehaviorParams
 {
     /// <summary>Specifies behavior parameters for input source with amplitude modulation.</summary>
-    public class AmBehaviorParams : SourceBehaviorParams
+    public class AmBehavior : InputSourceBehavior
     {
         /// <summary>
         ///     Peak amplitude of the unmodulated signal in volts or ampers. The real maximum amplitude is given by
