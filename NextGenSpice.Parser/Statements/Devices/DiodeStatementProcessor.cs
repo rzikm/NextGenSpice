@@ -21,13 +21,13 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <summary>Processes given set of statements.</summary>
         protected override void DoProcess()
         {
-            var name = DeviceName; // capture
             var nodes = GetNodeIds(1, 2);
-            // cannot check for model existence yet, defer checking for model later
 
+            // cannot check for model existence yet, defer checking for model later
             if (Errors == 0)
             {
-                var modelToken = RawStatement[3]; // capture
+                var name = DeviceName; // capture
+                var modelToken = RawStatement[3];
                 Context.DeferredStatements.Add(
                     new ModeledDeviceDeferedStatement<DiodeParams>(Context.CurrentScope,
                         (par, cb) => cb.AddDevice(nodes, new Diode(par, name)), modelToken));

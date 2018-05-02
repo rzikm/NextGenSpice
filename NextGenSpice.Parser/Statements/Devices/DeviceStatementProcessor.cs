@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NextGenSpice.Core.Circuit;
 using NextGenSpice.Parser.Statements.Models;
 using NextGenSpice.Parser.Utils;
 
@@ -14,6 +15,9 @@ namespace NextGenSpice.Parser.Statements.Devices
 
         /// <summary>Number of errors that occured during parsing of this statement.</summary>
         protected int Errors => Context.Errors.Count - oldErrors;
+
+        /// <summary>Circuit builder for the current parsing context.</summary>
+        protected CircuitBuilder CircuitBuilder => Context.CurrentScope.CircuitBuilder;
 
         /// <summary>Current context in which parsing occurs.</summary>
         protected ParsingContext Context { get; private set; }

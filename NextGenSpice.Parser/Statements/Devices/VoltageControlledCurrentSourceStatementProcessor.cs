@@ -22,15 +22,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             var gain = GetValue(5);
 
             if (Errors == 0)
-                Context.DeferredStatements.Add(new SimpleDeviceDeferredStatement(Context.CurrentScope, builder =>
-                    builder.AddDevice(
-                        nodes,
-                        new Vccs(
-                            gain,
-                            name
-                        )
-                    )
-                ));
+                CircuitBuilder.AddDevice(nodes, new Vccs(gain, name));
         }
     }
 }

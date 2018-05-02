@@ -25,8 +25,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             var ic = GetInitialCondition();
 
             if (Errors == 0)
-                Context.DeferredStatements.Add(new SimpleDeviceDeferredStatement(Context.CurrentScope, cb =>
-                    cb.AddDevice(nodes, new Capacitor(cvalue, ic, name))));
+                CircuitBuilder.AddDevice(nodes, new Capacitor(cvalue, ic, name));
         }
 
         private double? GetInitialCondition()

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NextGenSpice.Core.BehaviorParams;
+using NextGenSpice.Core.Devices;
 using NextGenSpice.Parser.Statements.Deferring;
 using NextGenSpice.Parser.Utils;
 
@@ -81,21 +82,20 @@ namespace NextGenSpice.Parser.Statements.Devices
 
             if (RawStatement.Length < 4) return; // nothing more to do here
 
-            DeferredStatement statement;
+            ICircuitDefinitionDevice device;
             if (char.IsDigit(RawStatement[3].Value[0])) // constant source
             {
                 var val = GetValue(3);
-                statement = GetStatement(name, nodes, new ConstantBehavior {Value = val});
+                device = GetDevice(new ConstantBehavior {Value = val}, name);
             }
             else // tran function
             {
                 var paramTokens = Utils.Parser.Retokenize(RawStatement, 3).ToList();
-                var param = GetBehaviorParam(paramTokens);
-                statement = GetStatement(name, nodes, param);
+                device = GetDevice(GetBehaviorParam(paramTokens), name);
             }
 
             if (Errors == 0)
-                Context.DeferredStatements.Add(statement);
+                CircuitBuilder.AddDevice(nodes, device);
         }
 
         /// <summary>Gets behavior parameters for given list of tokens or null if no such transient function exists.</summary>
@@ -205,10 +205,9 @@ namespace NextGenSpice.Parser.Statements.Devices
         }
 
         /// <summary>Factory method for a deferred statement that should be processed later.</summary>
-        /// <param name="name"></param>
-        /// <param name="nodes"></param>
         /// <param name="par"></param>
+        /// <param name="name"></param>
         /// <returns></returns>
-        protected abstract DeferredStatement GetStatement(string name, int[] nodes, InputSourceBehavior par);
+        protected abstract ICircuitDefinitionDevice GetDevice(InputSourceBehavior par, string name);
     }
 }

@@ -11,14 +11,12 @@ namespace NextGenSpice.Parser.Statements.Devices
         public override char Discriminator => 'V';
 
         /// <summary>Factory method for a deferred statement that should be processed later.</summary>
-        /// <param name="name"></param>
-        /// <param name="nodes"></param>
         /// <param name="par"></param>
+        /// <param name="name"></param>
         /// <returns></returns>
-        protected override DeferredStatement GetStatement(string name, int[] nodes, InputSourceBehavior par)
+        protected override ICircuitDefinitionDevice GetDevice(InputSourceBehavior par, string name)
         {
-            return new SimpleDeviceDeferredStatement(Context.CurrentScope, builder =>
-                builder.AddDevice(nodes, new VoltageSource(par, name)));
+            return new VoltageSource(par, name);
         }
     }
 }
