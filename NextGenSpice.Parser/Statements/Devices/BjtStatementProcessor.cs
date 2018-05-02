@@ -25,8 +25,8 @@ namespace NextGenSpice.Parser.Statements.Devices
         {
             var name = DeviceName;
             var nodes = RawStatement.Length == 5
-                ? GetNodeIndices(1, 3).Concat(new[] {0}).ToArray() // substrate node not specified.
-                : GetNodeIndices(1, 4);
+                ? GetNodeIds(1, 3).Concat(new[] {0}).ToArray() // substrate node not specified.
+                : GetNodeIds(1, 4);
 
             // cannot check for model existence yet, defer checking for model later
             if (Errors == 0)

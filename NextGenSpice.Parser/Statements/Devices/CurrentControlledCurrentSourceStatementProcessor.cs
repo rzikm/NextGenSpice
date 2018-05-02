@@ -18,7 +18,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         protected override void DoProcess()
         {
             var name = DeviceName;
-            var nodes = GetNodeIndices(1, 2);
+            var nodes = GetNodeIds(1, 2);
             var vsource = RawStatement[3];
             var gain = GetValue(4);
 

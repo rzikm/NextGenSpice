@@ -20,7 +20,7 @@ namespace NextGenSpice.Numerics.Equations
 
 
 #if dd_precision
-        private DdEquationSystem system;
+        public DdEquationSystem system;
 #elif qd_precision
         private QdEquationSystem system;
 #else

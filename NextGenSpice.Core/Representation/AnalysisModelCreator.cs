@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Composition.Hosting;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Loader;
 
 namespace NextGenSpice.Core.Representation
@@ -51,7 +52,7 @@ namespace NextGenSpice.Core.Representation
 
             if (CompositionContainer.TryGetExport<IAnalysisModelFactory<TAnalysisModel>>(out var export))
             {
-                factories[typeof(TAnalysisModel)] = export;
+                SetFactory(export);
                 return export;
             }
 
@@ -67,10 +68,24 @@ namespace NextGenSpice.Core.Representation
                 .GetFiles(Path.GetDirectoryName(typeof(CircuitDefinition).Assembly.Location),
                     "NextGenSpice.*.dll",
                     SearchOption.AllDirectories);
-
+            
             var asms = assemblies
-                .Where(i => !i.Contains("Native"))
-                .Select(AssemblyLoadContext.Default.LoadFromAssemblyPath)
+                .Select(a =>
+                {
+                    Assembly assembly = null;
+
+                    try
+                    {
+                        assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(a);
+                    }
+                    catch
+                    {
+                        // do nothing
+                    }
+                       
+                    return assembly;
+                })
+                .Where(a => a != null)
                 .ToList();
 
             var configuration = new ContainerConfiguration().WithAssemblies(asms);

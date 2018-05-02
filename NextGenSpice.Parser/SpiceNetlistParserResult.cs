@@ -24,8 +24,8 @@ namespace NextGenSpice.Parser
             Title = title;
             OtherStatements = otherStatements;
 
-            NodeIndices = new Dictionary<string, int>(nodeNames.Count);
-            for (var i = 0; i < nodeNames.Count; i++) NodeIndices[nodeNames[i]] = i;
+            NodeIds = new Dictionary<string, int>(nodeNames.Count);
+            for (var i = 0; i < nodeNames.Count; i++) NodeIds[nodeNames[i]] = i;
         }
 
         /// <summary>Circuit defined in the input file. Is null if there was an error in input file.</summary>
@@ -40,8 +40,8 @@ namespace NextGenSpice.Parser
         /// <summary>Names used in the netlist to refer to circuit nodes, indexed by node id.</summary>
         public IReadOnlyList<string> NodeNames { get; }
 
-        /// <summary>Mapping from node names from the netlist file to the node indices.</summary>
-        public IDictionary<string, int> NodeIndices { get; }
+        /// <summary>Mapping from node names from the netlist file to the node ids.</summary>
+        public IDictionary<string, int> NodeIds { get; }
 
         /// <summary>All statements that do not directly influence the circuit description.</summary>
         public IReadOnlyList<SpiceStatement> OtherStatements { get; }

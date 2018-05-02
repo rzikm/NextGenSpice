@@ -52,8 +52,8 @@ R3 3 0 5
             var model = result.CircuitDefinition.GetLargeSignalModel();
             model.EstablishDcBias();
 
-            var v2 = result.NodeIndices["2"];
-            var v3 = result.NodeIndices["3"];
+            var v2 = result.NodeIds["2"];
+            var v3 = result.NodeIds["3"];
 
             var vs = (ITwoTerminalLargeSignalDevice)model.FindDevice("V1");
 

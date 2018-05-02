@@ -1,4 +1,4 @@
-//#undef native_gauss
+#undef native_gauss
 using System;
 using System.Diagnostics;
 using System.Linq;

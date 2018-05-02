@@ -22,7 +22,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         protected override void DoProcess()
         {
             var name = DeviceName; // capture
-            var nodes = GetNodeIndices(1, 2);
+            var nodes = GetNodeIds(1, 2);
             // cannot check for model existence yet, defer checking for model later
 
             if (Errors == 0)

@@ -20,7 +20,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         protected override void DoProcess()
         {
             var name = DeviceName;
-            var nodes = GetNodeIndices(1, 2);
+            var nodes = GetNodeIds(1, 2);
             var cvalue = GetValue(3);
             var ic = GetInitialCondition();
 
@@ -37,7 +37,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                 var t = RawStatement[4];
                 if (!t.Value.StartsWith("IC="))
                 {
-                    Error(t, SpiceParserErrorCode.InvalidParameter);
+                    Context.Errors.Add(t.ToError(SpiceParserErrorCode.InvalidParameter));
                 }
                 else
                 {

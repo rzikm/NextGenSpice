@@ -23,7 +23,7 @@ namespace NextGenSpice.Parser
         private readonly PrintStatementProcessor printProcessor;
         private readonly IDictionary<string, IDotStatementProcessor> statementProcessors;
 
-        public SpiceNetlistParser()
+        private SpiceNetlistParser()
         {
             modelProcessor = new ModelStatementProcessor();
             printProcessor = new PrintStatementProcessor();
@@ -36,6 +36,15 @@ namespace NextGenSpice.Parser
             RegisterStatement(printProcessor, true, false);
         }
 
+        /// <summary>Creates new instance of the parser without any statement processors regitered.</summary>
+        /// <returns></returns>
+        public static SpiceNetlistParser Empty()
+        {
+            return new SpiceNetlistParser();
+        }
+
+        /// <summary>Creates new instance of the parser with default statement handlers registered.</summary>
+        /// <returns></returns>
         public static SpiceNetlistParser WithDefaults()
         {
             var p = new SpiceNetlistParser();
@@ -100,7 +109,7 @@ namespace NextGenSpice.Parser
         /// <returns></returns>
         public SpiceNetlistParserResult Parse(TextReader input)
         {
-            var ctx = new ParsingContext()
+            var ctx = new ParsingContext
             {
                 Title = input.ReadLine() // First line of the file always contains title
             };
@@ -141,7 +150,8 @@ namespace NextGenSpice.Parser
                 circuitDefinition,
                 ctx.OtherStatements,
                 ctx.Errors.OrderBy(e => e.LineNumber).ThenBy(e => e.LineColumn).ToList(), // order errors
-                ctx.SymbolTable.GetLocalSubcircuits().OfType<SubcircuitDefinition>().ToList(), // only valid subcircuit definitions, no NullCircuitDefinitions
+                ctx.SymbolTable.GetLocalSubcircuits().OfType<SubcircuitDefinition>()
+                    .ToList(), // only valid subcircuit definitions, no NullCircuitDefinitions
                 ctx.SymbolTable.GetNodeNames(Enumerable.Range(0, ctx.CurrentScope.CircuitBuilder.NodeCount)).ToList(),
                 ctx.SymbolTable.GetAllModels());
         }

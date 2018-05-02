@@ -17,7 +17,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         protected override void DoProcess()
         {
             var name = DeviceName;
-            var nodes = GetNodeIndices(1, RawStatement.Length - 2);
+            var nodes = GetNodeIds(1, RawStatement.Length - 2);
             var subcircuitName = RawStatement[RawStatement.Length - 1];
 
             if (Errors == 0)

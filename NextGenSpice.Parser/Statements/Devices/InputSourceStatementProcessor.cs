@@ -77,7 +77,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         protected override void DoProcess()
         {
             var name = DeviceName;
-            var nodes = GetNodeIndices(1, 2);
+            var nodes = GetNodeIds(1, 2);
 
             if (RawStatement.Length < 4) return; // nothing more to do here
 
@@ -127,7 +127,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                     return GetParameterTokens(dcMapper, paramTokens, 1);
 
                 default:
-                    Error(paramTokens[0], SpiceParserErrorCode.UnknownTransientFunction);
+                    Context.Errors.Add(paramTokens[0].ToError(SpiceParserErrorCode.UnknownTransientFunction));
                     return null;
             }
         }
@@ -151,7 +151,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                     {
                         rep = GetValue(paramTokens[i + 1]);
                         if (!definitionPoints.ContainsKey(rep))
-                            Error(paramTokens[i + 1], SpiceParserErrorCode.NoBreakpointRepetition);
+                            Context.Errors.Add(paramTokens[i + 1].ToError(SpiceParserErrorCode.NoBreakpointRepetition));
                     }
 
                     par.RepeatStart = rep;
@@ -160,15 +160,17 @@ namespace NextGenSpice.Parser.Statements.Devices
 
                 if (i == paramTokens.Count - 1) // this timepoint does not have corresponding value
                 {
-                    Error(paramTokens[i], SpiceParserErrorCode.TimePointWithoutValue);
+                    Context.Errors.Add(paramTokens[i].ToError(SpiceParserErrorCode.TimePointWithoutValue));
                     break;
                 }
 
                 var time = GetValue(paramTokens[i]);
                 var value = GetValue(paramTokens[i + 1]);
 
-                if (time < 0) Error(paramTokens[i], SpiceParserErrorCode.NegativeTimepoint);
-                else if (time <= currentTime) Error(paramTokens[i + 1], SpiceParserErrorCode.NonascendingTimepoints);
+                if (time < 0)
+                    Context.Errors.Add(paramTokens[i].ToError(SpiceParserErrorCode.NegativeTimepoint));
+                else if (time <= currentTime)
+                    Context.Errors.Add(paramTokens[i + 1].ToError(SpiceParserErrorCode.NonascendingTimepoints));
 
                 definitionPoints[time] = value;
 
@@ -195,7 +197,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                 mapper.Set(i - 1, GetValue(paramTokens[i]));
 
             if (paramTokens.Count < minArgc || paramTokens.Count > mapper.ByIndexCount + 1)
-                Error(paramTokens[0], SpiceParserErrorCode.InvalidNumberOfArguments);
+                Context.Errors.Add(paramTokens[0].ToError(SpiceParserErrorCode.InvalidNumberOfArguments));
 
             var t = mapper.Target;
             mapper.Target = default(T); // free memory

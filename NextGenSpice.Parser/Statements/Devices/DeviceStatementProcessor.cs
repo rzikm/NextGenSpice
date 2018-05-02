@@ -66,22 +66,12 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <summary>Processes given set of statements.</summary>
         protected abstract void DoProcess();
 
-        // TODO: inline this
-        /// <summary>Returns generic error message</summary>
-        /// <param name="source"></param>
-        /// <param name="errorCode"></param>
-        /// <returns></returns>
-        protected void Error(Token source, SpiceParserErrorCode errorCode)
-        {
-            Context.Errors.Add(source.ToError(errorCode));
-        }
-
         /// <summary>Returns message, that some device with given name has been already defined.</summary>
         /// <param name="token"></param>
         /// <returns></returns>
         private void DeviceAlreadyDefined(Token token)
         {
-            Error(token, SpiceParserErrorCode.DeviceAlreadyDefined);
+            Context.Errors.Add(token.ToError(SpiceParserErrorCode.DeviceAlreadyDefined));
         }
 
         /// <summary>Return message, that given token cannot be converted to a numeric representation.</summary>
@@ -89,7 +79,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <returns></returns>
         private void NotANumber(Token token)
         {
-            Error(token, SpiceParserErrorCode.NotANumber);
+            Context.Errors.Add(token.ToError(SpiceParserErrorCode.NotANumber));
         }
 
         /// <summary>Returns message indicating that given token does not represent a node name.</summary>
@@ -97,7 +87,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <returns></returns>
         private void NotANode(Token token)
         {
-            Error(token, SpiceParserErrorCode.NotANode);
+            Context.Errors.Add(token.ToError(SpiceParserErrorCode.NotANode));
         }
 
         /// <summary>Return message indicatiing that there was wrong number of arguments for given device type.</summary>
@@ -105,7 +95,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <returns></returns>
         protected void InvalidNumberOfArguments(Token token)
         {
-            Error(token, SpiceParserErrorCode.InvalidNumberOfArguments);
+            Context.Errors.Add(token.ToError(SpiceParserErrorCode.InvalidNumberOfArguments));
         }
 
         /// <summary>Gets device name and sets it in symbol table, adds relevant errors into the errors collection</summary>
@@ -125,7 +115,7 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <param name="startIndex"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        private int[] GetNodeIndices(Token[] tokens, int startIndex, int count)
+        private int[] GetNodeIds(Token[] tokens, int startIndex, int count)
         {
             var ret = new int[count];
             for (var i = 0; i < Math.Min(tokens.Length - startIndex, count); i++)
@@ -151,9 +141,9 @@ namespace NextGenSpice.Parser.Statements.Devices
         /// <param name="startIndex"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        protected int[] GetNodeIndices(int startIndex, int count)
+        protected int[] GetNodeIds(int startIndex, int count)
         {
-            return GetNodeIndices(RawStatement, startIndex, count);
+            return GetNodeIds(RawStatement, startIndex, count);
         }
 
         /// <summary>

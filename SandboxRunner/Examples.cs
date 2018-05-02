@@ -11,11 +11,30 @@ using NextGenSpice.LargeSignal;
 using NextGenSpice.LargeSignal.Devices;
 using NextGenSpice.LargeSignal.NumIntegration;
 using NextGenSpice.Parser;
+using NextGenSpice.Parser.Statements.Devices;
 
 namespace SandboxRunner
 {
     public class Examples
     {
+        public class E : DeviceStatementProcessor
+        {
+            /// <summary>Discriminator of the device type this processor can parse.</summary>
+            public override char Discriminator => throw new NotImplementedException();
+
+            /// <summary>Processes given set of statements.</summary>
+            protected override void DoProcess()
+            {
+                
+            }
+        }
+
+        public static void RegisteringModels()
+        {
+            var factory = AnalysisModelCreator.Instance.GetFactory<LargeSignalCircuitModel>();
+            factory.SetModel<Resistor, LargeSignalResistor>(resistor => new LargeSignalResistor(resistor));
+        }
+
         public static void Simple()
         {
             var builder = new CircuitBuilder();
@@ -144,7 +163,7 @@ namespace SandboxRunner
 
             var model = circuit.GetLargeSignalModel();
             var d1 = (ITwoTerminalLargeSignalDevice)model.FindDevice("D1");
-            var inNode = result.NodeIndices["IN"];
+            var inNode = result.NodeIds["IN"];
 
             Console.WriteLine("Time V(IN) I(D1)");
 
