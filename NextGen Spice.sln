@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextGenSpice.Core", "NextGe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextGenSpice.LargeSignal", "NextGenSpice.LargeSignal\NextGenSpice.LargeSignal.csproj", "{F2CA4E90-E99B-4E8D-81F6-EEDC121CBC26}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextGenSpice.Test", "NextGenSpiceTest\NextGenSpice.Test.csproj", "{6496C20F-B890-4045-907E-DC8D15334FE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextGenSpice.Core.Test", "NextGenSpiceTest\NextGenSpice.Core.Test.csproj", "{6496C20F-B890-4045-907E-DC8D15334FE2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SandboxRunner", "SandboxRunner\SandboxRunner.csproj", "{8383357E-8228-41BC-BADD-CA6382961F7B}"
 EndProject
@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextGenSpice.Numerics", "Ne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextGenSpice.Parser", "NextGenSpice.Parser\NextGenSpice.Parser.csproj", "{A8130D76-712B-4C64-B096-CFF892541A02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NextGenSpice.LargeSignal.Test", "NextGenSpice.LargeSignal.Test\NextGenSpice.LargeSignal.Test.csproj", "{EE910AC6-E6A2-46DD-A9F7-6E676DF564E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextGenSpice.LargeSignal.Test", "NextGenSpice.LargeSignal.Test\NextGenSpice.LargeSignal.Test.csproj", "{EE910AC6-E6A2-46DD-A9F7-6E676DF564E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

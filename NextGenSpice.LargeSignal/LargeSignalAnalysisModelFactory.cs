@@ -30,7 +30,7 @@ namespace NextGenSpice.LargeSignal
             SetModel<CurrentControlledCurrentSourceDevice, LargeSignalCccs>((e,ctx) => new LargeSignalCccs(e, (LargeSignalVoltageSource) ctx.GetModel(e.Ampermeter)));
 
             SetModel<SubcircuitDevice, LargeSignalSubcircuit>((e, ctx) =>
-                new LargeSignalSubcircuit(e, e.Devices.Select(ctx.GetModel).Cast<ILargeSignalDevice>()));
+                new LargeSignalSubcircuit(e, e.Devices.Select(ctx.GetSubContext().GetModel).Cast<ILargeSignalDevice>()));
 
             // Input source behaviors
             SetParam<ConstantBehaviorParams>(def => new ConstantSourceBehavior(def));

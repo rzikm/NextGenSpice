@@ -70,7 +70,14 @@ namespace NextGenSpice.Core.Representation
             if (paramCreators.TryGetValue(arg.GetType(), out var factoryFunc))
                 return factoryFunc(arg, this);
 
-            throw new InvalidOperationException($"No param creator for type{arg.GetType()}");
+            throw new InvalidOperationException($"No param creator for type {arg.GetType()}");
+        }
+
+        /// <summary>Gets nested instantiation context (for handling subcircuits).</summary>
+        /// <returns></returns>
+        public IModelInstantiationContext<TAnalysisModel> GetSubContext()
+        {
+            return new ModelInstantiationContext<TAnalysisModel>(modelCreators, paramCreators, CircuitDefinition);
         }
 
         /// <summary>Creates model instance for given definition device.</summary>

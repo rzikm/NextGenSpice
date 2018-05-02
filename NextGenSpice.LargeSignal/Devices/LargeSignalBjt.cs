@@ -138,8 +138,8 @@ namespace NextGenSpice.LargeSignal.Devices
 
 
 
-            var Ube = vbe.GetValue() * polarity;
-            var Ubc = vbc.GetValue() * polarity;
+            var Ube = vbe.GetValue();
+            var Ubc = vbc.GetValue();
             var Uce = Ube - Ubc;
 
             //            var  (gpi, gmu, gmf, gmr, iT) = CalculateModelValues();
@@ -151,9 +151,9 @@ namespace NextGenSpice.LargeSignal.Devices
 
             CurrentBase = CurrentBaseEmitter + CurrentBaseCollector;
 
-            stamper.Stamp(gpi, gmu, gm, go, (-ieqB - ieqC) * polarity, (ieqC - ieqE) * polarity,
+            stamper.Stamp(gpi, gmu, gm, go, (-ieqB - ieqC) , (ieqC - ieqE) ,
                 //            stamper.Stamp(gpi, gmu, gmf, gmr, (-ieqB - ieqC) * polarity, (ieqC - ieqE) * polarity,
-                (ieqB + ieqE) * polarity);
+                (ieqB + ieqE) );
         }
 
         /// <summary>This method is called each time an equation is solved.</summary>

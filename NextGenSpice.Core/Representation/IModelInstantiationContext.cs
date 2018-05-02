@@ -23,5 +23,9 @@ namespace NextGenSpice.Core.Representation
         /// <param name="arg">Argument to be processed.</param>
         /// <returns></returns>
         object GetParam(object arg);
+
+        /// <summary>Gets nested instantiation context (for handling subcircuits).</summary>
+        /// <returns></returns>
+        IModelInstantiationContext<TAnalysisModel> GetSubContext();
     }
 }

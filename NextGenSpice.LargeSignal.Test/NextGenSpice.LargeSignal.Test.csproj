@@ -17,7 +17,7 @@
     <ProjectReference Include="..\NextGenSpice.LargeSignal\NextGenSpice.LargeSignal.csproj" />
     <ProjectReference Include="..\NextGenSpice.Parser\NextGenSpice.Parser.csproj" />
     <ProjectReference Include="..\NextGenSpiceParserTest\NextGenSpice.Parser.Test.csproj" />
-    <ProjectReference Include="..\NextGenSpiceTest\NextGenSpice.Test.csproj" />
+    <ProjectReference Include="..\NextGenSpiceTest\NextGenSpice.Core.Test.csproj" />
   </ItemGroup>
 
 </Project>
