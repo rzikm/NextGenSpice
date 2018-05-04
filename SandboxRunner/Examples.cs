@@ -136,7 +136,7 @@ namespace SandboxRunner
                 model.AdvanceInTime(timestep);
             }
 
-            model.CircuitParameters.IntegrationMethodFactory =
+            model.SimulationParameters.IntegrationMethodFactory =
                 new SimpleIntegrationMethodFactory(() => new TrapezoidalIntegrationMethod());
         }
 

@@ -38,7 +38,7 @@ namespace NextGenSpice.LargeSignal.Devices
             stamper.Register(adapter, Anode, Cathode);
             voltage.Register(adapter, Anode, Cathode);
             firtDcPoint = true;
-            IntegrationMethod = context.CircuitParameters.IntegrationMethodFactory.CreateInstance();
+            IntegrationMethod = context.SimulationParameters.IntegrationMethodFactory.CreateInstance();
         }
 
         /// <summary>

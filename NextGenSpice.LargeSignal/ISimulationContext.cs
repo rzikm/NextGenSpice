@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using NextGenSpice.LargeSignal.Devices;
 
 namespace NextGenSpice.LargeSignal
 {
@@ -12,6 +12,16 @@ namespace NextGenSpice.LargeSignal
         double TimeStep { get; }
 
         /// <summary>General parameters of the circuit that is simulated.</summary>
-        CircuitParameters CircuitParameters { get; }
+        SimulationParameters SimulationParameters { get; }
+
+        /// <summary>Specifies whether the Newton-Raphson iterations converged.</summary>
+        bool Converged { get; }
+
+        /// <summary>
+        ///     Reports that Newton-Raphson iterations for this device did not converge yet and another iteration should be
+        ///     made.
+        /// </summary>
+        /// <param name="device"></param>
+        void ReportNotConverged(ILargeSignalDevice device);
     }
 }

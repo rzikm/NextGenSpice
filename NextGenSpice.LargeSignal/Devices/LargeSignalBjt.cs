@@ -85,6 +85,14 @@ namespace NextGenSpice.LargeSignal.Devices
         /// <summary>Voltage between collector and emitter terminal.</summary>
         public double VoltageCollectorEmitter { get; private set; }
 
+        public double Transconductance { get; private set; }
+
+        public double OutputConductance { get; private set; }
+
+        public double ConductancePi { get; private set; }
+
+        public double ConductanceMu { get; private set; }
+
         private void CacheModelParams()
         {
             vT = PhysicalConstants.Boltzmann *
@@ -138,15 +146,10 @@ namespace NextGenSpice.LargeSignal.Devices
             // calculate values according to Gummel-Poon model
             // for details see http://qucs.sourceforge.net/tech/node70.html
 
-            var UbeCrit = DeviceHelpers.PnCriticalVoltage(iS, nF * vT);
-            var UbcCrit = DeviceHelpers.PnCriticalVoltage(iS, nR * vT);
 
-            var Ube = vbe.GetValue();
-            var Ubc = vbc.GetValue();
+            var Ube = VoltageBaseEmitter;
+            var Ubc = VoltageBaseCollector;
             var Uce = Ubc - Ube;
-
-            VoltageBaseEmitter = Ube = DeviceHelpers.PnLimitVoltage(Ube, VoltageBaseEmitter, nF * vT, UbeCrit);
-            VoltageBaseCollector = Ubc = DeviceHelpers.PnLimitVoltage(Ubc, VoltageBaseCollector, nR * vT, UbcCrit);
 
             double iF, gif;
             DeviceHelpers.PnJunction(iS, Ube, nF * vT, out iF, out gif);
@@ -172,13 +175,13 @@ namespace NextGenSpice.LargeSignal.Devices
             double gBC = gBCi + gBCn;
             CurrentBaseCollector = iBC;
 
-            var q1 = 1 / (1 - Ubc / vAf - Ube / vAr); // shouldn't it be * vaf, *var
+            var q1 = 1 / (1 - Ubc / vAf - Ube / vAr);
             var q2 = iF / iKf + iR / iKr;
 
             var sqrt = Math.Sqrt(1 + 4 * q2);
             var qB = q1 / 2 * (1 + sqrt);
 
-            var dQdbUbe = q1 * (qB / vAr + gif / (iKf * sqrt)); // shouldn't it be * vaf, *var
+            var dQdbUbe = q1 * (qB / vAr + gif / (iKf * sqrt)); 
             var dQbdUbc = q1 * (qB / vAf + gir / (iKr * sqrt));
 
             var iT = (iF - iR) / qB;
@@ -202,10 +205,6 @@ namespace NextGenSpice.LargeSignal.Devices
             var ceqbe = polarity * (cc + cb - Ube * (gm + go + gpi) + Ubc * go);
             var ceqbc = polarity * (-cc + Ube * (gm + go) - Ubc * (gmu + go));
 
-            var ieqB = CurrentBaseEmitter - Ube * gpi;
-            var ieqC = CurrentBaseCollector - Ubc * gmu;
-            var ieqE = iT - Ube * gm - Uce * go;
-
             CurrentBase = CurrentBaseEmitter + CurrentBaseCollector;
 
             var iC = -ceqbc;
@@ -219,6 +218,38 @@ namespace NextGenSpice.LargeSignal.Devices
         /// <param name="context">Context of current simulation.</param>
         public override void OnEquationSolution(ISimulationContext context)
         {
+            var UbeCrit = DeviceHelpers.PnCriticalVoltage(iS, nF * vT);
+            var UbcCrit = DeviceHelpers.PnCriticalVoltage(iS, nR * vT);
+
+            var Ube = vbe.GetValue();
+            var Ubc = vbc.GetValue();
+
+            var delvbe = Ube - VoltageBaseEmitter;
+            var delvbc = Ubc - VoltageBaseCollector;
+            var cchat = CurrentCollector + (Transconductance + OutputConductance) * delvbe - (OutputConductance + ConductanceMu) * delvbc;
+            var cbhat = CurrentBase + ConductancePi * delvbe + ConductanceMu * delvbc;
+            var cc = CurrentCollector;
+            var cb = CurrentBase;
+
+            var reltor = context.SimulationParameters.RelativeTolerance;
+            var abstol = context.SimulationParameters.AbsolutTolerane;
+            
+            //  compare and set flag
+            var tol = reltor * Math.Max(Math.Abs(cchat), Math.Abs(cc)) + abstol;
+            if (Math.Abs(cchat - cc) > tol)
+            {
+                context.ReportNotConverged(this);
+            }
+
+            tol = reltor * Math.Max(Math.Abs(cbhat), Math.Abs(cb)) + abstol;
+            if (Math.Abs(cbhat - cb) > tol)
+            {
+                context.ReportNotConverged(this);
+            }
+
+            // update voltages
+            VoltageBaseEmitter = DeviceHelpers.PnLimitVoltage(Ube, VoltageBaseEmitter, nF * vT, UbeCrit);
+            VoltageBaseCollector = DeviceHelpers.PnLimitVoltage(Ubc, VoltageBaseCollector, nR * vT, UbcCrit);
         }
 
         /// <summary>

@@ -92,6 +92,12 @@ namespace NextGenSpice.Core.Devices.Parameters
         /// <summary>Ideal reverse transit time in seconds.</summary>
         public double ReverseTransitTime { get; set; } = 0;
 
+        /// <summary>
+        /// Substrate junction built-in potential in volts
+        /// </summary>
+        public double SubstratePotential { get; set; } = 0.75;
+    
+
         /// <summary>Base-substrate zero-bias depletion capacitance in farrads.</summary>
         public double SubstrateCapacitance { get; set; } = 0;
 

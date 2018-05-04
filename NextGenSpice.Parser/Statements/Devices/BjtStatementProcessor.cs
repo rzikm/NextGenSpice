@@ -93,6 +93,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                 Map(x => x.CurrentBaseResistanceMidpoint, "XCJC");
                 Map(x => x.ReverseTransitTime, "TR");
                 Map(x => x.SubstrateCapacitance, "CJS");
+                Map(x => x.SubstratePotential, "VJS");
                 Map(x => x.SubstrateExponentialFactor, "MJS");
                 Map(x => x.TemperatureExponentBeta, "XTB");
                 Map(x => x.EnergyGap, "EG");

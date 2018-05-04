@@ -11,8 +11,10 @@ namespace NextGenSpice.LargeSignal.Devices
     /// <summary>Large signal model for <see cref="Diode" /> device.</summary>
     public class LargeSignalDiode : TwoTerminalLargeSignalDevice<Diode>
     {
-        private double capacitanceTreshold; // cached treshold values based by model.
         private readonly CapacitorStamper capacitorStamper;
+        private readonly DiodeStamper stamper;
+        private readonly VoltageProxy voltage;
+        private double capacitanceTreshold; // cached treshold values based by model.
 
         private double gmin; // minimal slope of the I-V characteristic of the diode.
         private double ic; // current through the capacitor that models junction capacitance
@@ -20,10 +22,8 @@ namespace NextGenSpice.LargeSignal.Devices
         // flags if initial condition for given subdevice should be applied
         private bool initialConditionCapacitor;
         private double smallBiasTreshold; // cached treshold for diode model characteristic
-        private readonly DiodeStamper stamper;
 
         private double vc; // voltage across the capacitor that models junction capacitance
-        private readonly VoltageProxy voltage;
         private double vt; // thermal voltage based on diode model values.
 
         public LargeSignalDiode(Diode definitionDevice) : base(definitionDevice)
@@ -41,6 +41,9 @@ namespace NextGenSpice.LargeSignal.Devices
         /// <summary>Integration method used for modifying inner state of the device.</summary>
         private IIntegrationMethod IntegrationMethod { get; set; }
 
+        /// <summary>Equivalent conductance of the diode</summary>
+        public double Conductance { get; set; }
+
         /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
         /// <param name="adapter">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>
@@ -50,9 +53,9 @@ namespace NextGenSpice.LargeSignal.Devices
             capacitorStamper.Register(adapter, Anode, Cathode);
             voltage.Register(adapter, Anode, Cathode);
 
-            gmin = Parameters.MinimalResistance ?? context.CircuitParameters.MinimalResistance;
+            gmin = Parameters.MinimalResistance ?? context.SimulationParameters.MinimalResistance;
             initialConditionCapacitor = true;
-            IntegrationMethod = context.CircuitParameters.IntegrationMethodFactory.CreateInstance();
+            IntegrationMethod = context.SimulationParameters.IntegrationMethodFactory.CreateInstance();
 
             Voltage = DefinitionDevice.VoltageHint;
 
@@ -71,22 +74,7 @@ namespace NextGenSpice.LargeSignal.Devices
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(ISimulationContext context)
         {
-            var vd = voltage.GetValue() - Parameters.SeriesResistance * Current;
-            ApplyLinearizedModel(context, vd);
-        }
-
-        /// <summary>This method is called each time an equation is solved.</summary>
-        /// <param name="context">Context of current simulation.</param>
-        public override void OnEquationSolution(ISimulationContext context)
-        {
-            Voltage = voltage.GetValue();
-        }
-
-        /// <summary>Applies linarized diode model to the equation system.</summary>
-        /// <param name="context"></param>
-        /// <param name="vd"></param>
-        private void ApplyLinearizedModel(ISimulationContext context, double vd)
-        {
+            var vd = Voltage - Parameters.SeriesResistance * Current;
             var (id, geq, cd) = GetModelValues(vd);
             var ieq = id - geq * vd;
 
@@ -102,6 +90,31 @@ namespace NextGenSpice.LargeSignal.Devices
 
             Voltage = vd;
             Current = id + ic;
+            Conductance = geq;
+        }
+
+        /// <summary>This method is called each time an equation is solved.</summary>
+        /// <param name="context">Context of current simulation.</param>
+        public override void OnEquationSolution(ISimulationContext context)
+        {
+            var newvolt = voltage.GetValue();
+
+            var dVolt = newvolt - Voltage;
+            var dCurr = Conductance * dVolt;
+
+            var reltor = context.SimulationParameters.RelativeTolerance;
+            var abstol = context.SimulationParameters.AbsolutTolerane;
+
+            //  compare and set flag
+            var tol = reltor * Math.Max(Math.Abs(Current), Math.Abs(Current + dCurr)) + abstol;
+            if (Math.Abs(dCurr) > tol)
+            {
+                context.ReportNotConverged(this);
+            }
+
+
+            var vcrit = DeviceHelpers.PnCriticalVoltage(Parameters.SaturationCurrent, vt);
+            Voltage = DeviceHelpers.PnLimitVoltage(newvolt, Voltage, vt, vcrit);
         }
 
         /// <summary>
@@ -135,8 +148,6 @@ namespace NextGenSpice.LargeSignal.Devices
             var bv = Parameters.ReverseBreakdownVoltage;
 
             double id, geq;
-            double vcrit = DeviceHelpers.PnCriticalVoltage(iss, vt);
-            vd = DeviceHelpers.PnLimitVoltage(vd, Voltage, vt, vcrit);
 
             if (vd >= smallBiasTreshold)
             {

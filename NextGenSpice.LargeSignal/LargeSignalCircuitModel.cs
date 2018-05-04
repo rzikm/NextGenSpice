@@ -19,7 +19,7 @@ namespace NextGenSpice.LargeSignal
         /// <summary>
         /// Set of device independent circuit parameters.
         /// </summary>
-        public CircuitParameters CircuitParameters { get; }
+        public SimulationParameters SimulationParameters { get; }
 
         private double[] currentSolution;
         private double[] previousSolution;
@@ -32,7 +32,7 @@ namespace NextGenSpice.LargeSignal
             NodeVoltages = new double[this.initialVoltages.Length];
             this.devices = devices.ToArray();
             initVoltProxies = new List<IEquationSystemCoefficientProxy>();
-            CircuitParameters = new CircuitParameters();
+            SimulationParameters = new SimulationParameters();
 
             deviceTagLookup = devices.Where(e => e.DefinitionDevice.Tag != null).ToDictionary(e => e.DefinitionDevice.Tag);
             deviceLookup = devices.ToDictionary(e => e.DefinitionDevice);
@@ -129,18 +129,21 @@ namespace NextGenSpice.LargeSignal
 
             if (!EstablishDcBias_Internal())
                 throw new NonConvergenceException();
-
+            var iterCount = LastNonLinearIterationCount;
+            LastNonLinearIterationCount = 0;
+            
             // rerun without initial voltages
             if (!initCond && !EstablishDcBias_Internal())
                 throw new NonConvergenceException();
 
+            LastNonLinearIterationCount += iterCount;
             OnDcBiasEstablished();
         }
 
         private void EnsureInitialized()
         {
             if (context != null) return;
-            context = new SimulationContext(CircuitParameters);
+            context = new SimulationContext(SimulationParameters);
 
             // build equation system
             equationSystemAdapter = new EquationSystemAdapter(NodeCount);
@@ -179,28 +182,20 @@ namespace NextGenSpice.LargeSignal
             LastNonLinearIterationCount = 0;
             LastNonLinearIterationDelta = 0;
 
-            UpdateEquationSystem();
-            SolveAndUpdateVoltages();
-
-            double delta;
+            //            UpdateEquationSystem();
+            //            SolveAndUpdateVoltages();
 
             do
             {
-                delta = 0;
+                if (LastNonLinearIterationCount++ == MaxDcPointIterations) return false;
+
+                // clear flag;
+                context.Converged = true;
 
                 UpdateEquationSystem();
                 SolveAndUpdateVoltages();
 
-                for (var i = 0; i < previousSolution.Length; i++)
-                {
-                    var d = previousSolution[i] - currentSolution[i];
-                    delta += d * d;
-                }
-
-                if (++LastNonLinearIterationCount == MaxDcPointIterations) return false;
-            } while (delta > NonlinearIterationEpsilon * NonlinearIterationEpsilon);
-
-            LastNonLinearIterationDelta = Math.Sqrt(delta);
+            } while (!context.Converged);
 
             return true;
         }
@@ -244,15 +239,22 @@ namespace NextGenSpice.LargeSignal
 
         private class SimulationContext : ISimulationContext
         {
-            public SimulationContext(CircuitParameters parameters)
+            public SimulationContext(SimulationParameters parameters)
             {
-                CircuitParameters = parameters;
+                SimulationParameters = parameters;
             }
 
             public double TimePoint { get; set; }
             public double TimeStep { get; set; }
 
-            public CircuitParameters CircuitParameters { get; }
+            public SimulationParameters SimulationParameters { get; }
+
+            public bool Converged { get; set; }
+
+            public void ReportNotConverged(ILargeSignalDevice device)
+            {
+                Converged = false;
+            }
         }
     }
 }
