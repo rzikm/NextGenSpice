@@ -26,9 +26,9 @@ namespace NextGenSpice.Numerics
             for (var i = 0; i < size; i++)
             {
                 for (var j = 0; j < size; j++)
-                    Trace.Write($"{Convert.ToDouble(m[i, j]),10:G4} ");
+                    Trace.Write($"{Convert.ToDouble(m[i, j]),10:G2} ");
 
-                Trace.WriteLine($"| {Convert.ToDouble(b[i]),10:G4}");
+                Trace.WriteLine($"| {Convert.ToDouble(b[i]),10:G2}");
             }
 
             Trace.WriteLine("-----------------------------------------------------");
@@ -46,11 +46,13 @@ namespace NextGenSpice.Numerics
         /// <param name="x">The output array for solution x.</param>
         public static void Solve(Matrix<double> a, double[] b, double[] x)
         {
+            PrintSystem(a,b);
 #if native_gauss
             Solve_Native_double(a, b, x);
 #else
             Solve_Managed_double(a, b, x);
 #endif
+            PrintSolution(b);
         }
 
 
@@ -63,11 +65,15 @@ namespace NextGenSpice.Numerics
         /// <param name="x">The output array for solution x.</param>
         public static void Solve(Matrix<qd_real> a, qd_real[] b, qd_real[] x)
         {
+            PrintSystem(a,b);
 #if native_gauss
             Solve_Native_qd(a, b, x);
 #else
             Solve_Managed_qd(a, b, x);
 #endif
+            PrintSolution(b.Select(e => (double)e).ToArray());
+
+
         }
 
         public static void Solve_Managed_qd(Matrix<qd_real> m, qd_real[] b, qd_real[] x)
@@ -79,7 +85,6 @@ namespace NextGenSpice.Numerics
 
             var size = m.Size;
 
-            PrintSystem(m, b);
 
             for (var i = 0; i < size - 1; i++)
             {
@@ -108,8 +113,6 @@ namespace NextGenSpice.Numerics
                     b[i] = tmp;
                 }
 
-                //                PrintSystem(m, b);
-
 
                 // eliminate current variable in all columns
                 for (var k = i + 1; k < size; k++)
@@ -123,8 +126,6 @@ namespace NextGenSpice.Numerics
                     // b vector
                     b[k] += c * b[i];
                 }
-
-                //                PrintSystem(m, b);
             }
 
 
@@ -143,7 +144,6 @@ namespace NextGenSpice.Numerics
             }
 
             b.CopyTo(x, 0);
-            PrintSolution(b.Select(e => (double) e).ToArray());
         }
 
 
@@ -171,11 +171,13 @@ namespace NextGenSpice.Numerics
         /// <param name="x">The output array for solution x.</param>
         public static void Solve(Matrix<dd_real> a, dd_real[] b, dd_real[] x)
         {
+//            PrintSystem(a,b);
 #if native_gauss
             Solve_Native_dd(a, b, x);
 #else
             Solve_Managed_dd(a, b, x);
 #endif
+            PrintSolution(b.Select(e => (double) e).ToArray());
         }
 
         public static void Solve_Managed_dd(Matrix<dd_real> m, dd_real[] b, dd_real[] x)
@@ -216,9 +218,6 @@ namespace NextGenSpice.Numerics
                     b[i] = tmp;
                 }
 
-//                PrintSystem(m, b);
-
-
                 // eliminate current variable in all columns
                 for (var k = i + 1; k < size; k++)
                 {
@@ -231,8 +230,6 @@ namespace NextGenSpice.Numerics
                     // b vector
                     b[k] += c * b[i];
                 }
-
-//                PrintSystem(m, b);
             }
 
 
@@ -251,7 +248,6 @@ namespace NextGenSpice.Numerics
             }
 
             b.CopyTo(x, 0);
-            PrintSolution(b.Select(e => (double) e).ToArray());
         }
 
 
@@ -274,8 +270,6 @@ namespace NextGenSpice.Numerics
         public static void Solve_Managed_double(Matrix<double> m, double[] b, double[] x)
         {
             var size = m.Size;
-
-            PrintSystem(m, b);
 
             for (var i = 0; i < size - 1; i++)
             {
@@ -304,9 +298,6 @@ namespace NextGenSpice.Numerics
                     b[i] = tmp;
                 }
 
-                //                PrintSystem(m, b);
-
-
                 // eliminate current variable in all columns
                 for (var k = i + 1; k < size; k++)
                 {
@@ -319,8 +310,6 @@ namespace NextGenSpice.Numerics
                     // b vector
                     b[k] += c * b[i];
                 }
-
-//                PrintSystem(m, b);
             }
 
 
@@ -338,12 +327,9 @@ namespace NextGenSpice.Numerics
                     b[k] -= m[k, i] * b[i];
                     m[k, i] = 0;
                 }
-
-//                PrintSystem(m, b);
             }
 
             b.CopyTo(x, 0);
-            PrintSolution(b);
         }
 
         public static void Solve_Native_double(Matrix<double> m, double[] b, double[] x)

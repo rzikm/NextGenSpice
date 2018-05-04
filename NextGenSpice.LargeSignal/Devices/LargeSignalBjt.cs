@@ -6,6 +6,7 @@ using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
 using System;
 using System.Collections.Generic;
+using System.Net;
 
 namespace NextGenSpice.LargeSignal.Devices
 {
@@ -135,15 +136,65 @@ namespace NextGenSpice.LargeSignal.Devices
         public override void ApplyModelValues(ISimulationContext context)
         {
             // calculate values according to Gummel-Poon model
+            // for details see http://qucs.sourceforge.net/tech/node70.html
 
-
+            var UbeCrit = DeviceHelpers.PnCriticalVoltage(iS, nF * vT);
+            var UbcCrit = DeviceHelpers.PnCriticalVoltage(iS, nR * vT);
 
             var Ube = vbe.GetValue();
             var Ubc = vbc.GetValue();
-            var Uce = Ube - Ubc;
+            var Uce = Ubc - Ube;
 
-            //            var  (gpi, gmu, gmf, gmr, iT) = CalculateModelValues();
-            var (gpi, gmu, gm, go, iT) = CalculateModelValues();
+            VoltageBaseEmitter = Ube = DeviceHelpers.PnLimitVoltage(Ube, VoltageBaseEmitter, nF * vT, UbeCrit);
+            VoltageBaseCollector = Ubc = DeviceHelpers.PnLimitVoltage(Ubc, VoltageBaseCollector, nR * vT, UbcCrit);
+
+            double iF, gif;
+            DeviceHelpers.PnJunction(iS, Ube, nF * vT, out iF, out gif);
+            double iBEn, gBEn;
+            DeviceHelpers.PnJunction(iSe, Ube, nE * vT, out iBEn, out gBEn);
+
+            double iBEi = iF / bF;
+            double gBEi = gif / bF;
+
+            double iBE = iBEi + iBEn;
+            double gBE = gBEi + gBEn;
+            CurrentBaseEmitter = iBE;
+
+            double iR, gir;
+            DeviceHelpers.PnJunction(iS, Ubc, nR * vT, out iR, out gir);
+            double iBCn, gBCn;
+            DeviceHelpers.PnJunction(iSc, Ubc, nC * vT, out iBCn, out gBCn);
+
+            double iBCi = iR / bR;
+            double gBCi = gir / bR;
+
+            double iBC = iBCi + iBCn;
+            double gBC = gBCi + gBCn;
+            CurrentBaseCollector = iBC;
+
+            var q1 = 1 / (1 - Ubc / vAf - Ube / vAr); // shouldn't it be * vaf, *var
+            var q2 = iF / iKf + iR / iKr;
+
+            var sqrt = Math.Sqrt(1 + 4 * q2);
+            var qB = q1 / 2 * (1 + sqrt);
+
+            var dQdbUbe = q1 * (qB / vAr + gif / (iKf * sqrt)); // shouldn't it be * vaf, *var
+            var dQbdUbc = q1 * (qB / vAf + gir / (iKr * sqrt));
+
+            var iT = (iF - iR) / qB;
+
+            var gmf = (gif - iT * dQdbUbe) / qB;
+            var gmr = (gir - iT * dQbdUbc) / qB;
+
+            var go = -gmr - gmin;
+            var gm = gmf + gmr;
+
+            var gpi = gBE + gmin;
+            var gmu = gBC + gmin;
+
+            // calculate terminal currents
+            CurrentCollector = iT - 1 / bR * iR;
+            CurrentEmitter = -iT - 1 / bF * iF;
 
             var cc = CurrentCollector;
             var cb = CurrentBaseEmitter;
@@ -157,17 +208,11 @@ namespace NextGenSpice.LargeSignal.Devices
 
             CurrentBase = CurrentBaseEmitter + CurrentBaseCollector;
 
-//            var iB = (-ieqB - ieqC) * polarity;
-//            var iC = (ieqC - ieqE) * polarity;
-//            var iE = (ieqB + ieqE) * polarity;
-
             var iC = -ceqbc;
             var iB = ceqbe + ceqbc;
             var iE = -ceqbe;
 
-            stamper.Stamp(gpi, gmu, gm, go, iB , iC ,
-                //            stamper.Stamp(gpi, gmu, gmf, gmr, (-ieqB - ieqC) * polarity, (ieqC - ieqE) * polarity,
-                iE );
+            stamper.Stamp(gpi, gmu, gm, -go, iB , iC, iE );
         }
 
         /// <summary>This method is called each time an equation is solved.</summary>
