@@ -83,7 +83,7 @@ namespace NextGenSpice.Parser.Statements.Devices
             if (RawStatement.Length < 4) return; // nothing more to do here
 
             ICircuitDefinitionDevice device;
-            if (char.IsDigit(RawStatement[3].Value[0])) // constant source
+            if (char.IsDigit(RawStatement[3].Value[0]) || RawStatement[3].Value[0] == '-' || RawStatement[3].Value[0] == '+') // constant source
             {
                 var val = GetValue(3);
                 device = GetDevice(new ConstantBehavior {Value = val}, name);
