@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NextGenSpice.Core.Exceptions;
@@ -13,7 +14,7 @@ namespace NextGenSpice
     {
         private static void Main(string[] args)
         {
-//            Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
+            Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
             if (args.Length != 1)
             {
                 Console.Error.WriteLine("Usage: NextGenSpice <input file>");

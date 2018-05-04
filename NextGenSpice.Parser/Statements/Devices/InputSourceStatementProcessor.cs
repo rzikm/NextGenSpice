@@ -64,12 +64,12 @@ namespace NextGenSpice.Parser.Statements.Devices
             sffmMapper.Map(c => c.ModulationIndex, 3);
             sffmMapper.Map(c => c.FrequencySignal, 4);
 
-            amMapper.Map(c => c.SignalAmplitude, 0);
-            amMapper.Map(c => c.FrequencyCarrier, 1);
+            amMapper.Map(c => c.Amplitude, 0);
+            amMapper.Map(c => c.DcOffset, 1);
             amMapper.Map(c => c.FrequencyModulation, 2);
-            amMapper.Map(c => c.ModulationIndex, 3);
-            amMapper.Map(c => c.PhaseOffset, 4, v => v / 180.0 * Math.PI); // convert from degrees to radians
-            amMapper.Map(c => c.Delay, 5);
+            amMapper.Map(c => c.FrequencyCarrier, 3);
+            amMapper.Map(c => c.Delay, 4);
+            amMapper.Map(c => c.PhaseOffset, 5, v => v / 180.0 * Math.PI); // convert from degrees to radians
 
             dcMapper.Map(c => c.Value, 0);
         }

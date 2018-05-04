@@ -7,9 +7,9 @@ namespace NextGenSpice.LargeSignal.Stamping
         private ConductanceStamper gbc_;
         private ConductanceStamper gbe_;
 
-        private CurrentStamper ibe;
-        private CurrentStamper ibc;
-        private CurrentStamper ice;
+        private IEquationSystemCoefficientProxy ib;
+        private IEquationSystemCoefficientProxy ic;
+        private IEquationSystemCoefficientProxy ie;
 
         private VccsStamper gmf_;
         private ConductanceStamper gmr_;
@@ -20,9 +20,7 @@ namespace NextGenSpice.LargeSignal.Stamping
             gbc_ = new ConductanceStamper();
             gbe_ = new ConductanceStamper();
 
-            ibe = new CurrentStamper();
-            ibc = new CurrentStamper();
-            ice = new CurrentStamper();
+            
 
             gmf_ = new VccsStamper();
             gmr_ = new ConductanceStamper();
@@ -42,9 +40,12 @@ namespace NextGenSpice.LargeSignal.Stamping
             gmf_.Register(adapter, nCollector, nEmitter, nBase, nEmitter);
             gmr_.Register(adapter, nEmitter, nCollector);
 
-            ibe.Register(adapter, nBase, nEmitter);
-            ibc.Register(adapter, nBase, nCollector);
-            ice.Register(adapter, nCollector, nEmitter);
+//            ibe.Register(adapter, nBase, nEmitter);
+//            ibc.Register(adapter, nBase, nCollector);
+//            ice.Register(adapter, nCollector, nEmitter);
+            ib = adapter.GetRightHandSideCoefficientProxy(nBase);
+            ic = adapter.GetRightHandSideCoefficientProxy(nCollector);
+            ie = adapter.GetRightHandSideCoefficientProxy(nEmitter);
         }
 
         /// <summary>Stamps the device characteristics onto the equation system through the registered proxies.</summary>
@@ -58,9 +59,9 @@ namespace NextGenSpice.LargeSignal.Stamping
 
             gmr_.Stamp(go);
 
-            ibe.Stamp(iB);
-            ibc.Stamp(iC);
-            ice.Stamp(iE);
+            ib.Add(iB);
+            ic.Add(iC);
+            ie.Add(iE);
         }
     }
 

@@ -87,7 +87,7 @@ namespace NextGenSpice.LargeSignal.Devices
         private void CacheModelParams()
         {
             vT = PhysicalConstants.Boltzmann *
-                 PhysicalConstants.CelsiusToKelvin(27) /
+                 PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
                  PhysicalConstants.DevicearyCharge;
 
             iS = Parameters.SaturationCurrent;
@@ -145,15 +145,29 @@ namespace NextGenSpice.LargeSignal.Devices
             //            var  (gpi, gmu, gmf, gmr, iT) = CalculateModelValues();
             var (gpi, gmu, gm, go, iT) = CalculateModelValues();
 
+            var cc = CurrentCollector;
+            var cb = CurrentBaseEmitter;
+
+            var ceqbe = polarity * (cc + cb - Ube * (gm + go + gpi) + Ubc * go);
+            var ceqbc = polarity * (-cc + Ube * (gm + go) - Ubc * (gmu + go));
+
             var ieqB = CurrentBaseEmitter - Ube * gpi;
             var ieqC = CurrentBaseCollector - Ubc * gmu;
             var ieqE = iT - Ube * gm - Uce * go;
 
             CurrentBase = CurrentBaseEmitter + CurrentBaseCollector;
 
-            stamper.Stamp(gpi, gmu, gm, go, (-ieqB - ieqC) , (ieqC - ieqE) ,
+//            var iB = (-ieqB - ieqC) * polarity;
+//            var iC = (ieqC - ieqE) * polarity;
+//            var iE = (ieqB + ieqE) * polarity;
+
+            var iC = -ceqbc;
+            var iB = ceqbe + ceqbc;
+            var iE = -ceqbe;
+
+            stamper.Stamp(gpi, gmu, gm, go, iB , iC ,
                 //            stamper.Stamp(gpi, gmu, gmf, gmr, (-ieqB - ieqC) * polarity, (ieqC - ieqE) * polarity,
-                (ieqB + ieqE) );
+                iE );
         }
 
         /// <summary>This method is called each time an equation is solved.</summary>
@@ -234,7 +248,7 @@ namespace NextGenSpice.LargeSignal.Devices
             var gmf = (gif - iT * dQdbUbe) / qB;
             var gmr = (gir - iT * dQbdUbc) / qB;
 
-            var go = -gmr;
+            var go = -gmr - gmin;
             var gm = gmf + gmr;
 
             var gpi = gBE + gmin;
@@ -245,7 +259,7 @@ namespace NextGenSpice.LargeSignal.Devices
             CurrentEmitter = -iT - 1 / bF * iF;
 
             //            return (gpi, gmu, gmf, gmr, iT);
-            return (gpi, gmu, gm, go, iT);
+            return (gpi, gmu, gm, -go, iT);
         }
     }
 }

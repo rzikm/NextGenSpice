@@ -61,6 +61,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                 Map(p => p.ForwardBiasDepletionCapacitanceCoefficient, "FC");
                 Map(p => p.ReverseBreakdownVoltage, "BV");
                 Map(p => p.ReverseBreakdownCurrent, "IBV");
+                Map(p => p.NominalTemperature, "TNOM");
             }
 
             /// <summary>Discriminator of handled model type.</summary>

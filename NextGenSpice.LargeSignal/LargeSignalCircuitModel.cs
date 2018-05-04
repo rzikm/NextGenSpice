@@ -172,10 +172,10 @@ namespace NextGenSpice.LargeSignal
             // allocate temporary arrays
             currentSolution = new double[equationSystemAdapter.VariableCount];
             previousSolution = new double[equationSystemAdapter.VariableCount];
-//            var system = equationSystemAdapter.system.Solution;
-//            system[2] = new dd_real(7.934391e-01);
-//            system[1] = new dd_real(2.896719e+00);
-//            system[3] = new dd_real(5);
+            var system = equationSystemAdapter.system.Solution;
+            system[2] = new dd_real(7.934391e-01);
+            system[1] = new dd_real(2.896719e+00);
+            system[3] = new dd_real(5);
             
         }
 

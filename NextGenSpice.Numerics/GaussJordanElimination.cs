@@ -1,4 +1,4 @@
-#undef native_gauss
+//#undef native_gauss
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -216,7 +216,7 @@ namespace NextGenSpice.Numerics
                     b[i] = tmp;
                 }
 
-                PrintSystem(m, b);
+//                PrintSystem(m, b);
 
 
                 // eliminate current variable in all columns
@@ -232,7 +232,7 @@ namespace NextGenSpice.Numerics
                     b[k] += c * b[i];
                 }
 
-                PrintSystem(m, b);
+//                PrintSystem(m, b);
             }
 
 
@@ -320,7 +320,7 @@ namespace NextGenSpice.Numerics
                     b[k] += c * b[i];
                 }
 
-                PrintSystem(m, b);
+//                PrintSystem(m, b);
             }
 
 
@@ -339,7 +339,7 @@ namespace NextGenSpice.Numerics
                     m[k, i] = 0;
                 }
 
-                PrintSystem(m, b);
+//                PrintSystem(m, b);
             }
 
             b.CopyTo(x, 0);

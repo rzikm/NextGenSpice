@@ -26,9 +26,9 @@ namespace NextGenSpice.LargeSignal.Behaviors
             var phaseCarrier = c * Parameters.FrequencyCarrier;
             var phaseModulation = c * Parameters.FrequencyModulation;
 
-            var m = Parameters.ModulationIndex;
 
-            return Parameters.SignalAmplitude * Math.Sin(phaseCarrier) * (1 + m * Math.Cos(phaseModulation));
+            return time < 0? 0 : Parameters.Amplitude * (Parameters.DcOffset + Math.Sin(phaseModulation) + Parameters.PhaseOffset) *
+                   Math.Sin(phaseCarrier + Parameters.PhaseOffset);
         }
     }
 }

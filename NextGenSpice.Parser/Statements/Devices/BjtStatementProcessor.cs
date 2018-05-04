@@ -86,7 +86,7 @@ namespace NextGenSpice.Parser.Statements.Devices
                 Map(x => x.CurrentBaseResistanceMidpoint, "XTF");
                 Map(x => x.VbcDependenceOfTransitTime, "VTF");
                 Map(x => x.ForwardTransitHighCurrent, "ITF");
-                //                Map(x => x., "PTF");
+
                 Map(x => x.CollectorCapacitance, "CJC");
                 Map(x => x.CollectorPotential, "VJC");
                 Map(x => x.CollectorExponentialFactor, "MJC");

@@ -18,7 +18,7 @@ namespace NextGenSpice.Core.Devices.Parameters
             JunctionGradingCoefficient = 0.25,
             JunctionPotential = 20,
             ReverseBreakdownVoltage = 75,
-            SeriesResistance = 0.568,
+            SeriesResistance = 0.568
         };
 
         /// <summary>Saturation current (from diode equation) in amperes.</summary>
@@ -30,7 +30,7 @@ namespace NextGenSpice.Core.Devices.Parameters
         /// <summary>Emission coefficient of the diode, also called Ideality coefficient.</summary>
         public double EmissionCoefficient { get; set; } = 1;
 
-
+        /// <summary>Transit time of the PN junction in seconds.</summary>
         public double TransitTime { get; set; }
 
         /// <summary>Zero-bias junction capacitance of the diode in farads.</summary>

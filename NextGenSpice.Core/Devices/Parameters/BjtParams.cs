@@ -83,9 +83,6 @@ namespace NextGenSpice.Core.Devices.Parameters
         /// <summary>Ideal forward transit time in seconds;</summary>
         public double ForwardTransitTime { get; set; } = 0;
 
-        /// <summary>Coefficient for bias dependence of forward transit time.</summary>
-        public double ForwardTransitBiasCoefficient { get; set; } = 0;
-
         /// <summary>Voltage describing VBC dependence of transit time in volts.</summary>
         public double VbcDependenceOfTransitTime { get; set; } = double.PositiveInfinity;
 
@@ -97,9 +94,6 @@ namespace NextGenSpice.Core.Devices.Parameters
 
         /// <summary>Base-substrate zero-bias depletion capacitance in farrads.</summary>
         public double SubstrateCapacitance { get; set; } = 0;
-
-        /// <summary>Base-substrate junction built-in potential in volts.</summary>
-        public double SubstratePotential { get; set; } = 0.75;
 
         /// <summary>Base-substrate junction exponential factor.</summary>
         public double SubstrateExponentialFactor { get; set; } = 0;
