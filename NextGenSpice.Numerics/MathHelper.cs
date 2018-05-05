@@ -1,3 +1,5 @@
+using System;
+
 namespace NextGenSpice.Numerics
 {
     /// <summary>Defines helper methods for mathematic operations.</summary>
