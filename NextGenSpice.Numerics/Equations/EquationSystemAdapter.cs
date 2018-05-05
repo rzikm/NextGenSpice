@@ -5,21 +5,19 @@ using System;
 using System.Collections.Generic;
 using NextGenSpice.Numerics.Precision;
 
+
 namespace NextGenSpice.Numerics.Equations
 {
     /// <summary>Class used to build and</summary>
-    /// nonlinearDevices
     public class EquationSystemAdapter : IEquationSystemAdapter
     {
-        /// <summary>Number of variables in the equation system</summary>
+        /// <summary>Number of variables in the equation system;</summary>
         public int VariableCount { get; private set; }
 
         private readonly Dictionary<(int, int), MatrixProxy> matrixProxies;
         private readonly Dictionary<int, RhsProxy> rhsProxies;
         private readonly Dictionary<int, SolutionProxy> solutionProxies;
 
-        /// <summary>The underlying equation system implementation.</summary>
-        public IEquationSystem EquationSystem => system;
 
 #if dd_precision
         private DdEquationSystem system;
@@ -113,17 +111,19 @@ namespace NextGenSpice.Numerics.Equations
             if (system == null) throw new InvalidOperationException("Equation system must be frozen before accessing.");
             if (target.Length != VariableCount) throw new ArgumentException("The target array is of different size.");
             system.Solve();
-            for (var i = 0; i < target.Length; i++) target[i] = (double) system.Solution[i];
+            for (var i = 0; i < target.Length; i++) target[i] = (double)system.Solution[i];
         }
 
-        /// <summary>Enforces value 0 of a particular eqation system variable.</summary>
+        /// <summary>
+        /// Enforces value 0 of a particular eqation system variable.
+        /// </summary>
         /// <param name="index"></param>
         public void Anullate(int index)
         {
             var m = system.Matrix;
 
 #if dd_precision
-            for (var i = 0; i < m.Size; i++)
+            for (int i = 0; i < m.Size; i++)
             {
                 m[i, index] = dd_real.Zero;
                 m[index, i] = dd_real.Zero;
@@ -221,14 +221,15 @@ namespace NextGenSpice.Numerics.Equations
 
             public double GetValue()
             {
-                return (double) system.Solution[row];
+                return (double)system.Solution[row];
             }
         }
 
         public void Clear()
         {
-            for (var i = 0; i < system.Matrix.RawData.Length; ++i)
+            for (int i = 0; i < system.Matrix.RawData.Length; ++i)
             {
+
 #if dd_precision
                 system.Matrix.RawData[i] = new dd_real(0);
 #elif qd_precision
@@ -238,8 +239,9 @@ namespace NextGenSpice.Numerics.Equations
 #endif
             }
 
-            for (var i = 0; i < system.RightHandSide.Length; ++i)
+            for (int i = 0; i < system.RightHandSide.Length; ++i)
             {
+
 #if dd_precision
                 system.RightHandSide[i] = new dd_real(0);
 #elif qd_precision

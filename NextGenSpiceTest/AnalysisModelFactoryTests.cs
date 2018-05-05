@@ -56,6 +56,12 @@ namespace NextGenSpice.Test
             {
             }
 
+            /// <summary>Gets metadata about this device interconnections in the circuit.</summary>
+            /// <returns></returns>
+            public override IEnumerable<CircuitBranchMetadata> GetBranchMetadata()
+            {
+                return Enumerable.Empty<CircuitBranchMetadata>();
+            }
         }
 
         private interface ITestDeviceModel : IAnalysisDeviceModel<TestAnalysisCircuitModel>
