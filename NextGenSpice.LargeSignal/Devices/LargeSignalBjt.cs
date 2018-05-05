@@ -98,7 +98,7 @@ namespace NextGenSpice.LargeSignal.Devices
             var iS = Parameters.SaturationCurrent;
             var nF = Parameters.ForwardEmissionCoefficient;
             var nR = Parameters.ReverseEmissionCoefficient;
-//            VoltageBaseCollector = DeviceHelpers.PnCriticalVoltage(iS, nF * vT);
+            VoltageBaseCollector = DeviceHelpers.PnCriticalVoltage(iS, nF * vT);
 //            VoltageBaseEmitter = DeviceHelpers.PnCriticalVoltage(iS, nR * vT);
 
             CacheModelParams();
@@ -146,22 +146,23 @@ namespace NextGenSpice.LargeSignal.Devices
 
             DeviceHelpers.PnJunction(iS, Ube, nF * vT, out var iF, out var gif);
             DeviceHelpers.PnJunction(iSe, Ube, nE * vT, out var iBEn, out var gBEn);
-
+            gif += gmin;
+            
             var iBEi = iF / bF;
             var gBEi = gif / bF;
 
             var iBE = iBEi + iBEn;
-            var gBE = gBEi + gBEn;
+            var gpi = gBEi + gBEn;
             CurrentBaseEmitter = iBE;
 
             DeviceHelpers.PnJunction(iS, Ubc, nR * vT, out var iR, out var gir);
             DeviceHelpers.PnJunction(iSc, Ubc, nC * vT, out var iBCn, out var gBCn);
 
-            double iBCi = iR / bR;
-            double gBCi = gir / bR;
+            var iBCi = iR / bR;
+            var gBCi = gir / bR;
 
-            double iBC = iBCi + iBCn;
-            double gBC = gBCi + gBCn;
+            var iBC = iBCi + iBCn;
+            var gmu = gBCi + gBCn;
             CurrentBaseCollector = iBC;
 
             var q1 = 1 / (1 - Ubc / vAf - Ube / vAr);
@@ -178,12 +179,10 @@ namespace NextGenSpice.LargeSignal.Devices
             var gmf = (gif - iT * dQdbUbe) / qB;
             var gmr = (gir - iT * dQbdUbc) / qB;
 
-            var go = gmr + gmin;
+            var go = -gmr;
+            var go2 = -gmr;
             var gm = gmf + gmr;
-
-            var gpi = gBE + gmin;
-            var gmu = gBC + gmin;
-
+            
             // calculate terminal currents
             CurrentCollector = iT - 1 / bR * iR;
             CurrentEmitter = -iT - 1 / bF * iF;
