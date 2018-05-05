@@ -9,5 +9,12 @@ namespace NextGenSpice.Test
         public SwitchDevice(string name = null) : base(name)
         {
         }
+
+        /// <summary>Gets metadata about this device interconnections in the circuit.</summary>
+        /// <returns></returns>
+        public override IEnumerable<CircuitBranchMetadata> GetBranchMetadata()
+        {
+            return Enumerable.Empty<CircuitBranchMetadata>();
+        }
     }
 }

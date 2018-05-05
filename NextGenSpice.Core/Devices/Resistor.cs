@@ -13,5 +13,12 @@ namespace NextGenSpice.Core.Devices
 
         /// <summary>Resistance of the device in ohms.</summary>
         public double Resistance { get; set; }
+
+        /// <summary>Gets metadata about this device interconnections in the circuit.</summary>
+        /// <returns></returns>
+        public override IEnumerable<CircuitBranchMetadata> GetBranchMetadata()
+        {
+            return Enumerable.Empty<CircuitBranchMetadata>();
+        }
     }
 }

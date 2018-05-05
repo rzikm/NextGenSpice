@@ -127,12 +127,6 @@ namespace NextGenSpice.Core.Devices.Parameters
 
         /// <summary>True if this is a PNP BJT model, otherwise this is a NPN model.</summary>
         public bool IsPnp { get; set; }
-        
-        /// <summary>
-        ///     Optional parameter - convergence aid for the simulation, if not set, global (circuits) GMIN parameter will be
-        ///     used.
-        /// </summary>
-        public double? MinimalResistance { get; set; }
 
         /// <summary>Creates a new object that is a copy of the current instance.</summary>
         /// <returns>A new object that is a copy of this instance.</returns>
