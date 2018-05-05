@@ -14,7 +14,7 @@ namespace NextGenSpice
     {
         private static void Main(string[] args)
         {
-            Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
+//            Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
 //            Trace.Listeners.Add(new TextWriterTraceListener(new StreamWriter("dump.txt")));
             if (args.Length != 1)
             {
