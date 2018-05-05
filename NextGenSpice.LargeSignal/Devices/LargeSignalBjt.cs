@@ -195,6 +195,14 @@ namespace NextGenSpice.LargeSignal.Devices
 
             CurrentBase = CurrentBaseEmitter + CurrentBaseCollector;
 
+            var ibeeq = iBE - gpi * Ube;
+            var ibceq = iBC - gmu * Ubc;
+            var iceeq = iT - gmf * Ube + gmr * Ubc;
+
+            var ic = ibceq - iceeq;
+            var ib = -ibeeq - ibceq;
+            var ie = ibeeq + iceeq;
+
             var iC = -ceqbc;
             var iB = ceqbe + ceqbc;
             var iE = -ceqbe;
@@ -204,7 +212,8 @@ namespace NextGenSpice.LargeSignal.Devices
             ConductancePi = gpi;
             ConductanceMu = gmu;
 
-            stamper.Stamp(gpi, gmu, gm, -go, iB, iC, iE);
+            stamper.Stamp(gpi, gmu, gm, go, ibeeq, ibceq, iceeq);
+//            stamper.Stamp(gpi, gmu, gm, -go, ib, ic, ie);
         }
 
         /// <summary>This method is called each time an equation is solved.</summary>

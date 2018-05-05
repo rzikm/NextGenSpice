@@ -31,9 +31,10 @@ vcc 3 0 5
             var v2 = model.NodeVoltages[result.NodeIds["2"]];
             var v3 = model.NodeVoltages[result.NodeIds["3"]];
 
-            Assert.Equal(2.89653326135722, v1, new DoubleComparer(1e-12));
-            Assert.Equal(0.79306652271697, v2, new DoubleComparer(1e-12));
-            Assert.Equal(5, v3, new DoubleComparer(1e-12));
+            var epsilon = 1e-5;
+            Assert.Equal(2.89653326135722, v1, new DoubleComparer(epsilon));
+            Assert.Equal(0.79306652271697, v2, new DoubleComparer(epsilon));
+            Assert.Equal(5, v3, new DoubleComparer(epsilon));
         }
     }
 }

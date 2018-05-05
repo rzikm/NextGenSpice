@@ -7,24 +7,31 @@ namespace NextGenSpice.LargeSignal.Stamping
         private ConductanceStamper gbc_;
         private ConductanceStamper gbe_;
 
-        private IEquationSystemCoefficientProxy ib;
-        private IEquationSystemCoefficientProxy ic;
-        private IEquationSystemCoefficientProxy ie;
+//        private IEquationSystemCoefficientProxy ib;
+//        private IEquationSystemCoefficientProxy ic;
+//        private IEquationSystemCoefficientProxy ie;
+
+
+        private CurrentStamper ibe;
+        private CurrentStamper ibc;
+        private CurrentStamper ice;
 
         private VccsStamper gmf_;
-        private ConductanceStamper gmr_;
-//        private VccsStamper gmr_;
+//        private ConductanceStamper gmr_;
+        private VccsStamper gmr_;
 
         public BjtTransistorStamper()
         {
             gbc_ = new ConductanceStamper();
             gbe_ = new ConductanceStamper();
 
-            
+            ibe = new CurrentStamper();
+            ibc = new CurrentStamper();
+            ice = new CurrentStamper();
 
             gmf_ = new VccsStamper();
-            gmr_ = new ConductanceStamper();
-//            gmr_ = new VccsStamper();
+//            gmr_ = new ConductanceStamper();
+            gmr_ = new VccsStamper();
         }
 
         /// <summary>Registeres the equation system coefficient proxies into the stamper.</summary>
@@ -38,30 +45,34 @@ namespace NextGenSpice.LargeSignal.Stamping
             gbe_.Register(adapter, nBase, nEmitter);
 
             gmf_.Register(adapter, nCollector, nEmitter, nBase, nEmitter);
-            gmr_.Register(adapter, nEmitter, nCollector);
+            gmr_.Register(adapter, nCollector, nEmitter, nEmitter, nCollector);
 
-//            ibe.Register(adapter, nBase, nEmitter);
-//            ibc.Register(adapter, nBase, nCollector);
-//            ice.Register(adapter, nCollector, nEmitter);
-            ib = adapter.GetRightHandSideCoefficientProxy(nBase);
-            ic = adapter.GetRightHandSideCoefficientProxy(nCollector);
-            ie = adapter.GetRightHandSideCoefficientProxy(nEmitter);
+            ibe.Register(adapter, nBase, nEmitter);
+            ibc.Register(adapter, nBase, nCollector);
+            ice.Register(adapter, nCollector, nEmitter);
+
+//            ib = adapter.GetRightHandSideCoefficientProxy(nBase);
+//            ic = adapter.GetRightHandSideCoefficientProxy(nCollector);
+//            ie = adapter.GetRightHandSideCoefficientProxy(nEmitter);
         }
 
         /// <summary>Stamps the device characteristics onto the equation system through the registered proxies.</summary>
-//        public void Stamp(double gBe, double gBc, double gmf, double gmr, double iB, double iC, double iE)
-        public void Stamp(double gBe, double gBc, double gm, double go, double iB, double iC, double iE)
+        public void Stamp(double gBe, double gBc, double gmf, double gmr, double ibeeq, double ibceq, double iceeq)
+//        public void Stamp(double gBe, double gBc, double gm, double go, double iB, double iC, double iE)
         {
             gbe_.Stamp(gBe);
             gbc_.Stamp(gBc);
 
-            gmf_.Stamp(gm);
+            gmf_.Stamp(gmf);
+            gmr_.Stamp(gmr);
 
-            gmr_.Stamp(go);
+            ibe.Stamp(ibeeq);
+            ibc.Stamp(ibceq);
+            ice.Stamp(iceeq);
 
-            ib.Add(iB);
-            ic.Add(iC);
-            ie.Add(iE);
+//            ib.Add(iB);
+//            ic.Add(iC);
+//            ie.Add(iE);
         }
     }
 

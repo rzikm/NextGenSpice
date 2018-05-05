@@ -1,4 +1,7 @@
 //#undef native_gauss
+#if DEBUG
+#define trace_dumpsolution
+#endif
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -17,7 +20,7 @@ namespace NextGenSpice.Numerics
 
 
 
-        [Conditional("DEBUG")]
+        [Conditional("trace_dumpmatrix")]
         public static void PrintSystem<T>(Matrix<T> m, T[] b) where T : struct
         {
             const char sep = '\t';
@@ -36,7 +39,7 @@ namespace NextGenSpice.Numerics
             Trace.WriteLine("-----------------------------------------------------");
         }
 
-        [Conditional("DEBUG")]
+        [Conditional("trace_dumpsolution")]
         private static void PrintSolution(double[] b)
         {
             Trace.WriteLine($"Solution: {string.Join(" ", b.Select(d => d.ToString("F")))}");
@@ -48,13 +51,13 @@ namespace NextGenSpice.Numerics
         /// <param name="x">The output array for solution x.</param>
         public static void Solve(Matrix<double> a, double[] b, double[] x)
         {
-            PrintSystem(a,b);
+//            PrintSystem(a,b);
 #if native_gauss
             Solve_Native_double(a, b, x);
 #else
             Solve_Managed_double(a, b, x);
 #endif
-            PrintSolution(b);
+//            PrintSolution(b);
         }
 
 
