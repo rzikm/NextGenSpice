@@ -4,7 +4,6 @@ using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.LargeSignal.NumIntegration;
 using NextGenSpice.LargeSignal.Stamping;
-using NextGenSpice.Numerics;
 using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Devices
@@ -54,12 +53,18 @@ namespace NextGenSpice.LargeSignal.Devices
             capacitorStamper.Register(adapter, Anode, Cathode);
             voltage.Register(adapter, Anode, Cathode);
 
+            gmin = Parameters.MinimalResistance ?? context.SimulationParameters.MinimalResistance;
             initialConditionCapacitor = true;
             IntegrationMethod = context.SimulationParameters.IntegrationMethodFactory.CreateInstance();
 
             Voltage = DefinitionDevice.VoltageHint;
 
-          
+            vt = Parameters.EmissionCoefficient * PhysicalConstants.Boltzmann *
+                 PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
+                 PhysicalConstants.DevicearyCharge;
+
+            smallBiasTreshold = -5 * vt;
+            capacitanceTreshold = Parameters.ForwardBiasDepletionCapacitanceCoefficient * Parameters.JunctionPotential;
         }
 
         /// <summary>
@@ -69,14 +74,6 @@ namespace NextGenSpice.LargeSignal.Devices
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(ISimulationContext context)
         {
-            vt = Parameters.EmissionCoefficient * PhysicalConstants.Boltzmann *
-                 PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
-                 PhysicalConstants.DevicearyCharge;
-
-            gmin = Parameters.MinimalResistance ?? context.SimulationParameters.MinimalResistance;
-            smallBiasTreshold = -5 * vt;
-            capacitanceTreshold = Parameters.ForwardBiasDepletionCapacitanceCoefficient * Parameters.JunctionPotential;
-
             var vd = Voltage - Parameters.SeriesResistance * Current;
             var (id, geq, cd) = GetModelValues(vd);
             var ieq = id - geq * vd;
@@ -100,22 +97,24 @@ namespace NextGenSpice.LargeSignal.Devices
         /// <param name="context">Context of current simulation.</param>
         public override void OnEquationSolution(ISimulationContext context)
         {
-            var vcrit = DeviceHelpers.PnCriticalVoltage(Parameters.SaturationCurrent, vt);
-            var newvolt = DeviceHelpers.PnLimitVoltage(voltage.GetValue(), Voltage, vt, vcrit);
+            var newvolt = voltage.GetValue();
 
             var dVolt = newvolt - Voltage;
             var dCurr = Conductance * dVolt;
 
-            var reltol = context.SimulationParameters.RelativeTolerance;
+            var reltor = context.SimulationParameters.RelativeTolerance;
             var abstol = context.SimulationParameters.AbsolutTolerane;
 
-            if (MathHelper.InTollerance(Current, Current + dCurr, abstol, reltol) ||
-                MathHelper.InTollerance(newvolt, Voltage, abstol, reltol))
+            //  compare and set flag
+            var tol = reltor * Math.Max(Math.Abs(Current), Math.Abs(Current + dCurr)) + abstol;
+            if (Math.Abs(dCurr) > tol)
             {
                 context.ReportNotConverged(this);
             }
-            
-            Voltage = newvolt;
+
+
+            var vcrit = DeviceHelpers.PnCriticalVoltage(Parameters.SaturationCurrent, vt);
+            Voltage = DeviceHelpers.PnLimitVoltage(newvolt, Voltage, vt, vcrit);
         }
 
         /// <summary>

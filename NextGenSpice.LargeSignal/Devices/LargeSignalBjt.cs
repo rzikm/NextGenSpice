@@ -7,15 +7,33 @@ using NextGenSpice.Numerics.Equations;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using NextGenSpice.Numerics;
 
 namespace NextGenSpice.LargeSignal.Devices
 {
     /// <summary>Large signal model for <see cref="Bjt" /> device.</summary>
     public class LargeSignalBjt : LargeSignalDeviceBase<Bjt>
     {
+        private double bF;
+        private double bR;
+
+        private double iKf;
+        private double iKr;
+        private double iS;
+        private double iSc;
+        private double iSe;
+        private double nC;
+        private double nE;
+
+        private double nF;
+        private double nR;
+
+        private double gmin;
+
+        private double polarity; // PNP vs NPN
         private readonly BjtTransistorStamper stamper;
 
+        private double vAf;
+        private double vAr;
         private readonly VoltageProxy vbe;
         private readonly VoltageProxy vbc;
 
@@ -77,6 +95,31 @@ namespace NextGenSpice.LargeSignal.Devices
 
         private void CacheModelParams()
         {
+            vT = PhysicalConstants.Boltzmann *
+                 PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
+                 PhysicalConstants.DevicearyCharge;
+
+            iS = Parameters.SaturationCurrent;
+            iSe = Parameters.EmitterSaturationCurrent;
+            iSc = Parameters.CollectorSaturationCurrent;
+
+            nF = Parameters.ForwardEmissionCoefficient;
+            nR = Parameters.ReverseEmissionCoefficient;
+            nE = Parameters.EmitterSaturationCoefficient;
+            nC = Parameters.CollectorSaturationCoefficient;
+
+            bF = Parameters.ForwardBeta;
+            bR = Parameters.ReverseBeta;
+
+            vAf = Parameters.ForwardEarlyVoltage;
+            vAr = Parameters.ReverseEarlyVoltage;
+
+            iKf = Parameters.ForwardCurrentCorner;
+            iKr = Parameters.ReverseCurrentCorner;
+
+            gmin = 1e-12;
+
+            polarity = Parameters.IsPnp ? 1 : -1;
         }
 
 
@@ -90,17 +133,6 @@ namespace NextGenSpice.LargeSignal.Devices
             vbc.Register(adapter, Base, Collector);
             vbe.Register(adapter, Base, Emitter);
 
-            vT = PhysicalConstants.Boltzmann *
-                 PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
-                 PhysicalConstants.DevicearyCharge;
-
-            // set init condition to help convergence
-            var iS = Parameters.SaturationCurrent;
-            var nF = Parameters.ForwardEmissionCoefficient;
-            var nR = Parameters.ReverseEmissionCoefficient;
-            VoltageBaseCollector = DeviceHelpers.PnCriticalVoltage(iS, nF * vT);
-            VoltageBaseEmitter = DeviceHelpers.PnCriticalVoltage(iS, nR * vT);
-
             CacheModelParams();
         }
 
@@ -111,39 +143,14 @@ namespace NextGenSpice.LargeSignal.Devices
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(ISimulationContext context)
         {
-            // cache params
-            vT = PhysicalConstants.Boltzmann *
-                 PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
-                 PhysicalConstants.DevicearyCharge;
+            // calculate values according to Gummel-Poon model
+            // for details see http://qucs.sourceforge.net/tech/node70.html
 
-            var iS = Parameters.SaturationCurrent;
-            var iSe = Parameters.EmitterSaturationCurrent;
-            var iSc = Parameters.CollectorSaturationCurrent;
-
-            var nF = Parameters.ForwardEmissionCoefficient;
-            var nR = Parameters.ReverseEmissionCoefficient;
-            var nE = Parameters.EmitterSaturationCoefficient;
-            var nC = Parameters.CollectorSaturationCoefficient;
-
-            var bF = Parameters.ForwardBeta;
-            var bR = Parameters.ReverseBeta;
-
-            var vAf = Parameters.ForwardEarlyVoltage;
-            var vAr = Parameters.ReverseEarlyVoltage;
-
-            var iKf = Parameters.ForwardCurrentCorner;
-            var iKr = Parameters.ReverseCurrentCorner;
-
-            var gmin = Parameters.MinimalResistance ?? context.SimulationParameters.MinimalResistance;
-
-            var polarity = Parameters.IsPnp ? 1 : -1;
 
             var Ube = VoltageBaseEmitter;
             var Ubc = VoltageBaseCollector;
-            
-            // calculate values according to Gummel-Poon model
-            // for details see http://qucs.sourceforge.net/tech/node70.html
-            
+            var Uce = Ubc - Ube;
+
             double iF, gif;
             DeviceHelpers.PnJunction(iS, Ube, nF * vT, out iF, out gif);
             double iBEn, gBEn;
@@ -174,7 +181,7 @@ namespace NextGenSpice.LargeSignal.Devices
             var sqrt = Math.Sqrt(1 + 4 * q2);
             var qB = q1 / 2 * (1 + sqrt);
 
-            var dQdbUbe = q1 * (qB / vAr + gif / (iKf * sqrt));
+            var dQdbUbe = q1 * (qB / vAr + gif / (iKf * sqrt)); 
             var dQbdUbc = q1 * (qB / vAf + gir / (iKr * sqrt));
 
             var iT = (iF - iR) / qB;
@@ -182,7 +189,7 @@ namespace NextGenSpice.LargeSignal.Devices
             var gmf = (gif - iT * dQdbUbe) / qB;
             var gmr = (gir - iT * dQbdUbc) / qB;
 
-            var go = gmr + gmin;
+            var go = -gmr - gmin;
             var gm = gmf + gmr;
 
             var gpi = gBE + gmin;
@@ -204,23 +211,18 @@ namespace NextGenSpice.LargeSignal.Devices
             var iB = ceqbe + ceqbc;
             var iE = -ceqbe;
 
-            stamper.Stamp(gpi, gmu, gm, -go, iB, iC, iE);
+            stamper.Stamp(gpi, gmu, gm, -go, iB , iC, iE );
         }
 
         /// <summary>This method is called each time an equation is solved.</summary>
         /// <param name="context">Context of current simulation.</param>
         public override void OnEquationSolution(ISimulationContext context)
         {
-            var iS = Parameters.SaturationCurrent;
-
-            var nF = Parameters.ForwardEmissionCoefficient;
-            var nR = Parameters.ReverseEmissionCoefficient;
-
             var UbeCrit = DeviceHelpers.PnCriticalVoltage(iS, nF * vT);
             var UbcCrit = DeviceHelpers.PnCriticalVoltage(iS, nR * vT);
 
-            var Ube = DeviceHelpers.PnLimitVoltage(vbe.GetValue(), VoltageBaseEmitter, nF * vT, UbeCrit);
-            var Ubc = DeviceHelpers.PnLimitVoltage(vbc.GetValue(), VoltageBaseCollector, nR * vT, UbcCrit);
+            var Ube = vbe.GetValue();
+            var Ubc = vbc.GetValue();
 
             var delvbe = Ube - VoltageBaseEmitter;
             var delvbc = Ubc - VoltageBaseCollector;
@@ -229,24 +231,25 @@ namespace NextGenSpice.LargeSignal.Devices
             var cc = CurrentCollector;
             var cb = CurrentBase;
 
-            var reltol = context.SimulationParameters.RelativeTolerance;
+            var reltor = context.SimulationParameters.RelativeTolerance;
             var abstol = context.SimulationParameters.AbsolutTolerane;
-
-            if (MathHelper.InTollerance(cchat, cc, abstol, reltol) ||
-                MathHelper.InTollerance(cbhat, cb, abstol, reltol) ||
-                MathHelper.InTollerance(Ube, VoltageBaseEmitter, abstol, reltol) ||
-                MathHelper.InTollerance(Ubc, VoltageBaseCollector, abstol, reltol))
+            
+            //  compare and set flag
+            var tol = reltor * Math.Max(Math.Abs(cchat), Math.Abs(cc)) + abstol;
+            if (Math.Abs(cchat - cc) > tol)
             {
                 context.ReportNotConverged(this);
             }
-            
+
+            tol = reltor * Math.Max(Math.Abs(cbhat), Math.Abs(cb)) + abstol;
+            if (Math.Abs(cbhat - cb) > tol)
+            {
+                context.ReportNotConverged(this);
+            }
+
             // update voltages
-                        VoltageBaseEmitter = Ube;
-                        VoltageBaseCollector = Ubc;
-                        VoltageBaseCollector = Ubc - Ube;
             VoltageBaseEmitter = DeviceHelpers.PnLimitVoltage(Ube, VoltageBaseEmitter, nF * vT, UbeCrit);
             VoltageBaseCollector = DeviceHelpers.PnLimitVoltage(Ubc, VoltageBaseCollector, nR * vT, UbcCrit);
-
         }
 
         /// <summary>
@@ -267,5 +270,72 @@ namespace NextGenSpice.LargeSignal.Devices
                 new SimpleDeviceStateProvider("VBC", () => VoltageBaseCollector),
                 new SimpleDeviceStateProvider("VCE", () => VoltageCollectorEmitter)
             };
-        }    }
+        }
+
+
+        private (double gBE, double gBC, double gitr, double gitf, double iT) CalculateModelValues()
+        {
+            // for details see http://qucs.sourceforge.net/tech/node70.html
+
+            var UbeCrit = DeviceHelpers.PnCriticalVoltage(iS, nF * vT);
+            var UbcCrit = DeviceHelpers.PnCriticalVoltage(iS, nR * vT);
+
+            var Ube = vbe.GetValue();
+            var Ubc = vbc.GetValue();
+
+            VoltageBaseEmitter = Ube = DeviceHelpers.PnLimitVoltage(Ube, VoltageBaseEmitter, nF * vT, UbeCrit);
+            VoltageBaseCollector = Ubc = DeviceHelpers.PnLimitVoltage(Ubc, VoltageBaseCollector, nR * vT, UbcCrit);
+
+            double iF, gif;
+            DeviceHelpers.PnJunction(iS, Ube, nF * vT, out iF, out gif);
+            double iBEn, gBEn;
+            DeviceHelpers.PnJunction(iSe, Ube, nE * vT, out iBEn, out gBEn);
+
+            double iBEi = iF / bF;
+            double gBEi = gif / bF;
+
+            double iBE = iBEi + iBEn;
+            double gBE = gBEi + gBEn;
+            CurrentBaseEmitter = iBE;
+
+            double iR, gir;
+            DeviceHelpers.PnJunction(iS, Ubc, nR * vT, out iR, out gir);
+            double iBCn, gBCn;
+            DeviceHelpers.PnJunction(iSc, Ubc, nC * vT, out iBCn, out gBCn);
+
+            double iBCi = iR / bR;
+            double gBCi = gir / bR;
+
+            double iBC = iBCi + iBCn;
+            double gBC = gBCi + gBCn;
+            CurrentBaseCollector = iBC;
+
+            var q1 = 1 / (1 - Ubc / vAf - Ube / vAr); // shouldn't it be * vaf, *var
+            var q2 = iF / iKf + iR / iKr;
+
+            var sqrt = Math.Sqrt(1 + 4 * q2);
+            var qB = q1 / 2 * (1 + sqrt);
+
+            var dQdbUbe = q1 * (qB / vAr + gif / (iKf * sqrt)); // shouldn't it be * vaf, *var
+            var dQbdUbc = q1 * (qB / vAf + gir / (iKr * sqrt));
+
+            var iT = (iF - iR) / qB;
+
+            var gmf = (gif - iT * dQdbUbe) / qB;
+            var gmr = (gir - iT * dQbdUbc) / qB;
+
+            var go = -gmr - gmin;
+            var gm = gmf + gmr;
+
+            var gpi = gBE + gmin;
+            var gmu = gBC + gmin;
+
+            // calculate terminal currents
+            CurrentCollector = iT - 1 / bR * iR;
+            CurrentEmitter = -iT - 1 / bF * iF;
+
+            //            return (gpi, gmu, gmf, gmr, iT);
+            return (gpi, gmu, gm, -go, iT);
+        }
+    }
 }
