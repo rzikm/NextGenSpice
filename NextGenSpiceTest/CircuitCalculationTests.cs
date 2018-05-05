@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Extensions;
@@ -96,6 +98,7 @@ namespace NextGenSpice.Test
         {
             var circuit = CircuitGenerator.GetLinearCircuit();
             var model = creator.GetModel<LargeSignalCircuitModel>(circuit);
+
             model.EstablishDcBias();
 
             Output.PrintCircuitStats(model);

@@ -213,6 +213,16 @@ namespace NextGenSpice.Numerics.Precision
             return (float) dd.x0;
         }
 
+        public static implicit operator dd_real(double d)
+        {
+            return new dd_real(d);
+        }
+
+        public static implicit operator dd_real(int d)
+        {
+            return new dd_real(d);
+        }
+
         public string ComponentString()
         {
             return $"{x0} {x1}";

@@ -27,7 +27,7 @@ namespace NextGenSpice.Numerics
         public static bool InTollerance(double v1, double v2, double abstol, double reltol)
         {
             var tol = reltol * Math.Max(Math.Abs(v1), Math.Abs(v2)) + abstol;
-            return (Math.Abs(v1 - v2) > tol);
+            return (Math.Abs(v1 - v2) < tol);
         }
     }
 }

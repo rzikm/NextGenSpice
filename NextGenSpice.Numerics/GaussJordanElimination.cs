@@ -20,15 +20,17 @@ namespace NextGenSpice.Numerics
         [Conditional("DEBUG")]
         public static void PrintSystem<T>(Matrix<T> m, T[] b) where T : struct
         {
+            const char sep = '\t';
+
             var size = m.Size;
             Trace.WriteLine("-----------------------------------------------------");
 
             for (var i = 0; i < size; i++)
             {
                 for (var j = 0; j < size; j++)
-                    Trace.Write($"{Convert.ToDouble(m[i, j]),10:G2} ");
+                    Trace.Write($"{Convert.ToDouble(m[i, j]),10:G2}{sep}");
 
-                Trace.WriteLine($"| {Convert.ToDouble(b[i]),10:G2}");
+                Trace.WriteLine($"|{sep}{Convert.ToDouble(b[i]),10:G2}");
             }
 
             Trace.WriteLine("-----------------------------------------------------");
@@ -171,7 +173,7 @@ namespace NextGenSpice.Numerics
         /// <param name="x">The output array for solution x.</param>
         public static void Solve(Matrix<dd_real> a, dd_real[] b, dd_real[] x)
         {
-//            PrintSystem(a,b);
+            PrintSystem(a,b);
 #if native_gauss
             Solve_Native_dd(a, b, x);
 #else

@@ -32,8 +32,6 @@ namespace NextGenSpice.LargeSignal.Devices
             stamper = new DiodeStamper();
             capacitorStamper = new CapacitorStamper();
             voltage = new VoltageProxy();
-
-            Voltage = definitionDevice.VoltageHint;
         }
 
         /// <summary>Diode model parameters.</summary>
@@ -57,9 +55,14 @@ namespace NextGenSpice.LargeSignal.Devices
             initialConditionCapacitor = true;
             IntegrationMethod = context.SimulationParameters.IntegrationMethodFactory.CreateInstance();
 
-            Voltage = DefinitionDevice.VoltageHint;
+            vt = Parameters.EmissionCoefficient * PhysicalConstants.Boltzmann *
+                 PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
+                 PhysicalConstants.DevicearyCharge;
 
-          
+            var iS = Parameters.SaturationCurrent;
+            var n = Parameters.EmissionCoefficient;
+
+            Voltage = DefinitionDevice.VoltageHint ?? DeviceHelpers.PnCriticalVoltage(iS, n * vt);
         }
 
         /// <summary>
@@ -91,7 +94,6 @@ namespace NextGenSpice.LargeSignal.Devices
                 capacitorStamper.Stamp(0, 0);
             else capacitorStamper.Stamp(cieq, cgeq);
 
-            Voltage = vd;
             Current = id + ic;
             Conductance = geq;
         }
@@ -109,8 +111,8 @@ namespace NextGenSpice.LargeSignal.Devices
             var reltol = context.SimulationParameters.RelativeTolerance;
             var abstol = context.SimulationParameters.AbsolutTolerane;
 
-            if (MathHelper.InTollerance(Current, Current + dCurr, abstol, reltol) ||
-                MathHelper.InTollerance(newvolt, Voltage, abstol, reltol))
+            if (!MathHelper.InTollerance(Current, Current + dCurr, abstol, reltol) ||
+                !MathHelper.InTollerance(newvolt, Voltage, abstol, reltol))
             {
                 context.ReportNotConverged(this);
             }

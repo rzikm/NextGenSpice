@@ -219,6 +219,21 @@ namespace NextGenSpice.Numerics.Precision
             return (float) qd.x0;
         }
 
+        public static implicit operator qd_real(dd_real d)
+        {
+            return new qd_real(d.x0, d.x1);
+        }
+
+        public static implicit operator qd_real(double d)
+        {
+            return new qd_real(d);
+        }
+
+        public static implicit operator qd_real(int d)
+        {
+            return new qd_real(d);
+        }
+
         public string ComponentString()
         {
             return $"{x0} {x1} {x2} {x3}";

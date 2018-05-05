@@ -98,8 +98,8 @@ namespace NextGenSpice.LargeSignal.Devices
             var iS = Parameters.SaturationCurrent;
             var nF = Parameters.ForwardEmissionCoefficient;
             var nR = Parameters.ReverseEmissionCoefficient;
-            VoltageBaseCollector = DeviceHelpers.PnCriticalVoltage(iS, nF * vT);
-            VoltageBaseEmitter = DeviceHelpers.PnCriticalVoltage(iS, nR * vT);
+//            VoltageBaseCollector = DeviceHelpers.PnCriticalVoltage(iS, nF * vT);
+//            VoltageBaseEmitter = DeviceHelpers.PnCriticalVoltage(iS, nR * vT);
 
             CacheModelParams();
         }
@@ -140,26 +140,22 @@ namespace NextGenSpice.LargeSignal.Devices
 
             var Ube = VoltageBaseEmitter;
             var Ubc = VoltageBaseCollector;
-            
+
             // calculate values according to Gummel-Poon model
             // for details see http://qucs.sourceforge.net/tech/node70.html
-            
-            double iF, gif;
-            DeviceHelpers.PnJunction(iS, Ube, nF * vT, out iF, out gif);
-            double iBEn, gBEn;
-            DeviceHelpers.PnJunction(iSe, Ube, nE * vT, out iBEn, out gBEn);
 
-            double iBEi = iF / bF;
-            double gBEi = gif / bF;
+            DeviceHelpers.PnJunction(iS, Ube, nF * vT, out var iF, out var gif);
+            DeviceHelpers.PnJunction(iSe, Ube, nE * vT, out var iBEn, out var gBEn);
 
-            double iBE = iBEi + iBEn;
-            double gBE = gBEi + gBEn;
+            var iBEi = iF / bF;
+            var gBEi = gif / bF;
+
+            var iBE = iBEi + iBEn;
+            var gBE = gBEi + gBEn;
             CurrentBaseEmitter = iBE;
 
-            double iR, gir;
-            DeviceHelpers.PnJunction(iS, Ubc, nR * vT, out iR, out gir);
-            double iBCn, gBCn;
-            DeviceHelpers.PnJunction(iSc, Ubc, nC * vT, out iBCn, out gBCn);
+            DeviceHelpers.PnJunction(iS, Ubc, nR * vT, out var iR, out var gir);
+            DeviceHelpers.PnJunction(iSc, Ubc, nC * vT, out var iBCn, out var gBCn);
 
             double iBCi = iR / bR;
             double gBCi = gir / bR;
@@ -204,6 +200,11 @@ namespace NextGenSpice.LargeSignal.Devices
             var iB = ceqbe + ceqbc;
             var iE = -ceqbe;
 
+            Transconductance = gm;
+            OutputConductance = go;
+            ConductancePi = gpi;
+            ConductanceMu = gmu;
+
             stamper.Stamp(gpi, gmu, gm, -go, iB, iC, iE);
         }
 
@@ -232,21 +233,16 @@ namespace NextGenSpice.LargeSignal.Devices
             var reltol = context.SimulationParameters.RelativeTolerance;
             var abstol = context.SimulationParameters.AbsolutTolerane;
 
-            if (MathHelper.InTollerance(cchat, cc, abstol, reltol) ||
-                MathHelper.InTollerance(cbhat, cb, abstol, reltol) ||
-                MathHelper.InTollerance(Ube, VoltageBaseEmitter, abstol, reltol) ||
-                MathHelper.InTollerance(Ubc, VoltageBaseCollector, abstol, reltol))
+            if (!MathHelper.InTollerance(cchat, cc, abstol, reltol) ||
+                !MathHelper.InTollerance(cbhat, cb, abstol, reltol))
             {
                 context.ReportNotConverged(this);
             }
-            
-            // update voltages
-                        VoltageBaseEmitter = Ube;
-                        VoltageBaseCollector = Ubc;
-                        VoltageBaseCollector = Ubc - Ube;
-            VoltageBaseEmitter = DeviceHelpers.PnLimitVoltage(Ube, VoltageBaseEmitter, nF * vT, UbeCrit);
-            VoltageBaseCollector = DeviceHelpers.PnLimitVoltage(Ubc, VoltageBaseCollector, nR * vT, UbcCrit);
 
+            // update voltages
+            VoltageBaseEmitter = Ube;
+            VoltageBaseCollector = Ubc;
+            VoltageBaseCollector = Ubc - Ube;
         }
 
         /// <summary>
@@ -267,5 +263,6 @@ namespace NextGenSpice.LargeSignal.Devices
                 new SimpleDeviceStateProvider("VBC", () => VoltageBaseCollector),
                 new SimpleDeviceStateProvider("VCE", () => VoltageCollectorEmitter)
             };
-        }    }
+        }
+    }
 }

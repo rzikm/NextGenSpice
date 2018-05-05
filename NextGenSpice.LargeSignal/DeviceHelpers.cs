@@ -39,6 +39,21 @@ namespace NextGenSpice.LargeSignal.Devices
                 }
             }
             return voltage;
+
+//            if (voltage > criticalVoltage && Math.Abs(voltage - oldVoltage) > thermalVoltage + thermalVoltage)
+//            {
+//                if (oldVoltage > 0)
+//                {
+//                    var arg = 1 + (voltage - oldVoltage) / thermalVoltage;
+//                    if (arg > 0)
+//                        voltage = oldVoltage + thermalVoltage * Math.Log(arg);
+//                    else
+//                        voltage = criticalVoltage;
+//                }
+//                else
+//                    voltage = thermalVoltage * Math.Log(voltage / thermalVoltage);
+//            }
+//            return voltage;
         }
 
         /// <summary>
