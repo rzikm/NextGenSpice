@@ -27,7 +27,7 @@ namespace SandboxRunner
 
         private static void Main(string[] args)
         {
-            PrintFileSizes(); return;
+//            PrintFileSizes(); return;
 //            Examples.ResistorSweep(); return;
 //            Examples.SimpleRlc(); return;
             var summary = BenchmarkRunner.Run<GaussianEliminationTests>(); return;

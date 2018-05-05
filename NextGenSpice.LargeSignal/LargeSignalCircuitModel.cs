@@ -182,9 +182,6 @@ namespace NextGenSpice.LargeSignal
             LastNonLinearIterationCount = 0;
             LastNonLinearIterationDelta = 0;
 
-            //            UpdateEquationSystem();
-            //            SolveAndUpdateVoltages();
-
             do
             {
                 if (LastNonLinearIterationCount++ == MaxDcPointIterations) return false;

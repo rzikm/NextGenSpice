@@ -28,12 +28,5 @@ namespace NextGenSpice.Core.Devices
             clone.Parameters = (DiodeParams) clone.Parameters.Clone();
             return clone;
         }
-
-        /// <summary>Gets metadata about this device interconnections in the circuit.</summary>
-        /// <returns></returns>
-        public override IEnumerable<CircuitBranchMetadata> GetBranchMetadata()
-        {
-            return Enumerable.Empty<CircuitBranchMetadata>();
-        }
     }
 }

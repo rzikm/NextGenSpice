@@ -2,10 +2,8 @@
 
 namespace NextGenSpice.Numerics.Equations
 {
-    /// <summary>
-    /// Simple equation system with double precision coefficient.
-    /// </summary>
-    public class EquationSystem
+    /// <summary>Simple equation system with double precision coefficient.</summary>
+    public class EquationSystem : IEquationSystem
     {
         public EquationSystem(int size)
         {
@@ -27,6 +25,14 @@ namespace NextGenSpice.Numerics.Equations
         /// <summary>Count of the variables in the equation.</summary>
         public int VariablesCount => Solution.Length;
 
+        /// <summary>Returns solution for the given variable.</summary>
+        /// <param name="variable">Index of the variable in the equation system.</param>
+        /// <returns></returns>
+        public double GetSolution(int variable)
+        {
+            return Solution[variable];
+        }
+
         /// <summary>Solves the linear equation system. If the system has no solution, the result is undefined.</summary>
         public void Solve()
         {
@@ -35,10 +41,8 @@ namespace NextGenSpice.Numerics.Equations
     }
 
 #if dd_precision
-    /// <summary>
-    /// Simple equation system with dd_real precision coefficient.
-    /// </summary>
-    public class DdEquationSystem
+    /// <summary>Simple equation system with dd_real precision coefficient.</summary>
+    public class DdEquationSystem : IEquationSystem
     {
         public DdEquationSystem(int size)
         {
@@ -60,6 +64,14 @@ namespace NextGenSpice.Numerics.Equations
         /// <summary>Count of the variables in the equation.</summary>
         public int VariablesCount => Solution.Length;
 
+        /// <summary>Returns solution for the given variable.</summary>
+        /// <param name="variable">Index of the variable in the equation system.</param>
+        /// <returns></returns>
+        public double GetSolution(int variable)
+        {
+            return Solution[variable].x0;
+        }
+
         /// <summary>Solves the linear equation system. If the system has no solution, the result is undefined.</summary>
         public void Solve()
         {
@@ -69,10 +81,8 @@ namespace NextGenSpice.Numerics.Equations
 #endif
 
 #if qd_precision
-    /// <summary>
-    /// Simple equation system with qd_real precision coefficient.
-    /// </summary>
-    public class QdEquationSystem
+    /// <summary>Simple equation system with qd_real precision coefficient.</summary>
+    public class QdEquationSystem : IEquationSystem
     {
         public QdEquationSystem(int size)
         {
@@ -93,6 +103,14 @@ namespace NextGenSpice.Numerics.Equations
 
         /// <summary>Count of the variables in the equation.</summary>
         public int VariablesCount => Solution.Length;
+
+        /// <summary>Returns solution for the given variable.</summary>
+        /// <param name="variable">Index of the variable in the equation system.</param>
+        /// <returns></returns>
+        public double GetSolution(int variable)
+        {
+            return Solution[variable].x0;
+        }
 
         /// <summary>Solves the linear equation system. If the system has no solution, the result is undefined.</summary>
         public void Solve()
