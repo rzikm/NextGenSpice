@@ -176,7 +176,7 @@ namespace NextGenSpice.Numerics.Equations
 
             public void Add(double value)
             {
-                if (double.IsNaN(value)) throw new InvalidOperationException("Cannot insert NaN");
+                if (double.IsNaN(value)) throw new ArgumentNaNException("Cannot insert NaN");
                 system.Matrix[row, col] += value;
             }
         }
@@ -200,7 +200,7 @@ namespace NextGenSpice.Numerics.Equations
 
             public void Add(double value)
             {
-                if (double.IsNaN(value)) throw new InvalidOperationException("Cannot insert NaN");
+                if (double.IsNaN(value)) throw new ArgumentNaNException("Cannot insert NaN");
                 system.RightHandSide[row] += value;
             }
         }

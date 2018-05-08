@@ -19,7 +19,11 @@ namespace NextGenSpice.Core.Exceptions
     [Serializable]
     public class NaNInEquationSystemSolutionException : SimulationException
     {
-        public NaNInEquationSystemSolutionException() : base("NaN in equation system solution.")
+        public NaNInEquationSystemSolutionException() : this(null)
+        {
+        }
+
+        public NaNInEquationSystemSolutionException(Exception inner) : base("NaN in equation system solution.", inner)
         {
         }
         protected NaNInEquationSystemSolutionException(

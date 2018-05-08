@@ -209,6 +209,8 @@ namespace NextGenSpice.LargeSignal
             var tmp = currentSolution;
             currentSolution = previousSolution;
             previousSolution = tmp;
+
+
             equationSystemAdapter.Solve(currentSolution);
 
             if (currentSolution.Any(d => double.IsNaN(d)))
@@ -229,10 +231,18 @@ namespace NextGenSpice.LargeSignal
         {
             equationSystemAdapter.Clear();
 
-            for (int i = 0; i < devices.Length; i++)
+            try
             {
-                devices[i].ApplyModelValues(context);
+                for (int i = 0; i < devices.Length; i++)
+                {
+                    devices[i].ApplyModelValues(context);
+                }
             }
+            catch (ArgumentNaNException e)
+            {
+                throw new NaNInEquationSystemSolutionException(e);
+            }
+
         }
 
         private class SimulationContext : ISimulationContext
