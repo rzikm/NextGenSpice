@@ -43,7 +43,12 @@ namespace NextGenSpice.Numerics
         [Conditional("trace_dumpsolution")]
         private static void PrintSolution(double[] b)
         {
-            Trace.WriteLine($"Solution: {string.Join(" ", b.Select(d => d.ToString("F")))}");
+            Trace.Write($"\nSolution:");
+            for (int i = 0; i < b.Length; i++)
+            {
+                if (i % 18 == 0) Trace.WriteLine("");
+                Trace.Write($"{b[i],10:g3} ");
+            }
         }
 
         /// <summary>Solves system of linear equations in the form A*x=b.</summary>

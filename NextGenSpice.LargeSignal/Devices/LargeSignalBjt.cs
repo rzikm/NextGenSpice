@@ -95,10 +95,10 @@ namespace NextGenSpice.LargeSignal.Devices
                  PhysicalConstants.DevicearyCharge;
 
             // set init condition to help convergence
-            var iS = Parameters.SaturationCurrent;
-            var nF = Parameters.ForwardEmissionCoefficient;
-            var nR = Parameters.ReverseEmissionCoefficient;
-            VoltageBaseCollector = DeviceHelpers.PnCriticalVoltage(iS, nF * vT);
+//            var iS = Parameters.SaturationCurrent;
+//            var nF = Parameters.ForwardEmissionCoefficient;
+//            var nR = Parameters.ReverseEmissionCoefficient;
+//            VoltageBaseCollector = DeviceHelpers.PnCriticalVoltage(iS, nF * vT);
 //            VoltageBaseEmitter = DeviceHelpers.PnCriticalVoltage(iS, nR * vT);
 
             CacheModelParams();
@@ -180,32 +180,16 @@ namespace NextGenSpice.LargeSignal.Devices
             var gmr = (gir - iT * dQbdUbc) / qB;
 
             var go = -gmr;
-            var go2 = -gmr;
             var gm = gmf + gmr;
             
             // calculate terminal currents
             CurrentCollector = iT - 1 / bR * iR;
             CurrentEmitter = -iT - 1 / bF * iF;
-
-            var cc = CurrentCollector;
-            var cb = CurrentBaseEmitter;
-
-            var ceqbe = polarity * (cc + cb - Ube * (gm + go + gpi) + Ubc * go);
-            var ceqbc = polarity * (-cc + Ube * (gm + go) - Ubc * (gmu + go));
-
             CurrentBase = CurrentBaseEmitter + CurrentBaseCollector;
 
             var ibeeq = iBE - gpi * Ube;
             var ibceq = iBC - gmu * Ubc;
             var iceeq = iT - gmf * Ube + gmr * Ubc;
-
-            var ic = ibceq - iceeq;
-            var ib = -ibeeq - ibceq;
-            var ie = ibeeq + iceeq;
-
-            var iC = -ceqbc;
-            var iB = ceqbe + ceqbc;
-            var iE = -ceqbe;
 
             Transconductance = gm;
             OutputConductance = go;
@@ -213,7 +197,6 @@ namespace NextGenSpice.LargeSignal.Devices
             ConductanceMu = gmu;
 
             stamper.Stamp(gpi, gmu, gm, go, ibeeq, ibceq, iceeq);
-//            stamper.Stamp(gpi, gmu, gm, -go, ib, ic, ie);
         }
 
         /// <summary>This method is called each time an equation is solved.</summary>
