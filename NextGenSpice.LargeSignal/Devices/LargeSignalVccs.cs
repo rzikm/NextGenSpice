@@ -43,6 +43,7 @@ namespace NextGenSpice.LargeSignal.Devices
         public override void Initialize(IEquationSystemAdapter adapter, ISimulationContext context)
         {
             voltage.Register(adapter, Anode, Cathode);
+            stamper.Register(adapter, Anode, Cathode, ReferenceAnode, ReferenceCathode);
             refvoltage.Register(adapter, ReferenceAnode, ReferenceCathode);
         }
 
