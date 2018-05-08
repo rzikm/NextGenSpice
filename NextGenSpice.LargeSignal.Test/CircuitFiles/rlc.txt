@@ -1,0 +1,11 @@
+Series RLC circuit
+
+*VIN 1 0 PWL 0 0 10n 5 25m 5 25.01m 0
+VIN 1 0 PULSE(0 5 5m 0 0 25m)
+L1 2 3 0.125
+C1 3 0 1u
+R1 1 2 50
+
+.tran .2m 50m
+.print tran V(1) V(3)
+.end

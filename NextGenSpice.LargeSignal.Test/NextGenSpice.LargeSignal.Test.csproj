@@ -20,4 +20,8 @@
     <ProjectReference Include="..\NextGenSpiceTest\NextGenSpice.Core.Test.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="CircuitFiles\" />
+  </ItemGroup>
+
 </Project>

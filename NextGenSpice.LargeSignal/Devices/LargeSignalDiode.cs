@@ -62,7 +62,7 @@ namespace NextGenSpice.LargeSignal.Devices
             var iS = Parameters.SaturationCurrent;
             var n = Parameters.EmissionCoefficient;
 
-            Voltage = DefinitionDevice.VoltageHint ?? DeviceHelpers.PnCriticalVoltage(iS, n * vt);
+            Voltage = DefinitionDevice.VoltageHint ?? 0;
         }
 
         /// <summary>
@@ -111,8 +111,7 @@ namespace NextGenSpice.LargeSignal.Devices
             var reltol = context.SimulationParameters.RelativeTolerance;
             var abstol = context.SimulationParameters.AbsolutTolerane;
 
-            if (!MathHelper.InTollerance(Current, Current + dCurr, abstol, reltol) ||
-                !MathHelper.InTollerance(newvolt, Voltage, abstol, reltol))
+            if (!MathHelper.InTollerance(Current, Current + dCurr, abstol, reltol) )
             {
                 context.ReportNotConverged(this);
             }

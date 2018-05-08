@@ -15,7 +15,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
 
         private ISubcircuitDefinition model;
 
-        public SubcircuitDeviceDeferredStatement(ParsingScope context, string deviceName, int[] terminals, Token subcircuitName) : base(context)
+        public SubcircuitDeviceDeferredStatement(ParsingScope scope, string deviceName, int[] terminals, Token subcircuitName) : base(scope)
         {
             this.deviceName = deviceName;
             this.terminals = terminals;
@@ -30,7 +30,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
         public override bool CanApply()
         {
             errors.Clear();
-            if (!context.SymbolTable.TryGetSubcircuit(subcircuitName.Value, out model))
+            if (!Scope.SymbolTable.TryGetSubcircuit(subcircuitName.Value, out model))
             {
                 errors.Add(subcircuitName.ToError(SpiceParserErrorCode.NoSuchSubcircuit));
                 return false;
@@ -59,7 +59,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
         {
             base.Apply();
 
-            context.CircuitBuilder.AddDevice(
+            Scope.CircuitBuilder.AddDevice(
                 terminals,
                 new Subcircuit(model,
                     deviceName

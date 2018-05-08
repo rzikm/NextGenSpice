@@ -40,7 +40,7 @@ namespace NextGenSpice.Parser.Statements
             private string subname;
             public ParsingScope subScope;
 
-            public DeferredSubcktStatement(ParsingScope context, Token[] tokens) : base(context)
+            public DeferredSubcktStatement(ParsingScope scope, Token[] tokens) : base(scope)
             {
                 this.tokens = tokens;
                 errors = new List<SpiceParserError>();
@@ -73,7 +73,7 @@ namespace NextGenSpice.Parser.Statements
 
                 var terminals = GetNodeIndices(tokens.Skip(2), subScope);
 
-                if (context.SymbolTable.TryGetSubcircuit(name.Value, out _))
+                if (Scope.SymbolTable.TryGetSubcircuit(name.Value, out _))
                     errors.Add(tokens[1].ToError(SpiceParserErrorCode.SubcircuitAlreadyExists));
 
                 // validate terminal specs - no duplicates
@@ -103,8 +103,8 @@ namespace NextGenSpice.Parser.Statements
 
                 if (def == null) def = new NullSubcircuitDefinition(terminals, subScope.CircuitBuilder.NodeCount);
 
-                context.Errors.AddRange(errors);
-                context.SymbolTable.AddSubcircuit(subname, def);
+                Scope.Errors.AddRange(errors);
+                Scope.SymbolTable.AddSubcircuit(subname, def);
             }
 
             /// <summary>Gets indices of the nodes represented by given set of tokens. Adds relevant errors into the errors collection.</summary>

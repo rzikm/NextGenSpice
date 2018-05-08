@@ -24,14 +24,13 @@ namespace NextGenSpice.Parser.Statements.Devices
             var nodes = GetNodeIds(1, 2);
 
             // cannot check for model existence yet, defer checking for model later
-            if (Errors == 0)
-            {
-                var name = DeviceName; // capture
-                var modelToken = RawStatement[3];
-                Context.DeferredStatements.Add(
-                    new ModeledDeviceDeferedStatement<DiodeParams>(Context.CurrentScope,
-                        (par, cb) => cb.AddDevice(nodes, new Diode(par, name)), modelToken));
-            }
+            if (Errors != 0) return;
+
+            var name = DeviceName; // capture
+            var modelToken = RawStatement[3];
+            Context.DeferredStatements.Add(
+                new ModeledDeviceDeferedStatement<DiodeParams>(Context.CurrentScope,
+                    (par, cb) => cb.AddDevice(nodes, new Diode(par, name)), modelToken));
         }
 
         /// <summary>Gets list of model statement handlers that are responsible to parsing respective models of this device.</summary>

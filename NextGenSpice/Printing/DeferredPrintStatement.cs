@@ -37,12 +37,12 @@ namespace NextGenSpice.Printing
         {
             errors.Clear();
             var device =
-                context.CircuitBuilder.Devices.FirstOrDefault(el => el.Tag as string == name); // a two terminal device
+                Scope.CircuitBuilder.Devices.FirstOrDefault(el => el.Tag as string == name); // a two terminal device
 
             if (stat == "V") // output voltage
             {
                 int i;
-                if (context.SymbolTable.TryGetNodeIndex(name, out var id)) // a node
+                if (Scope.SymbolTable.TryGetNodeIndex(name, out var id)) // a node
                 {
                     printStatement = new NodeVoltagePrintStatement(name, id);
                 }
@@ -59,14 +59,14 @@ namespace NextGenSpice.Printing
 
                     // reuse token instance for error reporting
                     token.LineColumn++;
-                    if (!context.SymbolTable.TryGetNodeIndex(n1, out var i1))
+                    if (!Scope.SymbolTable.TryGetNodeIndex(n1, out var i1))
                     {
                         errors.Add(token.ToError(SpiceParserErrorCode.NotANode, n1));
                         success = false;
                     }
 
                     token.LineColumn += n1.Length + 1;
-                    if (!context.SymbolTable.TryGetNodeIndex(n2, out var i2))
+                    if (!Scope.SymbolTable.TryGetNodeIndex(n2, out var i2))
                     {
                         errors.Add(token.ToError(SpiceParserErrorCode.NotANode, n2));
                         success = false;
@@ -98,7 +98,7 @@ namespace NextGenSpice.Printing
             base.Apply();
 
             printStatement.AnalysisType = analysisType;
-            context.OtherStatements.Add(printStatement);
+            Scope.OtherStatements.Add(printStatement);
         }
 
         /// <summary>Returns set of errors due to which this stetement cannot be processed.</summary>

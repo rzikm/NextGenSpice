@@ -37,6 +37,8 @@ namespace SandboxRunner
 
         public static void Simple()
         {
+            // requires NextGenSpice.Core.Circuit and
+            // NextGenSpice.Core.Devices namespace
             var builder = new CircuitBuilder();
             builder
                 .AddDevice(new[] { 1, 0 }, new VoltageSource(12, "VS"))

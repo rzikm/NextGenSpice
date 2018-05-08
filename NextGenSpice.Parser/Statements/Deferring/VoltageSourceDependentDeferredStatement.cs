@@ -14,9 +14,9 @@ namespace NextGenSpice.Parser.Statements.Deferring
     {
         private readonly Token vsourcName;
 
-        public VoltageSourceDependentDeferredStatement(ParsingScope context, Token vsourcName,
+        public VoltageSourceDependentDeferredStatement(ParsingScope scope, Token vsourcName,
             Action<CircuitBuilder, VoltageSource> builderFunc)
-            : base(context, b => builderFunc(b, FindVoltageSource(b, vsourcName.Value)))
+            : base(scope, b => builderFunc(b, FindVoltageSource(b, vsourcName.Value)))
         {
             this.vsourcName = vsourcName;
         }
@@ -26,7 +26,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
         /// <returns></returns>
         public override bool CanApply()
         {
-            var vs = FindVoltageSource(context.CircuitBuilder, vsourcName.Value);
+            var vs = FindVoltageSource(Scope.CircuitBuilder, vsourcName.Value);
             return vs != null;
         }
 

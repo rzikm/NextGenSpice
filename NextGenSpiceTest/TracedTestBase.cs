@@ -39,7 +39,7 @@ namespace NextGenSpice.Test
         protected ITestOutputHelper Output => output;
 
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public void Dispose()
+        public virtual void Dispose()
         {
             Trace.Listeners.Remove(myTraceListener);
         }

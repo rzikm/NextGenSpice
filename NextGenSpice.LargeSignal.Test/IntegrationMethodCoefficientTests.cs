@@ -3,7 +3,7 @@ using Xunit;
 
 namespace NextGenSpice.Test
 {
-    public class MiscTests
+    public class IntegrationMethodCoefficientTests
     {
         // coeffitients taken from http://qucs.sourceforge.net/tech/node24.html
 

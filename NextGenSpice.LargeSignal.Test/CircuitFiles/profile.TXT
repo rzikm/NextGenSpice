@@ -1,0 +1,27 @@
+*** profiling circuit no.1 ****
+*** RF switch circuit ***
+
+* Input source
+vs 1 0 sin(0V 3V 100MegHz 20ns 0)
+Rs in 1 50ohm
+
+* Switch
+Ci in 4 1.6nF
+Rb 4 3 2.1k
+Lc1 3 2 100uH
+D1 4 50 mydiode
+vmeter 50 5 0
+Lc2 5 0 100uH
+cout 5 out 1.6n
+
+* Load
+Rload out 0 1k
+
+* DC biasing
+vcc 2 0 5V
+
+.model mydiode d (is=1e-15A n=1)
+.print tran v(in) v(out) v(4,5)
+.tran .1ns 100ns
+
+* .end

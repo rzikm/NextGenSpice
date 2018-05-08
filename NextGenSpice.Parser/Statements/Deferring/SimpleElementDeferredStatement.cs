@@ -10,7 +10,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
     {
         private readonly Action<CircuitBuilder> builderFunc;
 
-        public SimpleDeviceDeferredStatement(ParsingScope context, Action<CircuitBuilder> builderFunc) : base(context)
+        public SimpleDeviceDeferredStatement(ParsingScope scope, Action<CircuitBuilder> builderFunc) : base(scope)
         {
             this.builderFunc = builderFunc;
         }
@@ -35,7 +35,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
         public override void Apply()
         {
             base.Apply();
-            builderFunc(context.CircuitBuilder);
+            builderFunc(Scope.CircuitBuilder);
         }
     }
 }

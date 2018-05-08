@@ -9,11 +9,11 @@ namespace NextGenSpice.Parser.Statements.Deferring
     /// </summary>
     public abstract class DeferredStatement
     {
-        protected ParsingScope context;
+        protected ParsingScope Scope;
 
-        protected DeferredStatement(ParsingScope context)
+        protected DeferredStatement(ParsingScope scope)
         {
-            this.context = context;
+            this.Scope = scope;
         }
 
         /// <summary>Returns true if all prerequisites for the statements have been fulfilled and statement is ready to be applied.</summary>
@@ -27,7 +27,7 @@ namespace NextGenSpice.Parser.Statements.Deferring
         /// <summary>Applies the statement in the given context.</summary>
         public virtual void Apply()
         {
-            context.Statements.Remove(this);
+            Scope.Statements.Remove(this);
         }
     }
 }
