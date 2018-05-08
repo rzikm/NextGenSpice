@@ -3,12 +3,12 @@ using System.Linq;
 using NextGenSpice.Core.BehaviorParams;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Extensions;
-using NextGenSpice.LargeSignal;
 using NextGenSpice.LargeSignal.Devices;
+using NextGenSpice.Test;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace NextGenSpice.Test
+namespace NextGenSpice.LargeSignal.Test
 {
     public class TransientAnalysisTests : TracedTestBase
     {

@@ -1,7 +1,8 @@
 ﻿using NextGenSpice.LargeSignal.NumIntegration;
+using NextGenSpice.Test;
 using Xunit;
 
-namespace NextGenSpice.Test
+namespace NextGenSpice.LargeSignal.Test
 {
     public class IntegrationMethodCoefficientTests
     {

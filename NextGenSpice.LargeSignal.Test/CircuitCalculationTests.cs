@@ -1,16 +1,14 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Extensions;
 using NextGenSpice.Core.Representation;
-using NextGenSpice.LargeSignal;
+using NextGenSpice.Test;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace NextGenSpice.Test
+namespace NextGenSpice.LargeSignal.Test
 {
     public class CircuitCalculationTests : TracedTestBase
     {

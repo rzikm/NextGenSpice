@@ -43,6 +43,14 @@ namespace NextGenSpice.LargeSignal.Devices
         /// <summary>Equivalent conductance of the diode</summary>
         public double Conductance { get; set; }
 
+        /// <summary>Allows devices to register any additional variables.</summary>
+        /// <param name="adapter">The equation system builder.</param>
+        public override void RegisterAdditionalVariables(IEquationSystemAdapter adapter)
+        {
+            base.RegisterAdditionalVariables(adapter);
+            capacitorStamper.RegisterVariable(adapter);
+        }
+
         /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
         /// <param name="adapter">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>
