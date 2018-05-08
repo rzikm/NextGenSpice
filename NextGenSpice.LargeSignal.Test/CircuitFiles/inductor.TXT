@@ -1,7 +1,0 @@
-Inductor test circuit
-*
-V1 1 0 pulse(0 15 0 1n 1n 100)
-r1 1 2 1
-L1 2 0 1u
-*
-.tran 10n 10u

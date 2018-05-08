@@ -1,6 +1,0 @@
-SPICE test circuit
-v1 1 0 pulse(0 15 0 1n 1n 100)
-c1 0 2 1u
-r1 2 1 1
-
-.tran 10n 10u

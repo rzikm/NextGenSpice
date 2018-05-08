@@ -84,9 +84,9 @@ namespace NextGenSpice
                 foreach (var error in e.Errors)
                     Console.WriteLine(error);
             }
-            catch (NonConvergenceException e)
+            catch (SimulationException e)
             {
-                Console.WriteLine("ERROR: Simulation did not converge");
+                Console.WriteLine($"ERROR: {e.Message}");
             }
         }
     }

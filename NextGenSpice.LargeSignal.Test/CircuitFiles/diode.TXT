@@ -1,8 +1,0 @@
-Simple diode test circuit
-Is 0 1 0.1a
-R1 1 0 100
-R2 1 2 10k
-D1 2 0 DMOD
-
-.model DMOD D(IS=1e-15)
-.op

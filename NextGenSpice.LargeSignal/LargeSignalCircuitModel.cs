@@ -127,14 +127,13 @@ namespace NextGenSpice.LargeSignal
                 }
             }
 
-            if (!EstablishDcBias_Internal())
-                throw new NonConvergenceException();
+            EstablishDcBias_Internal();
+
             var iterCount = LastNonLinearIterationCount;
             LastNonLinearIterationCount = 0;
-            
+
             // rerun without initial voltages
-            if (!initCond && !EstablishDcBias_Internal())
-                throw new NonConvergenceException();
+            if (!initCond) EstablishDcBias_Internal();
 
             LastNonLinearIterationCount += iterCount;
             OnDcBiasEstablished();
@@ -177,17 +176,15 @@ namespace NextGenSpice.LargeSignal
             previousSolution = new double[equationSystemAdapter.VariableCount];
         }
 
-        private bool EstablishDcBias_Internal()
+        private void EstablishDcBias_Internal()
         {
             LastNonLinearIterationCount = 0;
             LastNonLinearIterationDelta = 0;
 
-            //            UpdateEquationSystem();
-            //            SolveAndUpdateVoltages();
-
             do
             {
-                if (LastNonLinearIterationCount++ == MaxDcPointIterations) return false;
+                if (LastNonLinearIterationCount++ == MaxDcPointIterations)
+                    throw new IterationCountExceededException();
 
                 // clear flag;
                 context.Converged = true;
@@ -196,8 +193,6 @@ namespace NextGenSpice.LargeSignal
                 SolveAndUpdateVoltages();
 
             } while (!context.Converged);
-
-            return true;
         }
 
         private void OnDcBiasEstablished()
@@ -215,6 +210,9 @@ namespace NextGenSpice.LargeSignal
             currentSolution = previousSolution;
             previousSolution = tmp;
             equationSystemAdapter.Solve(currentSolution);
+
+            if (currentSolution.Any(d => double.IsNaN(d)))
+                throw new NaNInEquationSystemSolutionException();
 
             for (int i = 0; i < devices.Length; i++)
             {

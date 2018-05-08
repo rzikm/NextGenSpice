@@ -111,7 +111,10 @@ namespace NextGenSpice.Numerics.Equations
             if (system == null) throw new InvalidOperationException("Equation system must be frozen before accessing.");
             if (target.Length != VariableCount) throw new ArgumentException("The target array is of different size.");
             system.Solve();
-            for (var i = 0; i < target.Length; i++) target[i] = (double)system.Solution[i];
+            for (var i = 0; i < target.Length; i++)
+            {
+                target[i] = (double)system.Solution[i];
+            }
         }
 
         /// <summary>

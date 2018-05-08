@@ -139,7 +139,7 @@ namespace NextGenSpice.LargeSignal.Test
             var model = creator.GetModel<LargeSignalCircuitModel>(circuit);
             model.MaxDcPointIterations = 3; // some unrealistic low bound
 
-            Assert.Throws<NonConvergenceException>(() => model.EstablishDcBias());
+            Assert.Throws<IterationCountExceededException>(() => model.EstablishDcBias());
             Output.PrintCircuitStats(model);
         }
     }
