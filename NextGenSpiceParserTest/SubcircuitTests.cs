@@ -207,6 +207,7 @@ v 1 22 5         *oops forgot to connect to node 2
             Assert.Equal(SpiceParserErrorCode.SubcircuitNotConnected, error.ErrorCode);
         }
 
+
         [Fact]
         public void SimpleNestedSubcircuit()
         {
@@ -229,35 +230,5 @@ v1 1 2 5v
             Assert.Empty(result.Errors);
         }
 
-        [Fact]
-        public void TestSameSimulationAsWithoutSubcircuit()
-        {
-            var v1 = Parse(@"
-i1 1 0 5a
-r1 1 2 5OHM
-x1 0 1 subcircuit
-
-.subckt subcircuit 1 2
-d1 1 2 D
-x1 1 2 voltageAlias
-
-.subckt voltageAlias 1 2
-v1 1 2 5v
-.ends
-
-.ends
-").CircuitDefinition.GetLargeSignalModel();
-            v1.EstablishDcBias();
-
-            var v2 = Parse(@"
-i1 1 0 5a
-r1 1 2 5OHM
-d-x1.d1 0 1 D
-v-x1.x1.v1 0 1 5v
-").CircuitDefinition.GetLargeSignalModel();
-            v2.EstablishDcBias();
-
-            Assert.Equal(v2.NodeVoltages, v1.NodeVoltages);
-        }
     }
 }
