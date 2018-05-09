@@ -63,9 +63,9 @@ namespace NextGenSpice.LargeSignal.Devices
             initialConditionCapacitor = true;
             IntegrationMethod = context.SimulationParameters.IntegrationMethodFactory.CreateInstance();
 
-            vt = Parameters.EmissionCoefficient * PhysicalConstants.Boltzmann *
-                 PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
-                 PhysicalConstants.DevicearyCharge;
+            vt = Parameters.EmissionCoefficient * PhysicsConstants.Boltzmann *
+                 PhysicsConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
+                 PhysicsConstants.DevicearyCharge;
 
             var iS = Parameters.SaturationCurrent;
             var n = Parameters.EmissionCoefficient;
@@ -80,9 +80,9 @@ namespace NextGenSpice.LargeSignal.Devices
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(ISimulationContext context)
         {
-            vt = Parameters.EmissionCoefficient * PhysicalConstants.Boltzmann *
-                 PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
-                 PhysicalConstants.DevicearyCharge;
+            vt = Parameters.EmissionCoefficient * PhysicsConstants.Boltzmann *
+                 PhysicsConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
+                 PhysicsConstants.DevicearyCharge;
 
             gmin = Parameters.MinimalResistance ?? context.SimulationParameters.MinimalResistance;
             smallBiasTreshold = -5 * vt;

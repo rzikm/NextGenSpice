@@ -3,7 +3,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace NextGenSpice.Numerics.Precision
+namespace NextGenSpice.Numerics
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct qd_real : IConvertible, IComparable<qd_real>, IEquatable<qd_real>

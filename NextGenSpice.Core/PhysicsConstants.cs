@@ -1,7 +1,7 @@
 ﻿namespace NextGenSpice.Core
 {
     /// <summary>Helper class for aggregating physics-related constants.</summary>
-    public static class PhysicalConstants
+    public static class PhysicsConstants
     {
         /// <summary>Relates average kinetic energy of particles in a gas with the temperature of the gas. k = R/N_A</summary>
         public static double Boltzmann { get; } = 1.3806485279e-23;

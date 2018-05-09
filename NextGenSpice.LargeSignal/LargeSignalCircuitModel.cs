@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Devices;
 using NextGenSpice.Numerics;
 using NextGenSpice.Numerics.Equations;
-using NextGenSpice.Numerics.Precision;
 
 namespace NextGenSpice.LargeSignal
 {
