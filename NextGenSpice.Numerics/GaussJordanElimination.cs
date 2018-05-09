@@ -1,6 +1,6 @@
 //#undef native_gauss
 #if DEBUG
-#define trace_dumpsolution
+//#define trace_dumpsolution
 //#define trace_dumpmatrix
 #endif
 using System;

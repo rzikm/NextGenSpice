@@ -14,9 +14,9 @@ namespace NextGenSpice.LargeSignal.Devices
     public class LargeSignalBjt : LargeSignalDeviceBase<Bjt>
     {
         private readonly BjtTransistorStamper stamper;
-        private readonly VoltageProxy vbc;
+        private readonly VoltageProxy voltageBc;
 
-        private readonly VoltageProxy vbe;
+        private readonly VoltageProxy voltageBe;
 
         private readonly ConductanceStamper gb;
         private readonly ConductanceStamper gc;
@@ -31,8 +31,8 @@ namespace NextGenSpice.LargeSignal.Devices
         public LargeSignalBjt(Bjt definitionDevice) : base(definitionDevice)
         {
             stamper = new BjtTransistorStamper();
-            vbe = new VoltageProxy();
-            vbc = new VoltageProxy();
+            voltageBe = new VoltageProxy();
+            voltageBc = new VoltageProxy();
 
             gb = new ConductanceStamper();
             gc = new ConductanceStamper();
@@ -109,8 +109,8 @@ namespace NextGenSpice.LargeSignal.Devices
         {
             stamper.Register(adapter, bprimeNode, cprimeNode, eprimeNode);
 
-            vbc.Register(adapter, bprimeNode, cprimeNode);
-            vbe.Register(adapter, bprimeNode, eprimeNode);
+            voltageBc.Register(adapter, bprimeNode, cprimeNode);
+            voltageBe.Register(adapter, bprimeNode, eprimeNode);
 
             gb.Register(adapter, bprimeNode, Base);
             gc.Register(adapter, cprimeNode, Collector);
@@ -119,7 +119,6 @@ namespace NextGenSpice.LargeSignal.Devices
             vT = PhysicalConstants.Boltzmann *
                  PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
                  PhysicalConstants.DevicearyCharge;
-
 
             VoltageBaseEmitter = DeviceHelpers.PnCriticalVoltage(Parameters.SaturationCurrent, vT);
         }
@@ -163,93 +162,49 @@ namespace NextGenSpice.LargeSignal.Devices
             var gge = Parameters.EmitterCapacitance > 0 ? 1 / Parameters.EmitterCapacitance : 0;
 
 
-            var Ube = VoltageBaseEmitter;
-            var Ubc = VoltageBaseCollector;
+            var vbe = VoltageBaseEmitter;
+            var vbc = VoltageBaseCollector;
 
-            var (CurrentBe, CondBe) = DeviceHelpers.PnBJT(iS, Ube, nF * vT, gmin);
-            var (iBEn, gBEn) = DeviceHelpers.PnBJT(iSe, Ube, nE * vT, 0);
+            // calculate junction currents
+            var (ibe, gbe) = DeviceHelpers.PnBJT(iS, vbe, nF * vT, gmin);
+            var (iben, gben) = DeviceHelpers.PnBJT(iSe, vbe, nE * vT, 0);
 
-            var (CurrentBc, CondBc) = DeviceHelpers.PnBJT(iS, Ubc, nR * vT, gmin);
-            var (iBCn, gBCn) = DeviceHelpers.PnBJT(iSc, Ubc, nR * vT, 0);
+            var (ibc, gbc) = DeviceHelpers.PnBJT(iS, vbc, nR * vT, gmin);
+            var (ibcn, gbcn) = DeviceHelpers.PnBJT(iSc, vbc, nC * vT, 0);
 
-            //
-            //            var iBE = iBEi + iBEn;
-            //            var gpi = CondBe/ bF + gBEn;
-            //            CurrentBaseEmitter = iBE;
-
-
-
-
-            //            DeviceHelpers.PnJunction(iS, Ubc, nR * vT, out var iR, out var gir);
-            //            DeviceHelpers.PnJunction(iSc, Ubc, nC * vT, out var iBCn, out var gBCn);
-            //            gir += gmin;
-            //            var iBC = iBCi + iBCn;
-            //            var gmu = CondBc / bR + gBCn;
-            //            CurrentBaseCollector = iBC;
-
-            var q1 = 1 / (1 - Ubc / vAf - Ube / vAr);
-            var q2 = CurrentBe / iKf + CurrentBc / iKr;
+            // base charge calculation
+            var q1 = 1 / (1 - vbc / vAf - vbe / vAr);
+            var q2 = ibe / iKf + ibc / iKr;
 
             var sqrt = Math.Sqrt(1 + 4 * q2);
             var qB = q1 / 2 * (1 + sqrt);
 
-            var dQdbUbe = q1 * (qB / vAr + CondBe / (iKf * sqrt));
-            var dQbdUbc = q1 * (qB / vAf + CondBc / (iKr * sqrt));
+            var dQdbUbe = q1 * (qB / vAr + gbe / (iKf * sqrt));
+            var dQbdUbc = q1 * (qB / vAf + gbc / (iKr * sqrt));
 
             // excess phase missing
-            var cc = 0.0;
-            var cex = CurrentBe;
-            var gex = CondBe;
+            var ic = (ibe - ibc) / qB - ibc / bR - ibcn;
+            var ib = ibe / bF + iben + ibc / bR + ibcn;
+            var gpi = gbe / bF + gben;
+            var gmu = gbc / bR + gbcn;
+            var go = (gbc + (ibe - ibc) * dQbdUbc / qB) / qB;
+            var gm = (gbe - (ibe - ibc) * dQdbUbe / qB) / qB - go;
 
-            cc = cc + (cex - CurrentBc) / qB - CurrentBc / bR - iBCn;
-            var cb = CurrentBe / bF + iBEn + CurrentBc / bR + iBCn;
+            // terminal currents
+            var ceqbe = polarity * (ic + ib - vbe * (gm + go + gpi) + vbc * go);
+            var ceqbc = polarity * (-ic + vbe * (gm + go) - vbc * (gmu + go));
 
-            //            var iT = (iF - iR) / qB;
-            //
-            //            var gmf = (gif - iT * dQdbUbe) / qB;
-            //            var gmr = (gir - iT * dQbdUbc) / qB;
-
-
-            var gpi = CondBe / bF + gBEn;
-            var gmu = CondBc / bR + gBCn;
-            var go = (CondBc + (cex - CurrentBc) * dQbdUbc / qB) / qB;
-            var gm = (gex - (cex - CurrentBc) * dQdbUbe / qB) / qB - go;
-
-
-            //            var go = -gmr;
-            //            var gm = gmf + gmr;
-
-            // calculate terminal currents
-            //            CurrentCollector = iT - 1 / bR * iR;
-            //            CurrentEmitter = -iT - 1 / bF * iF;
-            //            CurrentBase = CurrentBaseEmitter + CurrentBaseCollector;
-
-            var ceqbe = polarity * (cc + cb - Ube * (gm + go + gpi) + Ubc * go);
-            var ceqbc = polarity * (-cc + Ube * (gm + go) - Ubc * (gmu + go));
-
-            //            var ibeeq = iBE - gpi * Ube;
-            //            var ibceq = iBC - gmu * Ubc;
-            //            var iceeq = iT - gmf * Ube + gmr * Ubc;
-
-            var ibeeq = ceqbe;
-            var ibceq = ceqbc;
-            var iceeq = 0;
-
-            CurrentBase = cb;
-            CurrentCollector = cc;
-            CurrentEmitter = -cb - cc;
-            CurrentBaseEmitter = CurrentBe;
-            CurrentBaseCollector = CurrentBc;
-
-
-
+            CurrentBase = ib;
+            CurrentCollector = ic;
+            CurrentEmitter = -ib - ic;
+            CurrentBaseEmitter = ibe;
+            CurrentBaseCollector = ibc;
             Transconductance = gm;
             OutputConductance = go;
             ConductancePi = gpi;
             ConductanceMu = gmu;
 
-            stamper.Stamp(gpi, gmu, gm, -go, ibeeq, ibceq, iceeq);
-//            stamper.Stamp(gpi, gmu, gm, go, ibeeq * polarity, ibceq * polarity, iceeq * polarity);
+            stamper.Stamp(gpi, gmu, gm, -go, ceqbe, ceqbc);
             gb.Stamp(ggb);
             ge.Stamp(gge);
             gc.Stamp(ggc);
@@ -265,18 +220,19 @@ namespace NextGenSpice.LargeSignal.Devices
             var nR = Parameters.ReverseEmissionCoefficient;
             var polarity = Parameters.IsPnp ? -1 : +1;
 
+            // critical voltages to prevent numerical overflow
+            var vbecrit = DeviceHelpers.PnCriticalVoltage(iS, nF * vT);
+            var vbccrit = DeviceHelpers.PnCriticalVoltage(iS, nR * vT);
 
-            var UbeCrit = DeviceHelpers.PnCriticalVoltage(iS, nF * vT);
-            var UbcCrit = DeviceHelpers.PnCriticalVoltage(iS, nR * vT);
+            var vvbe = voltageBe.GetValue() * polarity;
+            var vvbc = voltageBc.GetValue() * polarity;
 
-            var vvbe = vbe.GetValue() * polarity;
-            var vvbc = vbc.GetValue() * polarity;
+            var (vbe, limited) = DeviceHelpers.PnLimitVoltage(vvbe, VoltageBaseEmitter, nF * vT, vbecrit);
+            var (vbc, limited2) = DeviceHelpers.PnLimitVoltage(vvbc, VoltageBaseCollector, nR * vT, vbccrit);
 
-            var (Ube, limited) = DeviceHelpers.PnLimitVoltage(vvbe, VoltageBaseEmitter, nF * vT, UbeCrit);
-            var (Ubc, limited2) = DeviceHelpers.PnLimitVoltage(vvbc, VoltageBaseCollector, nR * vT, UbcCrit);
-
-            var delvbe = Ube - VoltageBaseEmitter;
-            var delvbc = Ubc - VoltageBaseCollector;
+            // calculate current deltas
+            var delvbe = vbe - VoltageBaseEmitter;
+            var delvbc = vbc - VoltageBaseCollector;
             var cchat = CurrentCollector + (Transconductance + OutputConductance) * delvbe -
                         (OutputConductance + ConductanceMu) * delvbc;
             var cbhat = CurrentBase + ConductancePi * delvbe + ConductanceMu * delvbc;
@@ -286,15 +242,16 @@ namespace NextGenSpice.LargeSignal.Devices
             var reltol = context.SimulationParameters.RelativeTolerance;
             var abstol = context.SimulationParameters.AbsoluteTolerance;
 
+            // request another iteration if not converged
             if (limited || limited2 ||
                 !MathHelper.InTollerance(cchat, cc, abstol, reltol) ||
                 !MathHelper.InTollerance(cbhat, cb, abstol, reltol))
                 context.ReportNotConverged(this);
 
             // update voltages
-            VoltageBaseEmitter = Ube;
-            VoltageBaseCollector = Ubc;
-            VoltageCollectorEmitter = Ubc - Ube;
+            VoltageBaseEmitter = vbe;
+            VoltageBaseCollector = vbc;
+            VoltageCollectorEmitter = vbc - vbe;
         }
 
         /// <summary>
