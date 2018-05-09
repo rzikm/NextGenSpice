@@ -2,7 +2,7 @@
   "profiles": {
     "NextGenSpice": {
       "commandName": "Project",
-      "commandLineArgs": "illcond.txt",
+      "commandLineArgs": "cfflop.txt",
       "workingDirectory": "D:\\Visual Studio 2017\\Projects\\NextGen Spice\\Debug"
     }
   }

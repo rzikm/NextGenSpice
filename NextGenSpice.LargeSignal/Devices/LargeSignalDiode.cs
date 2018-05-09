@@ -117,7 +117,7 @@ namespace NextGenSpice.LargeSignal.Devices
             var dCurr = Conductance * dVolt;
 
             var reltol = context.SimulationParameters.RelativeTolerance;
-            var abstol = context.SimulationParameters.AbsolutTolerane;
+            var abstol = context.SimulationParameters.AbsoluteTolerance;
 
             if (!MathHelper.InTollerance(Current, Current + dCurr, abstol, reltol) )
             {

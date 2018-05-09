@@ -18,6 +18,14 @@ namespace NextGenSpice.LargeSignal.Devices
 
         private readonly VoltageProxy vbe;
 
+        private readonly ConductanceStamper gb;
+        private readonly ConductanceStamper gc;
+        private readonly ConductanceStamper ge;
+
+        private int bprimeNode;
+        private int cprimeNode;
+        private int eprimeNode;
+
         private double vT; // thermal voltage
 
         public LargeSignalBjt(Bjt definitionDevice) : base(definitionDevice)
@@ -25,6 +33,10 @@ namespace NextGenSpice.LargeSignal.Devices
             stamper = new BjtTransistorStamper();
             vbe = new VoltageProxy();
             vbc = new VoltageProxy();
+
+            gb = new ConductanceStamper();
+            gc = new ConductanceStamper();
+            ge = new ConductanceStamper();
         }
 
         /// <summary>Node connected to collector terminal of the transistor.</summary>
@@ -79,15 +91,30 @@ namespace NextGenSpice.LargeSignal.Devices
         public double ConductanceMu { get; private set; }
 
 
+        /// <summary>Allows devices to register any additional variables.</summary>
+        /// <param name="adapter">The equation system builder.</param>
+        public override void RegisterAdditionalVariables(IEquationSystemAdapter adapter)
+        {
+            base.RegisterAdditionalVariables(adapter);
+
+            bprimeNode = Parameters.BaseResistance > 0 ? adapter.AddVariable() : Base;
+            cprimeNode = Parameters.CollectorResistance > 0 ? adapter.AddVariable() : Collector;
+            eprimeNode = Parameters.EmitterCapacitance > 0 ? adapter.AddVariable() : Emitter;
+        }
+
         /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
         /// <param name="adapter">The equation system builder.</param>
         /// <param name="context">Context of current simulation.</param>
         public override void Initialize(IEquationSystemAdapter adapter, ISimulationContext context)
         {
-            stamper.Register(adapter, Base, Collector, Emitter);
+            stamper.Register(adapter, bprimeNode, cprimeNode, eprimeNode);
 
-            vbc.Register(adapter, Base, Collector);
-            vbe.Register(adapter, Base, Emitter);
+            vbc.Register(adapter, bprimeNode, cprimeNode);
+            vbe.Register(adapter, bprimeNode, eprimeNode);
+
+            gb.Register(adapter, bprimeNode, Base);
+            gc.Register(adapter, cprimeNode, Collector);
+            ge.Register(adapter, eprimeNode, Emitter);
 
             vT = PhysicalConstants.Boltzmann *
                  PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
@@ -127,6 +154,11 @@ namespace NextGenSpice.LargeSignal.Devices
             var gmin = Parameters.MinimalResistance ?? context.SimulationParameters.MinimalResistance;
 
             var polarity = Parameters.IsPnp ? 1 : -1;
+
+            var ggb = Parameters.BaseResistance > 0 ? 1 / Parameters.BaseResistance : 0;
+            var ggc = Parameters.CollectorResistance > 0 ? 1 / Parameters.CollectorResistance : 0;
+            var gge = Parameters.EmitterCapacitance > 0 ? 1 / Parameters.EmitterCapacitance : 0;
+
 
             var Ube = VoltageBaseEmitter;
             var Ubc = VoltageBaseCollector;
@@ -187,6 +219,9 @@ namespace NextGenSpice.LargeSignal.Devices
             ConductanceMu = gmu;
 
             stamper.Stamp(gpi, gmu, gm, go, ibeeq, ibceq, iceeq);
+            gb.Stamp(ggb);
+            ge.Stamp(gge);
+            gc.Stamp(ggc);
         }
 
         /// <summary>This method is called each time an equation is solved.</summary>
@@ -197,9 +232,13 @@ namespace NextGenSpice.LargeSignal.Devices
 
             var nF = Parameters.ForwardEmissionCoefficient;
             var nR = Parameters.ReverseEmissionCoefficient;
+            var polarity = Parameters.IsPnp ? 1 : -1;
 
             var UbeCrit = DeviceHelpers.PnCriticalVoltage(iS, nF * vT);
             var UbcCrit = DeviceHelpers.PnCriticalVoltage(iS, nR * vT);
+
+            var vvbe = vbe.GetValue();
+            var vvbc = vbc.GetValue();
 
             var Ube = DeviceHelpers.PnLimitVoltage(vbe.GetValue(), VoltageBaseEmitter, nF * vT, UbeCrit);
             var Ubc = DeviceHelpers.PnLimitVoltage(vbc.GetValue(), VoltageBaseCollector, nR * vT, UbcCrit);
@@ -213,7 +252,7 @@ namespace NextGenSpice.LargeSignal.Devices
             var cb = CurrentBase;
 
             var reltol = context.SimulationParameters.RelativeTolerance;
-            var abstol = context.SimulationParameters.AbsolutTolerane;
+            var abstol = context.SimulationParameters.AbsoluteTolerance;
 
             if (!MathHelper.InTollerance(cchat, cc, abstol, reltol) ||
                 !MathHelper.InTollerance(cbhat, cb, abstol, reltol))

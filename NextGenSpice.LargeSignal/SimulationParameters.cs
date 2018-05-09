@@ -18,7 +18,7 @@ namespace NextGenSpice.LargeSignal
         public double RelativeTolerance { get; set; } = 1e-3;
 
         /// <summary>Absolute tolerance for Newton-Raphson iterations convergence check.</summary>
-        public double AbsolutTolerane { get; set; } = 1e-11;
+        public double AbsoluteTolerance { get; set; } = 1e-9;
 
         /// <summary>Factory for preffered integration method for circuit devices.</summary>
         public IIntegrationMethodFactory IntegrationMethodFactory
