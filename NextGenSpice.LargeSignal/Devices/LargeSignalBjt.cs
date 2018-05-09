@@ -1,13 +1,12 @@
-﻿using NextGenSpice.Core;
+﻿using System;
+using System.Collections.Generic;
+using NextGenSpice.Core;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Stamping;
-using NextGenSpice.Numerics.Equations;
-using System;
-using System.Collections.Generic;
-using System.Net;
 using NextGenSpice.Numerics;
+using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.Devices
 {
@@ -15,9 +14,9 @@ namespace NextGenSpice.LargeSignal.Devices
     public class LargeSignalBjt : LargeSignalDeviceBase<Bjt>
     {
         private readonly BjtTransistorStamper stamper;
+        private readonly VoltageProxy vbc;
 
         private readonly VoltageProxy vbe;
-        private readonly VoltageProxy vbc;
 
         private double vT; // thermal voltage
 
@@ -67,17 +66,17 @@ namespace NextGenSpice.LargeSignal.Devices
         /// <summary>Voltage between collector and emitter terminal.</summary>
         public double VoltageCollectorEmitter { get; private set; }
 
+        /// <summary>Transconductance computed for the current timepoint.</summary>
         public double Transconductance { get; private set; }
 
+        /// <summary>Output conductance computed for the current timepoint.</summary>
         public double OutputConductance { get; private set; }
 
+        /// <summary>Computed conductance between the base and emitter terminals.</summary>
         public double ConductancePi { get; private set; }
 
+        /// <summary>Computed conductance between the base and collector terminals.</summary>
         public double ConductanceMu { get; private set; }
-
-        private void CacheModelParams()
-        {
-        }
 
 
         /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
@@ -93,15 +92,6 @@ namespace NextGenSpice.LargeSignal.Devices
             vT = PhysicalConstants.Boltzmann *
                  PhysicalConstants.CelsiusToKelvin(Parameters.NominalTemperature) /
                  PhysicalConstants.DevicearyCharge;
-
-            // set init condition to help convergence
-//            var iS = Parameters.SaturationCurrent;
-//            var nF = Parameters.ForwardEmissionCoefficient;
-//            var nR = Parameters.ReverseEmissionCoefficient;
-//            VoltageBaseCollector = DeviceHelpers.PnCriticalVoltage(iS, nF * vT);
-//            VoltageBaseEmitter = DeviceHelpers.PnCriticalVoltage(iS, nR * vT);
-
-            CacheModelParams();
         }
 
         /// <summary>
@@ -147,7 +137,7 @@ namespace NextGenSpice.LargeSignal.Devices
             DeviceHelpers.PnJunction(iS, Ube, nF * vT, out var iF, out var gif);
             DeviceHelpers.PnJunction(iSe, Ube, nE * vT, out var iBEn, out var gBEn);
             gif += gmin;
-            
+
             var iBEi = iF / bF;
             var gBEi = gif / bF;
 
@@ -181,7 +171,7 @@ namespace NextGenSpice.LargeSignal.Devices
 
             var go = -gmr;
             var gm = gmf + gmr;
-            
+
             // calculate terminal currents
             CurrentCollector = iT - 1 / bR * iR;
             CurrentEmitter = -iT - 1 / bF * iF;
@@ -216,7 +206,8 @@ namespace NextGenSpice.LargeSignal.Devices
 
             var delvbe = Ube - VoltageBaseEmitter;
             var delvbc = Ubc - VoltageBaseCollector;
-            var cchat = CurrentCollector + (Transconductance + OutputConductance) * delvbe - (OutputConductance + ConductanceMu) * delvbc;
+            var cchat = CurrentCollector + (Transconductance + OutputConductance) * delvbe -
+                        (OutputConductance + ConductanceMu) * delvbc;
             var cbhat = CurrentBase + ConductancePi * delvbe + ConductanceMu * delvbc;
             var cc = CurrentCollector;
             var cb = CurrentBase;
@@ -226,9 +217,7 @@ namespace NextGenSpice.LargeSignal.Devices
 
             if (!MathHelper.InTollerance(cchat, cc, abstol, reltol) ||
                 !MathHelper.InTollerance(cbhat, cb, abstol, reltol))
-            {
                 context.ReportNotConverged(this);
-            }
 
             // update voltages
             VoltageBaseEmitter = Ube;
