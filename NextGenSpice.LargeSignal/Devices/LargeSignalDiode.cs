@@ -111,7 +111,7 @@ namespace NextGenSpice.LargeSignal.Devices
         public override void OnEquationSolution(ISimulationContext context)
         {
             var vcrit = DeviceHelpers.PnCriticalVoltage(Parameters.SaturationCurrent, vt);
-            var newvolt = DeviceHelpers.PnLimitVoltage(voltage.GetValue(), Voltage, vt, vcrit);
+            var (newvolt, limited) = DeviceHelpers.PnLimitVoltage(voltage.GetValue(), Voltage, vt, vcrit);
 
             var dVolt = newvolt - Voltage;
             var dCurr = Conductance * dVolt;
@@ -119,7 +119,7 @@ namespace NextGenSpice.LargeSignal.Devices
             var reltol = context.SimulationParameters.RelativeTolerance;
             var abstol = context.SimulationParameters.AbsoluteTolerance;
 
-            if (!MathHelper.InTollerance(Current, Current + dCurr, abstol, reltol) )
+            if (limited || !MathHelper.InTollerance(Current, Current + dCurr, abstol, reltol))
             {
                 context.ReportNotConverged(this);
             }

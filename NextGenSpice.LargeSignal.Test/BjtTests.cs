@@ -33,19 +33,17 @@ vcc 3 0 5
             AssertEqual(2.89653326135722, v1);
             AssertEqual(0.79306652271697, v2);
             AssertEqual(5, v3);
-
-            PrintStatistics(Model, Result);
         }
 
         [Fact]
         public void SimplePnp()
         {
             Parse(@"
-.Model mybjt pnp is=1e-15
+.Model mybjt pnp 
 
+rc 1 2 5kOhm
 vcc 1 0  6V
 vin 3 0  sin(0.705 50mV 1kHz 0 0)
-rc 1 2 5kOhm
 q1 2 3 0 mybjt
 
 
@@ -53,10 +51,8 @@ q1 2 3 0 mybjt
             Model.EstablishDcBias();
 
             AssertEqual(6, Model.NodeVoltages[1]);
-            AssertEqual(2.51299401496814, Model.NodeVoltages[3]);
-            AssertEqual(0.705, Model.NodeVoltages[2]);
-
-            PrintStatistics(Model, Result);
+            AssertEqual(1.45843798227343, Model.NodeVoltages[2]);
+            AssertEqual(0.705, Model.NodeVoltages[3]);
         }
     }
 }

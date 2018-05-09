@@ -13,7 +13,7 @@ namespace NextGenSpice.LargeSignal.Test
 
         protected LargeSignalCircuitModel Model { get; private set; }
 
-        private DoubleComparer comparer = new DoubleComparer(1e-8);
+        private DoubleComparer comparer = new DoubleComparer(1e-5);
         public CalculationTestBase(ITestOutputHelper output) : base(output)
         {
         }

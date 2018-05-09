@@ -6,6 +6,7 @@ using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Devices;
+using NextGenSpice.Numerics;
 using NextGenSpice.Numerics.Equations;
 using NextGenSpice.Numerics.Precision;
 
@@ -221,8 +222,13 @@ namespace NextGenSpice.LargeSignal
                 devices[i].OnEquationSolution(context);
             }
 
+            // copy solution and check tollerances
+            var abstol = SimulationParameters.AbsoluteTolerance;
+            var reltol = SimulationParameters.RelativeTolerance;
             for (var i = 0; i < NodeCount; i++)
             {
+                if (!MathHelper.InTollerance(NodeVoltages[i], currentSolution[i], abstol, reltol))
+                    context.Converged = false;
                 NodeVoltages[i] = currentSolution[i];
             }
         }

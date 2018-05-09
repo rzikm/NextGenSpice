@@ -15,45 +15,46 @@ namespace NextGenSpice.LargeSignal.Devices
         /// <param name="thermalVoltage">Thermal voltage of the PN junction.</param>
         /// <param name="criticalVoltage">Critical voltage of the PN junction.</param>
         /// <returns></returns>
-        public static double PnLimitVoltage(double voltage, double oldVoltage, double thermalVoltage, double criticalVoltage)
+        public static (double voltage, bool limited) PnLimitVoltage(double voltage, double oldVoltage, double thermalVoltage, double criticalVoltage)
         {
-            double arg;
-            if (voltage > criticalVoltage && Math.Abs(voltage - oldVoltage) > 2 * thermalVoltage)
+            //            double arg;
+            //            if (voltage > criticalVoltage && Math.Abs(voltage - oldVoltage) > 2 * thermalVoltage)
+            //            {
+            //                if (oldVoltage > 0)
+            //                {
+            //                    arg = (voltage - oldVoltage) / thermalVoltage;
+            //                    if (arg > 0)
+            //                        voltage = oldVoltage + thermalVoltage * (2 + Math.Log10(arg - 2));
+            //                    else
+            //                        voltage = oldVoltage - thermalVoltage * (2 + Math.Log10(2 - arg));
+            //                }
+            //                else voltage = oldVoltage < 0 ? thermalVoltage * Math.Log10(voltage / thermalVoltage) : criticalVoltage;
+            //            }
+            //            else
+            //            {
+            //                if (voltage < 0)
+            //                {
+            //                    arg = oldVoltage > 0 ? -1 - oldVoltage : 2 * oldVoltage - 1;
+            //                    if (voltage < arg) voltage = arg;
+            //                }
+            //            }
+            //            return voltage;
+            bool limited = false;
+            if (voltage > criticalVoltage && Math.Abs(voltage - oldVoltage) > thermalVoltage + thermalVoltage)
             {
+                limited = true;
                 if (oldVoltage > 0)
                 {
-                    arg = (voltage - oldVoltage) / thermalVoltage;
+                    var arg = 1 + (voltage - oldVoltage) / thermalVoltage;
                     if (arg > 0)
-                        voltage = oldVoltage + thermalVoltage * (2 + Math.Log10(arg - 2));
+                        voltage = oldVoltage + thermalVoltage * Math.Log(arg);
                     else
-                        voltage = oldVoltage - thermalVoltage * (2 + Math.Log10(2 - arg));
+                        voltage = criticalVoltage;
                 }
-                else voltage = oldVoltage < 0 ? thermalVoltage * Math.Log10(voltage / thermalVoltage) : criticalVoltage;
+                else
+                    voltage = thermalVoltage * Math.Log(voltage / thermalVoltage);
             }
-            else
-            {
-                if (voltage < 0)
-                {
-                    arg = oldVoltage > 0 ? -1 - oldVoltage : 2 * oldVoltage - 1;
-                    if (voltage < arg) voltage = arg;
-                }
-            }
-            return voltage;
-
-//            if (voltage > criticalVoltage && Math.Abs(voltage - oldVoltage) > thermalVoltage + thermalVoltage)
-//            {
-//                if (oldVoltage > 0)
-//                {
-//                    var arg = 1 + (voltage - oldVoltage) / thermalVoltage;
-//                    if (arg > 0)
-//                        voltage = oldVoltage + thermalVoltage * Math.Log(arg);
-//                    else
-//                        voltage = criticalVoltage;
-//                }
-//                else
-//                    voltage = thermalVoltage * Math.Log(voltage / thermalVoltage);
-//            }
-//            return voltage;
+            return (voltage, limited);
         }
 
         /// <summary>
@@ -79,6 +80,25 @@ namespace NextGenSpice.LargeSignal.Devices
             var e = Math.Exp(voltage / thermalVoltage);
             current = saturationCurrent * (e - 1);
             conductance = saturationCurrent * e / thermalVoltage;
+        }
+
+        public static (double current, double conductance) PnBJT(double saturationCurrent, double voltage,
+            double thermalVoltage, double gmin)
+        {
+            double current, conductance;
+            if (voltage > -5 * thermalVoltage)
+            {
+                var e = Math.Exp(voltage / thermalVoltage);
+                current = saturationCurrent * (e - 1) + gmin * voltage;
+                conductance = saturationCurrent / thermalVoltage * e + gmin;
+            }
+            else
+            {
+                conductance = -saturationCurrent / voltage + gmin;
+                current = conductance * voltage;
+            }
+
+            return (current, conductance);
         }
 
         /// <summary>
