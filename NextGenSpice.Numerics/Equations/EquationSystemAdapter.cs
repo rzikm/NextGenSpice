@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using NextGenSpice.Numerics.Precision;
 
 
 namespace NextGenSpice.Numerics.Equations

@@ -8,8 +8,8 @@ namespace NextGenSpice.LargeSignal
     {
         private IIntegrationMethodFactory integrationMethodFactory =
             new SimpleIntegrationMethodFactory(() => new GearIntegrationMethod(2));
-        //            new SimpleIntegrationMethodFactory(() => new BackwardEulerIntegrationMethod());
-        //            new SimpleIntegrationMethodFactory(() => new TrapezoidalIntegrationMethod());
+//            new SimpleIntegrationMethodFactory(() => new BackwardEulerIntegrationMethod());
+//            new SimpleIntegrationMethodFactory(() => new TrapezoidalIntegrationMethod());
 
         /// <summary>Convergence aid for some devices.</summary>
         public double MinimalResistance { get; set; } = 1e-12;
@@ -26,8 +26,5 @@ namespace NextGenSpice.LargeSignal
             get => integrationMethodFactory;
             set => integrationMethodFactory = value ?? throw new ArgumentNullException();
         }
-
-        /// <summary>Simulation temperature in degrees Celsius</summary>
-        public double Temperature { get; set; } = 27;
     }
 }

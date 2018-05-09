@@ -2,7 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace NextGenSpice.Numerics
+namespace NextGenSpice.Numerics.Precision
 {
 #if dd_precision
     [StructLayout(LayoutKind.Sequential)]

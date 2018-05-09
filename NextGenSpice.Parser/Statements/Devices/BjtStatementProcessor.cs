@@ -73,11 +73,10 @@ namespace NextGenSpice.Parser.Statements.Devices
                 Map(x => x.ReverseCurrentCorner, "IKR");
                 Map(x => x.CollectorSaturationCurrent, "ISC");
                 Map(x => x.CollectorSaturationCoefficient, "NC");
-
                 Map(x => x.BaseResistance, "RB");
                 Map(x => x.CurrentBaseResistanceMidpoint, "IRB");
-                Map(x => x.MinimumBaseResistance, "RBM");
 
+                Map(x => x.MinimumBaseResistance, "RBM");
                 Map(x => x.EmitterResistance, "RE");
                 Map(x => x.CollectorResistance, "RC");
                 Map(x => x.EmitterCapacitance, "CJE");

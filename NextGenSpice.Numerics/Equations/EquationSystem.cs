@@ -1,4 +1,6 @@
-﻿namespace NextGenSpice.Numerics.Equations
+﻿using NextGenSpice.Numerics.Precision;
+
+namespace NextGenSpice.Numerics.Equations
 {
     /// <summary>Simple equation system with double precision coefficient.</summary>
     public class EquationSystem : IEquationSystem

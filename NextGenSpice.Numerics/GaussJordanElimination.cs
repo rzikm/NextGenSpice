@@ -1,6 +1,6 @@
 //#undef native_gauss
 #if DEBUG
-//#define trace_dumpsolution
+#define trace_dumpsolution
 //#define trace_dumpmatrix
 #endif
 using System;
@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
+using NextGenSpice.Numerics.Precision;
 
 namespace NextGenSpice.Numerics
 {
