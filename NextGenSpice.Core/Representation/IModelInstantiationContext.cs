@@ -14,10 +14,10 @@ namespace NextGenSpice.Core.Representation
         /// <returns></returns>
         IAnalysisDeviceModel<TAnalysisModel> GetModel(ICircuitDefinitionDevice device);
 
-        /// <summary>Gets model instance for device definition instance identified by given name.</summary>
-        /// <param name="device">The name of the device.</param>
+        /// <summary>Gets model instance for device definition instance identified by given name.</summary>      
+        /// <param name="tag">Tag of the device to be instantiated.</param>
         /// <returns></returns>
-        IAnalysisDeviceModel<TAnalysisModel> GetModel(string name);
+        IAnalysisDeviceModel<TAnalysisModel> GetModel(object tag);
 
         /// <summary>Processes parameter using registered factory function for its type.</summary>
         /// <param name="arg">Argument to be processed.</param>

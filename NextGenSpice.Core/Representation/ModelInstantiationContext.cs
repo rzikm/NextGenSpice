@@ -50,14 +50,14 @@ namespace NextGenSpice.Core.Representation
         }
 
         /// <summary>Creates model instance for definition device with given name.</summary>
-        /// <param name="deviceName">Name of the device to be instantiated.</param>
+        /// <param name="tag">Tag of the device to be instantiated.</param>
         /// <returns></returns>
-        public IAnalysisDeviceModel<TAnalysisModel> GetModel(string deviceName)
+        public IAnalysisDeviceModel<TAnalysisModel> GetModel(object tag)
         {
-            if (deviceName == null) throw new ArgumentNullException(nameof(deviceName));
+            if (tag == null) throw new ArgumentNullException(nameof(tag));
 
-            if (!namedDevices.TryGetValue(deviceName, out var device))
-                throw new ArgumentException($"Device with name {deviceName} does not exist in given context.");
+            if (!namedDevices.TryGetValue(tag, out var device))
+                throw new ArgumentException($"Device with tag '{tag}' does not exist in given context.");
 
             return GetModel(device);
         }
