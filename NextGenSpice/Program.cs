@@ -12,14 +12,14 @@ namespace NextGenSpice
 {
     internal class Program
     {
-        private static void Main(string[] args)
+        private static int Main(string[] args)
         {
             Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
 //            Trace.Listeners.Add(new TextWriterTraceListener(new StreamWriter("dump.txt")));
             if (args.Length != 1)
             {
                 Console.Error.WriteLine("Usage: dotnet NextGenSpice.dll <input file>");
-                return;
+                return 1;
             }
 
             StreamReader input;
@@ -30,7 +30,7 @@ namespace NextGenSpice
             catch (Exception e)
             {
                 Console.Error.WriteLine(e.Message);
-                return;
+                return 1;
             }
 
             var parser = CreateParser();
@@ -43,7 +43,7 @@ namespace NextGenSpice
                 foreach (var error in result.Errors)
                     Console.WriteLine(error);
                 Console.WriteLine($"There were {result.Errors.Count} errors.");
-                return;
+                return 1;
             }
 
             bool first = true;
@@ -52,8 +52,23 @@ namespace NextGenSpice
             {
                 if (!first) Console.WriteLine();
                 first = false;
-                RunStatement(statement, result);
+                try
+                {
+                    statement.Simulate(result.CircuitDefinition, result.OtherStatements.OfType<PrintStatement>(), Console.Out);
+                }
+                catch (PrinterInitializationException e)
+                {
+                    foreach (var error in e.Errors)
+                        Console.WriteLine(error);
+                }
+                catch (SimulationException e)
+                {
+                    Console.WriteLine($"ERROR: {e.Message}");
+                    return 1;
+                }
             }
+
+            return 0;
         }
 
         private static SpiceNetlistParser CreateParser()
@@ -71,23 +86,6 @@ namespace NextGenSpice
             parser.RegisterStatement(print, true, false);
             parser.RegisterStatement(op, true, false);
             return parser;
-        }
-
-        private static void RunStatement(ISimulationStatement statement, SpiceNetlistParserResult result)
-        {
-            try
-            {
-                statement.Simulate(result.CircuitDefinition, result.OtherStatements.OfType<PrintStatement>(), Console.Out);
-            }
-            catch (PrinterInitializationException e)
-            {
-                foreach (var error in e.Errors)
-                    Console.WriteLine(error);
-            }
-            catch (SimulationException e)
-            {
-                Console.WriteLine($"ERROR: {e.Message}");
-            }
         }
     }
 }
