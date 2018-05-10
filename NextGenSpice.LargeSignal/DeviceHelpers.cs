@@ -57,6 +57,31 @@ namespace NextGenSpice.LargeSignal.Devices
             return (voltage, limited);
         }
 
+
+        /// <summary>
+        /// Calculates PN junction capacitance
+        /// </summary>
+        /// <param name="voltage"></param>
+        /// <param name="cj0">Zero-bias junction capacitance</param>
+        /// <param name="m">Emission coefficent</param>
+        /// <param name="vj">Junction potential</param>
+        /// <param name="tt">Transit time</param>
+        /// <param name="fc">Forward bias depletion capacitance coefficient.</param>
+        /// <returns></returns>
+        public static double JunctionCapacitance(double voltage, double cj0, double m, double vj, double tt, double fc)
+        {
+            if (voltage < fc * vj)
+            {
+                return tt + cj0 / Math.Pow(1 - voltage / vj, m);
+            }
+            else
+            {
+                var f2 = Math.Pow(1 - fc, 1 + m);
+                var f3 = 1 - fc * (1 + m);
+                return tt + cj0 / f2 * (f3 + (m * voltage) / vj);
+            }
+        }
+
         /// <summary>
         /// Calculates the current across the PN junction and its derivative.
         /// </summary>

@@ -258,9 +258,9 @@ namespace NextGenSpice.LargeSignal.Devices
             var vjs = Parameters.SubstratePotential;
 
 
-            var cbe = JunctionCapacitance(vbe, cje, mje, vje, gbe * tf, fc);
-            var cbc = JunctionCapacitance(vbc, cjc, mjc, vjc, gbc * tr, fc);
-            var ccs = JunctionCapacitance(vcs, cjs, mjs, vjs, 0, fc);
+            var cbe = DeviceHelpers.JunctionCapacitance(vbe, cje, mje, vje, gbe * tf, fc);
+            var cbc = DeviceHelpers.JunctionCapacitance(vbc, cjc, mjc, vjc, gbc * tr, fc);
+            var ccs = DeviceHelpers.JunctionCapacitance(vcs, cjs, mjs, vjs, 0, fc);
 
             // stamp capacitors
 
@@ -276,19 +276,6 @@ namespace NextGenSpice.LargeSignal.Devices
 
         }
 
-        public static double JunctionCapacitance(double voltage, double cj0, double m, double vj, double tt, double fc)
-        {
-            if (voltage < fc * vj)
-            {
-                return tt + cj0 / Math.Pow(1 - voltage / vj, m);
-            }
-            else
-            {
-                var f2 = Math.Pow(1 - fc, 1 + m);
-                var f3 = 1 - fc * (1 + m);
-                return tt + cj0 / f2 * (f3 + (m * voltage) / vj);
-            }
-        }
 
         /// <summary>This method is called each time an equation is solved.</summary>
         /// <param name="context">Context of current simulation.</param>
