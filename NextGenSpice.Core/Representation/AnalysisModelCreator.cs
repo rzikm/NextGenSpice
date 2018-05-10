@@ -36,7 +36,7 @@ namespace NextGenSpice.Core.Representation
         /// <typeparam name="TAnalysisModel">Analysis-specific model type.</typeparam>
         /// <param name="circuitDefinition">Definition of the circuit, whose analysis model should be created</param>
         /// <returns></returns>
-        public TAnalysisModel GetModel<TAnalysisModel>(ICircuitDefinition circuitDefinition)
+        public TAnalysisModel Create<TAnalysisModel>(ICircuitDefinition circuitDefinition)
         {
             var factory = GetFactory<TAnalysisModel>();
             return factory.Create(circuitDefinition);

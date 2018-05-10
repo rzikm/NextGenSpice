@@ -60,7 +60,7 @@ namespace SandboxRunner
             var model = circuit.GetLargeSignalModel();
             // equivalent to
             var m = AnalysisModelCreator
-                .Instance.GetModel<LargeSignalCircuitModel>(circuit);
+                .Instance.Create<LargeSignalCircuitModel>(circuit);
 
 
             //            builder

@@ -32,7 +32,7 @@ namespace NextGenSpice.LargeSignal.Test
                     .AddResistor(2, 0, 5)
                     .AddCapacitor(1, 2, 1).BuildCircuit();
                 Assert.Equal(3, circuit.NodeCount);
-                model = creator.GetModel<LargeSignalCircuitModel>(circuit);
+                model = creator.Create<LargeSignalCircuitModel>(circuit);
             }
             model.EstablishDcBias();
             Output.PrintCircuitStats(model);
@@ -45,7 +45,7 @@ namespace NextGenSpice.LargeSignal.Test
                     .AddVoltageSource(1, 0, 5)
                     .AddResistor(1, 0, 2)
                     .AddResistor(2, 0, 5).BuildCircuit();
-                model = creator.GetModel<LargeSignalCircuitModel>(circuit);
+                model = creator.Create<LargeSignalCircuitModel>(circuit);
             }
             model.EstablishDcBias();
             Output.PrintCircuitStats(model);
@@ -66,7 +66,7 @@ namespace NextGenSpice.LargeSignal.Test
                     .AddResistor(1, 0, 2)
                     .AddResistor(2, 0, 5)
                     .AddInductor(1, 2, 1).BuildCircuit();
-                model = creator.GetModel<LargeSignalCircuitModel>(circuit);
+                model = creator.Create<LargeSignalCircuitModel>(circuit);
             }
             model.EstablishDcBias();
             Output.PrintCircuitStats(model);
@@ -79,7 +79,7 @@ namespace NextGenSpice.LargeSignal.Test
                     .AddVoltageSource(1, 0, 5)
                     .AddResistor(1, 0, 2)
                     .AddResistor(1, 0, 5).BuildCircuit();
-                model = creator.GetModel<LargeSignalCircuitModel>(circuit);
+                model = creator.Create<LargeSignalCircuitModel>(circuit);
             }
             model.EstablishDcBias();
             Output.PrintCircuitStats(model);
@@ -95,7 +95,7 @@ namespace NextGenSpice.LargeSignal.Test
         public void TestLinearCircuit()
         {
             var circuit = CircuitGenerator.GetLinearCircuit();
-            var model = creator.GetModel<LargeSignalCircuitModel>(circuit);
+            var model = creator.Create<LargeSignalCircuitModel>(circuit);
 
             model.EstablishDcBias();
 
@@ -110,7 +110,7 @@ namespace NextGenSpice.LargeSignal.Test
         {
             var circuit = CircuitGenerator.GetNonlinearCircuit();
 
-            var model = creator.GetModel<LargeSignalCircuitModel>(circuit);
+            var model = creator.Create<LargeSignalCircuitModel>(circuit);
             model.EstablishDcBias();
             Output.PrintCircuitStats(model);
 
@@ -123,7 +123,7 @@ namespace NextGenSpice.LargeSignal.Test
         {
             var circuit = CircuitGenerator.GetCircuitWithVoltageSource();
 
-            var model = creator.GetModel<LargeSignalCircuitModel>(circuit);
+            var model = creator.Create<LargeSignalCircuitModel>(circuit);
             model.EstablishDcBias();
             Output.PrintCircuitStats(model);
 
@@ -136,7 +136,7 @@ namespace NextGenSpice.LargeSignal.Test
         {
             var circuit = CircuitGenerator.GetNonlinearCircuit();
 
-            var model = creator.GetModel<LargeSignalCircuitModel>(circuit);
+            var model = creator.Create<LargeSignalCircuitModel>(circuit);
             model.MaxDcPointIterations = 3; // some unrealistic low bound
 
             Assert.Throws<IterationCountExceededException>(() => model.EstablishDcBias());

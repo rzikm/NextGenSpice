@@ -11,7 +11,7 @@ namespace NextGenSpice.Core
         public static TAnalysisModel GetAnalysisModel<TAnalysisModel>(this ICircuitDefinition definition)
         {
             if (definition == null) throw new ArgumentNullException(nameof(definition));
-            return AnalysisModelCreator.Instance.GetModel<TAnalysisModel>(definition);
+            return AnalysisModelCreator.Instance.Create<TAnalysisModel>(definition);
         }
     }
 }

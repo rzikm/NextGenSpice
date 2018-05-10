@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 
 using NextGenSpice.Core.Devices;
-using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal;
 using NextGenSpice.LargeSignal.Devices;
 using NextGenSpice.LargeSignal.Stamping;
+using NextGenSpice.Numerics;
 using NextGenSpice.Numerics.Equations;
 using NextGenSpice.Parser;
 using NextGenSpice.Parser.Statements.Deferring;
 using NextGenSpice.Parser.Statements.Devices;
 using NextGenSpice.Parser.Statements.Models;
-using NextGenSpice.Parser.Utils;
 
 
 namespace SandboxRunner
@@ -148,8 +147,19 @@ namespace SandboxRunner
             }
 
             public override void OnEquationSolution(ISimulationContext context)
-            {   // read voltage across the diode
-                Current = voltage.GetValue();
+            {   
+                // Check if converged
+                var newVoltage = voltage.GetValue();
+                if (!MathHelper.InTollerance(newVoltage, Voltage,
+                    context.SimulationParameters.AbsoluteTolerance,
+                    context.SimulationParameters.RelativeTolerance))
+                {
+                    // request additional DC bias iteration
+                    context.ReportNotConverged(this);
+                }
+
+                // update voltage for reading
+                Voltage = newVoltage;
             }
         }
 

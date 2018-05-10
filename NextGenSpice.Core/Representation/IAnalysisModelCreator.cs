@@ -11,7 +11,7 @@
         /// <typeparam name="TAnalysisModel">Analysis-specific model type.</typeparam>
         /// <param name="circuitDefinition">Definition of the circuit, whose analysis model should be created</param>
         /// <returns></returns>
-        TAnalysisModel GetModel<TAnalysisModel>(ICircuitDefinition circuitDefinition);
+        TAnalysisModel Create<TAnalysisModel>(ICircuitDefinition circuitDefinition);
 
         /// <summary>Gets the instance of factory class responsible for creating analysis-specific model of givent type.</summary>
         /// <typeparam name="TAnalysisModel">Analysis-specific model type.</typeparam>

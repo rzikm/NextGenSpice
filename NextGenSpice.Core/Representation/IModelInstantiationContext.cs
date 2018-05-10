@@ -26,6 +26,6 @@ namespace NextGenSpice.Core.Representation
 
         /// <summary>Gets nested instantiation context (for handling subcircuits).</summary>
         /// <returns></returns>
-        IModelInstantiationContext<TAnalysisModel> GetSubContext();
+        IModelInstantiationContext<TAnalysisModel> CreateSubcontext();
     }
 }

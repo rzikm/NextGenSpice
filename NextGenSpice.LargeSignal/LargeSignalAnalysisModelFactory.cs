@@ -30,7 +30,7 @@ namespace NextGenSpice.LargeSignal
             SetModel<Cccs, LargeSignalCccs>((e,ctx) => new LargeSignalCccs(e, (LargeSignalVoltageSource) ctx.GetModel(e.Ampermeter)));
 
             SetModel<Subcircuit, LargeSignalSubcircuit>((e, ctx) =>
-                new LargeSignalSubcircuit(e, e.Devices.Select(ctx.GetSubContext().GetModel).Cast<ILargeSignalDevice>()));
+                new LargeSignalSubcircuit(e, e.Devices.Select(ctx.CreateSubcontext().GetModel).Cast<ILargeSignalDevice>()));
 
             // Input source behaviors
             SetParam<ConstantBehavior>(def => new ConstantSourceBehavior(def));
@@ -46,7 +46,7 @@ namespace NextGenSpice.LargeSignal
         /// <summary>Factory method for creating the actual instance of the analysis model.</summary>
         /// <param name="context">Current instantiation context.</param>
         /// <returns></returns>
-        protected override LargeSignalCircuitModel Instantiate(
+        protected override LargeSignalCircuitModel Create(
             IModelInstantiationContext<LargeSignalCircuitModel> context)
         {
             var devices = context.CircuitDefinition.Devices

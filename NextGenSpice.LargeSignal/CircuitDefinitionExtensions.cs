@@ -11,7 +11,7 @@ namespace NextGenSpice.LargeSignal
         public static LargeSignalCircuitModel GetLargeSignalModel(this ICircuitDefinition definition)
         {
             if (definition == null) throw new ArgumentNullException(nameof(definition));
-            return AnalysisModelCreator.Instance.GetModel<LargeSignalCircuitModel>(definition);
+            return AnalysisModelCreator.Instance.Create<LargeSignalCircuitModel>(definition);
         }
 
        

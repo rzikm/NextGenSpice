@@ -22,7 +22,7 @@ namespace NextGenSpice.Test
         [Export(typeof(IAnalysisModelFactory<TestAnalysisCircuitModel>))]
         private class TestAnalysisModelFactory : AnalysisModelFactory<TestAnalysisCircuitModel>
         {
-            protected override TestAnalysisCircuitModel Instantiate(
+            protected override TestAnalysisCircuitModel Create(
                 IModelInstantiationContext<TestAnalysisCircuitModel> context)
             {
                 return new TestAnalysisCircuitModel(context.CircuitDefinition.Devices.Select(context.GetModel)
@@ -87,7 +87,7 @@ namespace NextGenSpice.Test
 
         private class MyPrivateFactory : AnalysisModelFactory<LargeSignalCircuitModel>
         {
-            protected override LargeSignalCircuitModel Instantiate(
+            protected override LargeSignalCircuitModel Create(
                 IModelInstantiationContext<LargeSignalCircuitModel> context)
             {
                 return new LargeSignalCircuitModel(new double?[5], new List<ILargeSignalDevice>());
@@ -104,7 +104,7 @@ namespace NextGenSpice.Test
             creator.GetFactory<TestAnalysisCircuitModel>()
                 .SetModel<TestDeviceDefinition, TestDeviceModel>(def => new TestDeviceModel());
 
-            Assert.NotNull(creator.GetModel<TestAnalysisCircuitModel>(circuitDef));
+            Assert.NotNull(creator.Create<TestAnalysisCircuitModel>(circuitDef));
         }
 
         [Fact]
@@ -122,7 +122,7 @@ namespace NextGenSpice.Test
         [Fact]
         public void HasModelsForDefaultDevices()
         {
-            creator.GetModel<LargeSignalCircuitModel>(definition);
+            creator.Create<LargeSignalCircuitModel>(definition);
         }
 
         [Fact]
@@ -133,7 +133,7 @@ namespace NextGenSpice.Test
             var factory = creator.GetFactory<LargeSignalCircuitModel>();
 
             Assert.Equal(typeof(MyPrivateFactory), factory.GetType());
-            creator.GetModel<LargeSignalCircuitModel>(definition);
+            creator.Create<LargeSignalCircuitModel>(definition);
         }
 
         [Fact]
@@ -147,7 +147,7 @@ namespace NextGenSpice.Test
         {
             var circuitDef = new CircuitBuilder().AddDevice(new[] {0, 1}, new TestDeviceDefinition())
                 .AddDevice(new[] {1, 0}, new TestDeviceDefinition()).BuildCircuit();
-            Assert.Throws<InvalidOperationException>(() => creator.GetModel<LargeSignalCircuitModel>(circuitDef));
+            Assert.Throws<InvalidOperationException>(() => creator.Create<LargeSignalCircuitModel>(circuitDef));
         }
     }
 }

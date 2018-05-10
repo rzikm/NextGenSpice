@@ -31,7 +31,7 @@ namespace NextGenSpice.Core.Representation
             var instantiationContext =
                 new ModelInstantiationContext<TAnalysisModel>(modelCreators, paramCreators, circuitDefinition);
 
-            var analysisModel = Instantiate(instantiationContext);
+            var analysisModel = Create(instantiationContext);
 
             return analysisModel;
         }
@@ -78,6 +78,6 @@ namespace NextGenSpice.Core.Representation
         /// <summary>Factory method for creating the actual instance of the analysis model.</summary>
         /// <param name="context">Current instantiation context.</param>
         /// <returns></returns>
-        protected abstract TAnalysisModel Instantiate(IModelInstantiationContext<TAnalysisModel> context);
+        protected abstract TAnalysisModel Create(IModelInstantiationContext<TAnalysisModel> context);
     }
 }
