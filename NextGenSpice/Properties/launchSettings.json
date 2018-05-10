@@ -2,7 +2,7 @@
   "profiles": {
     "NextGenSpice": {
       "commandName": "Project",
-      "commandLineArgs": "bjt.txt",
+      "commandLineArgs": "nagle.txt",
       "workingDirectory": "D:\\Visual Studio 2017\\Projects\\NextGen Spice\\Debug"
     }
   }

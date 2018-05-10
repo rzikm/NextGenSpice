@@ -8,7 +8,7 @@ namespace NextGenSpice.LargeSignal.Devices
     /// <summary>Large signal model for <see cref="Capacitor" /> device.</summary>
     public class LargeSignalCapacitor : TwoTerminalLargeSignalDevice<Capacitor>
     {
-        private readonly CapacitorStamper stamper;
+        private readonly CapacitorStamperWithCurrent stamper;
         private readonly VoltageProxy voltage;
 
         private bool firtDcPoint;
@@ -16,7 +16,7 @@ namespace NextGenSpice.LargeSignal.Devices
         public LargeSignalCapacitor(Capacitor definitionDevice) : base(definitionDevice)
         {
             voltage = new VoltageProxy();
-            stamper = new CapacitorStamper();
+            stamper = new CapacitorStamperWithCurrent();
         }
 
         /// <summary>Integration method used for modifying inner state of the device.</summary>

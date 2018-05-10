@@ -12,7 +12,7 @@ namespace NextGenSpice.LargeSignal.Devices
     /// <summary>Large signal model for <see cref="Diode" /> device.</summary>
     public class LargeSignalDiode : TwoTerminalLargeSignalDevice<Diode>
     {
-        private readonly CapacitorStamper capacitorStamper;
+        private readonly CapacitorStamperWithCurrent capacitorStamper;
         private readonly DiodeStamper stamper;
         private readonly VoltageProxy voltage;
         private double capacitanceTreshold; // cached treshold values based by model.
@@ -30,7 +30,7 @@ namespace NextGenSpice.LargeSignal.Devices
         public LargeSignalDiode(Diode definitionDevice) : base(definitionDevice)
         {
             stamper = new DiodeStamper();
-            capacitorStamper = new CapacitorStamper();
+            capacitorStamper = new CapacitorStamperWithCurrent();
             voltage = new VoltageProxy();
         }
 

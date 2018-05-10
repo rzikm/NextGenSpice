@@ -4,6 +4,7 @@ using NextGenSpice.Core;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Devices.Parameters;
 using NextGenSpice.Core.Representation;
+using NextGenSpice.LargeSignal.NumIntegration;
 using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics;
 using NextGenSpice.Numerics.Equations;
@@ -15,16 +16,28 @@ namespace NextGenSpice.LargeSignal.Devices
     {
         private readonly BjtTransistorStamper stamper;
         private readonly VoltageProxy voltageBc;
-
         private readonly VoltageProxy voltageBe;
+        private readonly VoltageProxy voltageCs;
 
         private readonly ConductanceStamper gb;
         private readonly ConductanceStamper gc;
         private readonly ConductanceStamper ge;
 
+        private readonly CapacitorStamperWithCurrent capacbe;
+        private readonly CapacitorStamperWithCurrent capacbc;
+        private readonly CapacitorStamperWithCurrent capaccs;
+
+        private IIntegrationMethod chargebe;
+        private IIntegrationMethod chargebc;
+        private IIntegrationMethod chargecs;
+
         private int bprimeNode;
         private int cprimeNode;
         private int eprimeNode;
+
+        private double cgeqbe;
+        private double cgeqbc;
+        private double cgeqcs;
 
         private double vT; // thermal voltage
 
@@ -33,6 +46,11 @@ namespace NextGenSpice.LargeSignal.Devices
             stamper = new BjtTransistorStamper();
             voltageBe = new VoltageProxy();
             voltageBc = new VoltageProxy();
+            voltageCs = new VoltageProxy();
+
+            capacbe = new CapacitorStamperWithCurrent();
+            capacbc = new CapacitorStamperWithCurrent();
+            capaccs = new CapacitorStamperWithCurrent();
 
             gb = new ConductanceStamper();
             gc = new ConductanceStamper();
@@ -111,6 +129,15 @@ namespace NextGenSpice.LargeSignal.Devices
 
             voltageBc.Register(adapter, bprimeNode, cprimeNode);
             voltageBe.Register(adapter, bprimeNode, eprimeNode);
+            voltageCs.Register(adapter, cprimeNode, Substrate);
+
+            capacbe.Register(adapter, bprimeNode, eprimeNode);
+            capacbc.Register(adapter, bprimeNode, cprimeNode);
+            capaccs.Register(adapter, cprimeNode, Substrate);
+
+            chargebe = context.SimulationParameters.IntegrationMethodFactory.CreateInstance();
+            chargebc = context.SimulationParameters.IntegrationMethodFactory.CreateInstance();
+            chargecs = context.SimulationParameters.IntegrationMethodFactory.CreateInstance();
 
             gb.Register(adapter, bprimeNode, Base);
             gc.Register(adapter, cprimeNode, Collector);
@@ -147,8 +174,8 @@ namespace NextGenSpice.LargeSignal.Devices
             var bF = Parameters.ForwardBeta;
             var bR = Parameters.ReverseBeta;
 
-            var vAf = Parameters.ForwardEarlyVoltage;
-            var vAr = Parameters.ReverseEarlyVoltage;
+            var earlyVoltageForward = Parameters.ForwardEarlyVoltage;
+            var earlyVolrateReverse = Parameters.ReverseEarlyVoltage;
 
             var iKf = Parameters.ForwardCurrentCorner;
             var iKr = Parameters.ReverseCurrentCorner;
@@ -173,14 +200,14 @@ namespace NextGenSpice.LargeSignal.Devices
             var (ibcn, gbcn) = DeviceHelpers.PnBJT(iSc, vbc, nC * vT, 0);
 
             // base charge calculation
-            var q1 = 1 / (1 - vbc / vAf - vbe / vAr);
+            var q1 = 1 / (1 - vbc / earlyVoltageForward - vbe / earlyVolrateReverse);
             var q2 = ibe / iKf + ibc / iKr;
 
             var sqrt = Math.Sqrt(1 + 4 * q2);
             var qB = q1 / 2 * (1 + sqrt);
 
-            var dQdbUbe = q1 * (qB / vAr + gbe / (iKf * sqrt));
-            var dQbdUbc = q1 * (qB / vAf + gbc / (iKr * sqrt));
+            var dQdbUbe = q1 * (qB / earlyVolrateReverse + gbe / (iKf * sqrt));
+            var dQbdUbc = q1 * (qB / earlyVoltageForward + gbc / (iKr * sqrt));
 
             // excess phase missing
             var ic = (ibe - ibc) / qB - ibc / bR - ibcn;
@@ -208,6 +235,59 @@ namespace NextGenSpice.LargeSignal.Devices
             gb.Stamp(ggb);
             ge.Stamp(gge);
             gc.Stamp(ggc);
+
+            if (!(context.TimePoint > 0)) return;
+
+            var vcs = voltageCs.GetValue();
+
+            var tf = Parameters.ForwardTransitTime;
+            var tr = Parameters.ReverseTransitTime;
+
+            var fc = Parameters.ForwardBiasDepletionCoefficient;
+
+            var cje = Parameters.EmitterCapacitance;
+            var mje = Parameters.EmitterExponentialFactor;
+            var vje = Parameters.EmitterPotential;
+
+            var cjc = Parameters.CollectorCapacitance;
+            var mjc = Parameters.CollectorExponentialFactor;
+            var vjc = Parameters.CollectorPotential;
+
+            var cjs = Parameters.SubstrateCapacitance;
+            var mjs = Parameters.SubstrateExponentialFactor;
+            var vjs = Parameters.SubstratePotential;
+
+
+            var cbe = JunctionCapacitance(vbe, cje, mje, vje, gbe * tf, fc);
+            var cbc = JunctionCapacitance(vbc, cjc, mjc, vjc, gbc * tr, fc);
+            var ccs = JunctionCapacitance(vcs, cjs, mjs, vjs, 0, fc);
+
+            // stamp capacitors
+
+            double cieq;
+            (cieq, cgeqbe) = chargebe.GetEquivalents(cbe / context.TimeStep);
+            capacbe.Stamp(cieq, cgeqbe);
+
+            (cieq, cgeqbc) = chargebe.GetEquivalents(cbc / context.TimeStep);
+            capacbc.Stamp(cieq, cgeqbc);
+
+            (cieq, cgeqcs) = chargebe.GetEquivalents(ccs / context.TimeStep);
+            capaccs.Stamp(cieq, cgeqcs);
+
+        }
+
+        public static double JunctionCapacitance(double voltage, double cj0, double m, double vj, double tt, double fc)
+        {
+            if (voltage < fc * vj)
+            {
+                return tt + cj0 / Math.Pow(1 - voltage / vj, m);
+            }
+            else
+            {
+                var f2 = Math.Pow(1 - fc, 1 + m);
+                var f3 = 1 - fc * (1 + m);
+                return tt + cj0 / f2 * (f3 + (m * voltage) / vj);
+            }
         }
 
         /// <summary>This method is called each time an equation is solved.</summary>
@@ -252,6 +332,26 @@ namespace NextGenSpice.LargeSignal.Devices
             VoltageBaseEmitter = vbe;
             VoltageBaseCollector = vbc;
             VoltageCollectorEmitter = vbc - vbe;
+        }
+
+        /// <summary>
+        ///     Notifies model class that DC bias for given timepoint is established (i.e after Newton-Raphson iterations
+        ///     converged).
+        /// </summary>
+        /// <param name="context">Context of current simulation.</param>
+        public override void OnDcBiasEstablished(ISimulationContext context)
+        {
+            base.OnDcBiasEstablished(context);
+
+            // update capacitances
+            var vbe = voltageBe.GetValue();
+            chargebe.SetState(vbe * cgeqbe, vbe);
+
+            var vbc = voltageBc.GetValue();
+            chargebc.SetState(vbc * cgeqbc, vbc);
+
+            var vcs = voltageCs.GetValue();
+            chargecs.SetState(vcs * cgeqcs, vcs);
         }
 
         /// <summary>
