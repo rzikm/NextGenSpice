@@ -19,11 +19,6 @@ namespace NextGenSpice.Core.Representation
         /// <returns></returns>
         IAnalysisDeviceModel<TAnalysisModel> GetModel(object tag);
 
-        /// <summary>Processes parameter using registered factory function for its type.</summary>
-        /// <param name="arg">Argument to be processed.</param>
-        /// <returns></returns>
-        object GetParam(object arg);
-
         /// <summary>Gets nested instantiation context (for handling subcircuits).</summary>
         /// <returns></returns>
         IModelInstantiationContext<TAnalysisModel> CreateSubcontext();

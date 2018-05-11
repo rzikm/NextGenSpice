@@ -5,9 +5,10 @@ using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal;
 using NextGenSpice.LargeSignal.Devices;
+using NextGenSpice.Test;
 using Xunit;
 
-namespace NextGenSpice.Test
+namespace NextGenSpice.Core.Test
 {
     public class CircuitInstantiationTests
     {
@@ -21,7 +22,7 @@ namespace NextGenSpice.Test
                     [typeof(Resistor)] =
                         (e, ctx) => new LargeSignalResistor((Resistor) e),
                     [typeof(VoltageSource)] =
-                        (e, ctx) => new LargeSignalVoltageSource((VoltageSource) e, null)
+                        (e, ctx) => new LargeSignalVoltageSource((VoltageSource) e)
                 };
 
 

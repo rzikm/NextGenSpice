@@ -1,5 +1,5 @@
-﻿using NextGenSpice.Core.Devices;
-using NextGenSpice.LargeSignal.Behaviors;
+﻿using NextGenSpice.Core.BehaviorParams;
+using NextGenSpice.Core.Devices;
 using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
 
@@ -11,16 +11,16 @@ namespace NextGenSpice.LargeSignal.Devices
         private readonly CurrentStamper stamper;
         private readonly VoltageProxy voltage;
 
-        public LargeSignalCurrentSource(CurrentSource definitionDevice, IInputSourceBehavior behavior) :
+        public LargeSignalCurrentSource(CurrentSource definitionDevice) :
             base(definitionDevice)
         {
             stamper = new CurrentStamper();
             voltage = new VoltageProxy();
-            Behavior = behavior;
+            Behavior = DefinitionDevice.Behavior;
         }
 
         /// <summary>Strategy class specifying behavior of this source.</summary>
-        public IInputSourceBehavior Behavior { get; }
+        public InputSourceBehavior Behavior { get; }
 
         /// <summary>This method is called each time an equation is solved.</summary>
         /// <param name="context">Context of current simulation.</param>
@@ -45,7 +45,7 @@ namespace NextGenSpice.LargeSignal.Devices
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(ISimulationContext context)
         {
-            Current = Behavior.GetValue(context);
+            Current = Behavior.GetValue(context.TimePoint);
             stamper.Stamp(Current);
         }
     }

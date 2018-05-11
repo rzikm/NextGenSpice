@@ -1,4 +1,6 @@
-﻿namespace NextGenSpice.Core.BehaviorParams
+﻿using NextGenSpice.Numerics;
+
+namespace NextGenSpice.Core.BehaviorParams
 {
     /// <summary>Specifies behavior parameters for input source with alternating pulses.</summary>
     public class PulseBehavior : InputSourceBehavior
@@ -23,5 +25,28 @@
 
         /// <summary>Period of the waveform in seconds.</summary>
         public double Period { get; set; }
+
+        /// <summary>Gets input source value for given timepoint.</summary>
+        /// <param name="timepoint">The time value for which to calculate the value.</param>
+        /// <returns></returns>
+        public override double GetValue(double timepoint)
+        {
+            var phase = timepoint;
+            if (Period > 0)
+                phase = timepoint % Period;
+            if (phase < Delay) return InitialLevel;
+            phase -= Delay;
+            if (phase < TimeRise)
+                return MathHelper.LinearInterpolation(InitialLevel, PulseLevel,
+                    phase / TimeRise);
+            phase -= TimeRise;
+            if (phase < PulseWidth)
+                return PulseLevel;
+            phase -= PulseWidth;
+            if (phase < TimeFall)
+                return MathHelper.LinearInterpolation(PulseLevel, InitialLevel,
+                    phase / TimeFall);
+            return InitialLevel;
+        }
     }
 }

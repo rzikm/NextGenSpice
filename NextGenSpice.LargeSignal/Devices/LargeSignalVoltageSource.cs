@@ -1,5 +1,5 @@
-﻿using NextGenSpice.Core.Devices;
-using NextGenSpice.LargeSignal.Behaviors;
+﻿using NextGenSpice.Core.BehaviorParams;
+using NextGenSpice.Core.Devices;
 using NextGenSpice.LargeSignal.Stamping;
 using NextGenSpice.Numerics.Equations;
 
@@ -10,15 +10,15 @@ namespace NextGenSpice.LargeSignal.Devices
     {
         private readonly VoltageStamper stamper;
 
-        public LargeSignalVoltageSource(VoltageSource definitionDevice, IInputSourceBehavior behavior) :
+        public LargeSignalVoltageSource(VoltageSource definitionDevice) :
             base(definitionDevice)
         {
             stamper = new VoltageStamper();
-            Behavior = behavior;
+            Behavior = definitionDevice.Behavior;
         }
 
         /// <summary>Strategy class specifying behavior of this source.</summary>
-        private IInputSourceBehavior Behavior { get; }
+        private InputSourceBehavior Behavior { get; }
 
         /// <summary>Index of branch variable which holds current flowing through the voltage source.</summary>
         public int BranchVariable => stamper.BranchVariable;
@@ -46,7 +46,7 @@ namespace NextGenSpice.LargeSignal.Devices
         /// <param name="context">Context of current simulation.</param>
         public override void ApplyModelValues(ISimulationContext context)
         {
-            Voltage = Behavior.GetValue(context);
+            Voltage = Behavior.GetValue(context.TimePoint);
             stamper.Stamp(Voltage);
         }
 

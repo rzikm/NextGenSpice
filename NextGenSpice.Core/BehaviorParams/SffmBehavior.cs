@@ -1,4 +1,6 @@
-﻿namespace NextGenSpice.Core.BehaviorParams
+﻿using System;
+
+namespace NextGenSpice.Core.BehaviorParams
 {
     /// <summary>Specifies behavior parameters for input source with frequency modulation.</summary>
     public class SffmBehavior : InputSourceBehavior
@@ -17,5 +19,19 @@
 
         /// <summary>Indicates by how much the value varies around its unmodulated level.</summary>
         public double ModulationIndex { get; set; }
+
+        /// <summary>Gets input source value for given timepoint.</summary>
+        /// <param name="timepoint">The time value for which to calculate the value.</param>
+        /// <returns></returns>
+        public override double GetValue(double timepoint)
+        {
+            var c = 2 * Math.PI * timepoint;
+            var phaseCarrier = c * FrequencyCarrier;
+            var phaseSignal = c * FrequencySignal;
+
+            return DcOffset +
+                   Amplitude * Math.Sin(phaseCarrier + ModulationIndex * Math.Sin(phaseSignal));
+
+        }
     }
 }

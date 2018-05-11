@@ -62,17 +62,6 @@ namespace NextGenSpice.Core.Representation
             return GetModel(device);
         }
 
-        /// <summary>Processes parameter using registered factory function for its type.</summary>
-        /// <param name="arg">Argument to be processed.</param>
-        /// <returns></returns>
-        public object GetParam(object arg)
-        {
-            if (paramCreators.TryGetValue(arg.GetType(), out var factoryFunc))
-                return factoryFunc(arg, this);
-
-            throw new InvalidOperationException($"No param creator for type {arg.GetType()}");
-        }
-
         /// <summary>Gets nested instantiation context (for handling subcircuits).</summary>
         /// <returns></returns>
         public IModelInstantiationContext<TAnalysisModel> CreateSubcontext()

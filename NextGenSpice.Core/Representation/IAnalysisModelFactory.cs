@@ -31,15 +31,5 @@ namespace NextGenSpice.Core.Representation
             Func<TRepresentation, IModelInstantiationContext<TAnalysisModel>, TModel> factoryFunc)
             where TRepresentation : ICircuitDefinitionDevice
             where TModel : IAnalysisDeviceModel<TAnalysisModel>;
-
-        /// <summary>Registers a function for custom parameter processing (e.g. input source behaviors).</summary>
-        /// <typeparam name="TParam">Defining type of the parameter.</typeparam>
-        /// <param name="factoryFunc">Processing function of the parameter.</param>
-        void SetParam<TParam>(Func<TParam, object> factoryFunc);
-
-        /// <summary>Registers a function for custom parameter processing (e.g. input source behaviors).</summary>
-        /// <typeparam name="TParam">Defining type of the parameter.</typeparam>
-        /// <param name="factoryFunc">Processing function of the parameter.</param>
-        void SetParam<TParam>(Func<TParam, IModelInstantiationContext<TAnalysisModel>, object> factoryFunc);
     }
 }

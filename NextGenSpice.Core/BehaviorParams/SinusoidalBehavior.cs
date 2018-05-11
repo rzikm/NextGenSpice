@@ -1,4 +1,6 @@
-﻿namespace NextGenSpice.Core.BehaviorParams
+﻿using System;
+
+namespace NextGenSpice.Core.BehaviorParams
 {
     /// <summary>Specifies behavior parameters for sinusoidal input source.</summary>
     public class SinusoidalBehavior : InputSourceBehavior
@@ -20,5 +22,23 @@
 
         /// <summary>Phase offset of the waveform in radians.</summary>
         public double PhaseOffset { get; set; }
+
+        /// <summary>Gets input source value for given timepoint.</summary>
+        /// <param name="timepoint">The time value for which to calculate the value.</param>
+        /// <returns></returns>
+        public override double GetValue(double timepoint)
+        {
+            var phase = PhaseOffset;
+            var amplitude = Amplitude;
+            var elapsedTime = timepoint - Delay;
+
+            if (elapsedTime > 0) // source is constant during Delay time
+            {
+                phase += elapsedTime * Frequency * 2 * Math.PI;
+                amplitude *= Math.Exp(-elapsedTime * DampingFactor);
+            }
+
+            return DcOffset + Math.Sin(phase) * amplitude;
+        }
     }
 }

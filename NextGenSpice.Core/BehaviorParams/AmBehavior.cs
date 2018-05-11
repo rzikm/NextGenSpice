@@ -1,4 +1,6 @@
-﻿namespace NextGenSpice.Core.BehaviorParams
+﻿using System;
+
+namespace NextGenSpice.Core.BehaviorParams
 {
     /// <summary>Specifies behavior parameters for input source with amplitude modulation.</summary>
     public class AmBehavior : InputSourceBehavior
@@ -23,5 +25,22 @@
 
         /// <summary>Phase offset of the modulation at the start of the simulation in radians.</summary>
         public double PhaseOffset { get; set; }
+
+        /// <summary>Gets input source value for given timepoint.</summary>
+        /// <param name="timepoint">The time value for which to calculate the value.</param>
+        /// <returns></returns>
+        public override double GetValue(double timepoint)
+        {
+            timepoint -=  Delay;
+            var c = 2 * Math.PI * timepoint;
+
+            var phaseCarrier = c * FrequencyCarrier;
+            var phaseModulation = c * FrequencyModulation;
+
+
+            return timepoint < 0 ? 0 : Amplitude * (DcOffset + Math.Sin(phaseModulation) + PhaseOffset) *
+                                  Math.Sin(phaseCarrier + PhaseOffset);
+
+        }
     }
 }

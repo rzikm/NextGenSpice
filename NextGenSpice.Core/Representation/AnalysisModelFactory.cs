@@ -31,7 +31,7 @@ namespace NextGenSpice.Core.Representation
             var instantiationContext =
                 new ModelInstantiationContext<TAnalysisModel>(modelCreators, paramCreators, circuitDefinition);
 
-            var analysisModel = Create(instantiationContext);
+            var analysisModel = NewInstance(instantiationContext);
 
             return analysisModel;
         }
@@ -59,25 +59,9 @@ namespace NextGenSpice.Core.Representation
             modelCreators[typeof(TRepresentation)] = (model, context) => factoryFunc((TRepresentation) model, context);
         }
 
-        /// <summary>Registers a function for custom parameter processing (e.g. input source behaviors).</summary>
-        /// <typeparam name="TParam">Defining type of the parameter.</typeparam>
-        /// <param name="factoryFunc">Processing function of the parameter.</param>
-        public void SetParam<TParam>(Func<TParam, object> factoryFunc)
-        {
-            paramCreators[typeof(TParam)] = (param, context) => factoryFunc((TParam) param);
-        }
-
-        /// <summary>Registers a function for custom parameter processing (e.g. input source behaviors).</summary>
-        /// <typeparam name="TParam">Defining type of the parameter.</typeparam>
-        /// <param name="factoryFunc">Processing function of the parameter.</param>
-        public void SetParam<TParam>(Func<TParam, IModelInstantiationContext<TAnalysisModel>, object> factoryFunc)
-        {
-            paramCreators[typeof(TParam)] = (param, context) => factoryFunc((TParam) param, context);
-        }
-
         /// <summary>Factory method for creating the actual instance of the analysis model.</summary>
         /// <param name="context">Current instantiation context.</param>
         /// <returns></returns>
-        protected abstract TAnalysisModel Create(IModelInstantiationContext<TAnalysisModel> context);
+        protected abstract TAnalysisModel NewInstance(IModelInstantiationContext<TAnalysisModel> context);
     }
 }

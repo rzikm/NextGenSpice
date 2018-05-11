@@ -11,5 +11,11 @@ namespace NextGenSpice.Core.BehaviorParams
         {
             return MemberwiseClone();
         }
+
+
+        /// <summary>Gets input source value for given timepoint.</summary>
+        /// <param name="timepoint">The time value for which to calculate the value.</param>
+        /// <returns></returns>
+        public abstract double GetValue(double timepoint);
     }
 }

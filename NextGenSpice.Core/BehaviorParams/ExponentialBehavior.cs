@@ -1,4 +1,7 @@
-﻿namespace NextGenSpice.Core.BehaviorParams
+﻿using System;
+using NextGenSpice.Numerics;
+
+namespace NextGenSpice.Core.BehaviorParams
 {
     /// <summary>Specifies behavior parameters for input source with exponential rising and falling edges.</summary>
     public class ExponentialBehavior : InputSourceBehavior
@@ -20,5 +23,24 @@
 
         /// <summary>Trailing edge fall time constant in seconds.</summary>
         public double FallTau { get; set; }
+
+        /// <summary>Gets input source value for given timepoint.</summary>
+        /// <param name="timepoint">The time value for which to calculate the value.</param>
+        /// <returns></returns>
+        public override double GetValue(double timepoint)
+        {
+            if (timepoint <= RiseDelay)
+                return InitialLevel;
+            if (timepoint <= FallDelay)
+                return MathHelper.LinearInterpolation(
+                    InitialLevel,
+                    PulseLevel,
+                    1 - Math.Exp(-(timepoint - RiseDelay) / RiseTau));
+            return MathHelper.LinearInterpolation(
+                InitialLevel,
+                PulseLevel,
+                (1 - Math.Exp(-(FallDelay - RiseDelay) / RiseTau)) *
+                Math.Exp(-(timepoint - FallDelay) / FallTau));
+        }
     }
 }
