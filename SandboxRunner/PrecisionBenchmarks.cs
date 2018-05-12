@@ -39,8 +39,10 @@ namespace SandboxRunner
                 new SimulationRequest("npn", 0, -1),
                 new SimulationRequest("backtoback", 100e-6, 10e-3),
                 new SimulationRequest("cfflop", 1e-9, 1000e-9),
-//                new SimulationRequest("nagle", 1e-6, 10-3),
-//                new SimulationRequest("wideband", 0.5e-9, 250e-9),
+                new SimulationRequest("nagle", 1e-6, 10-3),
+                new SimulationRequest("wideband", 0.5e-9, 250e-9),
+                new SimulationRequest("adder", 0, -1),
+                new SimulationRequest("capacitor", 0.5e-9, 6e-6)
             }.Select(i => new CustomParam(i));
         }
 
@@ -76,14 +78,14 @@ namespace SandboxRunner
             iterations = 0;
             model.EstablishDcBias();
             iterations += model.LastNonLinearIterationCount;
-            var timestep = simulation.timestep;
-            var time = simulation.duration;
-            while (time > 0)
-            {
-                model.AdvanceInTime(timestep);
-                iterations += model.LastNonLinearIterationCount;
-                time -= timestep;
-            }
+//            var timestep = simulation.timestep;
+//            var time = simulation.duration;
+//            while (time > 0)
+//            {
+//                model.AdvanceInTime(timestep);
+//                iterations += model.LastNonLinearIterationCount;
+//                time -= timestep;
+//            }
         }
 
         [Benchmark(Description = "double", Baseline = true)]

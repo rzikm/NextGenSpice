@@ -46,10 +46,10 @@ namespace NextGenSpice.LargeSignal.Stamping
         /// <summary>Stamps the device characteristics onto the equation system through the registered proxies.</summary>
         public void Stamp(double gain)
         {
-            nab.Add(1);
-            ncb.Add(-1);
-            nba.Add(1);
-            nbc.Add(-1);
+            nab.Add(-1);
+            ncb.Add(1);
+            nba.Add(-1);
+            nbc.Add(1);
             nbra.Add(gain);
             nbrc.Add(gain);
         }

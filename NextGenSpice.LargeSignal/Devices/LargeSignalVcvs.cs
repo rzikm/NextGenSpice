@@ -10,6 +10,7 @@ namespace NextGenSpice.LargeSignal.Devices
     public class LargeSignalVcvs : LargeSignalDeviceBase<Vcvs>,
         ITwoTerminalLargeSignalDevice
     {
+        private readonly VoltageProxy refVoltage;
         private readonly VcvsStamper stamper;
         private readonly VoltageProxy voltage;
 
@@ -17,6 +18,7 @@ namespace NextGenSpice.LargeSignal.Devices
         {
             stamper = new VcvsStamper();
             voltage = new VoltageProxy();
+            refVoltage = new VoltageProxy();
         }
 
         /// <summary>Id of node connected to positive terminal of this device.</summary>
@@ -30,6 +32,9 @@ namespace NextGenSpice.LargeSignal.Devices
 
         /// <summary>Negative terminal of the reference voltage.</summary>
         public int ReferenceCathode => DefinitionDevice.ConnectedNodes[3];
+
+        /// <summary>Reference voltage that is multiplied to get voltage of this source.</summary>
+        public double ReferenceVoltage { get; set; }
 
         /// <summary>Allows devices to register any additional variables.</summary>
         /// <param name="adapter">The equation system builder.</param>
@@ -46,6 +51,7 @@ namespace NextGenSpice.LargeSignal.Devices
         {
             stamper.Register(adapter, Anode, Cathode, ReferenceAnode, ReferenceCathode);
             voltage.Register(adapter, Anode, Cathode);
+            refVoltage.Register(adapter, ReferenceAnode, ReferenceCathode);
         }
 
         /// <summary>Voltage across this device, difference of potential between positive and negative terminals.</summary>
@@ -84,6 +90,7 @@ namespace NextGenSpice.LargeSignal.Devices
         {
             Voltage = voltage.GetValue();
             Current = stamper.GetCurrent();
+            ReferenceVoltage = refVoltage.GetValue();
         }
     }
 }

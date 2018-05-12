@@ -33,9 +33,16 @@ namespace NextGenSpice.LargeSignal.Devices
         /// <summary>Negative terminal of the reference voltage.</summary>
         public int ReferenceCathode => DefinitionDevice.ConnectedNodes[3];
 
+
+        /// <summary>Reference voltage that is multiplied to get voltage of this source.</summary>
+        public double ReferenceVoltage { get; set; }
+
+        /// <summary>Voltage across this device, difference of potential between positive and negative terminals.</summary>
         public double Voltage { get; private set; }
 
+        /// <summary>Current flowing from positive terminal to negative terminal through the device.</summary>
         public double Current { get; private set; }
+
 
         /// <summary>Performs necessary initialization of the device, like mapping to the equation system.</summary>
         /// <param name="adapter">The equation system builder.</param>
@@ -76,7 +83,8 @@ namespace NextGenSpice.LargeSignal.Devices
         public override void OnEquationSolution(ISimulationContext context)
         {
             Voltage = voltage.GetValue();
-            Current = refvoltage.GetValue() * DefinitionDevice.Gain;
+            ReferenceVoltage = refvoltage.GetValue();
+            Current = ReferenceVoltage * DefinitionDevice.Gain;
         }
     }
 }
