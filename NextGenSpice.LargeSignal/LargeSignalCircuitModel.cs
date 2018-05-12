@@ -95,10 +95,13 @@ namespace NextGenSpice.LargeSignal
             if (timestep < 0) throw new ArgumentOutOfRangeException(nameof(timestep));
             if (context == null) EstablishDcBias();
 
-            context.TimePoint = context.TimePoint + timestep;
-            context.TimeStep = timestep;
-            EstablishDcBias_Internal();
-            OnDcBiasEstablished();
+            if (timestep > 0)
+            {
+                context.TimePoint = context.TimePoint + timestep;
+                context.TimeStep = timestep;
+                EstablishDcBias_Internal();
+                OnDcBiasEstablished();
+            }
         }
 
         /// <summary>Establishes initial operating point for the transient analysis.</summary>
