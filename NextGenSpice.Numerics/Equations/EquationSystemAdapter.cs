@@ -21,7 +21,7 @@ namespace NextGenSpice.Numerics.Equations
 #elif qd_precision
             SetFactory(() => new QdEquationSystemAdapter());
 #else
-            SetFactory(() => new DEquationSystemAdapter());
+            SetFactory(() => new EquationSystemAdapter());
 #endif
         }
 
