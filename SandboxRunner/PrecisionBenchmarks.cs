@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Jobs;
 using BenchmarkDotNet.Code;
@@ -17,6 +18,7 @@ namespace SandboxRunner
     public class PrecisionBenchmarks
     {
         private const string path = "D:\\Visual Studio 2017\\Projects\\NextGen Spice\\SandboxRunner\\ProfileCircuits\\";
+        private const string suffix = ".sp";
 
         private class Config : ManualConfig
         {
@@ -34,21 +36,22 @@ namespace SandboxRunner
         {
             return new List<SimulationRequest>
             {
-                new SimulationRequest("diode", 0, -1),
-                new SimulationRequest("rlc", 0.2e-3, 50e-3),
-                new SimulationRequest("npn", 0, -1),
-                new SimulationRequest("backtoback", 100e-6, 10e-3),
-                new SimulationRequest("cfflop", 1e-9, 1000e-9),
-                new SimulationRequest("nagle", 1e-6, 10-3),
-                new SimulationRequest("wideband", 0.5e-9, 250e-9),
-                new SimulationRequest("adder", 0, -1),
-                new SimulationRequest("capacitor", 0.5e-9, 6e-6)
+//                new SimulationRequest("astable", 0.1e-6, 10e-6),
+//                new SimulationRequest("backtoback", 100e-6, 10e-3),
+//                new SimulationRequest("cfflop", 1e-9, 1000e-9),
+//                new SimulationRequest("choke", 0.2e-3, 20e-3),
+//                new SimulationRequest("diffpair", 5e-9, 500e-9),
+//                new SimulationRequest("ecl", 0.2e-9, 10e-9),
+//                new SimulationRequest("rca3040", 0.5e-9, 200e-9),
+//                new SimulationRequest("rtlinv", 2e-9, 200e-9),
+                new SimulationRequest("sbdgate", 1e-9, 200e-9),
+                new SimulationRequest("ua709", 2e-6, 250e-6),
             }.Select(i => new CustomParam(i));
         }
 
         private void LoadCircuit()
         {
-            var result = SpiceNetlistParser.WithDefaults().Parse(new StreamReader(path + simulation.circuit + ".txt"));
+            var result = SpiceNetlistParser.WithDefaults().Parse(new StreamReader(path + simulation.circuit + suffix));
             model = result.CircuitDefinition.GetLargeSignalModel();
         }
 
@@ -78,14 +81,14 @@ namespace SandboxRunner
             iterations = 0;
             model.EstablishDcBias();
             iterations += model.LastNonLinearIterationCount;
-//            var timestep = simulation.timestep;
-//            var time = simulation.duration;
-//            while (time > 0)
-//            {
-//                model.AdvanceInTime(timestep);
-//                iterations += model.LastNonLinearIterationCount;
-//                time -= timestep;
-//            }
+            var timestep = simulation.timestep;
+            var time = simulation.duration;
+            while (time > 0)
+            {
+                model.AdvanceInTime(timestep);
+                iterations += model.LastNonLinearIterationCount;
+                time -= timestep;
+            }
         }
 
         [Benchmark(Description = "double", Baseline = true)]
