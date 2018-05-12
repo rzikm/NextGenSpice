@@ -87,8 +87,7 @@ namespace NextGenSpice.LargeSignal
         public double CurrentTimePoint => context?.TimePoint ?? 0.0;
 
         /// <summary>
-        ///     Advances transient simulation of the circuit by given ammount in seconds, respecting the maximum allowed
-        ///     timestep.
+        ///     Advances transient simulation of the circuit by given ammount in seconds.
         /// </summary>
         /// <param name="timestep"></param>
         public void AdvanceInTime(double timestep)
@@ -96,14 +95,10 @@ namespace NextGenSpice.LargeSignal
             if (timestep < 0) throw new ArgumentOutOfRangeException(nameof(timestep));
             if (context == null) EstablishDcBias();
 
-            while (timestep > 0)
-            {
-                context.TimePoint = context.TimePoint + timestep;
-                context.TimeStep = timestep;
-                EstablishDcBias_Internal();
-                OnDcBiasEstablished();
-                timestep -= timestep;
-            }
+            context.TimePoint = context.TimePoint + timestep;
+            context.TimeStep = timestep;
+            EstablishDcBias_Internal();
+            OnDcBiasEstablished();
         }
 
         /// <summary>Establishes initial operating point for the transient analysis.</summary>
@@ -199,6 +194,8 @@ namespace NextGenSpice.LargeSignal
         {
             for (var i = 0; i < devices.Length; i++)
                 devices[i].OnDcBiasEstablished(context);
+
+            TotalNonLinearIterationCount += LastNonLinearIterationCount;
         }
 
         private void SolveAndUpdateVoltages()
