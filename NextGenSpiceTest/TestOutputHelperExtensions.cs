@@ -8,7 +8,7 @@ namespace NextGenSpice.Test
         public static void PrintCircuitStats(this ITestOutputHelper output, LargeSignalCircuitModel model)
         {
             output.WriteLine($"Iterations: {model.LastNonLinearIterationCount}");
-            output.WriteLine($"Delta: {model.LastNonLinearIterationDelta}");
+            output.WriteLine($"Iterations total: {model.TotalNonLinearIterationCount}");
             output.WriteLine("Voltages:");
             for (var id = 0; id < model.NodeVoltages.Length; id++)
                 output.WriteLine($"[{id}]:\t{model.NodeVoltages[id]}");

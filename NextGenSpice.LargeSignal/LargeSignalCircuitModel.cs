@@ -25,7 +25,7 @@ namespace NextGenSpice.LargeSignal
         private double[] currentSolution;
         private double[] previousSolution;
 
-        private EquationSystemAdapter equationSystemAdapter;
+        private IEquationSystemAdapterWide equationSystemAdapter;
 
         public LargeSignalCircuitModel(IEnumerable<double?> initialVoltages, List<ILargeSignalDevice> devices)
         {
@@ -74,20 +74,14 @@ namespace NextGenSpice.LargeSignal
         private readonly List<IEquationSystemCoefficientProxy> initVoltProxies;
         private readonly ILargeSignalDevice[] devices;
 
-        /// <summary>
-        ///     Minimum absolute difference between two consecutive Newton-Raphson iterations before stable solution is
-        ///     assumed.
-        /// </summary>
-        public double NonlinearIterationEpsilon { get; set; } = 1e-4;
-
         /// <summary>Maximumum number of Newton-Raphson iterations per timepoint.</summary>
-        public int MaxDcPointIterations { get; set; } = 1000;
+        public int MaxDcPointIterations { get; set; } = 10000;
 
         /// <summary>How many Newton-Raphson iterations were needed in last operating point calculation.</summary>
         public int LastNonLinearIterationCount { get; private set; }
 
-        /// <summary>Difference between last two Newton-Raphson solutions during last operating point calculation.</summary>
-        public double LastNonLinearIterationDelta { get; private set; }
+        /// <summary>How many Newton-Raphson iterations were needed in total.</summary>
+        public int TotalNonLinearIterationCount { get; private set; }
 
         /// <summary>Current timepoint of the transient analysis in seconds.</summary>
         public double CurrentTimePoint => context?.TimePoint ?? 0.0;
@@ -144,9 +138,15 @@ namespace NextGenSpice.LargeSignal
         {
             if (context != null) return;
             context = new SimulationContext(SimulationParameters);
+            TotalNonLinearIterationCount = 0;
 
             // build equation system
-            equationSystemAdapter = new EquationSystemAdapter(NodeCount);
+            equationSystemAdapter = EquationSystemAdapterFactory.GetEquationSystemAdapter();
+
+            for (int i = 0; i < NodeCount; i++)
+            {
+                equationSystemAdapter.AddVariable();
+            }
 
             foreach (var device in Devices)
                 device.RegisterAdditionalVariables(equationSystemAdapter);
@@ -180,7 +180,6 @@ namespace NextGenSpice.LargeSignal
         private void EstablishDcBias_Internal()
         {
             LastNonLinearIterationCount = 0;
-            LastNonLinearIterationDelta = 0;
 
             do
             {

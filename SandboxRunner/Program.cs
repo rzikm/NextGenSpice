@@ -27,10 +27,11 @@ namespace SandboxRunner
 
         private static void Main(string[] args)
         {
-            PrintFileSizes(); return;
+//            PrintFileSizes(); return;
 //            Examples.ResistorSweep(); return;
 //            Examples.SimpleRlc(); return;
-            var summary = BenchmarkRunner.Run<GaussianEliminationTests>(); return;
+            var summary = BenchmarkRunner.Run<PrecisionBenchmarks>(); return;
+//            var summary = BenchmarkRunner.Run<GaussianEliminationTests>(); return;
 //            var summary = BenchmarkRunner.Run<PInvokeOverheadTest>(); return;
             //            IntegrationTest.Run();
 
@@ -125,7 +126,6 @@ namespace SandboxRunner
 
             var model = circuit.GetLargeSignalModel();
 
-            model.NonlinearIterationEpsilon = 1e-10;
             model.MaxDcPointIterations = 10000;
 
             model.EstablishDcBias();
