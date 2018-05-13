@@ -114,14 +114,14 @@ namespace SandboxRunner
                     PulseLevel = 5,
                     Delay = 5e-3, // 5 ms
                     PulseWidth = 25e-3 // 25 ms
-                })
+                },"vc")
                 .AddResistor(1, 2, 50)
                 .AddInductor(2, 3, 0.125)
                 .AddCapacitor(3, 0, 1e-6)
                 .BuildCircuit();
 
             var model = circuit.GetLargeSignalModel();
-
+            var vc = (ITwoTerminalLargeSignalDevice) model.FindDevice("vc");
             model.EstablishDcBias();
 
             Console.WriteLine("Time V(1) V(3)");
@@ -133,13 +133,13 @@ namespace SandboxRunner
                 var v1 = model.NodeVoltages[1];
                 var v3 = model.NodeVoltages[3];
 
-                Console.WriteLine($"{time} {v1} {v3}");
+                Console.WriteLine($"{time} {v1} {v3} {vc.Current}");
 
                 model.AdvanceInTime(timestep);
             }
 
-            model.SimulationParameters.IntegrationMethodFactory =
-                new SimpleIntegrationMethodFactory(() => new TrapezoidalIntegrationMethod());
+//            model.SimulationParameters.IntegrationMethodFactory =
+//                new SimpleIntegrationMethodFactory(() => new TrapezoidalIntegrationMethod());
         }
 
         public static void SimpleSubcircuit()

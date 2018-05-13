@@ -76,7 +76,6 @@ namespace NextGenSpice.Test
         }
 
 
-
         public static CircuitDefinition GetTruncationErrorModel()
         {
             return new CircuitBuilder()
@@ -85,30 +84,25 @@ namespace NextGenSpice.Test
                     Amplitude = 5,
                     Frequency = 100
                 }, "VS")
-//                .AddResistor(2, 3, 3 * 10000000000000e-6)
+                //                .AddResistor(2, 3, 3 * 10000000000000e-6)
                 .AddResistor(2, 3, 1e-6)
                 .AddDiode(1, 2, DiodeParams.D1N4148, "D1")
                 .AddDiode(0, 3, DiodeParams.D1N4148, "D2")
                 //                .AddResistor(1,2, 1)
-//                                .AddResistor(3,0, 10)
+                //                                .AddResistor(3,0, 10)
                 .BuildCircuit();
         }
 
         public static CircuitDefinition GetCapacitorCircuit()
         {
             return new CircuitBuilder()
-                //                .AddVoltageSource(1, 0, new PulseBehaviorParams()
-                //                {
-                //                    Value1 = 0,
-                //                    Value2 = 5,
-                //                    Duration = 1e-3,
-                //                    Delay = 1e-4,
-                //                    Period = 15e-4
-                //                })
-                .AddVoltageSource(1, 0, new SinusoidalBehavior
+                .AddVoltageSource(1, 0, new PulseBehavior
                 {
-                    Amplitude = 5,
-                    Frequency = 500
+                    InitialLevel = 0,
+                    PulseLevel = 5,
+                    PulseWidth = 1e-3,
+                    Delay = 1e-4,
+                    Period = 15e-4
                 })
                 .AddResistor(2, 3, 1e-6)
                 .AddCapacitor(1, 2, 1e-3)
