@@ -128,6 +128,8 @@ namespace NextGenSpice.Numerics
                 // eliminate current variable in all columns
                 for (var k = i + 1; k < size; k++)
                 {
+                    if (m[k,i] == qd_real.Zero) continue; // skip elimination on zered rows
+
                     var c = -m[k, i] / m[i, i];
                     for (var j = i; j < size; j++)
                         if (i == j)
@@ -232,6 +234,8 @@ namespace NextGenSpice.Numerics
                 // eliminate current variable in all columns
                 for (var k = i + 1; k < size; k++)
                 {
+                    if (m[k,i] == dd_real.Zero) continue; // skip elimination on zered rows
+
                     var c = -m[k, i] / m[i, i];
                     for (var j = i; j < size; j++)
                         if (i == j)
@@ -312,6 +316,7 @@ namespace NextGenSpice.Numerics
                 // eliminate current variable in all columns
                 for (var k = i + 1; k < size; k++)
                 {
+                    if (m[k,i] == 0.0) continue; // skip elimination on zered rows
                     var c = -m[k, i] / m[i, i];
                     for (var j = i; j < size; j++)
                         if (i == j)
