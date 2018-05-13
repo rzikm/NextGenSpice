@@ -8,7 +8,7 @@ namespace NextGenSpice.Core.Representation
     ///     analysis type must implement this interface.
     /// </summary>
     /// <typeparam name="TAnalysisModel"></typeparam>
-    public interface IAnalysisDeviceModel<TAnalysisModel>
+    public interface IAnalysisDeviceModel<out TAnalysisModel>
     {
         /// <summary>Instance of definition device that corresponds to this device analysis model.</summary>
         ICircuitDefinitionDevice DefinitionDevice { get; }
