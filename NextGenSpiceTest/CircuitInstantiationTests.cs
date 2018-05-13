@@ -49,7 +49,7 @@ namespace NextGenSpice.Core.Test
         {
             var modelName = "R1";
 
-            var device = circuitDefinition.Devices.Single(e => e.Tag == modelName);
+            var device = circuitDefinition.Devices.Single(e => Equals(e.Tag, modelName));
             var model = context.GetModel(modelName);
 
             Assert.Equal(context.GetModel(device), model);
