@@ -51,7 +51,7 @@ namespace NextGenSpice.Simulation
             {
                 model.AdvanceInTime(param.TimeStep);
                 time += param.TimeStep;
-                if (time > param.StartTime)
+                if (!(time < param.StartTime))
                     PrintValues(model, printers, output);
             }
         }

@@ -37,8 +37,8 @@ namespace SandboxRunner
             return new List<SimulationRequest>
             {
                 new SimulationRequest("adder", 1e-9, 50e-9),
-//                new SimulationRequest("astable", 0.1e-6, 10e-6),
-//                new SimulationRequest("backtoback", 100e-6, 10e-3),
+                new SimulationRequest("astable", 0.1e-6, 10e-6),
+                new SimulationRequest("backtoback", 100e-6, 10e-3),
 //                new SimulationRequest("cfflop", 1e-9, 1000e-9),
 //                new SimulationRequest("choke", 0.2e-3, 20e-3),
 //                new SimulationRequest("diffpair", 5e-9, 500e-9),

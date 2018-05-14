@@ -74,7 +74,4 @@ rcout 13 0 1k
 *.tran 0.1ns 6ns
 *.print tran v(1)
 
-
 .end
-
- 
