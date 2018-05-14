@@ -42,7 +42,7 @@ namespace NextGenSpice.Simulation
 
             if (errors.Count > 0) throw new PrinterInitializationException(errors);
 
-            model.AdvanceInTime(param.StartTime);
+            model.EstablishDcBias();
 
             var time = param.StartTime;
             PrintHeader(model, printers, output);
@@ -51,7 +51,8 @@ namespace NextGenSpice.Simulation
             {
                 model.AdvanceInTime(param.TimeStep);
                 time += param.TimeStep;
-                PrintValues(model, printers, output);
+                if (time > param.StartTime)
+                    PrintValues(model, printers, output);
             }
         }
 
