@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Linq;
-using NextGenSpice.LargeSignal;
 using NextGenSpice.Test;
 using Xunit;
 using Xunit.Abstractions;
