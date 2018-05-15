@@ -148,11 +148,12 @@ namespace SandboxRunner
 
             public override void OnEquationSolution(ISimulationContext context)
             {   
-                // Check if converged
                 var newVoltage = voltage.GetValue();
-                if (!MathHelper.InTollerance(newVoltage, Voltage,
-                    context.SimulationParameters.AbsoluteTolerance,
-                    context.SimulationParameters.RelativeTolerance))
+                var abstol = context.SimulationParameters.AbsoluteTolerance;
+                var reltol = context.SimulationParameters.RelativeTolerance;
+
+                // Check if converged
+                if (!MathHelper.InTollerance(newVoltage, Voltage, abstol, reltol))
                 {
                     // request additional DC bias iteration
                     context.ReportNotConverged(this);
