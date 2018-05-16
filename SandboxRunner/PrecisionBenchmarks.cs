@@ -17,7 +17,7 @@ namespace SandboxRunner
     [CoreJob]
     public class PrecisionBenchmarks
     {
-        private const string path = "D:\\Visual Studio 2017\\Projects\\NextGen Spice\\SandboxRunner\\ProfileCircuits\\";
+        private const string path = "..\\..\\..\\..\\..\\SandboxRunner\\ProfileCircuits\\";
         private const string suffix = ".sp";
 
         private class Config : ManualConfig
@@ -36,17 +36,17 @@ namespace SandboxRunner
         {
             return new List<SimulationRequest>
             {
-                new SimulationRequest("adder", 1e-9, 50e-9),
-                new SimulationRequest("astable", 0.1e-6, 10e-6),
-                new SimulationRequest("backtoback", 100e-6, 10e-3),
+//                new SimulationRequest("adder", 1e-9, 50e-9),
+//                new SimulationRequest("astable", 0.1e-6, 10e-6),
+//                new SimulationRequest("backtoback", 100e-6, 10e-3),
 //                new SimulationRequest("cfflop", 1e-9, 1000e-9),
-//                new SimulationRequest("choke", 0.2e-3, 20e-3),
+                new SimulationRequest("choke", 0.2e-3, 20e-3),
 //                new SimulationRequest("diffpair", 5e-9, 500e-9),
 //                new SimulationRequest("ecl", 0.2e-9, 10e-9),
 //                new SimulationRequest("rca3040", 0.5e-9, 200e-9),
 //                new SimulationRequest("rtlinv", 2e-9, 200e-9),
-                new SimulationRequest("sbdgate", 1e-9, 200e-9),
-                new SimulationRequest("ua709", 2e-6, 250e-6),
+//                new SimulationRequest("sbdgate", 1e-9, 200e-9),
+//                new SimulationRequest("ua709", 2e-6, 250e-6),
             }.Select(i => new CustomParam(i));
         }
 

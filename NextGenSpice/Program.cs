@@ -14,8 +14,6 @@ namespace NextGenSpice
     {
         private static int Main(string[] args)
         {
-            Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
-//            Trace.Listeners.Add(new TextWriterTraceListener(new StreamWriter("dump.txt")));
             if (args.Length != 1)
             {
                 Console.Error.WriteLine("Usage: dotnet NextGenSpice.dll <input file>");

@@ -16,4 +16,10 @@
     <DefineConstants>TRACE;dd_precision;qd_precision;native_gauss;RELEASE;NETSTANDARD2_0</DefineConstants>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Update="NextGenSpice.Numerics.Native.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
