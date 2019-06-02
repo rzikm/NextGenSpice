@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="219.96031mm"
+   height="143.61047mm"
+   viewBox="0 0 219.96031 143.61047"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="analysis-factories.svg">
+  <defs
+     id="defs2">
+    <marker
+       inkscape:isstock="true"
+       style="overflow:visible"
+       id="marker1668"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="DotL">
+      <path
+         transform="matrix(0.8,0,0,0.8,5.92,0.8)"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000003pt;stroke-opacity:1"
+         d="m -2.5,-1 c 0,2.76 -2.24,5 -5,5 -2.76,0 -5,-2.24 -5,-5 0,-2.76 2.24,-5 5,-5 2.76,0 5,2.24 5,5 z"
+         id="path1666"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="TriangleOutL"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="TriangleOutL"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path989"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000003pt;stroke-opacity:1"
+         transform="scale(0.8)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="DotL"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="DotL"
+       style="overflow:visible"
+       inkscape:isstock="true"
+       inkscape:collect="always">
+      <path
+         id="path908"
+         d="m -2.5,-1 c 0,2.76 -2.24,5 -5,5 -2.76,0 -5,-2.24 -5,-5 0,-2.76 2.24,-5 5,-5 2.76,0 5,2.24 5,5 z"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000003pt;stroke-opacity:1"
+         transform="matrix(0.8,0,0,0.8,5.92,0.8)"
+         inkscape:connector-curvature="0" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4"
+     inkscape:cx="413.88927"
+     inkscape:cy="273.84592"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-2.1562607,-4.0353066)">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.22319603px;line-height:1.25;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.15557991"
+       x="89.323723"
+       y="16.853165"
+       id="text817"><tspan
+         sodipodi:role="line"
+         id="tspan815"
+         x="89.323723"
+         y="16.853165"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.22319603px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.15557991">NextGenSpice.Core</tspan></text>
+    <rect
+       style="opacity:1;fill:#ccffaa;fill-opacity:0.69019608;stroke:#000000;stroke-width:0.26499999;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       id="rect827"
+       width="107.57598"
+       height="41.816559"
+       x="11.759859"
+       y="26.389603"
+       ry="2.2094216" />
+    <text
+       id="text821"
+       y="98.376213"
+       x="80.995941"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.22319603px;line-height:1.25;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.15557991"
+       xml:space="preserve"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.22319603px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.15557991"
+         y="98.376213"
+         x="80.995941"
+         sodipodi:role="line"
+         id="tspan823">NextGenSpice.LargeSignal</tspan></text>
+    <text
+       id="text831"
+       y="44.925842"
+       x="17.405073"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;line-height:1.25;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.10127057"
+       xml:space="preserve"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.10127057"
+         y="44.925842"
+         x="17.405073"
+         id="tspan829"
+         sodipodi:role="line">protected abstract T NewInstance(IDevice&lt;T&gt;[])</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;line-height:1.25;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.10127057"
+       x="17.405073"
+       y="52.676659"
+       id="text835"><tspan
+         sodipodi:role="line"
+         id="tspan833"
+         x="17.405073"
+         y="52.676659"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.10127057">public T Create(ICircuitDefinition)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;line-height:1.25;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.10127057"
+       x="40.523888"
+       y="33.834156"
+       id="text839"><tspan
+         sodipodi:role="line"
+         id="tspan837"
+         x="40.523888"
+         y="33.834156"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.10127057">AnalysisModelFactory&lt;T&gt;</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 11.759859,36.94675 H 119.33584"
+       id="path843"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.26499999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#DotL)"
+       d="M 94.212507,51.379303 H 129.75936"
+       id="path845"
+       inkscape:connector-curvature="0" />
+    <rect
+       style="opacity:1;fill:#e6e6e6;fill-opacity:0.97101452;stroke:#000000;stroke-width:0.26499999;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       id="rect1303"
+       width="74.571976"
+       height="30.396683"
+       x="127.6212"
+       y="28.0905"
+       rx="0"
+       ry="0" />
+    <text
+       id="text1311"
+       y="33.966839"
+       x="130.45894"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;line-height:1.25;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.10127057"
+       xml:space="preserve"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.10127057"
+         y="33.966839"
+         x="130.45894"
+         id="tspan1309"
+         sodipodi:role="line">{</tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.10127057"
+         y="39.030369"
+         x="130.45894"
+         sodipodi:role="line"
+         id="tspan1319">    var devices = /*...*/</tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.10127057"
+         y="44.093895"
+         x="130.45894"
+         sodipodi:role="line"
+         id="tspan1313">    ...</tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.10127057"
+         y="49.157425"
+         x="130.45894"
+         sodipodi:role="line"
+         id="tspan1317">    return NewInstance(devices);</tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.10127057"
+         y="54.220951"
+         x="130.45894"
+         sodipodi:role="line"
+         id="tspan1315">}</tspan></text>
+    <rect
+       ry="2.2094216"
+       y="108.63552"
+       x="11.759859"
+       height="29.507103"
+       width="107.57598"
+       id="rect1337"
+       style="opacity:1;fill:#ccffaa;fill-opacity:0.69019608;stroke:#000000;stroke-width:0.26499999;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;line-height:1.25;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.10127057"
+       x="17.405073"
+       y="127.17175"
+       id="text1341"><tspan
+         sodipodi:role="line"
+         id="tspan1339"
+         x="17.405073"
+         y="127.17175"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.10127057">protected override LargeSignalCircuitModel</tspan><tspan
+         sodipodi:role="line"
+         x="17.405073"
+         y="132.23528"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.10127057"
+         id="tspan1645">    NewInstance(IDevice&lt;T&gt;[] devices)</tspan></text>
+    <text
+       id="text1349"
+       y="116.08006"
+       x="33.909306"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;line-height:1.25;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.10127057"
+       xml:space="preserve"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.10127057"
+         y="116.08006"
+         x="33.909306"
+         id="tspan1347"
+         sodipodi:role="line">LargeSignalAnalysisModelFactory</tspan></text>
+    <path
+       inkscape:connector-curvature="0"
+       id="path1351"
+       d="M 11.759859,119.19265 H 119.33584"
+       style="fill:none;stroke:#000000;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#TriangleOutL)"
+       d="M 64.822916,108.50424 V 69.866488"
+       id="path1353"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <rect
+       ry="0"
+       rx="0"
+       y="107.87955"
+       x="127.6212"
+       height="30.396683"
+       width="89.029564"
+       id="rect1656"
+       style="opacity:1;fill:#e6e6e6;fill-opacity:0.97101452;stroke:#000000;stroke-width:0.26499999;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path1664"
+       d="M 98.759545,131.16836 H 127.4915"
+       style="fill:none;stroke:#000000;stroke-width:0.26499999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#marker1668)"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;line-height:1.25;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.10127057"
+       x="130.45894"
+       y="116.5751"
+       id="text2286"><tspan
+         sodipodi:role="line"
+         id="tspan2276"
+         x="130.45894"
+         y="116.5751"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.10127057">{</tspan><tspan
+         id="tspan2282"
+         sodipodi:role="line"
+         x="130.45894"
+         y="121.63863"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.10127057">    return new LargeSignalCircuitModel(</tspan><tspan
+         sodipodi:role="line"
+         x="130.45894"
+         y="126.70216"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.10127057"
+         id="tspan2365">        devices, ...);</tspan><tspan
+         id="tspan2284"
+         sodipodi:role="line"
+         x="130.45894"
+         y="131.76569"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.10127057">}</tspan></text>
+    <text
+       id="text2369"
+       y="61.630188"
+       x="17.405073"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;line-height:1.25;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.10127057"
+       xml:space="preserve"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.10127057"
+         y="61.630188"
+         x="17.405073"
+         id="tspan2367"
+         sodipodi:role="line">public void SetModel&lt;TDesc, TImpl&gt;(...)</tspan></text>
+    <rect
+       style="opacity:1;fill:#ccffaa;fill-opacity:0;stroke:#000000;stroke-width:0.26499999;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:1.58999992, 1.58999992;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       id="rect3058"
+       width="219.69531"
+       height="62.362808"
+       x="2.2887607"
+       y="85.150475"
+       ry="0"
+       rx="0" />
+    <rect
+       rx="0"
+       ry="0"
+       y="4.1678066"
+       x="2.2887607"
+       height="72.385422"
+       width="219.69531"
+       id="rect3060"
+       style="opacity:1;fill:#ccffaa;fill-opacity:0;stroke:#000000;stroke-width:0.26499999;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:1.58999992, 1.58999992;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
+    <text
+       id="text3142"
+       y="91.43074"
+       x="4.0415969"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;line-height:1.25;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.10127057"
+       xml:space="preserve"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.05082273px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.10127057"
+         y="91.43074"
+         x="4.0415969"
+         id="tspan3140"
+         sodipodi:role="line">T is LargeSignalCircuitModel</tspan></text>
+  </g>
+</svg>

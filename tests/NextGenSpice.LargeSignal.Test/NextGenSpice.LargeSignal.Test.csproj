@@ -14,10 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NextGenSpice.LargeSignal\NextGenSpice.LargeSignal.csproj" />
-    <ProjectReference Include="..\NextGenSpice.Parser\NextGenSpice.Parser.csproj" />
-    <ProjectReference Include="..\NextGenSpiceParserTest\NextGenSpice.Parser.Test.csproj" />
-    <ProjectReference Include="..\NextGenSpiceTest\NextGenSpice.Core.Test.csproj" />
+    <ProjectReference Include="..\..\src\NextGenSpice.LargeSignal\NextGenSpice.LargeSignal.csproj" />
+    <ProjectReference Include="..\..\src\NextGenSpice.Parser\NextGenSpice.Parser.csproj" />
+    <ProjectReference Include="..\NextGenSpice.Core.Test\NextGenSpice.Core.Test.csproj" />
+    <ProjectReference Include="..\NextGenSpice.Parser.Test\NextGenSpice.Parser.Test.csproj" />
   </ItemGroup>
 
 </Project>

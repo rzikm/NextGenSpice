@@ -1,55 +1,55 @@
 ﻿namespace NextGenSpice.Parser
 {
-    public enum SpiceParserErrorCode
-    {
-        DeviceAlreadyDefined,
+	public enum SpiceParserErrorCode
+	{
+		DeviceAlreadyDefined,
 
-        NotANumber,
-        NotANode,
-        NotAnDevice,
-        NotANodeOrDevice,
+		NotANumber,
+		NotANode,
+		NotAnDevice,
+		NotANodeOrDevice,
 
-        InvalidNumberOfArguments,
-        UnexpectedCharacter,
-        UnknownTransientFunction,
+		InvalidNumberOfArguments,
+		UnexpectedCharacter,
+		UnknownTransientFunction,
 
-        NoBreakpointRepetition,
-        TimePointWithoutValue,
-        NegativeTimepoint,
-        NonascendingTimepoints,
+		NoBreakpointRepetition,
+		TimePointWithoutValue,
+		NegativeTimepoint,
+		NonascendingTimepoints,
 
-        ModelAlreadyExists,
-        InvalidParameter,
+		ModelAlreadyExists,
+		InvalidParameter,
 
-        InvalidIcArgument,
+		InvalidIcArgument,
 
-        UnknownDeviceModelDiscriminator,
+		UnknownDeviceModelDiscriminator,
 
-        UnknownPrintStatementParameter,
+		UnknownPrintStatementParameter,
 
-        UnknownAnalysisType,
+		UnknownAnalysisType,
 
-        SubcircuitAlreadyExists,
+		SubcircuitAlreadyExists,
 
-        TerminalNamesNotUnique,
-        TerminalToGround,
+		TerminalNamesNotUnique,
+		TerminalToGround,
 
-        SubcircuitNotConnected,
+		SubcircuitNotConnected,
 
-        UnknownStatement,
-        UnknownDevice,
+		UnknownStatement,
+		UnknownDevice,
 
-        NoDcPathToGround,
-        VoltageBranchCycle,
-        CurrentBranchCutset,
+		NoDcPathToGround,
+		VoltageBranchCycle,
+		CurrentBranchCutset,
 
-        NoPrintProvider,
+		NoPrintProvider,
 
-        NoSuchModel,
-        NoSuchSubcircuit,
-        InvalidTerminalCount,
+		NoSuchModel,
+		NoSuchSubcircuit,
+		InvalidTerminalCount,
 
-        UnexpectedEnds,
-        NotVoltageSource
-    }
+		UnexpectedEnds,
+		NotVoltageSource
+	}
 }

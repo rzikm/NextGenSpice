@@ -1,7 +1,7 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
 #define _CRT_SECURE_NO_WARNINGS 1
-#define _WINSOCK_DEPRECATED_NO_WARNINGS 1 
+#define _WINSOCK_DEPRECATED_NO_WARNINGS 1
 
 /* Define to dummy `main' function (if any) required to link to the Fortran
    libraries. */

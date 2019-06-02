@@ -1,8 +1,8 @@
 {
-  "profiles": {
-    "SandboxRunner": {
-      "commandName": "Project",
-      "commandLineArgs": "illcond.txt"
-    }
-  }
+	"profiles": {
+		"SandboxRunner": {
+			"commandName": "Project",
+			"commandLineArgs": "illcond.txt"
+		}
+	}
 }

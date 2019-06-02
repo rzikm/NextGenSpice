@@ -3,36 +3,37 @@ using NextGenSpice.Parser.Statements.Deferring;
 
 namespace NextGenSpice.Parser.Statements.Devices
 {
-    /// <summary>Class for processing current controlled voltage source SPICE statements.</summary>
-    public class CurrentControlledVoltageSourceStatementProcessor : DeviceStatementProcessor
-    {
-        public CurrentControlledVoltageSourceStatementProcessor()
-        {
-            MinArgs = MaxArgs = 4;
-        }
+	/// <summary>Class for processing current controlled voltage source SPICE statements.</summary>
+	public class CurrentControlledVoltageSourceStatementProcessor : DeviceStatementProcessor
+	{
+		public CurrentControlledVoltageSourceStatementProcessor()
+		{
+			MinArgs = MaxArgs = 4;
+		}
 
-        /// <summary>Discriminator of the device type this processor can parse.</summary>
-        public override char Discriminator => 'H';
+		/// <summary>Discriminator of the device type this processor can parse.</summary>
+		public override char Discriminator => 'H';
 
-        /// <summary>Processes given set of statements.</summary>
-        protected override void DoProcess()
-        {
-            var name = DeviceName;
-            var nodes = GetNodeIds(1, 2);
-            var vsource = RawStatement[3];
-            var gain = GetValue(4);
+		/// <summary>Processes given set of statements.</summary>
+		protected override void DoProcess()
+		{
+			var name = DeviceName;
+			var nodes = GetNodeIds(1, 2);
+			var vsource = RawStatement[3];
+			var gain = GetValue(4);
 
-            if (Errors == 0)
-                Context.DeferredStatements.Add(new VoltageSourceDependentDeferredStatement(Context.CurrentScope, vsource, (builder, vs) =>
-                    builder.AddDevice(
-                        nodes,
-                        new Ccvs(
-                            vs,
-                            gain,
-                            name
-                        )
-                    )
-                ));
-        }
-    }
+			if (Errors == 0)
+				Context.DeferredStatements.Add(new VoltageSourceDependentDeferredStatement(Context.CurrentScope, vsource,
+					(builder, vs) =>
+						builder.AddDevice(
+							nodes,
+							new Ccvs(
+								vs,
+								gain,
+								name
+							)
+						)
+				));
+		}
+	}
 }

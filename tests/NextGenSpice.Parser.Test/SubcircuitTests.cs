@@ -1,24 +1,21 @@
-﻿using System.IO;
-using System.Linq;
-using NextGenSpice.Test;
+﻿using System.Linq;
+using NextGenSpice.Core.Test;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace NextGenSpice.Parser.Test
 {
-    public class SubcircuitTests : TracedTestBase
-    {
-        public SubcircuitTests(ITestOutputHelper output) : base(output)
-        {
-        }
-
-       
+	public class SubcircuitTests : TracedTestBase
+	{
+		public SubcircuitTests(ITestOutputHelper output) : base(output)
+		{
+		}
 
 
-        [Fact]
-        public void AcceptsSimpleSubcircuit()
-        {
-            var result = Parse(@"
+		[Fact]
+		public void AcceptsSimpleSubcircuit()
+		{
+			var result = Parse(@"
 x1 1 0 subcircuit
 r1 0 1 5OHM
 
@@ -27,31 +24,13 @@ v 1 2 5Volts
 .ends
 
 ");
-            Assert.Empty(result.Errors);
-        }
+			Assert.Empty(result.Errors);
+		}
 
-        [Fact]
-        public void CanUseCustomModelInsideSubcircuit()
-        {
-            var result = Parse(@"
-v1 1 0 5V
-r1 1 2 5OHM
-x1 0 1 diodeAlias
-
-.model mydiode D
-
-.subckt diodeAlias 1 2
-d1 1 2 mydiode *mydiode is declared outside
-.ends
-
-");
-            Assert.Empty(result.Errors);
-        }
-
-        [Fact]
-        public void CannotUseNestedSubcircuitOutside()
-        {
-            var result = Parse(@"
+		[Fact]
+		public void CannotUseNestedSubcircuitOutside()
+		{
+			var result = Parse(@"
 v1 1 0 5V
 r1 1 2 5OHM
 x1 0 1 subcircuit
@@ -68,16 +47,51 @@ v1 1 2 5v
 .ends
 
 ");
-            Assert.Single(result.Errors);
-            var error = result.Errors.Single();
-            Assert.Equal(SpiceParserErrorCode.NoSuchSubcircuit, error.ErrorCode);
-            Assert.Equal("VOLTAGEALIAS", error.Args[0]);
-        }
+			Assert.Single(result.Errors);
+			var error = result.Errors.Single();
+			Assert.Equal(SpiceParserErrorCode.NoSuchSubcircuit, error.ErrorCode);
+			Assert.Equal("VOLTAGEALIAS", error.Args[0]);
+		}
 
-        [Fact]
-        public void CanUsedSubcktInNestedSubckt()
-        {
-            var result = Parse(@"
+		[Fact]
+		public void CanUseCustomModelInsideSubcircuit()
+		{
+			var result = Parse(@"
+v1 1 0 5V
+r1 1 2 5OHM
+x1 0 1 diodeAlias
+
+.model mydiode D
+
+.subckt diodeAlias 1 2
+d1 1 2 mydiode *mydiode is declared outside
+.ends
+
+");
+			Assert.Empty(result.Errors);
+		}
+
+
+		[Fact]
+		public void CanUseDefaultModelInsideSubcircuit()
+		{
+			var result = Parse(@"
+v1 1 0 5V
+r1 1 2 5OHM
+x1 0 1 diodeAlias
+
+.subckt diodeAlias 1 2
+d1 1 2 D
+.ends
+
+");
+			Assert.Empty(result.Errors);
+		}
+
+		[Fact]
+		public void CanUsedSubcktInNestedSubckt()
+		{
+			var result = Parse(@"
 v1 1 0 5V
 r1 1 2 5OHM
 x1 0 1 sub2
@@ -93,30 +107,13 @@ i1 1 2 5v
 .ends
 
 ");
-            Assert.Empty(result.Errors);
-        }
+			Assert.Empty(result.Errors);
+		}
 
-
-        [Fact]
-        public void CanUseDefaultModelInsideSubcircuit()
-        {
-            var result = Parse(@"
-v1 1 0 5V
-r1 1 2 5OHM
-x1 0 1 diodeAlias
-
-.subckt diodeAlias 1 2
-d1 1 2 D
-.ends
-
-");
-            Assert.Empty(result.Errors);
-        }
-
-        [Fact]
-        public void DetectsCurrentCutsetAcrossSubcircuits()
-        {
-            var result = Parse(@"
+		[Fact]
+		public void DetectsCurrentCutsetAcrossSubcircuits()
+		{
+			var result = Parse(@"
 i1 1 0 5a
 r1 1 2 5OHM
 x1 2 3 curAlias
@@ -130,15 +127,15 @@ r2 4 2 5
 
 
 ");
-            Assert.Single(result.Errors);
-            var error = result.Errors.Single();
-            Assert.Equal(SpiceParserErrorCode.CurrentBranchCutset, error.ErrorCode);
-        }
+			Assert.Single(result.Errors);
+			var error = result.Errors.Single();
+			Assert.Equal(SpiceParserErrorCode.CurrentBranchCutset, error.ErrorCode);
+		}
 
-        [Fact]
-        public void DetectsVoltageCycleAcrossSubcircuits()
-        {
-            var result = Parse(@"
+		[Fact]
+		public void DetectsVoltageCycleAcrossSubcircuits()
+		{
+			var result = Parse(@"
 v1 1 0 5V
 r1 1 2 5OHM
 x1 0 1 voltAlias
@@ -150,15 +147,15 @@ v2 3 2 4
 
 
 ");
-            Assert.Single(result.Errors);
-            var error = result.Errors.Single();
-            Assert.Equal(SpiceParserErrorCode.VoltageBranchCycle, error.ErrorCode);
-        }
+			Assert.Single(result.Errors);
+			var error = result.Errors.Single();
+			Assert.Equal(SpiceParserErrorCode.VoltageBranchCycle, error.ErrorCode);
+		}
 
-        [Fact]
-        public void DoesNotAllowDuplicatesInSubcircuitTerminals()
-        {
-            var result = Parse(@"
+		[Fact]
+		public void DoesNotAllowDuplicatesInSubcircuitTerminals()
+		{
+			var result = Parse(@"
 v1 1 0 5V
 r1 1 2 5OHM
 x1 0 1 subcircuit
@@ -167,15 +164,15 @@ x1 0 1 subcircuit
 v1 1 0 5v
 .ends
 ");
-            Assert.Single(result.Errors);
-            var error = result.Errors.Single();
-            Assert.Equal(SpiceParserErrorCode.TerminalNamesNotUnique, error.ErrorCode);
-        }
+			Assert.Single(result.Errors);
+			var error = result.Errors.Single();
+			Assert.Equal(SpiceParserErrorCode.TerminalNamesNotUnique, error.ErrorCode);
+		}
 
-        [Fact]
-        public void DoesNotAllowGroundInSubcircuitTerminals()
-        {
-            var result = Parse(@"
+		[Fact]
+		public void DoesNotAllowGroundInSubcircuitTerminals()
+		{
+			var result = Parse(@"
 v1 1 0 5V
 r1 1 2 5OHM
 x1 0 1 subcircuit
@@ -184,16 +181,16 @@ x1 0 1 subcircuit
 v1 1 0 5v
 .ends
 ");
-            Assert.Single(result.Errors);
-            var error = result.Errors.Single();
-            Assert.Equal(SpiceParserErrorCode.TerminalToGround, error.ErrorCode);
-        }
+			Assert.Single(result.Errors);
+			var error = result.Errors.Single();
+			Assert.Equal(SpiceParserErrorCode.TerminalToGround, error.ErrorCode);
+		}
 
 
-        [Fact]
-        public void ReportsUnconnectedSubcircuit()
-        {
-            var result = Parse(@"
+		[Fact]
+		public void ReportsUnconnectedSubcircuit()
+		{
+			var result = Parse(@"
 v1 1 0 5
 x1 1 0 subckt
 
@@ -201,16 +198,16 @@ x1 1 0 subckt
 v 1 22 5         *oops forgot to connect to node 2
 .ends
 ");
-            Assert.Single(result.Errors);
-            var error = result.Errors.Single();
-            Assert.Equal(SpiceParserErrorCode.SubcircuitNotConnected, error.ErrorCode);
-        }
+			Assert.Single(result.Errors);
+			var error = result.Errors.Single();
+			Assert.Equal(SpiceParserErrorCode.SubcircuitNotConnected, error.ErrorCode);
+		}
 
 
-        [Fact]
-        public void SimpleNestedSubcircuit()
-        {
-            var result = Parse(@"
+		[Fact]
+		public void SimpleNestedSubcircuit()
+		{
+			var result = Parse(@"
 i1 1 0 5a
 r1 1 2 5OHM
 x1 0 1 subcircuit
@@ -226,8 +223,7 @@ v1 1 2 5v
 .ends
 
 ");
-            Assert.Empty(result.Errors);
-        }
-
-    }
+			Assert.Empty(result.Errors);
+		}
+	}
 }

@@ -1,0 +1,49 @@
+\chapter*{Conclusion}
+\addcontentsline{toc}{chapter}{Conclusion}
+
+To conclude our thesis, we will revisit the goals we set in the introduction chapter in section \ref{chap:intro:goals}
+
+\begin{enumerate}
+	\item \textit{Implement SPICE-like simulation library	}
+	\begin{enumerate}
+		\item \textit{Target .NET Standard for maximum portability} -- Our library requires .NET Standard 2.0, which makes it available on all major platforms running one of the newer version of .NET runtime.
+		
+		\item \textit{Support performing time-domain simulation of the circuit, and allow changing parameters of circuit devices between individual timesteps.} -- We designed our simulator in such a way that users of our library decide when next circuit state is computed and how big the timestep should be. Between the individual timesteps, users can modify parameters of the devices in the simulated circuit, and have the changes affect the next calculated circuit state. 
+		
+		\item \textit{Support following set of devices
+		\begin{enumerate}
+			\item Ideal resistor
+			\item Ideal voltage source
+			\item Ideal current source
+			\item Ideal inductor
+			\item Ideal capacitor
+			\item SPICE diode
+			\item SPICE BJT transistor
+		\end{enumerate}}
+		
+		We successfully implemented all circuit devices listed above. In addition, we also implemented linear controlled sources: voltage controlled voltage source, voltage controlled current source, current controlled voltage source and current controlled current source.
+		
+		\item \textit{Allow new types of circuit analyses and circuit devices to be added to the simulator without modifying the library's source code.} -- We have written a guide on how to add new devices in library's user documentation in chapter \ref{chap:exteding} and provided an example of adding new device in section \ref{chap:userdocs:diode-tutorial}.
+		
+		\item \textit{Implement SPICE netlist parser to allow importing circuits and macromodels from standard SPICE netlist files.} -- Our parser supports sufficient subset of the SPICE3 netlist syntax to allow importing circuits and subcircuits (macromodels) containing devices implemented in our simulator. We have tested our parser on existing SPICE netlists with success. However, because the parser implementation present in the library implements only the data statements (devices, subcircuits and device models), it is necessary to remove any control statements from the netlist file before parsing them in NextGen SPICE.
+		
+		\item \textit{Allow users of the library to choose between double, double-double, and quad-double precision types and compare the library's performance with respect to speed and accuracy for each listed precision type.} -- Users can compile our library themselves and choose the precision type to be used by defining a certain conditional compilation symbol. We compared the simulator performance for each precision type and found out that the double-double type currently provides the best combination of convergence and simulation speed for our library.
+	\end{enumerate}
+	
+	\item  \textit{Use the simulation library to implement SPICE-like console application for .NET Core, which would accept implemented subset of SPICE netlist syntax.} -- Our \texttt{NextGenSpice} application targets .NET Core 2.0 and provides the desired functionality by extending the library's parser to handle \texttt{.TRAN} \texttt{.OP} and \texttt{.PRINT} statements. We then used the library's functionality to run the simulations and print the requested data to standard output.
+\end{enumerate}
+
+\subsubsection{Future Work}
+The NextGen SPICE library offers only a narrow subset of the SPICE-like simulators used today. Following list contains features which we consider most beneficial for the next version of the library.
+
+\begin{itemize}
+	\item \textit{Sparse matrix representation} -- As discussed in the \ref{chap:results-precision}, the Gauss-Jordan elimination and full matrix representation proved to be a performance bottleneck when simulating larger circuits. Using sparse matrix methods which are used by the standard SPICE implementations would significantly speed up the simulation.
+	
+	\item \textit{Dynamic timestep} -- Current implementation of the transient analysis algorithm relies on the user to choose a fixed timestep. As discussed in the analysis \ref{chap:analysis-timestep}, dynamic timestep mechanism can speedup simulation in regions where the capacitor charges and inductor fluxes do not change quickly.
+	
+	\item \textit{Implementing \texttt{.INCLUDE} statement} -- Currently all used models and subcircuits need to be defined in the netlist file. SPICE3's \texttt{.INCLUDE} statement works similarly to the \texttt{\#include} directive in C or C++ languages: the contents of the included file are treated as if they were copied and pasted in place of the \texttt{.INCLUDE} statement. This allows better reuse of the subcircuits and defined models.
+	
+	\item \textit{Interactive console application} -- Current \texttt{NextGenSpice} console application offers  limited interaction with the user. Also, when the user wants to run the same simulation with different parameters, the netlist file must be edited and the application run again. SPICE3 introduced an interactive mode, in which the program reads only the circuit description from the netlist file. The simulation statements and other control statements are then supplied on the standard input by the user.
+	
+	\item \textit{More devices and analysis types} -- Last but not least, the NextGen SPICE library as implemented in this thesis offers only a fraction of circuit analysis types and circuit devices. Examples of devices which are completely missing are switches (voltage and current controlled), other types of transistors (JFET, MOSFET), transmission lines, coupled inductors and semiconductor versions of resistor and capacitor devices. From the analysis types, the NextGenSpice library is missing e.g. the AC frequency sweep analysis, which requires small-signal models of the simulated devices.
+\end{itemize}

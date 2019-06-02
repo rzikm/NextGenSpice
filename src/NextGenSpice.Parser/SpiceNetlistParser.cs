@@ -12,214 +12,214 @@ using NextGenSpice.Parser.Utils;
 
 namespace NextGenSpice.Parser
 {
-    /// <summary>Main class for parsing SPICE netlist files</summary>
-    public class SpiceNetlistParser
-    {
-        private readonly IDictionary<char, IDeviceStatementProcessor> deviceProcessors;
+	/// <summary>Main class for parsing SPICE netlist files</summary>
+	public class SpiceNetlistParser
+	{
+		private readonly IDictionary<char, IDeviceStatementProcessor> deviceProcessors;
 
-        private readonly IDictionary<string, IDotStatementProcessor> insubcircuitStatementProcessors;
+		private readonly IDictionary<string, IDotStatementProcessor> insubcircuitStatementProcessors;
 
-        private readonly ModelStatementProcessor modelProcessor;
-        private readonly PrintStatementProcessor printProcessor;
-        private readonly IDictionary<string, IDotStatementProcessor> statementProcessors;
+		private readonly ModelStatementProcessor modelProcessor;
+		private readonly PrintStatementProcessor printProcessor;
+		private readonly IDictionary<string, IDotStatementProcessor> statementProcessors;
 
-        private SpiceNetlistParser()
-        {
-            modelProcessor = new ModelStatementProcessor();
-            printProcessor = new PrintStatementProcessor();
+		private SpiceNetlistParser()
+		{
+			modelProcessor = new ModelStatementProcessor();
+			printProcessor = new PrintStatementProcessor();
 
-            deviceProcessors = new Dictionary<char, IDeviceStatementProcessor>();
-            statementProcessors = new Dictionary<string, IDotStatementProcessor>();
-            insubcircuitStatementProcessors = new Dictionary<string, IDotStatementProcessor>();
+			deviceProcessors = new Dictionary<char, IDeviceStatementProcessor>();
+			statementProcessors = new Dictionary<string, IDotStatementProcessor>();
+			insubcircuitStatementProcessors = new Dictionary<string, IDotStatementProcessor>();
 
-            RegisterStatement(modelProcessor, true, true);
-            RegisterStatement(printProcessor, true, false);
-        }
+			RegisterStatement(modelProcessor, true, true);
+			RegisterStatement(printProcessor, true, false);
+		}
 
-        /// <summary>Creates new instance of the parser without any statement processors regitered.</summary>
-        /// <returns></returns>
-        public static SpiceNetlistParser Empty()
-        {
-            return new SpiceNetlistParser();
-        }
+		/// <summary>Creates new instance of the parser without any statement processors regitered.</summary>
+		/// <returns></returns>
+		public static SpiceNetlistParser Empty()
+		{
+			return new SpiceNetlistParser();
+		}
 
-        /// <summary>Creates new instance of the parser with default statement handlers registered.</summary>
-        /// <returns></returns>
-        public static SpiceNetlistParser WithDefaults()
-        {
-            var p = new SpiceNetlistParser();
-            p.RegisterDevice(new ResistorStatementProcessor());
-            p.RegisterDevice(new CurrentSourceStatementProcessor());
-            p.RegisterDevice(new VoltageSourceStatementProcessor());
+		/// <summary>Creates new instance of the parser with default statement handlers registered.</summary>
+		/// <returns></returns>
+		public static SpiceNetlistParser WithDefaults()
+		{
+			var p = new SpiceNetlistParser();
+			p.RegisterDevice(new ResistorStatementProcessor());
+			p.RegisterDevice(new CurrentSourceStatementProcessor());
+			p.RegisterDevice(new VoltageSourceStatementProcessor());
 
-            p.RegisterDevice(new CapacitorStatementProcessor());
-            p.RegisterDevice(new InductorStatementProcessor());
+			p.RegisterDevice(new CapacitorStatementProcessor());
+			p.RegisterDevice(new InductorStatementProcessor());
 
-            p.RegisterDevice(new DiodeStatementProcessor());
-            p.RegisterDevice(new BjtStatementProcessor());
+			p.RegisterDevice(new DiodeStatementProcessor());
+			p.RegisterDevice(new BjtStatementProcessor());
 
-            p.RegisterDevice(new SubcircuitDeviceStatementProcessor());
+			p.RegisterDevice(new SubcircuitDeviceStatementProcessor());
 
-            p.RegisterDevice(new VoltageControlledVoltageSourceStatementProcessor());
-            p.RegisterDevice(new VoltageControlledCurrentSourceStatementProcessor());
-            p.RegisterDevice(new CurrentControlledVoltageSourceStatementProcessor());
-            p.RegisterDevice(new CurrentControlledCurrentSourceStatementProcessor());
-
-
-            p.RegisterStatement(new SubcircuitStatementProcessor(), true, true);
-            p.RegisterStatement(new SubcircuitEndStatementProcessor(), false, true);
-            p.RegisterStatement(new InitialConditionStatement(), true, false);
-
-            return p;
-        }
+			p.RegisterDevice(new VoltageControlledVoltageSourceStatementProcessor());
+			p.RegisterDevice(new VoltageControlledCurrentSourceStatementProcessor());
+			p.RegisterDevice(new CurrentControlledVoltageSourceStatementProcessor());
+			p.RegisterDevice(new CurrentControlledCurrentSourceStatementProcessor());
 
 
-        /// <summary>Adds handler class for device statement processing, including their .MODEL statements</summary>
-        /// <param name="processor"></param>
-        public void RegisterDevice(IDeviceStatementProcessor processor)
-        {
-            deviceProcessors[processor.Discriminator] = processor;
-            foreach (var handler in processor.GetModelStatementHandlers())
-                modelProcessor.AddHandler(handler);
-        }
+			p.RegisterStatement(new SubcircuitStatementProcessor(), true, true);
+			p.RegisterStatement(new SubcircuitEndStatementProcessor(), false, true);
+			p.RegisterStatement(new InitialConditionStatement(), true, false);
 
-        public void RegisterStatement(IDotStatementProcessor processor, bool global, bool subcircuit)
-        {
-            if (global)
-                statementProcessors[processor.Discriminator] = processor;
-            if (subcircuit)
-                insubcircuitStatementProcessors[processor.Discriminator] = processor;
-        }
+			return p;
+		}
 
-        public void RegisterPrint(IPrintStatementHandler handler)
-        {
-            printProcessor.AddHandler(handler);
-        }
 
-        /// <summary>Parses SPICE code in the input stream.</summary>
-        /// <param name="filestream">Netlist input filestream</param>
-        /// <returns></returns>
-        public SpiceNetlistParserResult Parse(FileStream filestream)
-        {
-            return Parse(new StreamReader(filestream));
-        }
+		/// <summary>Adds handler class for device statement processing, including their .MODEL statements</summary>
+		/// <param name="processor"></param>
+		public void RegisterDevice(IDeviceStatementProcessor processor)
+		{
+			deviceProcessors[processor.Discriminator] = processor;
+			foreach (var handler in processor.GetModelStatementHandlers())
+				modelProcessor.AddHandler(handler);
+		}
 
-        /// <summary>Parses SPICE code in the input stream.</summary>
-        /// <param name="input">Netlist input source code.</param>
-        /// <returns></returns>
-        public SpiceNetlistParserResult Parse(TextReader input)
-        {
-            var ctx = new ParsingContext
-            {
-                Title = input.ReadLine() // First line of the file always contains title
-            };
+		public void RegisterStatement(IDotStatementProcessor processor, bool global, bool subcircuit)
+		{
+			if (global)
+				statementProcessors[processor.Discriminator] = processor;
+			if (subcircuit)
+				insubcircuitStatementProcessors[processor.Discriminator] = processor;
+		}
 
-            ITokenStream stream = new TokenStream(input, 1);
-            Token[] tokens;
-            modelProcessor.RegisterDefaultModels(ctx);
+		public void RegisterPrint(IPrintStatementHandler handler)
+		{
+			printProcessor.AddHandler(handler);
+		}
 
-            // parse input file by logical lines, each line is an independent statement
-            while ((tokens = stream.ReadStatement().ToArray()).Length > 0) // while not EOF
-            {
-                var firstToken = tokens[0]; // statement discriminator
-                var c = firstToken.Value[0];
+		/// <summary>Parses SPICE code in the input stream.</summary>
+		/// <param name="filestream">Netlist input filestream</param>
+		/// <returns></returns>
+		public SpiceNetlistParserResult Parse(FileStream filestream)
+		{
+			return Parse(new StreamReader(filestream));
+		}
 
-                if (char.IsLetter(c)) // possible device statement
-                    ProcessDevice(tokens, ctx, deviceProcessors);
-                else if (c != '.') // syntactic error
-                    ctx.Errors.Add(firstToken.ToError(SpiceParserErrorCode.UnexpectedCharacter, c));
-                else if (tokens[0].Value == ".END" && tokens.Length == 1)
-                    break; // end parsing now
-                else // other .[keyword] statement
-                    // if currently inside a subcircuit definition, use different statement processors
-                    ProcessStatement(tokens, ctx);
-            }
+		/// <summary>Parses SPICE code in the input stream.</summary>
+		/// <param name="input">Netlist input source code.</param>
+		/// <returns></returns>
+		public SpiceNetlistParserResult Parse(TextReader input)
+		{
+			var ctx = new ParsingContext
+			{
+				Title = input.ReadLine() // First line of the file always contains title
+			};
 
-            return ApplyStatements(ctx);
-        }
+			ITokenStream stream = new TokenStream(input, 1);
+			Token[] tokens;
+			modelProcessor.RegisterDefaultModels(ctx);
 
-        private SpiceNetlistParserResult ApplyStatements(ParsingContext ctx)
-        {
-            ctx.FlushStatements();
+			// parse input file by logical lines, each line is an independent statement
+			while ((tokens = stream.ReadStatement().ToArray()).Length > 0) // while not EOF
+			{
+				var firstToken = tokens[0]; // statement discriminator
+				var c = firstToken.Value[0];
 
-            // create circuit only if there were no errors
-            var circuitDefinition = ctx.Errors.Count == 0 ? TryCreateCircuitDefinition(ctx) : null;
+				if (char.IsLetter(c)) // possible device statement
+					ProcessDevice(tokens, ctx, deviceProcessors);
+				else if (c != '.') // syntactic error
+					ctx.Errors.Add(firstToken.ToError(SpiceParserErrorCode.UnexpectedCharacter, c));
+				else if (tokens[0].Value == ".END" && tokens.Length == 1)
+					break; // end parsing now
+				else // other .[keyword] statement
+					// if currently inside a subcircuit definition, use different statement processors
+					ProcessStatement(tokens, ctx);
+			}
 
-            return new SpiceNetlistParserResult(
-                ctx.Title,
-                circuitDefinition,
-                ctx.OtherStatements,
-                ctx.Errors.OrderBy(e => e.LineNumber).ThenBy(e => e.LineColumn).ToList(), // order errors
-                ctx.SymbolTable.GetLocalSubcircuits().OfType<SubcircuitDefinition>()
-                    .ToList(), // only valid subcircuit definitions, no NullCircuitDefinitions
-                ctx.SymbolTable.GetNodeNames(Enumerable.Range(0, ctx.CurrentScope.CircuitBuilder.NodeCount)).ToList(),
-                ctx.SymbolTable.GetAllModels());
-        }
+			return ApplyStatements(ctx);
+		}
 
-        private static CircuitDefinition TryCreateCircuitDefinition(ParsingContext ctx)
-        {
-            CircuitDefinition circuitDefinition = null;
-            try
-            {
-                circuitDefinition = ctx.CurrentScope.CircuitBuilder.BuildCircuit();
-            }
-            catch (Exception e)
-            {
-                // translate node indexes to node names used in the input file
-                SpiceParserError error;
-                switch (e)
-                {
-                    case NoDcPathToGroundException ex:
-                        error = new SpiceParserError(SpiceParserErrorCode.NoDcPathToGround, 0, 0,
-                            ctx.SymbolTable.GetNodeNames(ex.Nodes).Cast<object>().ToArray());
-                        break;
+		private SpiceNetlistParserResult ApplyStatements(ParsingContext ctx)
+		{
+			ctx.FlushStatements();
 
-                    case NotConnectedSubcircuitException ex:
-                        var names = ex.Components.Select(c => ctx.SymbolTable.GetNodeNames(c).ToArray()).Cast<object>()
-                            .ToArray();
-                        error = new SpiceParserError(SpiceParserErrorCode.SubcircuitNotConnected, 0, 0, names);
-                        break;
+			// create circuit only if there were no errors
+			var circuitDefinition = ctx.Errors.Count == 0 ? TryCreateCircuitDefinition(ctx) : null;
 
-                    case VoltageBranchCycleException ex:
-                        error = new SpiceParserError(SpiceParserErrorCode.VoltageBranchCycle, 0, 0,
-                            ex.Devices.Select(el => el.Tag).ToArray());
-                        break;
+			return new SpiceNetlistParserResult(
+				ctx.Title,
+				circuitDefinition,
+				ctx.OtherStatements,
+				ctx.Errors.OrderBy(e => e.LineNumber).ThenBy(e => e.LineColumn).ToList(), // order errors
+				ctx.SymbolTable.GetLocalSubcircuits().OfType<SubcircuitDefinition>()
+					.ToList(), // only valid subcircuit definitions, no NullCircuitDefinitions
+				ctx.SymbolTable.GetNodeNames(Enumerable.Range(0, ctx.CurrentScope.CircuitBuilder.NodeCount)).ToList(),
+				ctx.SymbolTable.GetAllModels());
+		}
 
-                    case CurrentBranchCutsetException ex:
-                        error = new SpiceParserError(SpiceParserErrorCode.CurrentBranchCutset, 0, 0,
-                            ex.Devices.Select(el => el.Tag).ToArray());
-                        break;
+		private static CircuitDefinition TryCreateCircuitDefinition(ParsingContext ctx)
+		{
+			CircuitDefinition circuitDefinition = null;
+			try
+			{
+				circuitDefinition = ctx.CurrentScope.CircuitBuilder.BuildCircuit();
+			}
+			catch (Exception e)
+			{
+				// translate node indexes to node names used in the input file
+				SpiceParserError error;
+				switch (e)
+				{
+					case NoDcPathToGroundException ex:
+						error = new SpiceParserError(SpiceParserErrorCode.NoDcPathToGround, 0, 0,
+							ctx.SymbolTable.GetNodeNames(ex.Nodes).Cast<object>().ToArray());
+						break;
 
-                    default:
-                        throw;
-                }
+					case NotConnectedSubcircuitException ex:
+						var names = ex.Components.Select(c => ctx.SymbolTable.GetNodeNames(c).ToArray()).Cast<object>()
+							.ToArray();
+						error = new SpiceParserError(SpiceParserErrorCode.SubcircuitNotConnected, 0, 0, names);
+						break;
 
-                ctx.Errors.Add(error);
-            }
+					case VoltageBranchCycleException ex:
+						error = new SpiceParserError(SpiceParserErrorCode.VoltageBranchCycle, 0, 0,
+							ex.Devices.Select(el => el.Tag).ToArray());
+						break;
 
-            return circuitDefinition;
-        }
+					case CurrentBranchCutsetException ex:
+						error = new SpiceParserError(SpiceParserErrorCode.CurrentBranchCutset, 0, 0,
+							ex.Devices.Select(el => el.Tag).ToArray());
+						break;
 
-        private void ProcessStatement(Token[] tokens, ParsingContext ctx)
-        {
-            // find processor that can handle this statement
-            var discriminator = tokens[0].Value;
-            var processors = ctx.CurrentScope.Depth == 0 ? statementProcessors : insubcircuitStatementProcessors;
-            if (processors.TryGetValue(discriminator, out var proc))
-                proc.Process(tokens, ctx);
-            else // unknown statement
-                ctx.Errors.Add(tokens[0].ToError(SpiceParserErrorCode.UnknownStatement));
-        }
+					default:
+						throw;
+				}
 
-        private void ProcessDevice(Token[] tokens, ParsingContext ctx,
-            IDictionary<char, IDeviceStatementProcessor> deviceStatementProcessors)
-        {
-            var discriminator = tokens[0].Value[0];
-            // find processor that can handle this device
-            if (deviceStatementProcessors.TryGetValue(discriminator, out var proc))
-                proc.Process(tokens, ctx);
-            else // unknown device
-                ctx.Errors.Add(tokens[0].ToError(SpiceParserErrorCode.UnknownDevice));
-        }
-    }
+				ctx.Errors.Add(error);
+			}
+
+			return circuitDefinition;
+		}
+
+		private void ProcessStatement(Token[] tokens, ParsingContext ctx)
+		{
+			// find processor that can handle this statement
+			var discriminator = tokens[0].Value;
+			var processors = ctx.CurrentScope.Depth == 0 ? statementProcessors : insubcircuitStatementProcessors;
+			if (processors.TryGetValue(discriminator, out var proc))
+				proc.Process(tokens, ctx);
+			else // unknown statement
+				ctx.Errors.Add(tokens[0].ToError(SpiceParserErrorCode.UnknownStatement));
+		}
+
+		private void ProcessDevice(Token[] tokens, ParsingContext ctx,
+			IDictionary<char, IDeviceStatementProcessor> deviceStatementProcessors)
+		{
+			var discriminator = tokens[0].Value[0];
+			// find processor that can handle this device
+			if (deviceStatementProcessors.TryGetValue(discriminator, out var proc))
+				proc.Process(tokens, ctx);
+			else // unknown device
+				ctx.Errors.Add(tokens[0].ToError(SpiceParserErrorCode.UnknownDevice));
+		}
+	}
 }

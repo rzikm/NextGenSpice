@@ -1,8 +1,8 @@
 {
-  "profiles": {
-    "NextGenSpice.LargeSignal": {
-      "commandName": "Project",
-      "commandLineArgs": "npn.txt"
-    }
-  }
+	"profiles": {
+		"NextGenSpice.LargeSignal": {
+			"commandName": "Project",
+			"commandLineArgs": "npn.txt"
+		}
+	}
 }

@@ -4,16 +4,16 @@ using Xunit.Abstractions;
 
 namespace NextGenSpice.LargeSignal.Test
 {
-    public class DiodeTests : CalculationTestBase
-    {
-        public DiodeTests(ITestOutputHelper output) : base(output)
-        {
-        }
+	public class DiodeTests : CalculationTestBase
+	{
+		public DiodeTests(ITestOutputHelper output) : base(output)
+		{
+		}
 
-        [Fact]
-        void DoubleDoublePrecisionCircuitTest()
-        {
-            Parse(@"
+		[Fact]
+		private void DoubleDoublePrecisionCircuitTest()
+		{
+			Parse(@"
 V1 IN 0 SIN(0 5 100 0 0 0)
 D1 IN A 1n4148
 R1 A B 1e-6
@@ -24,10 +24,10 @@ D2 0 B 1n4148
 .model 1N4148 D(Is=2.52n Rs=.568 N=1.752 Cjo=4p M=.4 tt=20n VJ=20 BV=75)
 *.print tran V(IN) I(D1)
 ");
-            Model.EstablishDcBias();
+			Model.EstablishDcBias();
 
-            var v1 = (ITwoTerminalLargeSignalDevice) Model.FindDevice("V1");
-            var d1 = (ITwoTerminalLargeSignalDevice) Model.FindDevice("D1");
-        }
-    }
+			var v1 = (ITwoTerminalLargeSignalDevice) Model.FindDevice("V1");
+			var d1 = (ITwoTerminalLargeSignalDevice) Model.FindDevice("D1");
+		}
+	}
 }

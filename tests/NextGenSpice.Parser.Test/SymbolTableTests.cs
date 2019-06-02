@@ -1,7 +1,7 @@
 ﻿namespace NextGenSpice.Parser.Test
 {
-    public class SymbolTableTests
-    {
+	public class SymbolTableTests
+	{
 //        public SymbolTableTests()
 //        {
 //            table = new SymbolTable();
@@ -62,5 +62,5 @@
 //            Assert.True(table.TryGetModel<DiodeParams>("default", out var m));
 //            Assert.NotNull(m);
 //        }
-    }
+	}
 }

@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="197.68929mm"
+   height="107.8196mm"
+   viewBox="0 0 197.68929 107.8196"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="analysis-interfaces.svg">
+  <defs
+     id="defs2">
+    <marker
+       inkscape:isstock="true"
+       style="overflow:visible"
+       id="marker2278"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="TriangleInL">
+      <path
+         transform="scale(-0.8)"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000003pt;stroke-opacity:1"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path2276"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="TriangleInL"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="TriangleInL"
+       style="overflow:visible"
+       inkscape:isstock="true"
+       inkscape:collect="always">
+      <path
+         id="path2139"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000003pt;stroke-opacity:1"
+         transform="scale(-0.8)"
+         inkscape:connector-curvature="0" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="207.58149"
+     inkscape:cy="336.72955"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-4.7084724,-16.565729)">
+    <g
+       id="g1944">
+      <g
+         id="g832">
+        <rect
+           style="opacity:1;fill:#ffeeaa;fill-opacity:0.69160635;stroke:#000000;stroke-width:0.26499999;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+           id="rect815"
+           width="72.521637"
+           height="12.862316"
+           x="4.8409724"
+           y="16.698229"
+           ry="3.6081386" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.3133111px;line-height:1.25;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.15783125"
+           x="11.110061"
+           y="24.698721"
+           id="text819"><tspan
+             sodipodi:role="line"
+             id="tspan817"
+             x="11.110061"
+             y="24.698721"
+             style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.3133111px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.15783125">IAcFreqSweepDevice</tspan></text>
+      </g>
+    </g>
+    <g
+       id="g1950">
+      <g
+         transform="translate(40.178207,0.72352714)"
+         id="g837">
+        <rect
+           ry="3.6081386"
+           y="16.030054"
+           x="89.565414"
+           height="12.862316"
+           width="72.521637"
+           id="rect823"
+           style="opacity:1;fill:#ffeeaa;fill-opacity:0.69160635;stroke:#000000;stroke-width:0.26499999;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
+        <text
+           id="text827"
+           y="24.43145"
+           x="99.97718"
+           style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.3133111px;line-height:1.25;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.15783125"
+           xml:space="preserve"><tspan
+             style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.3133111px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.15783125"
+             y="24.43145"
+             x="99.97718"
+             id="tspan825"
+             sodipodi:role="line">ITransientDevice</tspan></text>
+      </g>
+    </g>
+    <rect
+       style="opacity:1;fill:#f9f9f9;fill-opacity:0.69160635;stroke:#000000;stroke-width:0.26499999;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:1.05999997, 0.26499999;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       id="rect196-8"
+       width="121.78628"
+       height="19.865669"
+       x="42.294346"
+       y="65.195145" />
+    <g
+       id="g1983"
+       transform="translate(-19.84375)">
+      <rect
+         style="opacity:1;fill:#ccffaa;fill-opacity:0.69160635;stroke:#000000;stroke-width:0.26499999;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+         id="rect839"
+         width="55.229225"
+         height="12.862316"
+         x="125.41538"
+         y="68.480972"
+         ry="3.6081386" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.3133111px;line-height:1.25;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.15783125"
+         x="131.68448"
+         y="76.481461"
+         id="text843"><tspan
+           sodipodi:role="line"
+           id="tspan841"
+           x="131.68448"
+           y="76.481461"
+           style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.3133111px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.15783125">TranCapacitor</tspan></text>
+    </g>
+    <rect
+       y="96.756157"
+       x="41.727383"
+       height="19.865669"
+       width="122.16428"
+       id="rect1935"
+       style="opacity:1;fill:#f9f9f9;fill-opacity:0.69160635;stroke:#000000;stroke-width:0.26499999;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:1.05999997, 0.26499999;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
+    <g
+       id="g1988"
+       transform="translate(-19.84375,5.8586309)">
+      <rect
+         ry="3.6081386"
+         y="93.805374"
+         x="125.79337"
+         height="12.862316"
+         width="55.229225"
+         id="rect849"
+         style="opacity:1;fill:#ccffaa;fill-opacity:0.69160635;stroke:#000000;stroke-width:0.26499999;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
+      <text
+         id="text853"
+         y="101.99485"
+         x="133.95233"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.3133111px;line-height:1.25;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.15783125"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.3133111px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.15783125"
+           y="101.99485"
+           x="133.95233"
+           id="tspan851"
+           sodipodi:role="line">TranInductor</tspan></text>
+    </g>
+    <g
+       id="g2298">
+      <rect
+         style="opacity:1;fill:#ccffaa;fill-opacity:0.69160635;stroke:#000000;stroke-width:0.26499999;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+         id="rect855"
+         width="55.229225"
+         height="12.862316"
+         x="76.278473"
+         y="43.912514"
+         ry="3.6081386" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.3133111px;line-height:1.25;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.15783125"
+         x="91.241013"
+         y="52.101994"
+         id="text859"><tspan
+           sodipodi:role="line"
+           id="tspan857"
+           x="91.241013"
+           y="52.101994"
+           style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.3133111px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.15783125">Resistor</tspan><tspan
+           sodipodi:role="line"
+           x="91.241013"
+           y="59.993633"
+           style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.3133111px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.15783125"
+           id="tspan869" /></text>
+    </g>
+    <flowRoot
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       id="flowRoot861"
+       xml:space="preserve"
+       transform="translate(0,35.907738)"><flowRegion
+         id="flowRegion863"><rect
+           y="188.94826"
+           x="-10.714286"
+           height="146.42857"
+           width="341.42856"
+           id="rect865" /></flowRegion><flowPara
+         id="flowPara867"></flowPara></flowRoot>    <g
+       id="g1993"
+       transform="translate(19.276785)">
+      <rect
+         ry="3.6081386"
+         y="68.480972"
+         x="26.19663"
+         height="12.862316"
+         width="55.229225"
+         id="rect871"
+         style="opacity:1;fill:#ccffaa;fill-opacity:0.69160635;stroke:#000000;stroke-width:0.26499999;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
+      <text
+         id="text875"
+         y="76.481461"
+         x="36.245483"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.3133111px;line-height:1.25;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.15783125"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.3133111px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.15783125"
+           y="76.481461"
+           x="36.245483"
+           id="tspan873"
+           sodipodi:role="line">AcCapacitor</tspan></text>
+    </g>
+    <g
+       id="g1998"
+       transform="translate(19.276785,5.8586309)">
+      <rect
+         style="opacity:1;fill:#ccffaa;fill-opacity:0.69160635;stroke:#000000;stroke-width:0.26499999;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+         id="rect877"
+         width="55.229225"
+         height="12.862316"
+         x="26.574606"
+         y="93.805374"
+         ry="3.6081386" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.3133111px;line-height:1.25;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.15783125"
+         x="37.946369"
+         y="101.99485"
+         id="text881"><tspan
+           sodipodi:role="line"
+           id="tspan879"
+           x="37.946369"
+           y="101.99485"
+           style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.3133111px;font-family:'CMU Typewriter Text';-inkscape-font-specification:'CMU Typewriter Text, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.15783125">AcInductor</tspan></text>
+    </g>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.26499999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#TriangleInL)"
+       d="M 34.395833,30.999257 V 74.93899 h 10.77232"
+       id="path2004"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 45.836723,106.03592 H 34.410951 V 66.747302"
+       id="path2270"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccc" />
+    <path
+       sodipodi:nodetypes="ccc"
+       inkscape:connector-curvature="0"
+       id="path2272"
+       d="M 172.59855,30.999257 V 74.93899 H 160.9576"
+       style="fill:none;stroke:#000000;stroke-width:0.26499999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#marker2278)" />
+    <path
+       sodipodi:nodetypes="ccc"
+       inkscape:connector-curvature="0"
+       id="path2274"
+       d="m 161.15766,106.03592 h 11.42577 V 66.747302"
+       style="fill:none;stroke:#000000;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 131.53571,50.181549 h 41.10491"
+       id="path2280"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 76.162201,50.465032 H 34.395833"
+       id="path2282"
+       inkscape:connector-curvature="0" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.3133111px;line-height:1.25;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.15783125"
+       x="68.373459"
+       y="90.466576"
+       id="text2292"><tspan
+         sodipodi:role="line"
+         x="68.373459"
+         y="90.466576"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.3133111px;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.15783125"
+         id="tspan2290">Capacitor implementation</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.3133111px;line-height:1.25;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.15783125"
+       x="69.696381"
+       y="123.16151"
+       id="text2308"><tspan
+         sodipodi:role="line"
+         x="69.696381"
+         y="123.16151"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.3133111px;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.15783125"
+         id="tspan2306">Inductor implementation</tspan></text>
+  </g>
+</svg>

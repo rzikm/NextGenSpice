@@ -1,0 +1,155 @@
+%%% This file contains definitions of various useful macros and environments %%%
+%%% Please add more macros here instead of cluttering other files with them. %%%
+
+%%% Minor tweaks of style
+
+% These macros employ a little dirty trick to convince LaTeX to typeset
+% chapter headings sanely, without lots of empty space above them.
+% Feel free to ignore.
+\makeatletter
+\def\@makechapterhead#1{
+  {\parindent \z@ \raggedright \normalfont
+   \Huge\bfseries \thechapter. #1
+   \par\nobreak
+   \vskip 20\p@
+}}
+\def\@makeschapterhead#1{
+  {\parindent \z@ \raggedright \normalfont
+   \Huge\bfseries #1
+   \par\nobreak
+   \vskip 20\p@
+}}
+\makeatother
+
+% This macro defines a chapter, which is not numbered, but is included
+% in the table of contents.
+\def\chapwithtoc#1{
+\chapter*{#1}
+\addcontentsline{toc}{chapter}{#1}
+}
+
+% Draw black "slugs" whenever a line overflows, so that we can spot it easily.
+\overfullrule=1mm
+
+%%% Macros for definitions, theorems, claims, examples, ... (requires amsthm package)
+
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}
+\newtheorem{lemma}[thm]{Lemma}
+\newtheorem{claim}[thm]{Claim}
+
+\theoremstyle{plain}
+\newtheorem{defn}{Definition}
+
+\theoremstyle{remark}
+\newtheorem*{cor}{Corollary}
+\newtheorem*{rem}{Remark}
+\newtheorem*{example}{Example}
+
+%%% An environment for proofs
+
+%%% FIXME %%% \newenvironment{proof}{
+%%% FIXME %%%   \par\medskip\noindent
+%%% FIXME %%%   \textit{Proof}.
+%%% FIXME %%% }{
+%%% FIXME %%% \newline
+%%% FIXME %%% \rightline{$\square$}  % or \SquareCastShadowBottomRight from bbding package
+%%% FIXME %%% }
+
+%%% An environment for typesetting of program code and input/output
+%%% of programs. (Requires the fancyvrb package -- fancy verbatim.)
+
+\renewcommand{\theFancyVerbLine}{\ttfamily \normalfont \arabic{FancyVerbLine}:} %% bigger line numbers
+
+\DefineVerbatimEnvironment{spicecode}{Verbatim}{fontsize=\footnotesize,frame=single, numbers=left, tabsize=4,commandchars=\\\{\}}
+
+\DefineVerbatimEnvironment{code}{Verbatim}{fontsize=\footnotesize,frame=single, tabsize=4}
+
+\newminted{csharp}{frame=single, linenos, tabsize=4, mathescape=true, fontsize=\footnotesize}
+\usemintedstyle{vs} %does not seem to work?
+
+%% macro for coloring of the equations
+\makeatletter
+\def\mathcolor#1#{\@mathcolor{#1}}
+\def\@mathcolor#1#2#3{%
+	\protect\leavevmode
+	\begingroup
+	\color#1{#2}#3%
+	\endgroup
+}
+\makeatother
+
+
+% environment for algorithms
+\newenvironment{alg}[1]
+{
+	\begin{algorithm}
+	\caption{#1}
+	\begin{algorithmic}[1]
+}
+{	
+	\end{algorithmic}
+	\end{algorithm}
+}
+
+% environment for small inline circuit examples
+\newenvironment{circuitdev}
+{
+	\begin{center}	
+	\begin{circuitikz}[scale=0.8, font=\footnotesize]
+	\draw 
+}
+{
+	;
+	\end{circuitikz}
+	\end{center}
+}
+
+%%% inline quote
+\newcommand{\shortquote}[1]{`\textit{#1}'} 
+
+%%% force italics in the quote
+\newenvironment{blockquote}
+{
+	\begin{quotation}
+	\itshape
+}
+{
+	\end{quotation}
+}
+
+
+
+%%% macro for introducing line breaks without hyphenation
+\newcommand{\+}{\discretionary{}{}{}}
+
+%%% Asymptotic notaion
+\newcommand{\bigO}[1]{\mathcal{O}(#1)}
+
+%%% The field of all real and natural numbers
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+
+%%% Useful operators for statistics and probability
+\DeclareMathOperator{\pr}{\textsf{P}}
+\DeclareMathOperator{\E}{\textsf{E}\,}
+%\DeclareMathOperator{\var}{\textrm{var}}
+\DeclareMathOperator{\sd}{\textrm{sd}}
+
+%%% Transposition of a vector/matrix
+\newcommand{\T}[1]{#1^\top}
+
+%%% Various math goodies
+\newcommand{\goto}{\rightarrow}
+\newcommand{\gotop}{\stackrel{P}{\longrightarrow}}
+\newcommand{\maon}[1]{o(n^{#1})}
+%\newcommand{\abs}[1]{\left|{#1}\right|}
+\newcommand{\dint}{\int_0^\tau\!\!\int_0^\tau}
+\newcommand{\isqr}[1]{\frac{1}{\sqrt{#1}}}
+
+%%% Various table goodies
+\newcommand{\pulrad}[1]{\raisebox{1.5ex}[0pt]{#1}}
+\newcommand{\mc}[1]{\multicolumn{1}{c}{#1}}
+
+%%% Macro for red text in to-do sections
+\newcommand{\todo}[1]{{\color{red} TODO: [#1]}}

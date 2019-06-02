@@ -1,8 +1,8 @@
 {
-  "profiles": {
-    "NextGenSpice.Core": {
-      "commandName": "Project",
-      "commandLineArgs": "subcircuit.txt"
-    }
-  }
+	"profiles": {
+		"NextGenSpice.Core": {
+			"commandName": "Project",
+			"commandLineArgs": "subcircuit.txt"
+		}
+	}
 }

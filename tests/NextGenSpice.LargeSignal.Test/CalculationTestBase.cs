@@ -1,52 +1,50 @@
-﻿using System;
+﻿using NextGenSpice.Core.Test;
 using NextGenSpice.Parser;
 using NextGenSpice.Parser.Test;
-using NextGenSpice.Test;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace NextGenSpice.LargeSignal.Test
 {
-    public class CalculationTestBase : ParserTestBase
-    {
-        protected SpiceNetlistParserResult Result { get; private set; }
+	public class CalculationTestBase : ParserTestBase
+	{
+		private readonly DoubleComparer comparer = new DoubleComparer(1e-5);
 
-        protected LargeSignalCircuitModel Model { get; private set; }
+		public CalculationTestBase(ITestOutputHelper output) : base(output)
+		{
+		}
 
-        private DoubleComparer comparer = new DoubleComparer(1e-5);
-        public CalculationTestBase(ITestOutputHelper output) : base(output)
-        {
-        }
+		protected SpiceNetlistParserResult Result { get; private set; }
 
-        protected void PrintStatistics(LargeSignalCircuitModel model, SpiceNetlistParserResult result)
-        {
-            Output.WriteLine($"Iterations: {model.LastNonLinearIterationCount}");
-            for (int i = 0; i < result.NodeNames.Count; i++)
-            {
-                Output.WriteLine($"V({result.NodeNames[i]}) = {model.NodeVoltages[i]}");
-            }
-        }
+		protected LargeSignalCircuitModel Model { get; private set; }
 
-        protected void AssertEqual(double expected, double actual)
-        {
-            Assert.Equal(expected, actual, comparer);
-        }
+		protected void PrintStatistics(LargeSignalCircuitModel model, SpiceNetlistParserResult result)
+		{
+			Output.WriteLine($"Iterations: {model.LastNonLinearIterationCount}");
+			for (var i = 0; i < result.NodeNames.Count; i++)
+				Output.WriteLine($"V({result.NodeNames[i]}) = {model.NodeVoltages[i]}");
+		}
 
-        protected new void Parse(string netlist)
-        {
-            Result = base.Parse(netlist);
+		protected void AssertEqual(double expected, double actual)
+		{
+			Assert.Equal(expected, actual, comparer);
+		}
 
-            Assert.Empty(Result.Errors);
+		protected new void Parse(string netlist)
+		{
+			Result = base.Parse(netlist);
 
-            Model = Result.CircuitDefinition.GetLargeSignalModel();
-        }
+			Assert.Empty(Result.Errors);
 
-        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public override void Dispose()
-        {
-            base.Dispose();
-            if (Model != null)
-                PrintStatistics(Model, Result);
-        }
-    }
+			Model = Result.CircuitDefinition.GetLargeSignalModel();
+		}
+
+		/// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+		public override void Dispose()
+		{
+			base.Dispose();
+			if (Model != null)
+				PrintStatistics(Model, Result);
+		}
+	}
 }

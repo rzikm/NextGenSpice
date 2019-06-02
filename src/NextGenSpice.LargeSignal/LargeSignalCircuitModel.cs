@@ -1,273 +1,257 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NextGenSpice.Core.Circuit;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Exceptions;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal.Devices;
 using NextGenSpice.Numerics;
 using NextGenSpice.Numerics.Equations;
-using NextGenSpice.Numerics.Precision;
 
 namespace NextGenSpice.LargeSignal
 {
-    /// <summary>Main class for performing large signal analysis on electrical circuits.</summary>
-    public class LargeSignalCircuitModel : IAnalysisCircuitModel<ILargeSignalDevice>
-    {
-        private SimulationContext context;
+	/// <summary>Main class for performing large signal analysis on electrical circuits.</summary>
+	public class LargeSignalCircuitModel : IAnalysisCircuitModel<ILargeSignalDevice>
+	{
+		private readonly Dictionary<ICircuitDefinitionDevice, ILargeSignalDevice> deviceLookup;
+		private readonly ILargeSignalDevice[] devices;
 
-        /// <summary>
-        /// Set of device independent circuit parameters.
-        /// </summary>
-        public SimulationParameters SimulationParameters { get; }
+		private readonly Dictionary<object, ILargeSignalDevice> deviceTagLookup;
+		private readonly double?[] initialVoltages;
+		private readonly List<IEquationSystemCoefficientProxy> initVoltProxies;
+		private SimulationContext context;
 
-        private double[] currentSolution;
-        private double[] previousSolution;
+		private double[] currentSolution;
 
-        private IEquationSystemAdapterWide equationSystemAdapter;
+		private IEquationSystemAdapterWide equationSystemAdapter;
+		private double[] previousSolution;
 
-        public LargeSignalCircuitModel(IEnumerable<double?> initialVoltages, List<ILargeSignalDevice> devices)
-        {
-            this.initialVoltages = initialVoltages.ToArray();
-            NodeVoltages = new double[this.initialVoltages.Length];
-            this.devices = devices.ToArray();
-            initVoltProxies = new List<IEquationSystemCoefficientProxy>();
-            SimulationParameters = new SimulationParameters();
+		public LargeSignalCircuitModel(IEnumerable<double?> initialVoltages, List<ILargeSignalDevice> devices)
+		{
+			this.initialVoltages = initialVoltages.ToArray();
+			NodeVoltages = new double[this.initialVoltages.Length];
+			this.devices = devices.ToArray();
+			initVoltProxies = new List<IEquationSystemCoefficientProxy>();
+			SimulationParameters = new SimulationParameters();
 
-            deviceTagLookup = devices.Where(e => e.DefinitionDevice.Tag != null).ToDictionary(e => e.DefinitionDevice.Tag);
-            deviceLookup = devices.ToDictionary(e => e.DefinitionDevice);
-        }
+			deviceTagLookup = devices.Where(e => e.DefinitionDevice.Tag != null).ToDictionary(e => e.DefinitionDevice.Tag);
+			deviceLookup = devices.ToDictionary(e => e.DefinitionDevice);
+		}
 
-        /// <summary>Last computed node voltages.</summary>
-        public double[] NodeVoltages { get; }
+		/// <summary>
+		///   Set of device independent circuit parameters.
+		/// </summary>
+		public SimulationParameters SimulationParameters { get; }
 
-        /// <summary>Number of node in the circuit.</summary>
-        public int NodeCount => NodeVoltages.Length;
+		/// <summary>Last computed node voltages.</summary>
+		public double[] NodeVoltages { get; }
 
-        /// <summary>Set of all devices that this circuit model consists of.</summary>
-        public IReadOnlyList<ILargeSignalDevice> Devices => devices;
+		/// <summary>Number of node in the circuit.</summary>
+		public int NodeCount => NodeVoltages.Length;
 
-        /// <summary>
-        /// Returns device with given tag or null if no such device exists.
-        /// </summary>
-        /// <param name="tag">The tag of the queried device.</param>
-        /// <returns></returns>
-        public ILargeSignalDevice FindDevice(object tag)
-        {
-            deviceTagLookup.TryGetValue(tag, out var ret);
-            return ret;
-        }
+		/// <summary>Maximumum number of Newton-Raphson iterations per timepoint.</summary>
+		public int MaxDcPointIterations { get; set; } = 10000;
 
-        /// <summary>Returns device implementation for corresponding circuit definition device.</summary>
-        /// <param name="device">The tag of the queried device.</param>
-        /// <returns></returns>
-        public ILargeSignalDevice FindDevice(ICircuitDefinitionDevice device)
-        {
-            deviceLookup.TryGetValue(device, out var ret);
-            return ret;
-        }
+		/// <summary>How many Newton-Raphson iterations were needed in last operating point calculation.</summary>
+		public int LastNonLinearIterationCount { get; private set; }
 
-        private readonly Dictionary<object, ILargeSignalDevice> deviceTagLookup;
-        private readonly Dictionary<ICircuitDefinitionDevice, ILargeSignalDevice> deviceLookup;
-        private readonly double?[] initialVoltages;
-        private readonly List<IEquationSystemCoefficientProxy> initVoltProxies;
-        private readonly ILargeSignalDevice[] devices;
+		/// <summary>How many Newton-Raphson iterations were needed in total.</summary>
+		public int TotalNonLinearIterationCount { get; private set; }
 
-        /// <summary>Maximumum number of Newton-Raphson iterations per timepoint.</summary>
-        public int MaxDcPointIterations { get; set; } = 10000;
+		/// <summary>Current timepoint of the transient analysis in seconds.</summary>
+		public double CurrentTimePoint => context?.TimePoint ?? 0.0;
 
-        /// <summary>How many Newton-Raphson iterations were needed in last operating point calculation.</summary>
-        public int LastNonLinearIterationCount { get; private set; }
+		/// <summary>Set of all devices that this circuit model consists of.</summary>
+		public IReadOnlyList<ILargeSignalDevice> Devices => devices;
 
-        /// <summary>How many Newton-Raphson iterations were needed in total.</summary>
-        public int TotalNonLinearIterationCount { get; private set; }
+		/// <summary>
+		///   Returns device with given tag or null if no such device exists.
+		/// </summary>
+		/// <param name="tag">The tag of the queried device.</param>
+		/// <returns></returns>
+		public ILargeSignalDevice FindDevice(object tag)
+		{
+			deviceTagLookup.TryGetValue(tag, out var ret);
+			return ret;
+		}
 
-        /// <summary>Current timepoint of the transient analysis in seconds.</summary>
-        public double CurrentTimePoint => context?.TimePoint ?? 0.0;
+		/// <summary>Returns device implementation for corresponding circuit definition device.</summary>
+		/// <param name="device">The tag of the queried device.</param>
+		/// <returns></returns>
+		public ILargeSignalDevice FindDevice(ICircuitDefinitionDevice device)
+		{
+			deviceLookup.TryGetValue(device, out var ret);
+			return ret;
+		}
 
-        /// <summary>
-        ///     Advances transient simulation of the circuit by given ammount in seconds.
-        /// </summary>
-        /// <param name="timestep"></param>
-        public void AdvanceInTime(double timestep)
-        {
-            if (timestep < 0) throw new ArgumentOutOfRangeException(nameof(timestep));
-            if (context == null) EstablishDcBias();
+		/// <summary>
+		///   Advances transient simulation of the circuit by given ammount in seconds.
+		/// </summary>
+		/// <param name="timestep"></param>
+		public void AdvanceInTime(double timestep)
+		{
+			if (timestep < 0) throw new ArgumentOutOfRangeException(nameof(timestep));
+			if (context == null) EstablishDcBias();
 
-            if (timestep > 0)
-            {
-                context.TimePoint = context.TimePoint + timestep;
-                context.TimeStep = timestep;
-                EstablishDcBias_Internal();
-                OnDcBiasEstablished();
-            }
-        }
+			if (timestep > 0)
+			{
+				context.TimePoint = context.TimePoint + timestep;
+				context.TimeStep = timestep;
+				EstablishDcBias_Internal();
+				OnDcBiasEstablished();
+			}
+		}
 
-        /// <summary>Establishes initial operating point for the transient analysis.</summary>
-        public void EstablishDcBias(bool initCond = false)
-        {
-            context = null; // reset;
-            EnsureInitialized();
+		/// <summary>Establishes initial operating point for the transient analysis.</summary>
+		public void EstablishDcBias(bool initCond = false)
+		{
+			context = null; // reset;
+			EnsureInitialized();
 
-            // initial condition
-            for (int i = 0; i < initialVoltages.Length; i++)
-            {
-                if (initialVoltages[i].HasValue)
-                {
-                    initVoltProxies[2 * i].Add(1);
-                    initVoltProxies[2 * i + 1].Add(initialVoltages[i].Value);
-                }
-            }
+			// initial condition
+			for (var i = 0; i < initialVoltages.Length; i++)
+				if (initialVoltages[i].HasValue)
+				{
+					initVoltProxies[2 * i].Add(1);
+					initVoltProxies[2 * i + 1].Add(initialVoltages[i].Value);
+				}
 
-            EstablishDcBias_Internal();
+			EstablishDcBias_Internal();
 
-            var iterCount = LastNonLinearIterationCount;
-            LastNonLinearIterationCount = 0;
+			var iterCount = LastNonLinearIterationCount;
+			LastNonLinearIterationCount = 0;
 
-            // rerun without initial voltages
-            if (!initCond) EstablishDcBias_Internal();
+			// rerun without initial voltages
+			if (!initCond) EstablishDcBias_Internal();
 
-            LastNonLinearIterationCount += iterCount;
-            OnDcBiasEstablished();
-        }
+			LastNonLinearIterationCount += iterCount;
+			OnDcBiasEstablished();
+		}
 
-        private void EnsureInitialized()
-        {
-            if (context != null) return;
-            context = new SimulationContext(SimulationParameters);
-            TotalNonLinearIterationCount = 0;
+		private void EnsureInitialized()
+		{
+			if (context != null) return;
+			context = new SimulationContext(SimulationParameters);
+			TotalNonLinearIterationCount = 0;
 
-            // build equation system
-            equationSystemAdapter = EquationSystemAdapterFactory.GetEquationSystemAdapter();
+			// build equation system
+			equationSystemAdapter = EquationSystemAdapterFactory.GetEquationSystemAdapter();
 
-            for (int i = 0; i < NodeCount; i++)
-            {
-                equationSystemAdapter.AddVariable();
-            }
+			for (var i = 0; i < NodeCount; i++) equationSystemAdapter.AddVariable();
 
-            foreach (var device in Devices)
-                device.RegisterAdditionalVariables(equationSystemAdapter);
+			foreach (var device in Devices)
+				device.RegisterAdditionalVariables(equationSystemAdapter);
 
-            foreach (var device in Devices)
-                device.Initialize(equationSystemAdapter, context);
+			foreach (var device in Devices)
+				device.Initialize(equationSystemAdapter, context);
 
-            // get proxies for initial conditions
-            initVoltProxies.Clear();
-            for (int i = 0; i < this.initialVoltages.Length; i++)
-            {
-                if (initialVoltages[i].HasValue)
-                {
-                    initVoltProxies.Add(equationSystemAdapter.GetMatrixCoefficientProxy(i, i));
-                    initVoltProxies.Add(equationSystemAdapter.GetRightHandSideCoefficientProxy(i));
-                }
-                else
-                {
-                    initVoltProxies.Add(null);
-                    initVoltProxies.Add(null);
-                }
-            }
-            // finalize making changes
-            equationSystemAdapter.Freeze();
+			// get proxies for initial conditions
+			initVoltProxies.Clear();
+			for (var i = 0; i < initialVoltages.Length; i++)
+				if (initialVoltages[i].HasValue)
+				{
+					initVoltProxies.Add(equationSystemAdapter.GetMatrixCoefficientProxy(i, i));
+					initVoltProxies.Add(equationSystemAdapter.GetRightHandSideCoefficientProxy(i));
+				}
+				else
+				{
+					initVoltProxies.Add(null);
+					initVoltProxies.Add(null);
+				}
 
-            // allocate temporary arrays
-            currentSolution = new double[equationSystemAdapter.VariableCount];
-            previousSolution = new double[equationSystemAdapter.VariableCount];
-        }
+			// finalize making changes
+			equationSystemAdapter.Freeze();
 
-        private void EstablishDcBias_Internal()
-        {
-            LastNonLinearIterationCount = 0;
+			// allocate temporary arrays
+			currentSolution = new double[equationSystemAdapter.VariableCount];
+			previousSolution = new double[equationSystemAdapter.VariableCount];
+		}
 
-            do
-            {
-                if (LastNonLinearIterationCount++ == MaxDcPointIterations)
-                    throw new IterationCountExceededException();
+		private void EstablishDcBias_Internal()
+		{
+			LastNonLinearIterationCount = 0;
 
-                // clear flag;
-                context.Converged = true;
+			do
+			{
+				if (LastNonLinearIterationCount++ == MaxDcPointIterations)
+					throw new IterationCountExceededException();
 
-                UpdateEquationSystem();
-                SolveAndUpdateVoltages();
+				// clear flag;
+				context.Converged = true;
 
-            } while (!context.Converged);
-        }
+				UpdateEquationSystem();
+				SolveAndUpdateVoltages();
+			} while (!context.Converged);
+		}
 
-        private void OnDcBiasEstablished()
-        {
-            for (var i = 0; i < devices.Length; i++)
-                devices[i].OnDcBiasEstablished(context);
+		private void OnDcBiasEstablished()
+		{
+			for (var i = 0; i < devices.Length; i++)
+				devices[i].OnDcBiasEstablished(context);
 
-            TotalNonLinearIterationCount += LastNonLinearIterationCount;
-        }
+			TotalNonLinearIterationCount += LastNonLinearIterationCount;
+		}
 
-        private void SolveAndUpdateVoltages()
-        {
-            // ensure ground has 0 voltage
-            equationSystemAdapter.Anullate(0);
+		private void SolveAndUpdateVoltages()
+		{
+			// ensure ground has 0 voltage
+			equationSystemAdapter.Anullate(0);
 
-            var tmp = currentSolution;
-            currentSolution = previousSolution;
-            previousSolution = tmp;
+			var tmp = currentSolution;
+			currentSolution = previousSolution;
+			previousSolution = tmp;
 
 
-            equationSystemAdapter.Solve(currentSolution);
+			equationSystemAdapter.Solve(currentSolution);
 
-            if (currentSolution.Any(d => double.IsNaN(d)))
-                throw new NaNInEquationSystemSolutionException();
+			if (currentSolution.Any(d => double.IsNaN(d)))
+				throw new NaNInEquationSystemSolutionException();
 
-            for (int i = 0; i < devices.Length; i++)
-            {
-                devices[i].OnEquationSolution(context);
-            }
+			for (var i = 0; i < devices.Length; i++) devices[i].OnEquationSolution(context);
 
-            // copy solution and check tollerances
-            var abstol = SimulationParameters.AbsoluteTolerance;
-            var reltol = SimulationParameters.RelativeTolerance;
-            for (var i = 0; i < NodeCount; i++)
-            {
-                if (!MathHelper.InTollerance(NodeVoltages[i], currentSolution[i], abstol, reltol))
-                    context.Converged = false;
-                NodeVoltages[i] = currentSolution[i];
-            }
-        }
+			// copy solution and check tollerances
+			var abstol = SimulationParameters.AbsoluteTolerance;
+			var reltol = SimulationParameters.RelativeTolerance;
+			for (var i = 0; i < NodeCount; i++)
+			{
+				if (!MathHelper.InTollerance(NodeVoltages[i], currentSolution[i], abstol, reltol))
+					context.Converged = false;
+				NodeVoltages[i] = currentSolution[i];
+			}
+		}
 
-        private void UpdateEquationSystem()
-        {
-            equationSystemAdapter.Clear();
+		private void UpdateEquationSystem()
+		{
+			equationSystemAdapter.Clear();
 
-            try
-            {
-                for (int i = 0; i < devices.Length; i++)
-                {
-                    devices[i].ApplyModelValues(context);
-                }
-            }
-            catch (ArgumentNaNException e)
-            {
-                throw new NaNInEquationSystemSolutionException(e);
-            }
+			try
+			{
+				for (var i = 0; i < devices.Length; i++) devices[i].ApplyModelValues(context);
+			}
+			catch (ArgumentNaNException e)
+			{
+				throw new NaNInEquationSystemSolutionException(e);
+			}
+		}
 
-        }
+		private class SimulationContext : ISimulationContext
+		{
+			public SimulationContext(SimulationParameters parameters)
+			{
+				SimulationParameters = parameters;
+			}
 
-        private class SimulationContext : ISimulationContext
-        {
-            public SimulationContext(SimulationParameters parameters)
-            {
-                SimulationParameters = parameters;
-            }
+			public double TimePoint { get; set; }
+			public double TimeStep { get; set; }
 
-            public double TimePoint { get; set; }
-            public double TimeStep { get; set; }
+			public SimulationParameters SimulationParameters { get; }
 
-            public SimulationParameters SimulationParameters { get; }
+			public bool Converged { get; set; }
 
-            public bool Converged { get; set; }
-
-            public void ReportNotConverged(ILargeSignalDevice device)
-            {
-                Converged = false;
-            }
-        }
-    }
+			public void ReportNotConverged(ILargeSignalDevice device)
+			{
+				Converged = false;
+			}
+		}
+	}
 }

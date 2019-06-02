@@ -44,7 +44,8 @@
 
 extern "C" {
 
-void fpu_fix_start(unsigned int *old_cw) {
+void fpu_fix_start(unsigned int* old_cw)
+{
 #ifdef X86
 #ifdef _WIN32
 #ifdef __BORLANDC__
@@ -77,7 +78,8 @@ void fpu_fix_start(unsigned int *old_cw) {
 #endif
 }
 
-void fpu_fix_end(unsigned int *old_cw) {
+void fpu_fix_end(unsigned int* old_cw)
+{
 #ifdef X86
 #ifdef _WIN32
 
@@ -121,4 +123,3 @@ void f_fpu_fix_end(unsigned int *old_cw) {
 #endif
 
 }
- 

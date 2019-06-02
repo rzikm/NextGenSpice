@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
+﻿using System.Collections.Generic;
 using NextGenSpice.Core.Devices;
 using NextGenSpice.Core.Representation;
 using NextGenSpice.LargeSignal;
@@ -14,155 +11,147 @@ using NextGenSpice.Parser.Statements.Deferring;
 using NextGenSpice.Parser.Statements.Devices;
 using NextGenSpice.Parser.Statements.Models;
 
-
 namespace SandboxRunner
 {
-    public class DiodeImplExample
-    {
-        public class ShockleyDiodeParams
-        {
-            public double SaturationCurrent { get; set; } = 1e-14;
-            public double ThermalVoltage { get; set; } = 25.8563e-3;
-            public double IdealityCoefficient { get; set; } = 1;
-        }
+	public class DiodeImplExample
+	{
+		public static void UsingTheDiode()
+		{
+			var parser = SpiceNetlistParser.WithDefaults();
+			parser.RegisterDevice(new ShockleyDiodeStatementProcessor());
 
-        // requires .Core.Devices namespace
-        public class ShockleyDiode : TwoTerminalCircuitDevice
-        {
-            public ShockleyDiodeParams Param { get; set; }
+			// ...
 
-            public ShockleyDiode(ShockleyDiodeParams param, object tag = null) : base(tag)
-            {
-                Param = param;
-            }
-        }
+			// requires NextGenSpice.Core.Representation
+			var factory = AnalysisModelCreator.Instance.GetFactory<LargeSignalCircuitModel>();
+			factory.SetModel<ShockleyDiode, LargeSignalShockleyDiode>(
+				e => new LargeSignalShockleyDiode(e));
+		}
 
-        // requires NextGenSpice.Parser.Statements.Devices; namespace
-        private class ShockleyDiodeModelHandler : DeviceModelHandlerBase<ShockleyDiodeParams>
-        {
-            public ShockleyDiodeModelHandler()
-            {
-                Map(p => p.SaturationCurrent, "IS");
-                Map(p => p.ThermalVoltage, "VT");
-                Map(p => p.IdealityCoefficient, "N");
-            }
+		public class ShockleyDiodeParams
+		{
+			public double SaturationCurrent { get; set; } = 1e-14;
+			public double ThermalVoltage { get; set; } = 25.8563e-3;
+			public double IdealityCoefficient { get; set; } = 1;
+		}
 
-            public override string Discriminator => "SHOCKLEY";
+		// requires .Core.Devices namespace
+		public class ShockleyDiode : TwoTerminalCircuitDevice
+		{
+			public ShockleyDiode(ShockleyDiodeParams param, object tag = null) : base(tag)
+			{
+				Param = param;
+			}
 
-            protected override ShockleyDiodeParams CreateDefaultModel()
-            {
-                return new ShockleyDiodeParams();
-            }
-        }
+			public ShockleyDiodeParams Param { get; set; }
+		}
 
+		// requires NextGenSpice.Parser.Statements.Devices; namespace
+		private class ShockleyDiodeModelHandler : DeviceModelHandlerBase<ShockleyDiodeParams>
+		{
+			public ShockleyDiodeModelHandler()
+			{
+				Map(p => p.SaturationCurrent, "IS");
+				Map(p => p.ThermalVoltage, "VT");
+				Map(p => p.IdealityCoefficient, "N");
+			}
 
-        public class ShockleyDiodeStatementProcessor : DeviceStatementProcessor
-        {
-            public override char Discriminator => 'S';
+			public override string Discriminator => "SHOCKLEY";
 
-            public ShockleyDiodeStatementProcessor()
-            {
-                MinArgs = MaxArgs = 3;
-            }
-
-            protected override void DoProcess()
-            {
-                var name = DeviceName; // use local variable for capture
-                var nodes = GetNodeIds(1, 2);
-                // cannot check for model existence yet, defer checking for model later
-
-                if (Errors == 0)
-                {
-                    var modelToken = RawStatement[3];
-                    Context.DeferredStatements.Add(
-                        new ModeledDeviceDeferedStatement<ShockleyDiodeParams>(Context.CurrentScope,
-                            (par, cb) => cb.AddDevice(nodes, new ShockleyDiode(par, name)), modelToken));
-                }
-            }
-
-            public override IEnumerable<IDeviceModelHandler> GetModelStatementHandlers()
-            {
-                return new[] { new ShockleyDiodeModelHandler() };
-            }
-        }
+			protected override ShockleyDiodeParams CreateDefaultModel()
+			{
+				return new ShockleyDiodeParams();
+			}
+		}
 
 
-        public static void UsingTheDiode()
-        {
-            var parser =  SpiceNetlistParser.WithDefaults();
-            parser.RegisterDevice(new ShockleyDiodeStatementProcessor());
+		public class ShockleyDiodeStatementProcessor : DeviceStatementProcessor
+		{
+			public ShockleyDiodeStatementProcessor()
+			{
+				MinArgs = MaxArgs = 3;
+			}
 
-            // ...
+			public override char Discriminator => 'S';
 
-            // requires NextGenSpice.Core.Representation
-            var factory = AnalysisModelCreator.Instance.GetFactory<LargeSignalCircuitModel>();
-            factory.SetModel<ShockleyDiode, LargeSignalShockleyDiode>(
-                e => new LargeSignalShockleyDiode(e));
+			protected override void DoProcess()
+			{
+				var name = DeviceName; // use local variable for capture
+				var nodes = GetNodeIds(1, 2);
+				// cannot check for model existence yet, defer checking for model later
 
+				if (Errors == 0)
+				{
+					var modelToken = RawStatement[3];
+					Context.DeferredStatements.Add(
+						new ModeledDeviceDeferedStatement<ShockleyDiodeParams>(Context.CurrentScope,
+							(par, cb) => cb.AddDevice(nodes, new ShockleyDiode(par, name)), modelToken));
+				}
+			}
 
-        }
+			public override IEnumerable<IDeviceModelHandler> GetModelStatementHandlers()
+			{
+				return new[] {new ShockleyDiodeModelHandler()};
+			}
+		}
 
-        // requires NextGenSpice.Numerics.Equations and
-        // NextGenSpice.LargeSignal.Devices namespaces
-        public class LargeSignalShockleyDiode : TwoTerminalLargeSignalDevice<ShockleyDiode>
-        {
-            // classes encapsulating the work with equation system coefficient proxies
-            // requires NextGenSpice.LargeSignal.Stamping namespace
-            private VoltageProxy voltage; // used to get voltage across the diode
+		// requires NextGenSpice.Numerics.Equations and
+		// NextGenSpice.LargeSignal.Devices namespaces
+		public class LargeSignalShockleyDiode : TwoTerminalLargeSignalDevice<ShockleyDiode>
+		{
+			private readonly ConductanceStamper conductanceStamper;
 
-            // stamping equivalent circuit model
-            private CurrentStamper currentStamper;
-            private ConductanceStamper conductanceStamper;
+			// stamping equivalent circuit model
+			private readonly CurrentStamper currentStamper;
 
-            public LargeSignalShockleyDiode(ShockleyDiode definitionDevice) : base(definitionDevice)
-            {
-                voltage = new VoltageProxy();
-                currentStamper = new CurrentStamper();
-                conductanceStamper = new ConductanceStamper();
-            }
+			// classes encapsulating the work with equation system coefficient proxies
+			// requires NextGenSpice.LargeSignal.Stamping namespace
+			private readonly VoltageProxy voltage; // used to get voltage across the diode
 
-            public override void Initialize(IEquationSystemAdapter adapter, ISimulationContext context)
-            {
-                // get proxies
-                voltage.Register(adapter, Anode, Cathode);
-                currentStamper.Register(adapter, Anode, Cathode);
-                conductanceStamper.Register(adapter, Anode, Cathode);
-            }
+			public LargeSignalShockleyDiode(ShockleyDiode definitionDevice) : base(definitionDevice)
+			{
+				voltage = new VoltageProxy();
+				currentStamper = new CurrentStamper();
+				conductanceStamper = new ConductanceStamper();
+			}
 
-            public override void ApplyModelValues(ISimulationContext context)
-            {
-                var Is = DefinitionDevice.Param.SaturationCurrent;
-                var Vt = DefinitionDevice.Param.ThermalVoltage;
-                var n = DefinitionDevice.Param.IdealityCoefficient;
+			public override void Initialize(IEquationSystemAdapter adapter, ISimulationContext context)
+			{
+				// get proxies
+				voltage.Register(adapter, Anode, Cathode);
+				currentStamper.Register(adapter, Anode, Cathode);
+				conductanceStamper.Register(adapter, Anode, Cathode);
+			}
 
-                var Vd = voltage.GetValue();
-                // calculates current through the diode and it's derivative
-                DeviceHelpers.PnJunction(Is, Vd, Vt * n, out var Id, out var Geq);
-                Current = Id; 
+			public override void ApplyModelValues(ISimulationContext context)
+			{
+				var Is = DefinitionDevice.Param.SaturationCurrent;
+				var Vt = DefinitionDevice.Param.ThermalVoltage;
+				var n = DefinitionDevice.Param.IdealityCoefficient;
 
-                // stamp the equivalent circuit
-                var Ieq = Id - Geq * Vd;
-                conductanceStamper.Stamp(Geq);
-                currentStamper.Stamp(Ieq);
-            }
+				var Vd = voltage.GetValue();
+				// calculates current through the diode and it's derivative
+				DeviceHelpers.PnJunction(Is, Vd, Vt * n, out var Id, out var Geq);
+				Current = Id;
 
-            public override void OnEquationSolution(ISimulationContext context)
-            {   
-                var newVoltage = voltage.GetValue();
-                var abstol = context.SimulationParameters.AbsoluteTolerance;
-                var reltol = context.SimulationParameters.RelativeTolerance;
+				// stamp the equivalent circuit
+				var Ieq = Id - Geq * Vd;
+				conductanceStamper.Stamp(Geq);
+				currentStamper.Stamp(Ieq);
+			}
 
-                // Check if converged
-                if (!MathHelper.InTollerance(newVoltage, Voltage, abstol, reltol))
-                {
-                    // request additional DC bias iteration
-                    context.ReportNotConverged(this);
-                }
+			public override void OnEquationSolution(ISimulationContext context)
+			{
+				var newVoltage = voltage.GetValue();
+				var abstol = context.SimulationParameters.AbsoluteTolerance;
+				var reltol = context.SimulationParameters.RelativeTolerance;
 
-                // update voltage for reading
-                Voltage = newVoltage;
-            }
-        }
+				// Check if converged
+				if (!MathHelper.InTollerance(newVoltage, Voltage, abstol, reltol)) context.ReportNotConverged(this);
 
-    }
+				// update voltage for reading
+				Voltage = newVoltage;
+			}
+		}
+	}
 }

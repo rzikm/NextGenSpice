@@ -1,9 +1,9 @@
 {
-  "profiles": {
-    "NextGenSpice": {
-      "commandName": "Project",
-      "commandLineArgs": "capacitor.txt",
-      "workingDirectory": "D:\\Visual Studio 2017\\Projects\\NextGen Spice\\Debug"
-    }
-  }
+	"profiles": {
+		"NextGenSpice": {
+			"commandName": "Project",
+			"commandLineArgs": "capacitor.txt",
+			"workingDirectory": "D:\\Visual Studio 2017\\Projects\\NextGen Spice\\Debug"
+		}
+	}
 }

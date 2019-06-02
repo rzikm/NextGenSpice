@@ -1,97 +1,96 @@
 ﻿using System;
 using System.Linq;
-using NextGenSpice.Numerics;
 using NextGenSpice.Numerics.Equations;
 
 namespace NextGenSpice.LargeSignal.NumIntegration
 {
-    /// <summary>Class performing Adams-Moulton integration method of given order.</summary>
-    public class AdamsMoultonIntegrationMethod : IIntegrationMethod
-    {
-        private readonly double[] coefficients;
-        private readonly double derivativeCoeff;
-        private readonly double[] states;
+	/// <summary>Class performing Adams-Moulton integration method of given order.</summary>
+	public class AdamsMoultonIntegrationMethod : IIntegrationMethod
+	{
+		private readonly double[] coefficients;
+		private readonly double derivativeCoeff;
+		private readonly double[] states;
 
-        private int baseIndex;
-        private double derivative;
+		private int baseIndex;
+		private double derivative;
 
-        private int stateCount;
+		private int stateCount;
 
-        public AdamsMoultonIntegrationMethod(int order)
-        {
-            var coef = GetCoefficients(order);
-            coefficients = coef.Skip(1).ToArray();
-            derivativeCoeff = coef[0];
+		public AdamsMoultonIntegrationMethod(int order)
+		{
+			var coef = GetCoefficients(order);
+			coefficients = coef.Skip(1).ToArray();
+			derivativeCoeff = coef[0];
 
-            states = new double[order - 1];
-        }
+			states = new double[order - 1];
+		}
 
-        /// <summary>Adds state and derivative of current timepoint to history.</summary>
-        /// <param name="state">Value of current state variable</param>
-        /// <param name="derivative">Derivative of current state variable</param>
-        public void SetState(double state, double derivative)
-        {
-            this.derivative = derivative;
-            baseIndex = (baseIndex - 1 + states.Length) % states.Length;
-            states[baseIndex] = state;
-            stateCount++;
-        }
+		/// <summary>Adds state and derivative of current timepoint to history.</summary>
+		/// <param name="state">Value of current state variable</param>
+		/// <param name="derivative">Derivative of current state variable</param>
+		public void SetState(double state, double derivative)
+		{
+			this.derivative = derivative;
+			baseIndex = (baseIndex - 1 + states.Length) % states.Length;
+			states[baseIndex] = state;
+			stateCount++;
+		}
 
 
-        /// <summary>Gets next values of state and derivative based on history and current timepoint.</summary>
-        /// <param name="dx">How far to predict values of state and derivative.</param>
-        /// <returns></returns>
-        public (double state, double derivative) GetEquivalents(double dx)
-        {
-            if (dx <= 0) throw new ArgumentOutOfRangeException(nameof(dx));
+		/// <summary>Gets next values of state and derivative based on history and current timepoint.</summary>
+		/// <param name="dx">How far to predict values of state and derivative.</param>
+		/// <returns></returns>
+		public (double state, double derivative) GetEquivalents(double dx)
+		{
+			if (dx <= 0) throw new ArgumentOutOfRangeException(nameof(dx));
 
-            if (stateCount < states.Length)
-            {
-                var rec = new AdamsMoultonIntegrationMethod(stateCount + 1);
-                for (var i = 0; i < stateCount; i++)
-                    rec.SetState(states[states.Length - 1 - i], derivative);
-                return rec.GetEquivalents(dx);
-            }
+			if (stateCount < states.Length)
+			{
+				var rec = new AdamsMoultonIntegrationMethod(stateCount + 1);
+				for (var i = 0; i < stateCount; i++)
+					rec.SetState(states[states.Length - 1 - i], derivative);
+				return rec.GetEquivalents(dx);
+			}
 
-            var dy = dx / derivativeCoeff;
-            var y = derivative * dx;
-            for (var i = 0; i < states.Length; i++)
-                y += coefficients[i] * states[(baseIndex + i) % states.Length];
-            y /= derivativeCoeff;
+			var dy = dx / derivativeCoeff;
+			var y = derivative * dx;
+			for (var i = 0; i < states.Length; i++)
+				y += coefficients[i] * states[(baseIndex + i) % states.Length];
+			y /= derivativeCoeff;
 
-            return (y, dy);
-        }
+			return (y, dy);
+		}
 
-        /// <summary>Gets coefficients for the Adams-Moulton integration of given order.</summary>
-        /// <param name="order">Order of the integration method</param>
-        /// <returns></returns>
-        public static double[] GetCoefficients(int order)
-        {
-            if (order <= 0) throw new ArgumentOutOfRangeException(nameof(order));
+		/// <summary>Gets coefficients for the Adams-Moulton integration of given order.</summary>
+		/// <param name="order">Order of the integration method</param>
+		/// <returns></returns>
+		public static double[] GetCoefficients(int order)
+		{
+			if (order <= 0) throw new ArgumentOutOfRangeException(nameof(order));
 
-            // see http://qucs.sourceforge.net/tech/node24.html#eq:MoultonInt for details
+			// see http://qucs.sourceforge.net/tech/node24.html#eq:MoultonInt for details
 
-            var es = new EquationSystem(order);
-            es.Matrix[0, 0] = 1;
-            es.RightHandSide[0] = 1;
-            for (var i = 1; i < order; i++)
-            {
-                var parity = i % 2 > 0 ? -1 : 1;
+			var es = new EquationSystem(order);
+			es.Matrix[0, 0] = 1;
+			es.RightHandSide[0] = 1;
+			for (var i = 1; i < order; i++)
+			{
+				var parity = i % 2 > 0 ? -1 : 1;
 
-                es.Matrix[0, i] = 1;
-                es.Matrix[i, 0] = parity;
-                es.RightHandSide[i] = parity / (i + 1.0);
+				es.Matrix[0, i] = 1;
+				es.Matrix[i, 0] = parity;
+				es.RightHandSide[i] = parity / (i + 1.0);
 
-                var b = i - 1;
-                for (var row = 1; row < order; row++)
-                {
-                    es.Matrix[row, i] =  b;
-                    b *= i - 1;
-                }
-            }
+				var b = i - 1;
+				for (var row = 1; row < order; row++)
+				{
+					es.Matrix[row, i] = b;
+					b *= i - 1;
+				}
+			}
 
-            es.Solve();
-            return es.Solution;
-        }
-    }
+			es.Solve();
+			return es.Solution;
+		}
+	}
 }

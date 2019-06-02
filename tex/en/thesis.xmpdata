@@ -1,0 +1,10 @@
+% Metadata to be stored in PDF, see documentation of the pdfx package for more details.
+
+\Author{Radek Zikmund}
+\Title{NextGen SPICE – Electrical Circuit Simulation Library for .NET}
+\Keywords{Electrical circuit simulation\sep SPICE\sep .NET Library}
+\Subject{The goal of this thesis was to create an extensible library for simulating electrical circuits for the .NET platform, which could be used in broad contexts like development of educational programs or applications that use evolutionary algorithms to evolve electrical circuits. Our library is inspired by the family of SPICE programs developed at University of California, Berkeley. 	
+Initial version of our library implements the transient analysis of electrical circuits and supports basic devices like voltage and current sources, resistors, capacitors, inductors, but also semiconductor diode and BJT transistor devices. Our library is designed in such a way that both new circuit devices and circuit analyses can be added in future versions.
+Other features of our library include importing circuits or their parts from the industry standard SPICE netlists and ability to modify circuit parameters during the simulation. In this thesis, we also investigate using double-double precision type to improve convergence during the simulation.
+We also implement a simple SPICE-like console application to allow our simulation library to be used from command line.}
+\Publisher{Charles University}

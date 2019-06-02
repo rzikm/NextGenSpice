@@ -23,7 +23,7 @@
     <ProjectGuid>{B5F06554-21B8-4026-950C-C50D2493D89B}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>NextGenSpiceNumericsNative</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
